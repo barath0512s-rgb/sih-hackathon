@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaaniSetu — AI Teaching Assistant</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:       #0D2137;
+    --blue:       #1A5276;
+    --bright:     #2563EB;
+    --green:      #0D6B3E;
+    --red:        #C0392B;
+    --gold:       #FAC040;
+    --lightblue:  #AED6F1;
+    --dim:        #8AAAD0;
+    --white:      #ffffff;
+  }
+  body { background: var(--navy); color: var(--white); font-family: 'Segoe UI', sans-serif; padding: 16px; min-height: 100vh; }
+  .app { max-width: 520px; margin: auto; }
+
+  /* ── Header ── */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .brand-title { font-size: 24px; font-weight: bold; color: var(--gold); }
+  .brand-sub   { font-size: 10px; color: var(--lightblue); margin-top: 2px; }
+  .conn        { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--dim); }
+  .dot         { width: 10px; height: 10px; border-radius: 50%; background: var(--red); flex-shrink: 0; transition: background .4s; }
+  .dot.ok      { background: var(--green); }
+
+  /* ── Section labels ── */
+  .label { font-size: 9px; font-weight: bold; color: var(--gold); letter-spacing: .06em; margin-bottom: 4px; margin-top: 12px; }
+
+  /* ── Lesson spinner ── */
+  select { width: 100%; padding: 10px; background: var(--blue); color: var(--white); border: none; border-radius: 4px; font-size: 13px; cursor: pointer; }
+
+  /* ── Mode tabs ── */
+  .mode-row { display: flex; gap: 4px; }
+  .mode-btn { flex: 1; padding: 8px 4px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--white); background: var(--blue); transition: background .2s; }
+  .mode-btn.active { background: var(--bright); }
+
+  /* ── Step card ── */
+  .step-card { background: var(--blue); border-radius: 6px; padding: 12px; margin-top: 8px; }
+  .step-num  { font-size: 9px; color: var(--gold); font-weight: bold; margin-bottom: 4px; }
+  .step-note { font-size: 13px; }
+  .progress-bar-bg { height: 6px; background: var(--blue); border-radius: 3px; margin: 8px 0; }
+  .progress-bar    { height: 6px; background: var(--gold); border-radius: 3px; width: 0%; transition: width .4s; }
+
+  /* ── Status text ── */
+  .status { text-align: center; font-size: 12px; color: var(--lightblue); margin: 6px 0; min-height: 18px; }
+
+  /* ── Latency row ── */
+  .lat-row { display: flex; gap: 3px; margin: 6px 0; }
+  .lat-cell { flex: 1; background: var(--blue); border-radius: 4px; padding: 6px 4px; text-align: center; }
+  .lat-cell.total { background: var(--bright); }
+  .lat-lbl  { font-size: 9px; color: var(--gold); }
+  .lat-val  { font-size: 12px; font-weight: bold; }
+
+  /* ── Translation display boxes ── */
+  .disp-lbl { font-size: 9px; font-weight: bold; color: var(--gold); letter-spacing: .06em; margin-top: 10px; margin-bottom: 3px; }
+  .disp-box { border-radius: 4px; padding: 12px; min-height: 54px; font-size: 14px; display: flex; align-items: center; color: var(--white); }
+  .disp-box.hindi   { background: var(--blue); }
+  .disp-box.santali { background: var(--green); }
+  .disp-box.placeholder { color: var(--dim); font-style: italic; }
+
+  /* ── Record button ── */
+  .record-btn { width: 100%; padding: 18px; margin-top: 14px; border: none; border-radius: 6px; background: var(--red); color: var(--white); font-size: 16px; font-weight: bold; cursor: pointer; transition: background .15s; }
+  .record-btn:active, .record-btn.recording { background: #922B21; }
+
+  /* ── Action row ── */
+  .action-row { display: flex; gap: 4px; margin-top: 8px; }
+  .action-btn { flex: 1; padding: 12px 4px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--white); }
+  .action-btn.next  { background: var(--bright); }
+  .action-btn.ws    { background: var(--blue); }
+  .action-btn.summ  { background: var(--navy); border: 1px solid var(--gold); color: var(--gold); }
+
+  /* ── Response row ── */
+  .resp-row { display: flex; gap: 4px; margin-top: 8px; }
+  .resp-input { flex: 1; padding: 10px; background: var(--blue); color: var(--white); border: none; border-radius: 4px; font-size: 13px; }
+  .resp-input::placeholder { color: var(--dim); }
+  .check-btn  { padding: 10px 16px; background: var(--green); color: var(--white); border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; }
+
+  /* ── Comprehension signal ── */
+  .comp-signal { border-radius: 4px; padding: 12px; text-align: center; font-weight: bold; font-size: 14px; margin-top: 8px; display: none; }
+  .comp-signal.green  { display: block; background: var(--green); }
+  .comp-signal.yellow { display: block; background: #B7950B; }
+  .comp-signal.red    { display: block; background: var(--red); }
+
+  /* ── Summary card ── */
+  .summ-card { background: var(--blue); border-radius: 6px; padding: 14px; margin-top: 10px; font-size: 12px; line-height: 1.7; display: none; }
+  .summ-card.show { display: block; }
+  .summ-card b { color: var(--gold); }
+
+  /* ── Spinner ── */
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--lightblue); border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--navy); } ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="brand-title">VaaniSetu</div>
+      <div class="brand-sub">AI Teaching Assistant — Tribal Classrooms &nbsp;|&nbsp; SIH 2026</div>
+    </div>
+    <div class="conn">
+      <div class="dot" id="connDot"></div>
+      <span id="connText">...</span>
+    </div>
+  </div>
+
+  <!-- Lesson selector -->
+  <div class="label">LESSON</div>
+  <select id="lessonSpinner"></select>
+
+  <!-- Mode tabs -->
+  <div class="label">MODE</div>
+  <div class="mode-row">
+    <button class="mode-btn active" id="modeLesson"    onclick="setMode('lesson_script')">Lesson Script</button>
+    <button class="mode-btn"        id="modeActivity"  onclick="setMode('activity_instruction')">Activity</button>
+    <button class="mode-btn"        id="modeAssess"    onclick="setMode('assessment_prompt')">Assessment</button>
+  </div>
+
+  <!-- Step card -->
+  <div class="step-card">
+    <div class="step-num"  id="stepLabel">STEP 0 / 0</div>
+    <div class="step-note" id="stepNote">Select a lesson to begin</div>
+  </div>
+  <div class="progress-bar-bg"><div class="progress-bar" id="stepProg"></div></div>
+
+  <!-- Status -->
+  <div class="status" id="statusText">Ready — select a lesson</div>
+
+  <!-- Latency -->
+  <div class="lat-row">
+    <div class="lat-cell"><div class="lat-lbl">ASR</div><div class="lat-val" id="latASR">—</div></div>
+    <div class="lat-cell"><div class="lat-lbl">NMT</div><div class="lat-val" id="latNMT">—</div></div>
+    <div class="lat-cell"><div class="lat-lbl">TTS</div><div class="lat-val" id="latTTS">—</div></div>
+    <div class="lat-cell total"><div class="lat-lbl">TOTAL</div><div class="lat-val" id="latTotal">—</div></div>
+    <div class="lat-cell" style="background:var(--navy);border:1px solid var(--gold)"><div class="lat-lbl">CONFIDENCE</div><div class="lat-val" id="confVal" style="color:var(--gold)">—</div></div>
+  </div>
+
+  <!-- Hindi display & Input -->
+  <div class="disp-lbl">HINDI (हिन्दी)</div>
+  <textarea id="hindiBox" class="disp-box hindi placeholder" rows="3" style="width:100%; border:1px solid #ccc; padding:8px; border-radius:4px; margin-bottom:4px;" placeholder="Speak or type Hindi here..."></textarea>
+  <button onclick="translateText('hi-to-sat')" style="width:100%; padding:8px; background:var(--gold); color:var(--navy); font-weight:bold; border:none; border-radius:4px; cursor:pointer; margin-bottom:12px;">⬇️ Translate to Santali</button>
+
+  <!-- Santali display & Input -->
+  <div class="disp-lbl">SANTALI (ᱥᱟᱱᱛᱟᱲᱤ)</div>
+  <textarea id="santaliBox" class="disp-box santali placeholder" rows="3" style="width:100%; border:1px solid #ccc; padding:8px; border-radius:4px; margin-bottom:4px;" placeholder="Speak or type Santali here..."></textarea>
+  <button onclick="translateText('sat-to-hi')" style="width:100%; padding:8px; background:var(--gold); color:var(--navy); font-weight:bold; border:none; border-radius:4px; cursor:pointer; margin-bottom:12px;">⬆️ Translate to Hindi</button>
+
+  <!-- Translation Feedback UI -->
+  <div id="feedbackSection" style="display:none; margin-top:8px; background:var(--blue); padding:10px; border-radius:4px; text-align:center;">
+      <div style="font-size:10px; color:var(--gold); margin-bottom:8px; font-weight:bold;">IS THIS TRANSLATION CORRECT?</div>
+      <div style="display:flex; gap:6px; justify-content:center;">
+          <button onclick="submitFeedback(true)" style="padding:6px 12px; background:var(--green); color:white; border:none; border-radius:4px; cursor:pointer;">👍 Correct</button>
+          <button onclick="document.getElementById('correctionBox').style.display='block'" style="padding:6px 12px; background:var(--red); color:white; border:none; border-radius:4px; cursor:pointer;">👎 Wrong</button>
+      </div>
+      <div id="correctionBox" style="display:none; margin-top:10px;">
+          <input type="text" id="correctionInput" placeholder="Enter correct Santali text..." style="width:100%; padding:8px; border-radius:4px; border:none; margin-bottom:6px;">
+          <button onclick="submitFeedback(false)" style="padding:6px 12px; background:var(--gold); color:var(--navy); font-weight:bold; border:none; border-radius:4px; cursor:pointer;">Save Correction</button>
+      </div>
+  </div>
+
+  <!-- Record buttons -->
+  <div style="display:flex; gap:10px; justify-content:space-between; margin-top:16px;">
+      <button class="record-btn" id="recordBtnHi" style="flex:1; border-radius:30px;"
+        onmousedown="startRec('hi-to-sat')" onmouseup="stopRec()"
+        ontouchstart="startRec('hi-to-sat')" ontouchend="stopRec()">
+        🎤 Hold for Hindi
+      </button>
+      <button class="record-btn" id="recordBtnSat" style="flex:1; border-radius:30px; background:var(--navy);"
+        onmousedown="startRec('sat-to-hi')" onmouseup="stopRec()"
+        ontouchstart="startRec('sat-to-hi')" ontouchend="stopRec()">
+        🎤 Hold for Santali
+      </button>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="action-row">
+    <button class="action-btn next" onclick="nextStep()">NEXT STEP ›</button>
+    <button class="action-btn ws"   onclick="downloadWorksheet()">WORKSHEET ↓</button>
+    <button class="action-btn summ" onclick="fetchSummary()">SUMMARY</button>
+  </div>
+
+  <!-- Response check -->
+  <div class="resp-row">
+    <input class="resp-input" id="respInput" type="text" placeholder="Type student response here…" />
+    <button class="check-btn" onclick="checkResp()">CHECK</button>
+  </div>
+
+  <!-- Comprehension signal -->
+  <div class="comp-signal" id="compSignal"></div>
+
+  <!-- Summary card -->
+  <div class="summ-card" id="summCard"></div>
+
+</div><!-- /app -->
+
+<audio id="ttsAudio" style="display:none"></audio>
+
+<script>
+const SERVER   = "";   // same origin — served by Flask
+let sid        = "";
+let mode       = "lesson_script";
+let totalSteps = 0;
+let stepIdx    = 0;
+let lessons    = [];
+let lastHindi  = "";
+let lastSat    = "";
+let mediaRec   = null;
+let chunks     = [];
+
+// ── Utility ────────────────────────────────────────────────────────────────
+function st(msg, spinner=false) {
+  const el = document.getElementById("statusText");
+  el.innerHTML = spinner ? `<span class='spinner'></span>${msg}` : msg;
+}
+function setPlaceholder(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.classList.add("placeholder");
+}
+function setContent(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.classList.remove("placeholder");
+}
+
+// ── Ping / Connect ──────────────────────────────────────────────────────────
+async function ping() {
+  try {
+    const r = await fetch(`${SERVER}/health`);
+    if (r.ok) {
+      const d = await r.json();
+      document.getElementById("connDot").classList.add("ok");
+      document.getElementById("connText").textContent = `Connected · ${d.device}`;
+    } else throw new Error();
+  } catch {
+    document.getElementById("connText").textContent = "Unreachable";
+  }
+}
+
+// ── Load lessons ────────────────────────────────────────────────────────────
+async function loadLessons() {
+  try {
+    const r = await fetch(`${SERVER}/lessons`);
+    const d = await r.json();
+    lessons = d.lessons;
+    const sel = document.getElementById("lessonSpinner");
+    sel.innerHTML = "";
+    lessons.forEach((l, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `Grade ${l.grade}: ${l.title}`;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => startLesson(lessons[parseInt(sel.value)]);
+    if (lessons.length > 0) startLesson(lessons[0]);
+    st(`${lessons.length} lessons loaded`);
+  } catch(e) { st("Cannot reach server — is app.py running?"); }
+}
+
+// ── Start lesson ────────────────────────────────────────────────────────────
+async function startLesson(lesson) {
+  st("Starting lesson…", true);
+  try {
+    const r = await fetch(`${SERVER}/session/start`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({grade: lesson.grade, topic: lesson.topic})
+    });
+    const d = await r.json();
+    sid        = d.session_id;
+    totalSteps = d.total_steps;
+    stepIdx    = 0;
+    updateStep(0, totalSteps, d.step);
+    document.getElementById("compSignal").className = "comp-signal";
+    document.getElementById("summCard").classList.remove("show");
+    st(`Lesson: ${d.title}`);
+  } catch(e) { st("Error starting lesson"); }
+}
+
+function updateStep(idx, total, step) {
+  document.getElementById("stepLabel").textContent = `STEP ${idx} / ${total}`;
+  document.getElementById("stepNote").textContent  = step ? `${step.type.replace(/_/g," ").toUpperCase()} — ${step.note}` : "Lesson complete";
+  document.getElementById("stepProg").style.width  = `${total > 0 ? (idx/total)*100 : 0}%`;
+}
+
+// ── Mode tabs ───────────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  ["modeLesson","modeActivity","modeAssess"].forEach(id => document.getElementById(id).classList.remove("active"));
+  const map = {lesson_script:"modeLesson", activity_instruction:"modeActivity", assessment_prompt:"modeAssess"};
+  document.getElementById(map[m]).classList.add("active");
+}
+
+let currentDirection = "hi-to-sat";
+
+// ── Recording ───────────────────────────────────────────────────────────────
+async function startRec(dir) {
+  if (mediaRec && mediaRec.state === "recording") return;
+  currentDirection = dir;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    chunks = [];
+    mediaRec = new MediaRecorder(stream);
+    mediaRec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    mediaRec.onstop = sendAudio;
+    mediaRec.start();
+    const btn = document.getElementById(dir === "hi-to-sat" ? "recordBtnHi" : "recordBtnSat");
+    btn.textContent = "⬤  RECORDING…";
+    btn.classList.add("recording");
+    document.getElementById("feedbackSection").style.display = "none";
+    st("Recording…");
+  } catch(e) {
+    st("Microphone access denied — check browser permissions");
+  }
+}
+
+function stopRec() {
+  if (!mediaRec || mediaRec.state !== "recording") return;
+  mediaRec.stop();
+  mediaRec.stream.getTracks().forEach(t => t.stop());
+  
+  const btnHi = document.getElementById("recordBtnHi");
+  btnHi.textContent = "🎤 Hold for Hindi";
+  btnHi.classList.remove("recording");
+  
+  const btnSat = document.getElementById("recordBtnSat");
+  btnSat.textContent = "🎤 Hold for Santali";
+  btnSat.classList.remove("recording");
+  
+  st("Processing…", true);
+}
+
+async function sendAudio() {
+  const blob = new Blob(chunks, {type:"audio/webm"});
+  const fd   = new FormData();
+  fd.append("audio", blob, "recording.webm");
+  fd.append("mode", mode);
+  fd.append("session_id", sid);
+  fd.append("direction", currentDirection);
+  
+  try {
+    const r   = await fetch(`${SERVER}/translate/audio`, {method:"POST", body:fd});
+    const d   = await r.json();
+    updateUI(d, currentDirection);
+  } catch(e) { st("Translation error — check server"); }
+}
+
+async function translateText(dir) {
+    currentDirection = dir;
+    let textToTranslate = dir === "hi-to-sat" ? 
+        document.getElementById("hindiBox").value : 
+        document.getElementById("santaliBox").value;
+        
+    if (!textToTranslate.trim()) {
+        alert("Please enter some text to translate.");
+        return;
+    }
+    
+    st("Translating text...", true);
+    document.getElementById("feedbackSection").style.display = "none";
+    
+    try {
+        const r = await fetch(`${SERVER}/translate/text`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                text: textToTranslate,
+                direction: currentDirection,
+                mode: document.getElementById("modeSelect") ? document.getElementById("modeSelect").value : "lesson_script"
+            })
+        });
+        const d = await r.json();
+        updateUI(d, currentDirection);
+    } catch(e) {
+        st("Error translating text");
+    }
+}
+
+function updateUI(d, dir) {
+    document.getElementById("hindiBox").classList.remove("placeholder");
+    document.getElementById("santaliBox").classList.remove("placeholder");
+    
+    if (dir === "hi-to-sat") {
+        document.getElementById("hindiBox").value = d.recognized_text || document.getElementById("hindiBox").value;
+        document.getElementById("santaliBox").value = d.translated_text;
+        lastHindi = document.getElementById("hindiBox").value;
+        lastSat = d.translated_text;
+        
+        // Show feedback section only for hi-to-sat (our primary NIPUN domain target)
+        document.getElementById("feedbackSection").style.display = "block";
+        document.getElementById("correctionBox").style.display = "none";
+        document.getElementById("correctionInput").value = "";
+        
+        st("Playing Santali audio…");
+        const audio = document.getElementById("ttsAudio");
+        audio.src = `${SERVER}/audio/output?t=${Date.now()}`;
+        audio.play();
+        audio.onended = () => st("Done");
+    } else {
+        document.getElementById("santaliBox").value = d.recognized_text || document.getElementById("santaliBox").value;
+        document.getElementById("hindiBox").value = d.translated_text;
+        document.getElementById("feedbackSection").style.display = "none";
+        st("Done");
+    }
+
+    document.getElementById("latASR").textContent   = d.latency.asr   + "s";
+    document.getElementById("latNMT").textContent   = d.latency.nmt   + "s";
+    document.getElementById("latTTS").textContent   = d.latency.tts   + "s";
+    document.getElementById("latTotal").textContent = d.latency.total + "s";
+    
+    if (d.confidence) {
+        document.getElementById("confVal").textContent = d.confidence + "%";
+    }
+}
+
+async function submitFeedback(isCorrect) {
+    let correctedText = "";
+    if (!isCorrect) {
+        correctedText = document.getElementById("correctionInput").value.trim();
+        if (!correctedText) {
+            alert("Please provide the correct translation.");
+            return;
+        }
+    }
+    
+    try {
+        await fetch(`${SERVER}/feedback`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                hindi_text: lastHindi,
+                santali_text: lastSat,
+                is_correct: isCorrect,
+                corrected_text: correctedText
+            })
+        });
+        document.getElementById("feedbackSection").style.display = "none";
+        st(isCorrect ? "Feedback saved! ✅" : "Correction learned! ✅");
+    } catch(e) {
+        st("Error saving feedback");
+    }
+}
+
+// ── Next step ───────────────────────────────────────────────────────────────
+async function nextStep() {
+  if (!sid) return;
+  try {
+    const r = await fetch(`${SERVER}/session/next`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({session_id: sid})
+    });
+    const d = await r.json();
+    if (d.completed) {
+      document.getElementById("stepLabel").textContent = "LESSON COMPLETE";
+      document.getElementById("stepNote").textContent  = "Tap SUMMARY to see results";
+      document.getElementById("stepProg").style.width  = "100%";
+      st("Lesson finished!");
+    } else {
+      stepIdx = d.step_index;
+      updateStep(stepIdx, d.total_steps, d.step);
+    }
+  } catch(e) { st("Step error"); }
+}
+
+// ── Check student response ──────────────────────────────────────────────────
+async function checkResp() {
+  const resp = document.getElementById("respInput").value.trim();
+  if (!resp || !sid) { st("Enter a student response first"); return; }
+  try {
+    const r = await fetch(`${SERVER}/session/response`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({session_id:sid, response:resp})
+    });
+    const d   = await r.json();
+    const sig = document.getElementById("compSignal");
+    sig.className = `comp-signal ${d.signal}`;
+    sig.textContent = {green:"✅ Correct — student understood", yellow:"🟡 Partial — try again", red:"❌ Incorrect — repeat the concept"}[d.signal] || d.message;
+    document.getElementById("respInput").value = "";
+  } catch(e) { st("Check error"); }
+}
+
+// ── Summary ─────────────────────────────────────────────────────────────────
+async function fetchSummary() {
+  if (!sid) { st("Start a lesson first"); return; }
+  try {
+    const r = await fetch(`${SERVER}/session/summary`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({session_id:sid})
+    });
+    const d   = await r.json();
+    const c   = d.comprehension;
+    const card = document.getElementById("summCard");
+    card.innerHTML = `
+      <b>📚 ${d.lesson_title}</b><br>
+      <b>Competency:</b> ${d.competency}<br>
+      <b>Duration:</b> ${d.duration} &nbsp;|&nbsp; <b>Steps:</b> ${d.steps_completed}/${d.total_steps}<br>
+      <b>Sentences translated:</b> ${d.sentences_translated} &nbsp;|&nbsp; <b>Avg latency:</b> ${d.avg_latency_sec}s<br><br>
+      🟢 Green: ${c.green} &nbsp; 🟡 Yellow: ${c.yellow} &nbsp; 🔴 Red: ${c.red}<br>
+      <b>Score:</b> ${c.score_percent}% &nbsp;—&nbsp; <em>${c.verdict}</em>
+    `;
+    card.classList.add("show");
+  } catch(e) { st("Summary error"); }
+}
+
+// ── Worksheet download ──────────────────────────────────────────────────────
+async function downloadWorksheet() {
+  if (!lastHindi) { st("Record and translate first"); return; }
+  st("Generating worksheet PDF…", true);
+  try {
+    const r = await fetch(`${SERVER}/worksheet`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({session_id:sid, hindi_text:lastHindi, santali_text:lastSat, grade:"2", topic:"Lesson"})
+    });
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url; a.download = "VaaniSetu_Worksheet.pdf"; a.click();
+    URL.revokeObjectURL(url);
+    st("Worksheet downloaded ✅");
+  } catch(e) { st("Worksheet error"); }
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+ping();
+loadLessons();
+</script>
+</body>
+</html>

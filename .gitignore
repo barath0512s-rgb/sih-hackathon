@@ -1,0 +1,35 @@
+# Environments
+vaanisetu_env/
+venv/
+env/
+.env
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Models and weights (Too large for git)
+models/
+*.pt
+*.bin
+*.onnx
+*.safetensors
+
+# Media and cache
+tts_cache/
+*.wav
+*.mp3
+*.webm
+*.ogg
+
+# Database
+vaanisetu_feedback.db
+*.sqlite3
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
