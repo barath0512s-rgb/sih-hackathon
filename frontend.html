@@ -375,6 +375,7 @@ async function translateText(dir) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 text: textToTranslate,
+                session_id: sid,
                 direction: currentDirection,
                 mode: document.getElementById("modeSelect") ? document.getElementById("modeSelect").value : "lesson_script"
             })

@@ -4,7 +4,6 @@ import torch, time, os, threading
 import numpy as np
 import soundfile as sf
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-from parler_tts import ParlerTTSForConditionalGeneration
 from IndicTransToolkit.processor import IndicProcessor
 import database
 database.init_db()

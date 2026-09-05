@@ -13,6 +13,21 @@ CORS(app)
 pl       = VaaniSetuPipeline()
 sessions = {}
 
+def _record(sid, direction, source_text, translated_text, latency):
+    """Log a translation against an active lesson session.
+
+    Feeds the worksheet's lesson-progression table and the session summary's
+    average latency. Hindi/Santali are stored in fixed slots regardless of
+    which way the translation ran.
+    """
+    sess = sessions.get(sid)
+    if not sess:
+        return
+    if direction == "hi-to-sat":
+        sess.record_translation(source_text, translated_text, latency)
+    else:
+        sess.record_translation(translated_text, source_text, latency)
+
 @app.route("/")
 def index():
     return send_file("frontend.html")
@@ -76,7 +91,10 @@ def translate_audio():
         # No Hindi TTS currently setup, but could add gTTS here if needed.
         
     os.unlink(tmp_path)
-    
+
+    _record(request.form.get("session_id", ""), direction,
+            recognized, translated, round(t3 - t0, 2))
+
     return jsonify({
         "recognized_text": recognized,
         "translated_text": translated,
@@ -110,7 +128,10 @@ def translate_text():
         conf = 0.0
         t1 = time.time()
         t2 = time.time()
-        
+
+    _record(data.get("session_id", ""), direction,
+            text, translated, round(t2 - t0, 2))
+
     return jsonify({
         "translated_text": translated,
         "english_pivot":   pivot,

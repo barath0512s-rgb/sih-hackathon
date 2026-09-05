@@ -24,7 +24,7 @@ print("\n=== VaaniSetu Pipeline Tests ===\n")
 state = {}
 
 def t1():
-    sat, en = p.hindi_to_santali("आज हम जोड़ना सीखेंगे।", "lesson_script")
+    sat, en, conf = p.hindi_to_santali("आज हम जोड़ना सीखेंगे।", "lesson_script")
     assert len(sat) > 0, "Empty Santali output"
     assert len(en)  > 0, "Empty English pivot"
     state["sat"] = sat
@@ -46,7 +46,7 @@ def t3():
 
 def t4():
     for mode in ["lesson_script", "activity_instruction", "assessment_prompt"]:
-        out, _ = p.hindi_to_santali("यह क्या है?", mode)
+        out, _, _ = p.hindi_to_santali("यह क्या है?", mode)
         assert len(out) > 0, f"Empty output for mode {mode}"
     print("       All 3 modes produced output")
 
