@@ -13,22 +13,76 @@
 </head>
 <body>
 <div class="page">
-<header class="masthead"><div class="wordmark">Vaani<span>Setu</span></div><div class="edition">A translation notebook for the classroom · 2026</div><div class="teacher"><b id="connStatus">Live · AI4Bharat NMT</b><small>Teacher workspace</small></div></header>
-<section class="intro"><div><div class="kicker">For the first five minutes of class</div><h1>Say it in Hindi.<br><em>Hear it in Santali.</em></h1></div><p class="intro-copy"><b>VaaniSetu</b> keeps a teacher and a Santali-speaking child in the same conversation. Pick a lesson, speak a line, and keep going.</p></section>
+<header class="masthead"><div class="wordmark">Vaani<span>Setu</span></div><div class="edition">A two-way classroom bridge · 2026</div><div class="teacher"><b id="connStatus">Live · AI4Bharat NMT</b><small>Teacher workspace</small></div></header>
+<section class="intro"><div><div class="kicker">Hindi ↔ Santali · for the whole classroom</div><h1>Understand each other<br><em>as you speak.</em></h1></div><p class="intro-copy"><b>VaaniSetu</b> helps Hindi-speaking teachers and Santali-speaking students have the same conversation. Translate in either direction, then keep the lesson moving.</p></section>
 <div class="workspace">
-<nav class="rail"><div class="rail-label">Open a page</div><button class="active">Today’s lesson</button><button onclick="showToast('Lesson library is ready for your backend.')">Lesson library</button><button onclick="showToast('Progress view is ready for your backend.')">Progress notes</button><button onclick="showToast('Settings are ready for your backend.')">Settings</button><div class="rail-note">“A child should not have to leave their language at the classroom door.”</div></nav>
-<main class="lesson">
-<div class="lesson-head"><div><div class="section-kicker">Today’s lesson / Grade 2</div><h2 id="lessonTitle">Counting around us</h2></div><select class="lesson-select" id="lessonSelect" aria-label="Choose lesson"><option value="0">Grade 2 · Counting</option><option value="1">Grade 2 · Addition</option><option value="2">Grade 1 · Fruits & colours</option></select></div>
-<div class="meta"><span id="lessonTopic">Numbers · NIPUN Bharat</span><b id="stepMeta">Step 1 of 4</b><span>About 12 minutes</span></div><div class="progress"><span id="progressBar" style="width:25%"></span></div><div class="progress-note"><span id="progressText">Start with the first line.</span><span id="progressPercent">25%</span></div>
-<div class="modes"><button class="active" data-mode="script">Lesson guide</button><button data-mode="activity">Activity</button><button data-mode="assessment">Check understanding</button></div>
-<section class="prompt"><div class="step" id="stepNumberStr">01 / 04</div><div><p id="promptText">आज हम गिनना सीखेंगे। अपने हाथ दिखाओ।</p><small id="promptHint">Let’s learn to count. Show me your hands.</small></div></section>
-<section class="translations"><div class="language"><label>Hindi · हिन्दी</label><p id="hindiText" contenteditable="true">आज हम गिनना सीखेंगे। अपने हाथ दिखाओ।</p></div><button class="swap" onclick="swapLanguages()" aria-label="Swap languages">⇄</button><div class="language sat"><label>Santali · ᱥᱟᱱᱛᱟᱲᱤ</label><p id="santaliText" contenteditable="true">ᱟᱡ ᱦᱚᱞ ᱟᱢ ᱮᱞ ᱥᱮᱪᱮᱫ ᱟᱢᱟ।</p></div></section>
-<div class="controls"><button class="translate" onclick="translateText()">Translate this line</button><button class="play" onclick="playAudio()">Play Santali ↗</button><button onclick="downloadWorksheet()">Make a worksheet</button></div>
-<div class="recordings"><button class="record" id="recordHi" onclick="toggleRecord('recordHi','hi-to-sat')"><span class="mark">♩</span><span><b id="recTextHi">Speak Hindi</b><small>Press once to start</small></span></button><button class="record" id="recordSat" onclick="toggleRecord('recordSat','sat-to-hi')"><span class="mark">♩</span><span><b id="recTextSat">Speak Santali</b><small>Press once to start</small></span></button></div>
-<div class="summary" id="summary"><b>Lesson note</b><br><span id="summaryText">You have completed the first step. Keep the conversation going.</span></div>
-<div class="footer-actions"><button class="next" onclick="nextStep()">Next line →</button><button class="summary-btn" onclick="showSummary()">Write a lesson note</button></div>
-</main>
-<aside class="side"><div class="side-rule"><div class="section-kicker">A note for today</div><h3>Let the child answer first.</h3><p>Use the Santali line as a bridge, not a test. Pause, point, and let the classroom do some of the teaching.</p><div class="scribble">take your time ↘</div></div><div class="quick"><div class="section-kicker">Lesson at a glance</div><dl><dt>Steps planned</dt><dd id="statSteps">04</dd><dt>Languages</dt><dd>02</dd><dt>Target confidence</dt><dd id="statConf">96%</dd><dt>Latency</dt><dd id="statLat">--</dd></dl></div><div class="feedback" id="feedbackSection" style="display:none;"><div class="section-kicker">One small favour</div><h4>Was that translation right?</h4><p>Mark it here. Corrections help the next classroom.</p><button onclick="feedback(true)">Yes, it was right</button> <button onclick="feedback(false)">Needs a fix</button></div><div class="check"><div class="section-kicker">Listen back</div><h4>How did the student answer?</h4><div class="check-row"><input id="responseInput" placeholder="Write what you heard…"><button onclick="checkResponse()">Check</button></div><div class="notice" id="responseNotice"></div></div></aside>
+<nav class="rail" id="mainNav"><div class="rail-label">Open a page</div><button class="active" onclick="switchView('view-workspace', this)">Today’s lesson</button><button onclick="switchView('view-library', this)">Lesson library</button><button onclick="switchView('view-progress', this)">Progress notes</button><button onclick="switchView('view-settings', this)">Settings</button></nav>
+
+<div id="view-workspace" class="view-container" style="display:contents">
+    <main class="lesson">
+    <div class="lesson-head"><div><div class="section-kicker">Today’s lesson / Grade 2</div><h2 id="lessonTitle">Counting around us</h2></div><select class="lesson-select" id="lessonSelect" aria-label="Choose lesson"><option value="0">Grade 2 · Counting</option><option value="1">Grade 2 · Addition</option><option value="2">Grade 1 · Fruits & colours</option></select></div>
+    <div class="meta"><span id="lessonTopic">Numbers · NIPUN Bharat</span><b id="stepMeta">Step 1 of 4</b><span>About 12 minutes</span></div><div class="progress"><span id="progressBar" style="width:25%"></span></div><div class="progress-note"><span id="progressText">Start with the first line.</span><span id="progressPercent">25%</span></div>
+    <div class="modes"><button class="active" data-mode="script">Lesson guide</button><button data-mode="activity">Activity</button><button data-mode="assessment">Check understanding</button></div>
+    <section class="prompt"><div class="step" id="stepNumberStr">01 / 04</div><div><p id="promptText">आज हम गिनना सीखेंगे। अपने हाथ दिखाओ।</p><small id="promptHint">Let’s learn to count. Show me your hands.</small></div></section>
+    <section class="translations"><div class="language"><label>Hindi · हिन्दी</label><p id="hindiText" contenteditable="true">आज हम गिनना सीखेंगे। अपने हाथ दिखाओ।</p></div><button class="swap" onclick="swapLanguages()" aria-label="Swap languages">⇄</button><div class="language sat"><label>Santali · ᱥᱟᱱᱛᱟᱲᱤ</label><p id="santaliText" contenteditable="true">ᱟᱡ ᱦᱚᱞ ᱟᱢ ᱮᱞ ᱥᱮᱪᱮᱫ ᱟᱢᱟ।</p></div></section>
+    <div class="controls"><button class="translate" onclick="translateText()">Translate this line</button><button class="play" onclick="playAudio()">Play Santali ↗</button><button onclick="downloadWorksheet()">Make a worksheet</button></div>
+    <div class="recordings"><button class="record" id="recordHi" onclick="toggleRecord('recordHi','hi-to-sat')"><span class="mark">♩</span><span><b id="recTextHi">Speak Hindi</b><small>Press once to start</small></span></button><button class="record" id="recordSat" onclick="toggleRecord('recordSat','sat-to-hi')"><span class="mark">♩</span><span><b id="recTextSat">Speak Santali</b><small>Press once to start</small></span></button></div>
+    <div class="summary" id="summary"><b>Lesson note</b><br><span id="summaryText">You have completed the first step. Keep the conversation going.</span></div>
+    <div class="footer-actions"><button class="next" onclick="nextStep()">Next line →</button><button class="summary-btn" onclick="showSummary()">Write a lesson note</button></div>
+    </main>
+    
+    <aside class="side"><div class="side-rule"><div class="section-kicker">A note for today</div><h3>Leave room for an answer.</h3><p>Use the Santali line as a bridge, not a test. Pause, point, and let the classroom do some of the teaching.</p><div class="scribble">take your time ↘</div></div><div class="quick"><div class="section-kicker">Lesson at a glance</div><dl><dt>Steps planned</dt><dd id="statSteps">04</dd><dt>Languages</dt><dd>02</dd><dt>Target confidence</dt><dd id="statConf">96%</dd><dt>Latency</dt><dd id="statLat">--</dd></dl></div><div class="feedback" id="feedbackSection" style="display:none;"><div class="section-kicker">One small favour</div><h4>Was that translation right?</h4><p>Mark it here. Corrections help the next classroom.</p><button onclick="feedback(true)">Yes, it was right</button> <button onclick="feedback(false)">Needs a fix</button></div><div class="check"><div class="section-kicker">Listen back</div><h4>How did the learner answer?</h4><div class="check-row"><input id="responseInput" placeholder="Write what you heard…"><button onclick="checkResponse()">Check</button></div><div class="notice" id="responseNotice"></div></div></aside>
+</div>
+
+<!-- LESSON LIBRARY VIEW -->
+<div id="view-library" class="view-container lesson" style="display:none; grid-column: 2 / 4;">
+  <div class="lesson-head"><div><div class="section-kicker">Curriculum Overview</div><h2 style="font-family:var(--serif);font-size:38px;margin-bottom:10px;font-weight:500;">Lesson Library</h2></div></div>
+  <p style="color:var(--muted); max-width:500px; margin-bottom:30px; font-size:15px; line-height:1.6;">Explore the full NIPUN Bharat curriculum for Hindi and Santali foundational learning. Select a lesson to load it into your workspace.</p>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:25px;" id="libraryGrid"></div>
+</div>
+
+<!-- MY PROGRESS VIEW -->
+<div id="view-progress" class="view-container lesson" style="display:none; grid-column: 2 / 4;">
+  <div class="lesson-head"><div><div class="section-kicker">Teacher Dashboard</div><h2 style="font-family:var(--serif);font-size:38px;margin-bottom:10px;font-weight:500;">Progress Notes</h2></div></div>
+  <p style="color:var(--muted); max-width:500px; margin-bottom:30px; font-size:15px; line-height:1.6;">Track your classroom translation history and student comprehension over time.</p>
+  <div style="display:flex; gap:30px; margin-top:20px; flex-wrap:wrap;">
+    <div style="border-top:1px solid var(--ink); padding-top:10px; min-width:140px;">
+        <span style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Lessons Taught</span>
+        <strong style="font-family:var(--serif); font-size:42px; font-weight:500;">24</strong>
+    </div>
+    <div style="border-top:1px solid var(--ink); padding-top:10px; min-width:140px;">
+        <span style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Translations</span>
+        <strong style="font-family:var(--serif); font-size:42px; font-weight:500;">142</strong>
+    </div>
+    <div style="border-top:1px solid var(--ink); padding-top:10px; min-width:140px;">
+        <span style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Avg Comprehension</span>
+        <strong style="font-family:var(--serif); font-size:42px; font-weight:500;">89<small style="font-size:20px">%</small></strong>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS VIEW -->
+<div id="view-settings" class="view-container lesson" style="display:none; grid-column: 2 / 4;">
+  <div class="lesson-head"><div><div class="section-kicker">Configuration</div><h2 style="font-family:var(--serif);font-size:38px;margin-bottom:10px;font-weight:500;">Settings</h2></div></div>
+  <div style="display:flex; flex-direction:column; gap:25px; max-width: 400px; margin-top:20px;">
+    <div>
+      <label style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Translation Engine</label>
+      <select class="lesson-select" style="width:100%; max-width:100%; background-position:right 12px; padding:10px 0;"><option>AI4Bharat IndicTrans2 (Local)</option></select>
+    </div>
+    <div>
+      <label style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Speech Recognition (ASR)</label>
+      <select class="lesson-select" style="width:100%; max-width:100%; background-position:right 12px; padding:10px 0;"><option>IndicConformer (Local)</option></select>
+    </div>
+    <div>
+      <label style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Text-to-Speech (TTS)</label>
+      <select class="lesson-select" style="width:100%; max-width:100%; background-position:right 12px; padding:10px 0;"><option>gTTS Transliteration (Cloud)</option></select>
+    </div>
+    <div style="margin-top:20px; border-top:1px solid var(--ink); padding-top:20px;">
+        <button style="background:var(--green); color:#fff; border:0; padding:12px 18px; font-size:13px; font-weight:600;" onclick="showToast('Settings saved successfully!')">Save Preferences</button>
+    </div>
+  </div>
+</div>
+
 </div></div>
 <div class="toast" id="toast"></div>
 <audio id="ttsAudio" style="display:none;"></audio>
@@ -38,6 +92,42 @@
     let mediaRec, chunks = [], currentDirection = "hi-to-sat";
     let lastHindi = "", lastSat = "";
     
+    // View Switcher logic
+    function switchView(viewId, btn) {
+        document.querySelectorAll('.view-container').forEach(el => el.style.display = 'none');
+        
+        let target = document.getElementById(viewId);
+        if(viewId === 'view-workspace') {
+            target.style.display = 'contents';
+        } else {
+            target.style.display = 'block';
+        }
+        
+        document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        if(viewId === 'view-library') populateLibrary();
+    }
+
+    function populateLibrary() {
+        let grid = document.getElementById('libraryGrid');
+        if (grid.innerHTML.trim() !== '') return;
+        
+        lessons.forEach((l, i) => {
+            let div = document.createElement('div');
+            div.style.borderTop = '1px solid var(--rule)';
+            div.style.paddingTop = '15px';
+            div.style.cursor = 'pointer';
+            div.innerHTML = `<span style="font:10px var(--mono); color:var(--orange); text-transform:uppercase; letter-spacing:0.1em; display:block; margin-bottom:8px;">${l.competency || 'NIPUN Bharat'}</span><b style="font-family:var(--serif); font-size:22px; font-weight:500;">${l.title}</b><br><small style="color:var(--muted); font-size:13px; display:block; margin-top:8px;">${l.steps.length} steps</small>`;
+            div.onclick = () => {
+                lesson = i; step = 0; startSession();
+                switchView('view-workspace', document.querySelector('#mainNav button'));
+                showToast(`Loaded ${l.title}`);
+            };
+            grid.appendChild(div);
+        });
+    }
+
     // Fetch lessons from backend
     let lessons = [];
     async function loadLessons() {
