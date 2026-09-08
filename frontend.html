@@ -1,377 +1,1252 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VaaniSetu — A classroom translation notebook</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VaaniSetu</title>
+<meta name="description" content="Hindi and Santali in the same classroom, spoken both ways.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Bricolage Grotesque (display) / Instrument Sans (body) / Martian Mono (figures)
+     Baloo 2 carries all Devanagari, Kalam is the margin handwriting,
+     Noto Sans Ol Chiki is required or Santali renders as empty boxes. -->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;500&family=Baloo+2:wght@500;600;700&family=Kalam:wght@400;700&family=Noto+Sans+Ol+Chiki&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Work+Sans:wght@400;500;600;700&display=swap');
-:root{--paper:#f4f0e7;--ink:#252a27;--muted:#72766d;--rule:#d6d0c3;--green:#185b4f;--green2:#dbe9df;--orange:#d85c39;--yellow:#e8bf55;--white:#fbfaf5;--serif:'Newsreader',Georgia,serif;--sans:'Work Sans',Arial,sans-serif;--mono:'DM Mono',monospace}
-*{box-sizing:border-box}html{background:var(--paper)}body{margin:0;color:var(--ink);font-family:var(--sans);background-color:var(--paper);background-image:radial-gradient(rgba(37,42,39,.06) .55px,transparent .55px);background-size:7px 7px;min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}.page{max-width:1380px;margin:auto;padding:27px 44px 50px}.masthead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:1px solid var(--ink);padding-bottom:17px}.wordmark{font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:-.03em}.wordmark span{color:var(--orange)}.edition{text-align:center;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}.teacher{text-align:right;font-size:12px}.teacher b{font-weight:600}.teacher small{display:block;color:var(--muted);margin-top:3px}.intro{display:grid;grid-template-columns:minmax(380px,1.1fr) minmax(260px,.65fr);gap:70px;padding:56px 0 45px;align-items:end}.kicker{font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--orange);letter-spacing:.14em;margin-bottom:16px}.intro h1{font-family:var(--serif);font-size:clamp(46px,6.5vw,92px);line-height:.88;letter-spacing:-.055em;font-weight:500;margin:0;max-width:720px}.intro h1 em{font-style:italic;color:var(--green)}.intro-copy{font-size:15px;line-height:1.6;max-width:345px;border-left:3px solid var(--orange);padding-left:18px;margin-bottom:5px}.intro-copy b{font-weight:600}.workspace{display:grid;grid-template-columns:175px minmax(0,1fr) 255px;gap:28px;align-items:start}.rail{padding-top:7px}.rail-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.11em;text-transform:uppercase;margin-bottom:14px}.rail button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--rule);padding:11px 0;color:var(--muted);font-size:13px}.rail button:first-of-type{border-top:1px solid var(--ink)}.rail button:hover,.rail button.active{color:var(--green);font-weight:600}.rail-note{font-family:var(--serif);font-size:16px;line-height:1.2;color:var(--green);margin-top:80px;transform:rotate(-2deg)}.lesson{background:var(--white);border:1px solid var(--ink);position:relative;padding:31px 34px 29px;box-shadow:8px 8px 0 var(--yellow)}.lesson:before{content:'FIELD NOTES / 01';position:absolute;right:-1px;top:-26px;background:var(--ink);color:var(--paper);padding:6px 9px;font:10px var(--mono);letter-spacing:.08em}.lesson-head{display:flex;justify-content:space-between;gap:25px;border-bottom:1px solid var(--rule);padding-bottom:20px}.section-kicker{font:10px var(--mono);letter-spacing:.12em;color:var(--orange);text-transform:uppercase}.lesson h2{font:500 38px var(--serif);letter-spacing:-.04em;margin:4px 0 0}.lesson-select{appearance:none;border:0;border-bottom:1px solid var(--ink);background:transparent;padding:4px 22px 7px 0;color:var(--green);font-size:12px;font-weight:600;max-width:190px;align-self:start;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='%23185b4f'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 5px}.meta{display:flex;gap:12px;align-items:center;margin:17px 0 25px;font:10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.meta b{color:var(--orange);font-weight:500}.progress{height:5px;background:var(--rule);position:relative}.progress span{display:block;height:100%;background:var(--green);transition:width .35s}.progress-note{display:flex;justify-content:space-between;font:10px var(--mono);color:var(--muted);margin-top:8px}.modes{display:flex;gap:17px;border-bottom:1px solid var(--rule);margin-top:29px}.modes button{border:0;background:none;padding:0 0 11px;color:var(--muted);font:11px var(--mono);text-transform:uppercase;position:relative}.modes button.active{color:var(--green)}.modes button.active:after{content:'';height:2px;background:var(--orange);position:absolute;left:0;right:0;bottom:-1px}.prompt{padding:27px 0 25px;display:grid;grid-template-columns:45px 1fr;gap:18px}.step{font:13px var(--mono);color:var(--orange);padding-top:6px}.prompt p{font:500 clamp(25px,3vw,38px) var(--serif);line-height:1.06;letter-spacing:-.035em;margin:0;max-width:600px}.prompt small{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:11px}.translations{display:grid;grid-template-columns:1fr 36px 1fr;gap:17px;align-items:center;border-top:1px solid var(--rule);padding-top:21px}.language{min-height:115px}.language.sat{background:var(--green2);padding:15px 17px;margin:-15px -17px}.language label{display:block;font:10px var(--mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase}.language.sat label{color:var(--green)}.language p{font-size:15px;line-height:1.48;margin:13px 0 0;min-height:45px}.language p[contenteditable=true]:focus{outline:1px dashed var(--orange);outline-offset:4px}.swap{width:34px;height:34px;border-radius:50%;border:1px solid var(--ink);background:transparent;color:var(--green);font-size:17px;transition:transform .25s}.swap:hover{transform:rotate(180deg)}.controls{display:flex;gap:9px;margin-top:19px}.controls button,.footer-actions button{border:1px solid var(--ink);padding:11px 14px;background:transparent;font-size:12px}.controls .translate,.footer-actions .next{background:var(--green);border-color:var(--green);color:#fff}.controls .play{color:var(--green);border-color:var(--green)}.controls button:hover{transform:translateY(-2px)}.recordings{border-top:1px solid var(--rule);margin-top:23px;padding-top:16px;display:flex;justify-content:space-between;gap:20px}.record{background:none;border:0;padding:0;display:flex;align-items:center;gap:10px;text-align:left;color:var(--ink)}.record .mark{width:27px;height:27px;border:1px solid var(--orange);border-radius:50%;color:var(--orange);display:grid;place-items:center;font-size:13px}.record small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.record b{font-size:12px;font-weight:600}.record.active .mark{background:var(--orange);color:#fff;animation:beat 1s infinite}.footer-actions{display:flex;gap:11px;align-items:center;border-top:1px solid var(--ink);margin-top:25px;padding-top:17px}.footer-actions button{font-size:11px}.footer-actions .summary-btn{border:0;color:var(--muted)}.summary{display:none;margin-top:18px;padding:14px 16px;background:var(--green);color:#fff;font-size:12px;line-height:1.5}.summary.show{display:block}.side{padding-top:48px}.side-rule{border-top:2px solid var(--ink);padding-top:11px}.side h3{font:500 24px var(--serif);line-height:1;margin:0 0 15px}.side p{font-size:12px;line-height:1.55;color:var(--muted);margin:0}.scribble{font:italic 18px var(--serif);color:var(--orange);margin:28px 0 48px;transform:rotate(-4deg);display:inline-block}.quick{border-top:1px solid var(--ink);padding-top:14px}.quick dl{display:grid;grid-template-columns:1fr auto;gap:10px 5px;margin:15px 0;font:11px var(--mono)}.quick dt{color:var(--muted)}.quick dd{margin:0;color:var(--green)}.feedback{border-top:1px solid var(--ink);margin-top:37px;padding-top:14px}.feedback h4{font:500 20px var(--serif);margin:7px 0}.feedback p{margin-bottom:14px}.feedback button{border:1px solid var(--rule);background:transparent;padding:8px 9px;font-size:11px}.feedback button:hover{border-color:var(--orange);color:var(--orange)}.check{border-top:1px solid var(--ink);margin-top:34px;padding-top:14px}.check h4{font:500 20px var(--serif);margin:7px 0 13px}.check-row{display:flex}.check input{width:100%;min-width:0;border:1px solid var(--ink);background:transparent;padding:9px;font-size:11px}.check button{background:var(--orange);color:#fff;border:0;padding:0 12px;font:11px var(--mono)}.notice{display:none;margin-top:10px;font-size:11px;line-height:1.4}.notice.show{display:block;color:var(--green)}.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,16px);opacity:0;background:var(--ink);color:#fff;padding:11px 15px;font:11px var(--mono);transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}@keyframes beat{50%{box-shadow:0 0 0 6px rgba(216,92,57,.18)}}
-@media(max-width:1050px){.workspace{grid-template-columns:145px minmax(0,1fr)}.side{grid-column:2;display:grid;grid-template-columns:1fr 1fr;gap:26px;padding-top:0}.feedback,.check{margin-top:0}.scribble{margin:15px 0}.quick{grid-column:span 2}}@media(max-width:720px){.page{padding:18px 18px 38px}.masthead{grid-template-columns:1fr auto}.edition{display:none}.intro{display:block;padding:42px 0 35px}.intro h1{font-size:58px}.intro-copy{margin-top:26px}.workspace{display:block}.rail{display:flex;gap:13px;overflow:auto;margin-bottom:30px}.rail-label,.rail-note{display:none}.rail button{width:auto;white-space:nowrap;border:1px solid var(--rule);padding:8px 10px}.rail button:first-of-type{border-top:1px solid var(--rule)}.lesson{padding:23px 18px;box-shadow:5px 5px 0 var(--yellow)}.lesson h2{font-size:31px}.lesson-head{display:block}.lesson-select{margin-top:15px;max-width:none;width:100%}.translations{grid-template-columns:1fr}.swap{margin:auto;transform:rotate(90deg)}.swap:hover{transform:rotate(270deg)}.controls,.recordings,.footer-actions{flex-wrap:wrap}.side{display:block;margin-top:58px}.side>div{margin-bottom:34px}.quick{margin-top:0}.feedback,.check{margin-top:0}.intro-copy{max-width:400px}}
+/* ═══════════════════════════════════════════════════════════════
+   PAPER AND SLATE
+   The teacher writes on paper. The class reads off a blackboard.
+   Two materials, one accent (sindoor red), nothing else.
+   Radius: paper edges are square. Only the stamped controls are round.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --paper:#F1EADB;
+  --paper-2:#E9E0CD;
+  --paper-3:#DFD4BC;
+  --ink:#1E1B16;
+  --ink-2:#4B4438;
+  --muted:#867C6A;
+  --rule:#D3C6AC;
+  --rule-soft:#E0D5BE;
+
+  --slate:#242C29;
+  --slate-2:#2E3733;
+  --chalk:#EFE9DA;
+  --chalk-dim:#A3ACA4;
+  --chalk-rule:#3C4642;
+
+  --accent:#BC4227;
+  --accent-2:#9C3520;
+  --accent-wash:#EBD8CD;
+
+  --ok:#3D6B45;
+  --warn:#94661A;
+  --bad:#A93A28;
+
+  --display:'Bricolage Grotesque',Georgia,serif;
+  --sans:'Instrument Sans',system-ui,sans-serif;
+  --mono:'Martian Mono',ui-monospace,monospace;
+  --deva:'Baloo 2','Instrument Sans',system-ui,sans-serif;
+  --olck:'Noto Sans Ol Chiki','Instrument Sans',sans-serif;
+  --hand:'Kalam',cursive;
+
+  --ease:cubic-bezier(.2,.9,.25,1);
+  --scale:1;
+}
+:root[data-theme="dark"]{
+  --paper:#171B19;
+  --paper-2:#1E2422;
+  --paper-3:#27302C;
+  --ink:#EEE7D7;
+  --ink-2:#C6C0B1;
+  --muted:#8C9189;
+  --rule:#333D39;
+  --rule-soft:#2A3330;
+
+  --slate:#0D100F;
+  --slate-2:#151A18;
+  --chalk:#EFE9DA;
+  --chalk-dim:#9BA49C;
+  --chalk-rule:#242C29;
+
+  --accent:#E0664A;
+  --accent-2:#EC7A5E;
+  --accent-wash:#33211B;
+
+  --ok:#7FB289;
+  --warn:#D3A44E;
+  --bad:#E58270;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--paper)}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:calc(15px * var(--scale));line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.02;letter-spacing:-.025em;font-weight:700}
+p{margin:0}
+::selection{background:var(--accent);color:var(--paper)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.deva{font-family:var(--deva)}
+.olck{font-family:var(--olck)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* icon font, hidden until it actually arrives so an offline room sees labels, not ligature names */
+.ic{
+  font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;
+  display:inline-block;overflow:hidden;white-space:nowrap;text-align:center;flex:none;
+  font-variation-settings:'FILL' 1,'opsz' 24;font-size:1.15em;width:1.1em;height:1.1em;
+  vertical-align:-.18em;visibility:hidden;
+}
+html.icons-on .ic{visibility:visible}
+
+/* paper grain, one fixed layer, never on a scrolling box */
+.grain{
+  position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.16;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+:root[data-theme="dark"] .grain{mix-blend-mode:screen;opacity:.07}
+
+/* ═══════════ SHELL ═══════════ */
+.wrap{display:grid;grid-template-columns:212px minmax(0,1fr);min-height:100dvh}
+
+.rail{
+  position:sticky;top:0;height:100dvh;padding:30px 0 26px 34px;
+  border-right:1px solid var(--rule);display:flex;flex-direction:column;
+}
+.stamp{
+  display:inline-block;border:2px solid var(--accent);color:var(--accent);
+  padding:7px 11px 6px;transform:rotate(-2.4deg);font-family:var(--display);
+  font-weight:800;font-size:19px;letter-spacing:-.03em;line-height:1;
+}
+.rail .sub{font-family:var(--hand);font-size:15px;color:var(--muted);margin:14px 0 0;max-width:150px;line-height:1.25}
+
+nav{margin-top:52px;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+nav button{
+  font-size:16px;font-weight:500;color:var(--ink-2);padding:7px 0;position:relative;
+  transition:color .18s var(--ease),transform .18s var(--ease);
+}
+nav button::after{
+  content:"";position:absolute;left:0;right:100%;bottom:5px;height:2px;background:var(--accent);
+  transition:right .3s var(--ease);
+}
+nav button:hover{color:var(--ink);transform:translateX(2px)}
+nav button[aria-current]{color:var(--accent);font-weight:600}
+nav button[aria-current]::after{right:0}
+
+.rail-end{margin-top:auto;padding-right:26px;font-family:var(--mono);font-size:10px;letter-spacing:-.02em;color:var(--muted)}
+.rail-end div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px solid var(--rule-soft)}
+.rail-end span:last-child{color:var(--ink-2)}
+
+/* top strip: tight, mono, deliberately plain */
+.strip{
+  display:flex;align-items:center;gap:18px;padding:14px 44px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:-.02em;color:var(--muted);
+  position:sticky;top:0;z-index:40;background:var(--paper);
+}
+.strip .clock{color:var(--ink-2)}
+.strip .right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.pick{position:relative;display:flex;align-items:center;gap:6px}
+.pick select{
+  appearance:none;border:0;border-bottom:1.5px solid var(--ink);background:none;
+  font-family:var(--sans);font-size:13.5px;font-weight:600;letter-spacing:0;color:var(--ink);
+  padding:2px 20px 3px 0;max-width:230px;cursor:pointer;
+}
+.pick .ic{position:absolute;right:0;pointer-events:none;color:var(--ink)}
+.tbtn{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:-.02em;transition:color .18s var(--ease)}
+.tbtn:hover,.tbtn.on{color:var(--accent)}
+
+main{min-width:0}
+.view{display:none}
+.view.on{display:block}
+
+/* ═══════════ LESSON HEAD, airy and off centre ═══════════ */
+.head{padding:58px 44px 40px;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:44px;align-items:end}
+.grade{
+  display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--accent);
+  border:1.5px dashed var(--accent);padding:5px 9px 4px;transform:rotate(-1.6deg);margin-bottom:20px;
+}
+.head h1{font-size:clamp(42px,6.4vw,82px);letter-spacing:-.042em}
+.uline{display:block;width:min(320px,62%);height:12px;margin-top:6px;color:var(--accent)}
+.uline path{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.head-side{padding-bottom:9px}
+.head-side .what{font-size:16px;line-height:1.45;color:var(--ink-2);max-width:34ch}
+.head-side .goal{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:9px;letter-spacing:-.02em}
+
+/* step ticks, hairline, no card */
+.ticks{padding:0 44px;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:13px}
+.tick-row{display:flex;gap:5px;flex:none}
+.tick{width:34px;height:6px;background:var(--rule);position:relative;overflow:hidden}
+.tick::after{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.tick.on::after{transform:scaleX(1)}
+.tick.past::after{transform:scaleX(1);background:var(--ink-2)}
+.ticks .hint{font-size:13.5px;color:var(--muted)}
+.ticks .count{margin-left:auto;white-space:nowrap;font-family:var(--mono);font-size:10.5px;color:var(--ink-2);letter-spacing:-.02em}
+
+/* modes: underlined words, not a pill switcher */
+.modes{display:flex;gap:26px;padding:16px 44px 0}
+.modes button{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:-.02em;color:var(--muted);
+  padding-bottom:3px;border-bottom:1.5px solid transparent;transition:color .2s var(--ease),border-color .2s var(--ease);
+}
+.modes button:hover{color:var(--ink-2)}
+.modes button[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
+
+/* ═══════════ THE LINE, on ruled paper, number hanging in the margin ═══════════ */
+.line{position:relative;padding:34px 44px 46px;display:grid;grid-template-columns:76px minmax(0,1fr);gap:0}
+.line .num{
+  font-family:var(--mono);font-size:11px;color:var(--accent);padding-top:14px;letter-spacing:-.02em;
+}
+.ruled{
+  background-image:repeating-linear-gradient(to bottom,transparent 0 43px,var(--rule-soft) 43px 44px);
+  padding-top:8px;
+}
+.ruled p{
+  font-family:var(--deva);font-size:clamp(26px,3.6vw,44px);font-weight:600;line-height:44px;
+  letter-spacing:-.01em;max-width:19ch;
+}
+.aside{
+  font-family:var(--hand);font-size:17px;color:var(--muted);line-height:1.3;
+  transform:rotate(-1.8deg);margin-top:22px;max-width:30ch;
+}
+.aside b{color:var(--accent);font-weight:700}
+
+/* ═══════════ PAPER MEETS SLATE, the slate runs off the edge ═══════════ */
+.bridge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);border-top:1px solid var(--rule);position:relative}
+.side{padding:30px 40px 34px 44px;min-height:270px;display:flex;flex-direction:column}
+.side.board{
+  background:var(--slate);color:var(--chalk);border-left:1px solid var(--rule);margin-right:calc(-1 * (100vw - 100%));padding-right:44px;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 43px,var(--chalk-rule) 43px 44px);
+  background-position:0 62px;
+}
+.side .tag{
+  font-family:var(--mono);font-size:10px;letter-spacing:-.02em;color:var(--muted);
+  display:flex;align-items:center;gap:10px;margin-bottom:4px;
+}
+.side.board .tag{color:var(--chalk-dim)}
+.side .tag em{font-style:normal;margin-left:auto;display:flex;gap:12px}
+.side .tag button{color:inherit;opacity:.75;transition:opacity .2s var(--ease),color .2s var(--ease)}
+.side .tag button:hover{opacity:1;color:var(--accent)}
+.side.board .tag button:hover{color:var(--chalk)}
+.write{
+  flex:1;outline:0;font-size:22px;line-height:44px;padding-top:14px;letter-spacing:-.01em;
+}
+.side:not(.board) .write{font-family:var(--deva);font-weight:500;font-size:25px}
+.side.board .write{font-family:var(--olck);font-size:21px;color:var(--chalk);text-shadow:0 0 1px rgba(239,233,218,.35)}
+.write:empty::before{content:attr(data-ph);color:var(--muted);font-family:var(--sans);font-size:16px}
+.side.board .write:empty::before{color:var(--chalk-dim)}
+.side .foot{font-size:12px;color:var(--muted);margin-top:14px}
+.side.board .foot{color:var(--chalk-dim)}
+
+.seam{
+  position:absolute;left:50%;top:46px;transform:translateX(-50%);z-index:3;
+  width:44px;height:44px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink);
+  display:grid;place-items:center;color:var(--ink);font-size:17px;
+  transition:transform .5s var(--ease),background .2s var(--ease),color .2s var(--ease);
+}
+.seam:hover{background:var(--ink);color:var(--paper)}
+.seam.flip{transform:translateX(-50%) rotate(180deg)}
+
+/* chalk writing on, the one narrative motion moment */
+@keyframes chalkin{from{opacity:0;filter:blur(2px)}to{opacity:1;filter:none}}
+.chalkin{animation:chalkin .5s var(--ease) both}
+
+/* ═══════════ CONTROLS, tight band ═══════════ */
+.band{padding:26px 44px 30px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.mic{
+  display:flex;align-items:center;gap:12px;border:1.5px solid var(--ink);padding:12px 20px 12px 15px;
+  background:none;transition:background .2s var(--ease),color .2s var(--ease),transform .16s var(--ease);
+}
+.mic .dot{width:11px;height:11px;border-radius:50%;background:var(--ink);flex:none;transition:background .2s var(--ease)}
+.mic b{font-size:14.5px;font-weight:600}
+.mic small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:-.02em;margin-top:2px}
+.mic:hover{background:var(--ink);color:var(--paper)}
+.mic:hover .dot{background:var(--accent)}
+.mic:hover small{color:var(--paper)}
+.mic:active{transform:translateY(1px)}
+.mic.live{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.mic.live small{color:var(--paper)}
+.mic.live .dot{background:var(--paper);animation:beat 1.15s var(--ease) infinite}
+@keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.85)}70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}}
+.mic .t{font-family:var(--mono);font-size:11px;margin-left:6px;display:none}
+.mic.live .t{display:block}
+
+.go{
+  background:var(--accent);color:var(--paper);border:1.5px solid var(--accent);padding:13px 24px;
+  font-size:14.5px;font-weight:600;transition:background .2s var(--ease),transform .16s var(--ease);
+}
+.go:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.go:active{transform:translateY(1px)}
+.plain{
+  padding:13px 18px;font-size:14px;font-weight:500;color:var(--ink-2);border-bottom:1.5px solid transparent;
+  transition:color .2s var(--ease),border-color .2s var(--ease);
+}
+.plain:hover{color:var(--accent);border-color:var(--accent)}
+.next{margin-left:auto;display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.02em}
+.next .ic{transition:transform .25s var(--ease)}
+.next:hover .ic{transform:translateX(5px)}
+.go[disabled],.plain[disabled]{opacity:.4;pointer-events:none}
+
+/* ═══════════ READOUT, dense counterweight to the airy top ═══════════ */
+.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink)}
+.cell{padding:24px 26px 28px;border-right:1px solid var(--rule)}
+.cell:last-child{border-right:0}
+.cell h3{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:-.02em;color:var(--muted);margin-bottom:16px}
+
+.timing{display:flex;align-items:baseline;gap:9px}
+.timing b{font-family:var(--mono);font-size:31px;font-weight:400;letter-spacing:-.05em}
+.timing span{font-size:12px;color:var(--muted)}
+.split{display:flex;margin-top:16px;height:5px;background:var(--rule)}
+.split i{transition:width .5s var(--ease)}
+.split i:nth-child(1){background:var(--ink-2)}
+.split i:nth-child(2){background:var(--accent)}
+.split i:nth-child(3){background:var(--rule-soft)}
+.splitkeys{display:flex;justify-content:space-between;margin-top:9px;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:-.02em}
+.splitkeys b{color:var(--ink-2);font-weight:400}
+
+.ask{display:flex;border-bottom:1.5px solid var(--ink)}
+.ask input{flex:1;min-width:0;border:0;background:none;padding:7px 0;font-size:15px}
+.ask input::placeholder{color:var(--muted)}
+.ask input:focus{outline:0}
+.ask button{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:-.02em;padding-left:12px}
+.verdict{display:none;margin-top:13px;font-size:13.5px;font-weight:500;padding-left:13px;border-left:2.5px solid}
+.verdict.on{display:block}
+.verdict.green{color:var(--ok);border-color:var(--ok)}
+.verdict.yellow{color:var(--warn);border-color:var(--warn)}
+.verdict.red{color:var(--bad);border-color:var(--bad)}
+.counts{display:flex;gap:22px;margin-top:18px;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:-.02em}
+.counts b{display:block;font-size:22px;color:var(--ink);font-weight:400;letter-spacing:-.05em;margin-bottom:2px}
+
+.judge{display:flex;gap:10px}
+.judge button{
+  border:1.5px solid var(--rule);padding:9px 16px;font-size:13.5px;font-weight:500;
+  transition:border-color .2s var(--ease),color .2s var(--ease);
+}
+.judge button:hover{border-color:var(--ink);color:var(--ink)}
+.judge .no:hover{border-color:var(--accent);color:var(--accent)}
+.fix{display:none;margin-top:14px}
+.fix.on{display:block}
+.fix textarea{
+  width:100%;border:1.5px solid var(--rule);background:none;padding:10px 12px;font-family:var(--olck);
+  font-size:15px;resize:vertical;
+}
+.fix textarea:focus{outline:0;border-color:var(--accent)}
+.fix .row{display:flex;gap:14px;align-items:center;margin-top:10px}
+
+/* ═══════════ LIBRARY, index cards, uneven ═══════════ */
+.pagehead{padding:56px 44px 34px;max-width:760px}
+.pagehead h1{font-size:clamp(38px,5.4vw,66px);letter-spacing:-.04em}
+.pagehead p{font-size:17px;color:var(--ink-2);margin-top:18px;max-width:44ch;line-height:1.5}
+.chips{display:flex;gap:20px;padding:0 44px 26px;border-bottom:1px solid var(--rule)}
+.chips button{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:-.02em;border-bottom:1.5px solid transparent;padding-bottom:3px}
+.chips button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+
+.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0}
+.lcard{
+  grid-column:span 2;text-align:left;padding:28px 30px 26px;border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);position:relative;background:none;
+  transition:background .25s var(--ease);min-height:230px;display:flex;flex-direction:column;
+}
+.lcard:nth-child(1){grid-column:span 3;background:var(--paper-2)}
+.lcard:nth-child(2){grid-column:span 3}
+.lcard:hover{background:var(--paper-2)}
+.lcard:nth-child(1):hover{background:var(--paper-3)}
+.lcard .no{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:-.02em}
+.lcard h3{font-size:clamp(24px,2.4vw,32px);margin:14px 0 10px;letter-spacing:-.03em}
+.lcard:nth-child(1) h3{font-size:clamp(30px,3.2vw,42px)}
+.lcard p{font-size:14.5px;color:var(--ink-2);line-height:1.45;max-width:34ch}
+.lcard .end{margin-top:auto;padding-top:20px;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:-.02em;display:flex;justify-content:space-between;gap:12px}
+.lcard .end .arrow{color:var(--accent);opacity:0;transform:translateX(-5px);transition:all .25s var(--ease)}
+.lcard:hover .end .arrow{opacity:1;transform:none}
+
+/* ═══════════ PROGRESS, big figures on hairlines ═══════════ */
+.figs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+.fig{padding:26px 28px 30px;border-right:1px solid var(--rule)}
+.fig:last-child{border-right:0}
+.fig b{display:block;font-family:var(--display);font-size:clamp(38px,4.6vw,58px);font-weight:700;letter-spacing:-.05em;line-height:1}
+.fig span{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:-.02em;display:block;margin-top:10px}
+.rows{padding:0 44px}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 70px;gap:26px;padding:17px 0;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+.lrow .h{font-family:var(--deva);font-size:17px;font-weight:500}
+.lrow .s{font-family:var(--olck);font-size:16px;color:var(--ink-2)}
+.lrow .t{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:right;letter-spacing:-.02em}
+.nothing{padding:64px 44px 90px;max-width:40ch}
+.nothing b{font-family:var(--display);font-size:26px;font-weight:700;display:block;margin-bottom:10px;letter-spacing:-.03em}
+.nothing p{color:var(--muted);font-size:15px}
+
+/* ═══════════ SETTINGS, a form on paper with dotted leaders ═══════════ */
+.form{padding:0 44px 90px;max-width:660px}
+.fgroup{margin-top:44px}
+.fgroup h2{font-size:26px;letter-spacing:-.03em;margin-bottom:6px}
+.fgroup .lede{font-size:14.5px;color:var(--muted);margin-bottom:18px}
+.frow{display:flex;align-items:baseline;gap:12px;padding:15px 0;border-bottom:1px solid var(--rule-soft)}
+.frow .lab{font-size:15px;font-weight:500;flex:none}
+.frow .lab small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:2px}
+.frow .dots{flex:1;border-bottom:1px dotted var(--rule);transform:translateY(-4px)}
+.frow .val{flex:none}
+.frow select,.frow input{
+  border:0;border-bottom:1.5px solid var(--ink);background:none;font-size:14px;font-weight:500;
+  padding:3px 0;text-align:right;max-width:230px;
+}
+.frow select{appearance:none;cursor:pointer;padding-right:16px}
+.frow input:focus,.frow select:focus{outline:0;border-color:var(--accent)}
+.sw{width:52px;height:26px;border:1.5px solid var(--ink);position:relative;transition:background .25s var(--ease)}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:18px;background:var(--ink);transition:transform .28s var(--ease)}
+.sw[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.sw[aria-pressed="true"]::after{transform:translateX(26px);background:var(--paper)}
+
+/* ═══════════ WRAP UP SHEET ═══════════ */
+.veil{position:fixed;inset:0;background:rgba(20,18,14,.62);z-index:70;display:none;place-items:center;padding:22px}
+.veil.on{display:grid}
+.note{
+  width:min(600px,100%);background:var(--paper);border:1.5px solid var(--ink);padding:38px 40px 34px;
+  max-height:88dvh;overflow:auto;box-shadow:14px 14px 0 var(--slate);
+}
+:root[data-theme="dark"] .note{box-shadow:14px 14px 0 var(--slate-2)}
+.note h2{font-size:38px;letter-spacing:-.04em}
+.note .who{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:-.02em}
+.big{display:flex;align-items:flex-end;gap:20px;margin:32px 0 26px;flex-wrap:wrap}
+.big .pc{font-family:var(--display);font-size:96px;font-weight:800;line-height:.8;letter-spacing:-.06em;color:var(--accent)}
+.big .say{flex:1;min-width:200px}
+.big .say b{font-family:var(--display);font-size:20px;font-weight:700;display:block;margin-bottom:5px;letter-spacing:-.02em}
+.big .say p{font-size:14px;color:var(--ink-2);line-height:1.45}
+.notegrid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--ink)}
+.notegrid div{padding:14px 0;border-bottom:1px solid var(--rule-soft);display:flex;justify-content:space-between;gap:12px;font-size:13.5px}
+.notegrid div:nth-child(odd){padding-right:22px;border-right:1px solid var(--rule-soft)}
+.notegrid div:nth-child(even){padding-left:22px}
+.notegrid span{color:var(--muted)}
+.notegrid b{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:-.03em}
+.note .row{display:flex;gap:18px;align-items:center;margin-top:26px}
+
+/* ═══════════ TOAST ═══════════ */
+.toasts{position:fixed;left:256px;bottom:26px;z-index:80;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{
+  background:var(--slate);color:var(--chalk);padding:11px 16px;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:-.02em;animation:tin .3s var(--ease);max-width:330px;
+}
+.toast.out{animation:tout .3s var(--ease) forwards}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0;transform:translateY(6px)}}
+
+.spark{position:fixed;width:7px;height:7px;pointer-events:none;z-index:75}
+
+/* loading shimmer kept plain: the line just greys out */
+.pending{opacity:.35}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width:1080px){
+  .head{grid-template-columns:1fr;gap:26px;align-items:start}
+  .head-side{padding-bottom:0}
+  .readout{grid-template-columns:1fr}
+  .cell{border-right:0;border-bottom:1px solid var(--rule)}
+  .figs{grid-template-columns:1fr 1fr}
+  .fig:nth-child(2){border-right:0}
+  .fig:nth-child(1),.fig:nth-child(2){border-bottom:1px solid var(--rule)}
+  .lcard,.lcard:nth-child(1),.lcard:nth-child(2){grid-column:span 3}
+}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr}
+  .rail{
+    position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;
+    padding:0;border-right:0;border-top:1.5px solid var(--ink);background:var(--paper);z-index:50;
+  }
+  .rail .stamp,.rail .sub,.rail-end{display:none}
+  .rail nav{margin:0;flex-direction:row;width:100%}
+  .rail nav button{flex:1;text-align:center;padding:14px 4px;font-size:13px}
+  .rail nav button::after{left:22%;right:78%}
+  .rail nav button[aria-current]::after{left:22%;right:22%}
+  .strip{padding:12px 20px;gap:12px}
+  .strip .sess{display:none}
+  .head,.ticks,.modes,.line,.band,.pagehead,.chips,.rows,.form{padding-left:20px;padding-right:20px}
+  .head{padding-top:38px;padding-bottom:28px}
+  .head h1{font-size:clamp(36px,10vw,54px)}
+  .line{grid-template-columns:1fr;padding-top:26px}
+  .line .num{padding:0 0 8px}
+  .ruled p{font-size:27px;line-height:44px}
+  .bridge{grid-template-columns:1fr}
+  .side{padding:24px 20px 28px}
+  .side.board{margin-right:0}
+  .side:not(.board){order:1}
+  .seam{order:2;position:relative;left:auto;top:auto;transform:none;margin:-22px auto -22px;z-index:3}
+  .seam.flip{transform:rotate(180deg)}
+  .side.board{order:3;border-left:0;border-top:1px solid var(--rule)}
+  .seam.flip{transform:rotate(180deg)}
+  .band{padding:22px 20px 26px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mic{justify-content:center;padding:12px 10px}
+  .go{grid-column:span 2;padding:15px}
+  .plain{padding:8px 0;text-align:left}
+  .next{grid-column:span 2;margin-left:0;justify-content:space-between;border-top:1px solid var(--rule);padding-top:16px;margin-top:4px}
+  .cell{padding:22px 20px 26px}
+  .figs{grid-template-columns:1fr}
+  .fig{border-right:0;border-bottom:1px solid var(--rule)}
+  .lcard,.lcard:nth-child(1),.lcard:nth-child(2){grid-column:span 6;border-right:0;min-height:0}
+  .lrow{grid-template-columns:1fr;gap:5px}
+  .lrow .t{text-align:left}
+  .notegrid{grid-template-columns:1fr}
+  .notegrid div:nth-child(odd){padding-right:0;border-right:0}
+  .notegrid div:nth-child(even){padding-left:0}
+  .note{padding:26px 22px;box-shadow:8px 8px 0 var(--slate)}
+  .note h2{font-size:29px}
+  .big .pc{font-size:70px}
+  .toasts{left:20px;right:20px;bottom:76px}
+  main{padding-bottom:60px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
 </style>
 </head>
 <body>
-<div class="page">
-<header class="masthead"><div class="wordmark">Vaani<span>Setu</span></div><div class="edition">A two-way classroom bridge · 2026</div><div class="teacher"><b id="connStatus">Live · AI4Bharat NMT</b><small>Teacher workspace</small></div></header>
-<section class="intro"><div><div class="kicker">Hindi ↔ Santali · for the whole classroom</div><h1>Understand each other<br><em>as you speak.</em></h1></div><p class="intro-copy"><b>VaaniSetu</b> helps Hindi-speaking teachers and Santali-speaking students have the same conversation. Translate in either direction, then keep the lesson moving.</p></section>
-<div class="workspace">
-<nav class="rail" id="mainNav"><div class="rail-label">Open a page</div><button class="active" onclick="switchView('view-workspace', this)">Today’s lesson</button><button onclick="switchView('view-library', this)">Lesson library</button><button onclick="switchView('view-progress', this)">Progress notes</button><button onclick="switchView('view-settings', this)">Settings</button></nav>
+<div class="grain" aria-hidden="true"></div>
 
-<div id="view-workspace" class="view-container" style="display:contents">
-    <main class="lesson">
-    <div class="lesson-head"><div><div class="section-kicker">Today’s lesson / Grade 2</div><h2 id="lessonTitle">Counting around us</h2></div><select class="lesson-select" id="lessonSelect" aria-label="Choose lesson"><option value="0">Grade 2 · Counting</option><option value="1">Grade 2 · Addition</option><option value="2">Grade 1 · Fruits & colours</option></select></div>
-    <div class="meta"><span id="lessonTopic">Numbers · NIPUN Bharat</span><b id="stepMeta">Step 1 of 4</b><span>About 12 minutes</span></div><div class="progress"><span id="progressBar" style="width:25%"></span></div><div class="progress-note"><span id="progressText">Start with the first line.</span><span id="progressPercent">25%</span></div>
-    <div class="modes"><button class="active" data-mode="script">Lesson guide</button><button data-mode="activity">Activity</button><button data-mode="assessment">Check understanding</button></div>
-    <section class="prompt"><div class="step" id="stepNumberStr">01 / 04</div><div><p id="promptText">आज हम गिनना सीखेंगे। अपने हाथ दिखाओ।</p><small id="promptHint">Let’s learn to count. Show me your hands.</small></div></section>
-    <section class="translations"><div class="language"><label>Hindi · हिन्दी</label><p id="hindiText" contenteditable="true">आज हम गिनना सीखेंगे। अपने हाथ दिखाओ।</p></div><button class="swap" onclick="swapLanguages()" aria-label="Swap languages">⇄</button><div class="language sat"><label>Santali · ᱥᱟᱱᱛᱟᱲᱤ</label><p id="santaliText" contenteditable="true">ᱟᱡ ᱦᱚᱞ ᱟᱢ ᱮᱞ ᱥᱮᱪᱮᱫ ᱟᱢᱟ।</p></div></section>
-    <div class="controls"><button class="translate" onclick="translateText()">Translate this line</button><button class="play" onclick="playAudio()">Play Santali ↗</button><button onclick="downloadWorksheet()">Make a worksheet</button></div>
-    <div class="recordings"><button class="record" id="recordHi" onclick="toggleRecord('recordHi','hi-to-sat')"><span class="mark">♩</span><span><b id="recTextHi">Speak Hindi</b><small>Press once to start</small></span></button><button class="record" id="recordSat" onclick="toggleRecord('recordSat','sat-to-hi')"><span class="mark">♩</span><span><b id="recTextSat">Speak Santali</b><small>Press once to start</small></span></button></div>
-    <div class="summary" id="summary"><b>Lesson note</b><br><span id="summaryText">You have completed the first step. Keep the conversation going.</span></div>
-    <div class="footer-actions"><button class="next" onclick="nextStep()">Next line →</button><button class="summary-btn" onclick="showSummary()">Write a lesson note</button></div>
-    </main>
-    
-    <aside class="side"><div class="side-rule"><div class="section-kicker">A note for today</div><h3>Leave room for an answer.</h3><p>Use the Santali line as a bridge, not a test. Pause, point, and let the classroom do some of the teaching.</p><div class="scribble">take your time ↘</div></div><div class="quick"><div class="section-kicker">Lesson at a glance</div><dl><dt>Steps planned</dt><dd id="statSteps">04</dd><dt>Languages</dt><dd>02</dd><dt>Target confidence</dt><dd id="statConf">96%</dd><dt>Latency</dt><dd id="statLat">--</dd></dl></div><div class="feedback" id="feedbackSection" style="display:none;"><div class="section-kicker">One small favour</div><h4>Was that translation right?</h4><p>Mark it here. Corrections help the next classroom.</p><button onclick="feedback(true)">Yes, it was right</button> <button onclick="feedback(false)">Needs a fix</button></div><div class="check"><div class="section-kicker">Listen back</div><h4>How did the learner answer?</h4><div class="check-row"><input id="responseInput" placeholder="Write what you heard…"><button onclick="checkResponse()">Check</button></div><div class="notice" id="responseNotice"></div></div></aside>
+<div class="wrap">
+
+  <aside class="rail">
+    <div><span class="stamp">VaaniSetu</span></div>
+    <p class="sub">Hindi in, Santali out. And back again.</p>
+    <nav aria-label="Sections">
+      <button data-view="lesson" aria-current="page">Classroom</button>
+      <button data-view="library">Lessons</button>
+      <button data-view="progress">Progress</button>
+      <button data-view="settings">Settings</button>
+    </nav>
+    <div class="rail-end">
+      <div><span>hearing</span><span>IndicConformer</span></div>
+      <div><span>translating</span><span>IndicTrans2</span></div>
+      <div><span>speaking</span><span>gTTS</span></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="strip">
+      <span class="sess">in session <span class="clock" id="clock">00:00</span></span>
+      <span class="right">
+        <span class="pick">
+          <select id="pickLesson" aria-label="Choose a lesson"></select>
+          <span class="ic">expand_more</span>
+        </span>
+        <button class="tbtn" id="bigBtn" aria-pressed="false">big text</button>
+        <button class="tbtn" id="themeBtn">dark</button>
+      </span>
+    </div>
+
+    <!-- ══════════════ CLASSROOM ══════════════ -->
+    <section class="view on" id="v-lesson">
+
+      <header class="head">
+        <div>
+          <span class="grade" id="grade">GRADE 2</span>
+          <h1 id="title">Simple Addition</h1>
+          <svg class="uline" viewBox="0 0 320 12" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M3 8.4C54 4.2 108 3.1 163 4.6c53 1.4 106 3.9 154 1.1"/>
+          </svg>
+        </div>
+        <div class="head-side">
+          <p class="goal">WHAT THEY SHOULD WALK OUT WITH</p>
+          <p class="what" id="goal">Adds two single-digit numbers using objects</p>
+        </div>
+      </header>
+
+      <div class="ticks">
+        <span class="tick-row" id="tickRow" aria-hidden="true"></span>
+        <span class="hint" id="hint">Say the line, then hand it to the board.</span>
+        <span class="count" id="count">1 / 4</span>
+      </div>
+
+      <div class="modes" role="tablist" aria-label="Kind of line">
+        <button role="tab" aria-selected="true" data-mode="lesson_script">TEACHING</button>
+        <button role="tab" aria-selected="false" data-mode="activity_instruction">DOING</button>
+        <button role="tab" aria-selected="false" data-mode="assessment_prompt">ASKING</button>
+      </div>
+
+      <div class="line">
+        <div class="num" id="num">01</div>
+        <div>
+          <div class="ruled"><p class="deva" id="prompt">आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।</p></div>
+          <p class="aside" id="aside"><b>note:</b> introduction, show joining of groups</p>
+        </div>
+      </div>
+
+      <div class="bridge">
+        <button class="seam" id="seam" title="Turn it around" aria-label="Turn the translation around"><span class="ic">swap_horiz</span></button>
+
+        <div class="side">
+          <div class="tag">
+            YOU, IN HINDI
+            <em><button id="clearHi">clear</button></em>
+          </div>
+          <div class="write deva" id="hi" contenteditable="true" role="textbox" aria-label="Hindi" data-ph="Type it, or hold the mic"></div>
+          <div class="foot">Edit before you send it over.</div>
+        </div>
+
+        <div class="side board">
+          <div class="tag">
+            THE CLASS, IN SANTALI
+            <em><button id="sayIt">say it</button></em>
+          </div>
+          <div class="write olck" id="sa" contenteditable="true" role="textbox" aria-label="Santali" data-ph="It lands here"></div>
+          <div class="foot" id="voiceNote">Spoken back in about half a second.</div>
+        </div>
+      </div>
+
+      <div class="band">
+        <button class="mic" id="micHi"><span class="dot"></span><span><b>Speak Hindi</b><small>YOUR VOICE</small></span><span class="t" id="tHi">0:00</span></button>
+        <button class="mic" id="micSa"><span class="dot"></span><span><b>Speak Santali</b><small>THEIRS</small></span><span class="t" id="tSa">0:00</span></button>
+        <button class="go" id="goBtn">Translate</button>
+        <button class="plain" id="sheetBtn">Print a worksheet</button>
+        <button class="plain" id="wrapBtn">Wrap up</button>
+        <button class="next" id="nextBtn">Next line <span class="ic">arrow_forward</span></button>
+      </div>
+
+      <div class="readout">
+        <div class="cell">
+          <h3>TIME ON THE LAST LINE</h3>
+          <div class="timing"><b id="total">0.00</b><span>seconds, mic to voice</span></div>
+          <div class="split"><i id="sA" style="width:0"></i><i id="sN" style="width:0"></i><i id="sT" style="width:0"></i></div>
+          <div class="splitkeys">
+            <span>hearing <b id="vA">0.00</b></span>
+            <span>translating <b id="vN">0.00</b></span>
+            <span>speaking <b id="vT">0.00</b></span>
+          </div>
+        </div>
+
+        <div class="cell">
+          <h3>WHAT DID THEY SAY BACK</h3>
+          <div class="ask">
+            <input id="answer" placeholder="सात" aria-label="Student answer">
+            <button id="markBtn">MARK IT</button>
+          </div>
+          <div class="verdict" id="verdict"></div>
+          <div class="counts">
+            <span><b id="cG">0</b>got it</span>
+            <span><b id="cY">0</b>nearly</span>
+            <span><b id="cR">0</b>again</span>
+          </div>
+        </div>
+
+        <div class="cell">
+          <h3>WAS THE SANTALI RIGHT</h3>
+          <div class="judge">
+            <button id="yesBtn">Yes, that works</button>
+            <button class="no" id="noBtn">Fix it</button>
+          </div>
+          <div class="fix" id="fixBox">
+            <textarea id="fixIn" rows="2" placeholder="Write the line the way you would say it"></textarea>
+            <div class="row">
+              <button class="go" id="fixSave" style="padding:9px 18px;font-size:13.5px">Save it</button>
+              <button class="plain" id="fixCancel" style="padding:9px 0">Never mind</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ LESSONS ══════════════ -->
+    <section class="view" id="v-library">
+      <div class="pagehead">
+        <h1>Lessons</h1>
+        <p>Each one is a handful of lines you say out loud, in the order a lesson usually goes. Pick one and it loads into the classroom.</p>
+      </div>
+      <div class="chips" id="chips">
+        <button aria-pressed="true" data-g="all">EVERYTHING</button>
+        <button aria-pressed="false" data-g="1">GRADE 1</button>
+        <button aria-pressed="false" data-g="2">GRADE 2</button>
+        <button aria-pressed="false" data-g="3">GRADE 3</button>
+      </div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <!-- ══════════════ PROGRESS ══════════════ -->
+    <section class="view" id="v-progress">
+      <div class="pagehead">
+        <h1>Progress</h1>
+        <p>What this session added up to. It empties when the server restarts.</p>
+      </div>
+      <div class="figs">
+        <div class="fig"><b id="fLines">0</b><span>LINES TRANSLATED</span></div>
+        <div class="fig"><b id="fSec">0.00</b><span>SECONDS PER LINE</span></div>
+        <div class="fig"><b id="fRight">0%</b><span>ANSWERED RIGHT</span></div>
+        <div class="fig"><b id="fSteps">0</b><span>STEPS DONE</span></div>
+      </div>
+      <div class="rows" id="rows">
+        <div class="nothing">
+          <b>Nothing yet.</b>
+          <p>Translate a line in the classroom and it turns up here, with how long it took.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SETTINGS ══════════════ -->
+    <section class="view" id="v-settings">
+      <div class="pagehead">
+        <h1>Settings</h1>
+        <p>Set these once at the start of the day.</p>
+      </div>
+      <div class="form">
+        <div class="fgroup">
+          <h2>In the room</h2>
+          <p class="lede">How the app behaves while you are teaching.</p>
+          <div class="frow">
+            <span class="lab">Speak the Santali as soon as it lands<small>Saves you reaching for the button</small></span>
+            <span class="dots"></span>
+            <span class="val"><button class="sw" id="swAuto" aria-pressed="true" aria-label="Speak the Santali as soon as it lands"></button></span>
+          </div>
+          <div class="frow">
+            <span class="lab">Bigger type<small>For when the laptop is facing the class</small></span>
+            <span class="dots"></span>
+            <span class="val"><button class="sw" id="swBig" aria-pressed="false" aria-label="Bigger type"></button></span>
+          </div>
+          <div class="frow">
+            <span class="lab">Ask me to check each translation<small>Your corrections get reused</small></span>
+            <span class="dots"></span>
+            <span class="val"><button class="sw" id="swAsk" aria-pressed="true" aria-label="Ask me to check each translation"></button></span>
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <h2>Where it runs</h2>
+          <p class="lede">Point the tablets at the laptop doing the work.</p>
+          <div class="frow">
+            <span class="lab">Server<small>Use the laptop's address on the classroom wifi</small></span>
+            <span class="dots"></span>
+            <span class="val"><input id="server" value="http://127.0.0.1:5000" spellcheck="false"></span>
+          </div>
+          <div class="frow">
+            <span class="lab">Grade you usually teach</span>
+            <span class="dots"></span>
+            <span class="val"><select id="defGrade"><option>1</option><option selected>2</option><option>3</option></select></span>
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <h2>The models</h2>
+          <p class="lede">All on the machine, except the voice, which needs a connection.</p>
+          <div class="frow"><span class="lab">Hearing</span><span class="dots"></span><span class="val"><select><option>IndicConformer 600M</option></select></span></div>
+          <div class="frow"><span class="lab">Translating</span><span class="dots"></span><span class="val"><select><option>IndicTrans2 indic to indic</option></select></span></div>
+          <div class="frow"><span class="lab">Speaking</span><span class="dots"></span><span class="val"><select><option>gTTS, transliterated</option></select></span></div>
+          <div class="frow" style="border:0;padding-top:24px"><button class="go" id="saveSet">Save</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
-<!-- LESSON LIBRARY VIEW -->
-<div id="view-library" class="view-container lesson" style="display:none; grid-column: 2 / 4;">
-  <div class="lesson-head"><div><div class="section-kicker">Curriculum Overview</div><h2 style="font-family:var(--serif);font-size:38px;margin-bottom:10px;font-weight:500;">Lesson Library</h2></div></div>
-  <p style="color:var(--muted); max-width:500px; margin-bottom:30px; font-size:15px; line-height:1.6;">Explore the full NIPUN Bharat curriculum for Hindi and Santali foundational learning. Select a lesson to load it into your workspace.</p>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:25px;" id="libraryGrid"></div>
-</div>
-
-<!-- MY PROGRESS VIEW -->
-<div id="view-progress" class="view-container lesson" style="display:none; grid-column: 2 / 4;">
-  <div class="lesson-head"><div><div class="section-kicker">Teacher Dashboard</div><h2 style="font-family:var(--serif);font-size:38px;margin-bottom:10px;font-weight:500;">Progress Notes</h2></div></div>
-  <p style="color:var(--muted); max-width:500px; margin-bottom:30px; font-size:15px; line-height:1.6;">Track your classroom translation history and student comprehension over time.</p>
-  <div style="display:flex; gap:30px; margin-top:20px; flex-wrap:wrap;">
-    <div style="border-top:1px solid var(--ink); padding-top:10px; min-width:140px;">
-        <span style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Lessons Taught</span>
-        <strong style="font-family:var(--serif); font-size:42px; font-weight:500;">24</strong>
+<div class="veil" id="veil" role="dialog" aria-modal="true" aria-labelledby="noteTitle">
+  <div class="note">
+    <h2 id="noteTitle">How it went</h2>
+    <p class="who" id="noteWho">SIMPLE ADDITION, GRADE 2</p>
+    <div class="big">
+      <div class="pc" id="pc">0%</div>
+      <div class="say">
+        <b id="sayTitle">Too early to tell</b>
+        <p id="sayBody">Mark a few answers and this fills in.</p>
+      </div>
     </div>
-    <div style="border-top:1px solid var(--ink); padding-top:10px; min-width:140px;">
-        <span style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Translations</span>
-        <strong style="font-family:var(--serif); font-size:42px; font-weight:500;">142</strong>
+    <div class="notegrid">
+      <div><span>Steps done</span><b id="nSteps">0 / 4</b></div>
+      <div><span>Lines translated</span><b id="nLines">0</b></div>
+      <div><span>Time in the lesson</span><b id="nTime">0m 00s</b></div>
+      <div><span>Seconds per line</span><b id="nSec">0.00</b></div>
     </div>
-    <div style="border-top:1px solid var(--ink); padding-top:10px; min-width:140px;">
-        <span style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Avg Comprehension</span>
-        <strong style="font-family:var(--serif); font-size:42px; font-weight:500;">89<small style="font-size:20px">%</small></strong>
+    <div class="row">
+      <button class="go" id="notePdf">Print a worksheet</button>
+      <button class="plain" id="noteClose" style="padding:13px 0">Back to the lesson</button>
     </div>
   </div>
 </div>
 
-<!-- SETTINGS VIEW -->
-<div id="view-settings" class="view-container lesson" style="display:none; grid-column: 2 / 4;">
-  <div class="lesson-head"><div><div class="section-kicker">Configuration</div><h2 style="font-family:var(--serif);font-size:38px;margin-bottom:10px;font-weight:500;">Settings</h2></div></div>
-  <div style="display:flex; flex-direction:column; gap:25px; max-width: 400px; margin-top:20px;">
-    <div>
-      <label style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Translation Engine</label>
-      <select class="lesson-select" style="width:100%; max-width:100%; background-position:right 12px; padding:10px 0;"><option>AI4Bharat IndicTrans2 (Local)</option></select>
-    </div>
-    <div>
-      <label style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Speech Recognition (ASR)</label>
-      <select class="lesson-select" style="width:100%; max-width:100%; background-position:right 12px; padding:10px 0;"><option>IndicConformer (Local)</option></select>
-    </div>
-    <div>
-      <label style="display:block; font:10px var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Text-to-Speech (TTS)</label>
-      <select class="lesson-select" style="width:100%; max-width:100%; background-position:right 12px; padding:10px 0;"><option>gTTS Transliteration (Cloud)</option></select>
-    </div>
-    <div style="margin-top:20px; border-top:1px solid var(--ink); padding-top:20px;">
-        <button style="background:var(--green); color:#fff; border:0; padding:12px 18px; font-size:13px; font-weight:600;" onclick="showToast('Settings saved successfully!')">Save Preferences</button>
-    </div>
-  </div>
-</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 
-</div></div>
-<div class="toast" id="toast"></div>
-<audio id="ttsAudio" style="display:none;"></audio>
 <script>
-    const SERVER = window.location.origin;
-    let lesson=0, step=0, mode='lesson_script', sid = '';
-    let mediaRec, chunks = [], currentDirection = "hi-to-sat";
-    let lastHindi = "", lastSat = "";
-    
-    // View Switcher logic
-    function switchView(viewId, btn) {
-        document.querySelectorAll('.view-container').forEach(el => el.style.display = 'none');
-        
-        let target = document.getElementById(viewId);
-        if(viewId === 'view-workspace') {
-            target.style.display = 'contents';
-        } else {
-            target.style.display = 'block';
-        }
-        
-        document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        if(viewId === 'view-library') populateLibrary();
-    }
+const LESSONS = [
+  { grade:"1", topic:"counting_1_10", title:"Counting 1 to 10", goal:"Counts objects up to 10 and says the numbers in order", steps:[ {type:"lesson_script", hindi:"आज हम एक से दस तक गिनना सीखेंगे।", santali:"ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱢᱤᱫ ᱠᱷᱚᱱ ᱜᱮᱞ ᱦᱟᱹᱲᱤᱡ ᱥᱮᱪᱮᱫᱟ।", note:"hold up your fingers first"}, {type:"activity_instruction", hindi:"अपनी उंगलियां दिखाओ और मेरे साथ गिनो।", santali:"ᱟᱢᱟᱜ ᱠᱟᱹᱴᱩᱢ ᱩᱫᱩᱜ ᱢᱮ ᱟᱨ ᱤᱧ ᱥᱟᱶ ᱦᱟᱹᱲᱤᱡ ᱢᱮ।", note:"count out loud together"}, {type:"activity_instruction", hindi:"अब तुम्हारे सामने पांच पत्थर हैं। उन्हें गिनो।", santali:"ᱱᱤᱛᱚᱜ ᱟᱢ ᱥᱟᱢᱟᱝ ᱨᱮ ᱢᱚᱬᱮ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜ ᱠᱟᱱᱟ। ᱦᱟᱹᱲᱤᱡ ᱢᱮ।", note:"put real stones on the desk"}, {type:"assessment_prompt", hindi:"यहाँ कितने पत्थर हैं? बताओ।", santali:"ᱱᱚᱰᱮ ᱛᱤᱱᱟᱜ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ? ᱞᱟᱹᱭ ᱢᱮ।", note:"hold up three, wait for an answer", answers:["3","तीन","teen"]} ]},
+  { grade:"1", topic:"shapes", title:"Basic Shapes", goal:"Picks out a circle, a square and a triangle", steps:[ {type:"lesson_script", hindi:"यह गोल है। यह एक वृत्त है।", santali:"ᱱᱚᱶᱟ ᱜᱚᱞ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱢᱤᱫ ᱜᱚᱞ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ।", note:"hold the circle up high"}, {type:"lesson_script", hindi:"यह चौकोर है। इसके चार कोने हैं।", santali:"ᱱᱚᱶᱟ ᱪᱟᱩᱠᱟ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱨᱮᱭᱟᱜ ᱯᱩᱱ ᱠᱩᱱᱟᱹ ᱢᱮᱱᱟᱜᱼᱟ।", note:"let them count the corners"}, {type:"activity_instruction", hindi:"अपने आसपास गोल चीज़ें ढूंढो।", santali:"ᱟᱢᱟᱜ ᱥᱩᱨ ᱨᱮ ᱜᱚᱞ ᱡᱤᱱᱤᱥ ᱯᱟᱱᱛᱮ ᱢᱮ।", note:"let them walk around"}, {type:"assessment_prompt", hindi:"यह कौन सा आकार है?", santali:"ᱱᱚᱶᱟ ᱚᱠᱟ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ?", note:"point at the triangle on the board"} ]},
+  { grade:"2", topic:"addition", title:"Simple Addition", goal:"Adds two single-digit numbers using objects", steps:[ {type:"lesson_script", hindi:"आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।", santali:"ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱡᱚᱲᱟᱣ ᱥᱮᱪᱮᱫᱟ। ᱢᱤᱫ ᱟᱨ ᱢᱤᱫ ᱢᱮᱥᱟᱣ ᱢᱮ।", note:"push two piles together with your hands"}, {type:"activity_instruction", hindi:"दो आम और तीन आम मिलाओ। कुल कितने हुए?", santali:"ᱵᱟᱨ ᱩᱞ ᱟᱨ ᱯᱮ ᱩᱞ ᱢᱮᱥᱟᱣ ᱢᱮ। ᱡᱚᱛᱚ ᱛᱤᱱᱟᱜ ᱦᱩᱭᱮᱱᱟ?", note:"use whatever is on the desk"}, {type:"activity_instruction", hindi:"अब तुम एक जोड़ का सवाल बनाओ।", santali:"ᱱᱤᱛᱚᱜ ᱟᱢ ᱢᱤᱫ ᱡᱚᱲᱟᱣ ᱠᱩᱠᱞᱤ ᱛᱮᱭᱟᱨ ᱢᱮ।", note:"let one of them ask the class"}, {type:"assessment_prompt", hindi:"तीन और चार कितने होते हैं?", santali:"ᱯᱮ ᱟᱨ ᱯᱩᱱ ᱛᱤᱱᱟᱜ ᱦᱩᱭᱩᱜᱼᱟ?", note:"wait, do not fill the silence", answers:["7","सात","saat"]} ]},
+  { grade:"2", topic:"reading_words", title:"Reading Simple Words", goal:"Reads common two-syllable words out loud", steps:[ {type:"lesson_script", hindi:"यह शब्द है, माँ। इसे पढ़ो।", santali:"ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱠᱟᱱᱟ, ᱟᱭᱳ। ᱱᱚᱶᱟ ᱯᱟᱲᱦᱟᱣ ᱢᱮ।", note:"hold the card still while they look"}, {type:"activity_instruction", hindi:"इस शब्द को तीन बार पढ़ो, पानी।", santali:"ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱯᱮ ᱛᱷᱚᱠ ᱯᱟᱲᱦᱟᱣ ᱢᱮ, ᱫᱟᱜ।", note:"whole class, all together"}, {type:"assessment_prompt", hindi:"यह शब्द क्या है? पढ़कर बताओ।", santali:"ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱪᱮᱫ ᱠᱟᱱᱟ? ᱯᱟᱲᱦᱟᱣ ᱠᱟᱛᱮ ᱞᱟᱹᱭ ᱢᱮ।", note:"one child at a time"} ]},
+  { grade:"3", topic:"subtraction", title:"Simple Subtraction", goal:"Takes one single-digit number away from another", steps:[ {type:"lesson_script", hindi:"आज हम घटाना सीखेंगे। दस में से तीन घटाओ।", santali:"ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱠᱚᱢ ᱥᱮᱪᱮᱫᱟ। ᱜᱮᱞ ᱠᱷᱚᱱ ᱯᱮ ᱠᱚᱢ ᱢᱮ।", note:"take the stones away where they can see"}, {type:"activity_instruction", hindi:"सात पत्थर लो। तीन हटा दो। अब कितने बचे?", santali:"ᱭᱟᱭ ᱫᱷᱤᱨᱤ ᱦᱟᱛᱟᱣ ᱢᱮ। ᱯᱮ ᱚᱪᱚᱜ ᱢᱮ। ᱱᱤᱛᱚᱜ ᱛᱤᱱᱟᱜ ᱛᱟᱦᱮᱸᱱᱟ?", note:"their hands, not yours"}, {type:"assessment_prompt", hindi:"आठ में से पांच घटाओ। उत्तर क्या है?", santali:"ᱤᱨᱟᱹᱞ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱠᱚᱢ ᱢᱮ। ᱛᱮᱞᱟ ᱪᱮᱫ ᱠᱟᱱᱟ?", note:"no stones this time", answers:["3","तीन","teen"]} ]}
+];
 
-    function populateLibrary() {
-        let grid = document.getElementById('libraryGrid');
-        if (grid.innerHTML.trim() !== '') return;
-        
-        lessons.forEach((l, i) => {
-            let div = document.createElement('div');
-            div.style.borderTop = '1px solid var(--rule)';
-            div.style.paddingTop = '15px';
-            div.style.cursor = 'pointer';
-            div.innerHTML = `<span style="font:10px var(--mono); color:var(--orange); text-transform:uppercase; letter-spacing:0.1em; display:block; margin-bottom:8px;">${l.competency || 'NIPUN Bharat'}</span><b style="font-family:var(--serif); font-size:22px; font-weight:500;">${l.title}</b><br><small style="color:var(--muted); font-size:13px; display:block; margin-top:8px;">${l.steps.length} steps</small>`;
-            div.onclick = () => {
-                lesson = i; step = 0; startSession();
-                switchView('view-workspace', document.querySelector('#mainNav button'));
-                showToast(`Loaded ${l.title}`);
-            };
-            grid.appendChild(div);
-        });
-    }
+const SERVER = window.location.origin;
 
-    // Fetch lessons from backend
-    let lessons = [];
-    async function loadLessons() {
-      try {
-        const r = await fetch(`${SERVER}/lessons`);
-        const d = await r.json();
-        lessons = d.lessons;
-        
-        let sel = document.getElementById("lessonSelect");
-        sel.innerHTML = "";
-        lessons.forEach((l, i) => {
-            let opt = document.createElement("option");
-            opt.value = i; opt.textContent = l.title; sel.appendChild(opt);
-        });
-        
-        if(lessons.length > 0) startSession();
-      } catch(e) { showToast("Backend connection failed."); }
-    }
-
-    async function startSession() {
-      if(lessons.length === 0) return;
-      let l = lessons[lesson];
-      try {
-        const r = await fetch(`${SERVER}/session/start`, {
-            method:"POST", headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({grade:"2", topic:l.title})
-        });
-        const d = await r.json();
-        sid = d.session_id;
-        render();
-      } catch(e) {}
-    }
-
-    const $ = id => document.getElementById(id);
-    function render(){
-        if(lessons.length === 0) return;
-        let l = lessons[lesson], s = l.steps[step];
-        $('lessonTitle').textContent = l.title;
-        $('lessonTopic').textContent = l.competency;
-        $('promptText').textContent = s.hindi;
-        $('promptHint').textContent = s.note || "Classroom prompt";
-        $('hindiText').textContent = s.hindi;
-        $('santaliText').textContent = s.santali;
-        lastHindi = s.hindi; lastSat = s.santali;
-        
-        const pad = (n) => n < 10 ? '0'+n : n;
-        $('stepNumberStr').textContent = `${pad(step+1)} / ${pad(l.steps.length)}`;
-        $('stepMeta').textContent = `Step ${step+1} of ${l.steps.length}`;
-        $('statSteps').textContent = pad(l.steps.length);
-        $('progressBar').style.width = ((step+1)/l.steps.length*100)+'%';
-        $('progressPercent').textContent = Math.round((step+1)/l.steps.length*100)+'%';
-        $('progressText').textContent = step === l.steps.length-1 ? 'Almost there — finish strong' : 'Start with the first line.';
-        $('summary').classList.remove('show');
-    }
-    
-    $('lessonSelect').onchange = e => { lesson = +e.target.value; step = 0; startSession(); };
-    
-    document.querySelectorAll('.modes button').forEach(b => b.onclick = () => {
-        document.querySelectorAll('.modes button').forEach(x => x.classList.remove('active'));
-        b.classList.add('active'); mode = b.dataset.mode;
+const Api = {
+  async lessons(){ return LESSONS; },
+  async startSession(grade, topic){
+    const r = await fetch(`${SERVER}/session/start`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({grade, topic})
     });
+    return await r.json();
+  },
+  async translateText(text, direction){
+    const r = await fetch(`${SERVER}/translate/text`, {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({text, direction, mode: S.mode, session_id: S.sid})
+    });
+    return await r.json();
+  },
+  async translateAudio(blob, direction){
+    const fd = new FormData();
+    fd.append("audio", blob, "recording.webm");
+    fd.append("mode", S.mode);
+    fd.append("session_id", S.sid);
+    fd.append("direction", direction);
+    const r = await fetch(`${SERVER}/translate/audio`, {method:"POST", body:fd});
+    return await r.json();
+  },
+  async next(){
+    const r = await fetch(`${SERVER}/session/next`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({session_id: S.sid})
+    });
+    return await r.json();
+  },
+  async mark(response){
+    const r = await fetch(`${SERVER}/session/response`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({session_id: S.sid, response})
+    });
+    return await r.json();
+  },
+  async feedback(is_correct, corrected_text=""){
+    const r = await fetch(`${SERVER}/feedback`, {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            hindi_text: $("#hi").textContent,
+            santali_text: $("#sa").textContent,
+            is_correct,
+            corrected_text
+        })
+    });
+    return await r.json();
+  },
+  async worksheet(){
+    const r = await fetch(`${SERVER}/worksheet`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+            session_id: S.sid,
+            hindi_text: $("#hi").textContent,
+            santali_text: $("#sa").textContent,
+            grade: S.lesson.grade,
+            topic: S.lesson.title
+        })
+    });
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url; a.download = "VaaniSetu_Worksheet.pdf"; a.click();
+    URL.revokeObjectURL(url);
+    return { ok: true };
+  }
+};
 
-    async function nextStep(){
-      if (!sid) return;
-      const r = await fetch(`${SERVER}/session/next`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({session_id: sid})
-      });
-      const d = await r.json();
-      if (d.completed) {
-          showSummary();
-      } else {
-          step = d.step_index;
-          render();
-          showToast('Next line ready');
-      }
-    }
+const S = {
+  lessons:[], index:2, lesson:null, step:0,
+  mode:"lesson_script", dir:"hi-to-sat", sid:"",
+  rec:null, recTimer:null, secs:0, mediaRec:null, chunks:[],
+  began:Date.now(), log:[], times:[], counts:{green:0,yellow:0,red:0},
+  autoplay:true, ask:true, filter:"all"
+};
 
-    // ── Translation ──
-    async function translateText() {
-        let textToTranslate = currentDirection === "hi-to-sat" ? $('hindiText').textContent : $('santaliText').textContent;
-        if(!textToTranslate.trim()) return;
-        showToast("Translating...");
-        $('feedbackSection').style.display = "none";
-        
-        try {
-            const r = await fetch(`${SERVER}/translate/text`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({text: textToTranslate, session_id: sid, direction: currentDirection, mode: mode})
-            });
-            const d = await r.json();
-            updateUI(d, currentDirection);
-        } catch(e) { showToast("Translation error"); }
-    }
+const $ = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+const p2 = n => String(n).padStart(2,"0");
+const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ── Audio Recording ──
-    async function toggleRecord(id, dir) {
-        let b = $(id);
-        let txt = $(id === 'recordHi' ? 'recTextHi' : 'recTextSat');
-        let name = dir === 'hi-to-sat' ? 'Hindi' : 'Santali';
-        
-        if (b.classList.contains('active')) {
-            // Stop recording
-            b.classList.remove('active');
-            txt.textContent = 'Speak ' + name;
-            showToast("Processing audio...");
-            if (mediaRec && mediaRec.state === "recording") {
-                mediaRec.stop();
-                mediaRec.stream.getTracks().forEach(t => t.stop());
-            }
+if (document.fonts && document.fonts.load){
+  document.fonts.load('24px "Material Symbols Rounded"')
+    .then(f => { if (f.length) document.documentElement.classList.add("icons-on"); })
+    .catch(() => {});
+}
+
+function say(msg){
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  $("#toasts").appendChild(el);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 340); }, 2400);
+}
+
+const root = document.documentElement;
+function theme(t){ root.dataset.theme = t; $("#themeBtn").textContent = t === "dark" ? "light" : "dark"; }
+if (matchMedia("(prefers-color-scheme: dark)").matches) theme("dark");
+$("#themeBtn").onclick = () => theme(root.dataset.theme === "dark" ? "light" : "dark");
+
+function bigType(on){
+  root.style.setProperty("--scale", on ? "1.15" : "1");
+  $("#bigBtn").setAttribute("aria-pressed", String(on));
+  $("#bigBtn").classList.toggle("on", on);
+  $("#swBig").setAttribute("aria-pressed", String(on));
+}
+$("#bigBtn").onclick = () => bigType($("#bigBtn").getAttribute("aria-pressed") !== "true");
+
+function view(name){
+  $$(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + name));
+  $$(".rail nav button").forEach(b => b.dataset.view === name
+    ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+  window.scrollTo({ top:0, behavior: still() ? "auto" : "smooth" });
+}
+$$(".rail nav button").forEach(b => b.onclick = () => view(b.dataset.view));
+
+$$(".modes button").forEach(b => b.onclick = () => {
+  $$(".modes button").forEach(x => x.setAttribute("aria-selected","false"));
+  b.setAttribute("aria-selected","true");
+  S.mode = b.dataset.mode;
+});
+
+function draw(){
+  const l = S.lesson, s = l.steps[S.step];
+  $("#grade").textContent = "GRADE " + l.grade;
+  $("#title").textContent = l.title;
+  $("#goal").textContent = l.goal;
+  $("#prompt").textContent = s.hindi;
+  $("#aside").innerHTML = "<b>note:</b> " + (s.note || "say it the way you always do");
+  $("#num").textContent = p2(S.step + 1);
+  $("#count").textContent = `${S.step + 1} / ${l.steps.length}`;
+  $("#hint").textContent = S.step === l.steps.length - 1
+    ? "Last one. Then wrap up." : "Say the line, then hand it to the board.";
+
+  $("#tickRow").innerHTML = l.steps.map((_,i) =>
+    `<span class="tick ${i < S.step ? "past" : i === S.step ? "on" : ""}"></span>`).join("");
+
+  $("#hi").textContent = s.hindi;
+  $("#sa").textContent = "";
+
+  const mb = $(`.modes [data-mode="${s.type}"]`);
+  if (mb){ $$(".modes button").forEach(x => x.setAttribute("aria-selected","false")); mb.setAttribute("aria-selected","true"); S.mode = s.type; }
+
+  $("#verdict").className = "verdict";
+  $("#nextBtn").innerHTML = S.step === l.steps.length - 1
+    ? 'Finish <span class="ic">arrow_forward</span>' : 'Next line <span class="ic">arrow_forward</span>';
+}
+
+function facing(){
+  const hi = S.dir === "hi-to-sat";
+  $$(".side")[0].querySelector(".tag").childNodes[0].nodeValue = hi ? "YOU, IN HINDI " : "BACK TO YOU, IN HINDI ";
+  $$(".side")[1].querySelector(".tag").childNodes[0].nodeValue = hi ? "THE CLASS, IN SANTALI " : "THEM, IN SANTALI ";
+  $("#voiceNote").textContent = hi ? "Spoken back in about half a second." : "Voice output only runs into Santali.";
+}
+$("#seam").onclick = () => {
+  $("#seam").classList.toggle("flip");
+  S.dir = S.dir === "hi-to-sat" ? "sat-to-hi" : "hi-to-sat";
+  facing();
+  say(S.dir === "hi-to-sat" ? "Hindi into Santali" : "Santali into Hindi");
+};
+
+async function translate(){
+  const src = S.dir === "hi-to-sat" ? $("#hi") : $("#sa");
+  const dst = S.dir === "hi-to-sat" ? $("#sa") : $("#hi");
+  const text = src.textContent.trim();
+  if (!text){ say("Nothing on that side yet"); return; }
+
+  const btn = $("#goBtn");
+  btn.disabled = true; btn.textContent = "Working";
+  dst.classList.add("pending");
+
+  const r = await Api.translateText(text, S.dir);
+  r.latency.total = +(r.latency.asr + r.latency.nmt + r.latency.tts).toFixed(2);
+
+  dst.classList.remove("pending");
+  chalk(dst, r.translated_text);
+  btn.disabled = false; btn.textContent = "Translate";
+
+  timing(r.latency);
+  keep(r.latency.total,
+    S.dir === "hi-to-sat" ? text : r.translated_text,
+    S.dir === "hi-to-sat" ? r.translated_text : text);
+  if (S.autoplay && S.dir === "hi-to-sat") speak(true);
+  if (S.ask) say("Back in " + r.latency.total + " seconds");
+}
+$("#goBtn").onclick = translate;
+
+function chalk(el, text){
+  if (still()){ el.textContent = text; return; }
+  el.textContent = "";
+  el.classList.remove("chalkin"); void el.offsetWidth; el.classList.add("chalkin");
+  const chars = [...text];
+  let i = 0;
+  (function tick(){
+    el.textContent += chars[i++] ?? "";
+    if (i < chars.length) setTimeout(tick, 18);
+  })();
+}
+
+function timing(l){
+  const t = Math.max(l.total, .01);
+  $("#total").textContent = l.total.toFixed(2);
+  $("#vA").textContent = l.asr.toFixed(2);
+  $("#vN").textContent = l.nmt.toFixed(2);
+  $("#vT").textContent = l.tts.toFixed(2);
+  $("#sA").style.width = (l.asr/t*100) + "%";
+  $("#sN").style.width = (l.nmt/t*100) + "%";
+  $("#sT").style.width = (l.tts/t*100) + "%";
+}
+
+function keep(t, hindi, santali){
+  S.times.push(t);
+  S.log.unshift({ h:hindi, s:santali, t });
+  drawRows();
+}
+
+function speak(quiet){
+  if (!$("#sa").textContent.trim()){ say("Translate something first"); return; }
+  if (!quiet) say("Playing the Santali");
+  const audio = document.getElementById("ttsAudio") || document.createElement("audio");
+  audio.id = "ttsAudio";
+  audio.style.display = "none";
+  audio.src = `${SERVER}/audio/output?t=${Date.now()}`;
+  document.body.appendChild(audio);
+  audio.play();
+}
+$("#sayIt").onclick = () => speak();
+
+function stopRec(){
+  if (!S.rec) return;
+  $(S.rec === "hi-to-sat" ? "#micHi" : "#micSa").classList.remove("live");
+  clearInterval(S.recTimer); S.rec = null; S.secs = 0;
+}
+async function mic(dir){
+  const el = $(dir === "hi-to-sat" ? "#micHi" : "#micSa");
+  const t  = $(dir === "hi-to-sat" ? "#tHi" : "#tSa");
+
+  if (S.rec === dir){
+    return new Promise(resolve => {
+        if (S.mediaRec && S.mediaRec.state === "recording") {
+            S.mediaRec.onstop = async () => {
+                stopRec();
+                const blob = new Blob(S.chunks, {type:"audio/webm"});
+                const src = dir === "hi-to-sat" ? $("#hi") : $("#sa");
+                const dst = dir === "hi-to-sat" ? $("#sa") : $("#hi");
+                src.classList.add("pending"); dst.classList.add("pending");
+                
+                try {
+                    const r = await Api.translateAudio(blob, dir);
+                    src.textContent = r.recognized_text;
+                    chalk(dst, r.translated_text);
+                    timing(r.latency);
+                    keep(r.latency.total,
+                        dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
+                        dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
+                    if (S.autoplay && dir === "hi-to-sat") speak(true);
+                    say("Heard it, " + r.latency.total + " seconds");
+                } catch(e) {
+                    say("Audio translation failed");
+                } finally {
+                    src.classList.remove("pending"); dst.classList.remove("pending");
+                    resolve();
+                }
+            };
+            S.mediaRec.stop();
+            S.mediaRec.stream.getTracks().forEach(tk => tk.stop());
         } else {
-            // Start recording
-            document.querySelectorAll('.record').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            txt.textContent = 'Listening… click to finish';
-            currentDirection = dir;
-            
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-                chunks = [];
-                mediaRec = new MediaRecorder(stream);
-                mediaRec.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
-                mediaRec.onstop = sendAudio;
-                mediaRec.start();
-            } catch(e) { showToast("Microphone access denied"); b.classList.remove('active'); }
+            stopRec();
+            resolve();
         }
-    }
+    });
+  }
 
-    async function sendAudio() {
-        const blob = new Blob(chunks, {type:"audio/webm"});
-        const fd = new FormData();
-        fd.append("audio", blob, "recording.webm");
-        fd.append("mode", mode);
-        fd.append("session_id", sid);
-        fd.append("direction", currentDirection);
-        
-        try {
-            const r = await fetch(`${SERVER}/translate/audio`, {method:"POST", body:fd});
-            const d = await r.json();
-            updateUI(d, currentDirection);
-        } catch(e) { showToast("Audio translation failed"); }
-    }
+  try {
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      S.chunks = [];
+      S.mediaRec = new MediaRecorder(stream);
+      S.mediaRec.ondataavailable = e => { if(e.data.size > 0) S.chunks.push(e.data); };
+      S.mediaRec.start();
+  } catch(e) { say("Microphone access denied"); return; }
 
-    function updateUI(d, dir) {
-        if (dir === "hi-to-sat") {
-            if(d.recognized_text) $('hindiText').textContent = d.recognized_text;
-            $('santaliText').textContent = d.translated_text;
-            lastHindi = $('hindiText').textContent;
-            lastSat = d.translated_text;
-            $('feedbackSection').style.display = "block";
-            playAudio();
-        } else {
-            if(d.recognized_text) $('santaliText').textContent = d.recognized_text;
-            $('hindiText').textContent = d.translated_text;
-            $('feedbackSection').style.display = "none";
-            showToast("Santali translated!");
-        }
-        $('statLat').textContent = d.latency.total + "s";
-        $('statConf').textContent = (d.confidence || 95) + "%";
-    }
+  stopRec();
+  S.dir = dir; facing();
+  S.rec = dir; el.classList.add("live");
+  S.secs = 0; t.textContent = "0:00";
+  S.recTimer = setInterval(() => {
+    S.secs++; t.textContent = `${Math.floor(S.secs/60)}:${p2(S.secs%60)}`;
+  }, 1000);
+}
+$("#micHi").onclick = () => mic("hi-to-sat");
+$("#micSa").onclick = () => mic("sat-to-hi");
 
-    function playAudio(){
-        showToast('Playing Santali pronunciation...');
-        const audio = $('ttsAudio');
-        audio.src = `${SERVER}/audio/output?t=${Date.now()}`;
-        audio.play();
-    }
+$("#nextBtn").onclick = async () => {
+  await Api.next();
+  if (S.step >= S.lesson.steps.length - 1){ wrap(); return; }
+  S.step++; draw();
+};
 
-    function swapLanguages(){
-        let h = $('hindiText').textContent, s = $('santaliText').textContent;
-        $('hindiText').textContent = s;
-        $('santaliText').textContent = h;
-        currentDirection = currentDirection === "hi-to-sat" ? "sat-to-hi" : "hi-to-sat";
-        showToast('Swapped! Click translate.');
-    }
+$("#markBtn").onclick = async () => {
+  const v = $("#answer").value;
+  if (!v.trim()){ say("Write down what you heard"); return; }
+  const r = await Api.mark(v);
+  const box = $("#verdict");
+  box.className = "verdict on " + r.signal;
+  box.textContent = r.message;
+  S.counts[r.signal]++;
+  $("#cG").textContent = S.counts.green;
+  $("#cY").textContent = S.counts.yellow;
+  $("#cR").textContent = S.counts.red;
+  $("#answer").value = "";
+  if (r.signal === "green") confetti($("#markBtn"));
+  drawFigs();
+};
+$("#answer").addEventListener("keydown", e => { if (e.key === "Enter") $("#markBtn").click(); });
 
-    async function feedback(ok){
-        try {
-            let corr = "";
-            if(!ok) {
-                corr = prompt("Enter the correct Santali translation to train the model:");
-                if(!corr) return;
-            }
-            await fetch(`${SERVER}/feedback`, {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({hindi_text: lastHindi, santali_text: lastSat, is_correct: ok, corrected_text: corr})
-            });
-            $('feedbackSection').style.display = "none";
-            showToast(ok ? "Thanks — translation marked helpful ✅" : "Correction saved to database ✅");
-        } catch(e) { showToast("Error saving feedback"); }
-    }
+function confetti(from){
+  if (still()) return;
+  const r = from.getBoundingClientRect();
+  const cols = ["#BC4227","#242C29","#D3C6AC"];
+  for (let i=0;i<12;i++){
+    const s = document.createElement("i");
+    s.className = "spark";
+    s.style.background = cols[i % cols.length];
+    s.style.left = (r.left + r.width/2) + "px";
+    s.style.top = (r.top + r.height/2) + "px";
+    document.body.appendChild(s);
+    const a = Math.random()*Math.PI*2, d = 40 + Math.random()*60;
+    s.animate([
+      { transform:"translate(0,0)", opacity:1 },
+      { transform:`translate(${Math.cos(a)*d}px, ${Math.sin(a)*d + 34}px) rotate(${Math.random()*260}deg)`, opacity:0 }
+    ], { duration: 640 + Math.random()*300, easing:"cubic-bezier(.2,.9,.25,1)" }).onfinish = () => s.remove();
+  }
+}
 
-    async function checkResponse(){
-        let v = $('responseInput').value.trim();
-        if(!v) return;
-        try {
-            const r = await fetch(`${SERVER}/session/response`, {
-                method:"POST", headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({session_id:sid, response:v})
-            });
-            const d = await r.json();
-            let n = $('responseNotice');
-            n.className = 'notice show';
-            n.textContent = d.message;
-            $('responseInput').value = "";
-        } catch(e) { showToast("Error checking response"); }
-    }
+$("#yesBtn").onclick = async () => { await Api.feedback(true); say("Noted, thanks"); };
+$("#noBtn").onclick = () => { $("#fixBox").classList.add("on"); $("#fixIn").focus(); };
+$("#fixCancel").onclick = () => $("#fixBox").classList.remove("on");
+$("#fixSave").onclick = async () => {
+  const v = $("#fixIn").value.trim();
+  if (!v){ say("Write the correct line first"); return; }
+  await Api.feedback(false, v);
+  $("#sa").textContent = v;
+  $("#fixIn").value = "";
+  $("#fixBox").classList.remove("on");
+  say("Saved. It will use yours next time.");
+};
 
-    async function showSummary(){
-        try {
-            const r = await fetch(`${SERVER}/session/summary`, {
-                method:"POST", headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({session_id:sid})
-            });
-            const d = await r.json();
-            $('summaryText').innerHTML = `You completed ${d.steps_completed} of ${d.total_steps} steps. <br>Comprehension Score: ${d.comprehension.score_percent}% - ${d.comprehension.verdict}`;
-            $('summary').classList.add('show');
-        } catch(e) { showToast("Summary error"); }
-    }
+async function worksheet(btn){
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = "Building";
+  await Api.worksheet();
+  btn.disabled = false; btn.textContent = label;
+  say("Worksheet ready");
+}
+$("#sheetBtn").onclick = e => worksheet(e.currentTarget);
+$("#notePdf").onclick = e => worksheet(e.currentTarget);
 
-    async function downloadWorksheet() {
-        if (!lastHindi) { showToast("Record and translate first"); return; }
-        showToast("Generating worksheet PDF…");
-        try {
-            const r = await fetch(`${SERVER}/worksheet`, {
-                method:"POST", headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({session_id:sid, hindi_text:lastHindi, santali_text:lastSat, grade:"2", topic:$('lessonTitle').textContent})
-            });
-            const blob = await r.blob();
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement("a");
-            a.href     = url; a.download = "VaaniSetu_Worksheet.pdf"; a.click();
-            URL.revokeObjectURL(url);
-            showToast("Worksheet downloaded ✅");
-        } catch(e) { showToast("Worksheet error"); }
-    }
+function wrap(){
+  const answered = S.counts.green + S.counts.yellow + S.counts.red;
+  const pct = answered ? Math.round(S.counts.green/answered*100) : 0;
+  const avg = S.times.length ? S.times.reduce((a,b)=>a+b,0)/S.times.length : 0;
+  const secs = Math.floor((Date.now() - S.began)/1000);
 
-    function showToast(msg){
-        let t = $('toast'); t.textContent = msg; t.classList.add('show');
-        clearTimeout(window.toastTimer); window.toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
-    }
-    
-    // Boot
-    loadLessons();
+  $("#noteWho").textContent = (S.lesson.title + ", grade " + S.lesson.grade).toUpperCase();
+  $("#pc").textContent = pct + "%";
+  $("#nSteps").textContent = `${S.step+1} / ${S.lesson.steps.length}`;
+  $("#nLines").textContent = S.times.length;
+  $("#nTime").textContent = `${Math.floor(secs/60)}m ${p2(secs%60)}s`;
+  $("#nSec").textContent = avg.toFixed(2);
+
+  if (!answered){
+    $("#sayTitle").textContent = "Too early to tell";
+    $("#sayBody").textContent = "Mark a few answers and this fills in.";
+  } else if (pct >= 70){
+    $("#sayTitle").textContent = "They have it";
+    $("#sayBody").textContent = "Most of the class answered right. Take the next lesson tomorrow.";
+  } else if (pct >= 40){
+    $("#sayTitle").textContent = "Half the room";
+    $("#sayBody").textContent = "Open tomorrow by repeating the Santali words from this one.";
+  } else {
+    $("#sayTitle").textContent = "Worth doing again";
+    $("#sayBody").textContent = "Run it once more with things they can pick up and hold.";
+  }
+  $("#veil").classList.add("on");
+}
+$("#wrapBtn").onclick = wrap;
+$("#noteClose").onclick = () => $("#veil").classList.remove("on");
+$("#veil").addEventListener("click", e => { if (e.target === $("#veil")) $("#veil").classList.remove("on"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#veil").classList.remove("on"); });
+
+function drawCards(){
+  const list = S.lessons.filter(l => S.filter === "all" || l.grade === S.filter);
+  const grid = $("#cards");
+  if (!list.length){
+    grid.innerHTML = `<div class="nothing" style="grid-column:span 6"><b>Nothing for that grade.</b><p>Add it to the lesson engine and it turns up here.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((l,i) => `
+    <button class="lcard" data-index="${S.lessons.indexOf(l)}">
+      <span class="no">GRADE ${l.grade} / ${p2(S.lessons.indexOf(l)+1)}</span>
+      <h3>${l.title}</h3>
+      <p>${l.goal}</p>
+      <span class="end"><span>${l.steps.length} LINES</span><span class="arrow">OPEN &rarr;</span></span>
+    </button>`).join("");
+  $$(".lcard", grid).forEach(c => c.onclick = () => {
+    load(parseInt(c.dataset.index, 10));
+    view("lesson");
+    say(S.lesson.title + " is loaded");
+  });
+}
+$$("#chips button").forEach(b => b.onclick = () => {
+  $$("#chips button").forEach(x => x.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed","true");
+  S.filter = b.dataset.g;
+  drawCards();
+});
+
+function drawRows(){
+  if (!S.log.length) return;
+  $("#rows").innerHTML = S.log.slice(0,14).map(r => `
+    <div class="lrow">
+      <span class="h">${r.h}</span>
+      <span class="s">${r.s || ""}</span>
+      <span class="t">${r.t.toFixed(2)}s</span>
+    </div>`).join("");
+  drawFigs();
+}
+function drawFigs(){
+  const answered = S.counts.green + S.counts.yellow + S.counts.red;
+  const avg = S.times.length ? S.times.reduce((a,b)=>a+b,0)/S.times.length : 0;
+  $("#fLines").textContent = S.times.length;
+  $("#fSec").textContent = avg.toFixed(2);
+  $("#fRight").textContent = (answered ? Math.round(S.counts.green/answered*100) : 0) + "%";
+  $("#fSteps").textContent = S.step + (S.times.length ? 1 : 0);
+}
+
+function sw(id, fn){
+  const el = $(id);
+  el.onclick = () => { const on = el.getAttribute("aria-pressed") !== "true"; el.setAttribute("aria-pressed", String(on)); fn(on); };
+}
+sw("#swAuto", v => S.autoplay = v);
+sw("#swBig", v => bigType(v));
+sw("#swAsk", v => S.ask = v);
+$("#saveSet").onclick = () => say("Saved");
+$("#clearHi").onclick = () => { $("#hi").textContent = ""; };
+
+setInterval(() => {
+  const s = Math.floor((Date.now() - S.began)/1000);
+  $("#clock").textContent = `${p2(Math.floor(s/60))}:${p2(s%60)}`;
+}, 1000);
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); translate(); }
+});
+
+function load(i){
+  S.index = i; S.lesson = S.lessons[i]; S.step = 0;
+  $("#pickLesson").value = String(i);
+  draw();
+  Api.startSession(S.lesson.grade, S.lesson.topic).then(r => S.sid = r.session_id);
+}
+(async function(){
+  S.lessons = await Api.lessons();
+  $("#pickLesson").innerHTML = S.lessons.map((l,i) => `<option value="${i}">${l.title}</option>`).join("");
+  $("#pickLesson").onchange = e => load(+e.target.value);
+  load(S.index);
+  facing();
+  drawCards();
+  drawFigs();
+})();
 </script>
 </body>
 </html>

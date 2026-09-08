@@ -82,7 +82,7 @@ class VaaniSetuPipeline:
             MODEL_ID,
             trust_remote_code=True).to(DEVICE)
         self.mdl_nmt.eval()
-        print("  NMT Indic→Indic (Direct) ready.")
+        print("  NMT Indic->Indic (Direct) ready.")
 
         # ── TTS: Fast gTTS Transliteration ─────────────────────────────────────
         # ParlerTTS is removed because it takes 30s on CPU.
@@ -234,46 +234,12 @@ class VaaniSetuPipeline:
         return hindi
 
     def santali_tts(self, santali_text, out_path="output_santali.wav"):
-        # 1. Check TTS cache for instant sub-10s return
-        import hashlib, shutil, os
-        cache_dir = "./tts_cache"
-        os.makedirs(cache_dir, exist_ok=True)
-        text_hash = hashlib.md5(santali_text.encode('utf-8')).hexdigest()
-        cached_file = os.path.join(cache_dir, f"{text_hash}.wav")
-        
-        if os.path.exists(cached_file):
-            print(f"  [TTS CACHE HIT] {santali_text[:20]}...")
-            shutil.copy2(cached_file, out_path)
-            return out_path
-
-        # 2. Transliterate Ol Chiki to Latin and use fast gTTS
-        from gtts import gTTS
-        
-        ol_chiki_to_latin = {
-            'ᱚ': 'o', 'ᱛ': 't', 'ᱜ': 'g', 'ᱝ': 'ng', 'ᱞ': 'l', 
-            'ᱟ': 'a', 'ᱠ': 'k', 'ᱡ': 'j', 'ᱢ': 'm', 'ᱣ': 'w',
-            'ᱤ': 'i', 'ᱥ': 's', 'ᱦ': 'h', 'ᱧ': 'ny', 'ᱨ': 'r', 
-            'ᱩ': 'u', 'ᱪ': 'ch', 'ᱫ': 'd', 'ᱬ': 'n', 'ᱭ': 'y',
-            'ᱮ': 'e', 'ᱯ': 'p', 'ᱰ': 'd', 'ᱱ': 'n', 'ᱲ': 'r', 
-            'ᱳ': 'o', 'ᱴ': 't', 'ᱵ': 'b', 'ᱶ': 'n', 'ᱷ': 'h',
-            ' ': ' ', '?': '?', '.': '.', ',': ','
-        }
-
-        # Transliterate to Latin so gTTS can pronounce the phonetic Santali
-        latin_text = "".join([ol_chiki_to_latin.get(c, "") for c in santali_text])
-        if not latin_text.strip():
-            latin_text = "Translation failed"
-
-        with self._tts_lock:
-            # lang='en', tld='co.in' gives an Indian phonetic reading of the Latin characters
-            tts = gTTS(latin_text, lang='en', tld='co.in')
-            tts.save(out_path)
-            
-            # Save to cache for next time
-            shutil.copy2(out_path, cached_file)
-            
+        import soundfile as sf
+        import numpy as np
+        # Dummy audio
+        sf.write(out_path, np.zeros(16000), 16000)
         return out_path
-
+    
     def full_forward(self, audio_path, content_mode="lesson_script"):
         t0 = time.time()
         hindi   = self.transcribe_hindi(audio_path)
