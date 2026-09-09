@@ -31,21 +31,6 @@ tok2.save_pretrained("./models/en_indic")
 mdl2.save_pretrained("./models/en_indic")
 print("      Done.\n")
 
-# ── 4. Indic Parler-TTS pretrained — Santali TTS (~1.8 GB) ──────────────────
-# IMPORTANT: use indic-parler-tts-pretrained NOT indic-parler-tts
-# The fine-tuned version has an incomplete decoder on HuggingFace.
-print("3/3  Indic Parler-TTS pretrained (Santali TTS)...")
-TTS_NAME = "ai4bharat/indic-parler-tts-pretrained"
-tts_prompt_tok = AutoTokenizer.from_pretrained(TTS_NAME)
-tts_mdl = ParlerTTSForConditionalGeneration.from_pretrained(TTS_NAME)
-# Load description tokenizer from model config — do NOT hardcode flan-t5
-tts_desc_tok = AutoTokenizer.from_pretrained(
-    tts_mdl.config.text_encoder._name_or_path)
-tts_prompt_tok.save_pretrained("./models/tts/prompt_tok")
-tts_desc_tok.save_pretrained("./models/tts/desc_tok")
-tts_mdl.save_pretrained("./models/tts/model")
-print("     Done.\n")
-
 # ── Verify ───────────────────────────────────────────────────────────────────
 print("Verifying...")
 total = 0

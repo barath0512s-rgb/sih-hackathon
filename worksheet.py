@@ -22,9 +22,18 @@ try:
         pdfmetrics.registerFont(TTFont("NotoSansOlChiki", _olchiki_path))
     if os.path.exists(_deva_path):
         pdfmetrics.registerFont(TTFont("NotoSansDevanagari", _deva_path))
-    _UNICODE_FONT = "NotoSansDevanagari"
-    _UNICODE_FONT_BOLD = "NotoSansDevanagari"
-    print("  Worksheet: Unicode fonts loaded.")
+        # Paragraph markup uses <b>, so the family needs a bold slot even
+        # though this is a single-weight TTF, or reportlab raises on every <b>.
+        pdfmetrics.registerFontFamily(
+            "NotoSansDevanagari",
+            normal="NotoSansDevanagari", bold="NotoSansDevanagari",
+            italic="NotoSansDevanagari", boldItalic="NotoSansDevanagari")
+        _UNICODE_FONT = "NotoSansDevanagari"
+        _UNICODE_FONT_BOLD = "NotoSansDevanagari"
+        print("  Worksheet: Unicode fonts loaded.")
+    else:
+        print("  Worksheet: NotoSansDevanagari missing, using Helvetica "
+              "(Hindi and Santali will not render in the PDF)")
 except Exception as _e:
     print(f"  Worksheet: font load warning ({_e}), falling back to Helvetica")
 

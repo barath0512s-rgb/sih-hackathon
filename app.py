@@ -10,6 +10,9 @@ import database
 
 app      = Flask(__name__, static_folder=".", static_url_path="")
 CORS(app)
+# /feedback writes to SQLite. pipeline.py also calls this on import, but the
+# route must not depend on that side effect. init_db is idempotent.
+database.init_db()
 pl       = VaaniSetuPipeline()
 sessions = {}
 
@@ -32,15 +35,48 @@ def _record(sid, direction, source_text, translated_text, latency):
 def index():
     return send_file("frontend.html")
 
+@app.route("/health/models")
+def health_models():
+    """What actually loaded, so a broken model is visible without reading logs."""
+    import os
+    ok_tts = False
+    try:
+        from gtts import gTTS  # noqa: F401
+        ok_tts = True
+    except Exception:
+        pass
+    return jsonify({
+        "asr_backend": getattr(pl, "asr_backend", "unknown"),
+        "nmt_loaded":  hasattr(pl, "mdl_nmt"),
+        "tts_gtts_importable": ok_tts,
+        "tts_cache_files": len([f for f in os.listdir("tts_cache")
+                                if f.endswith(".wav")]) if os.path.isdir("tts_cache") else 0,
+        "translation_cache_entries": len(__import__("pipeline").TRANSLATION_CACHE),
+        "active_sessions": len(sessions),
+    })
+
 @app.route("/health")
 def health():
-    import torch
-    return jsonify({"status": "ok",
-                    "device": "GPU" if torch.cuda.is_available() else "CPU"})
+    try:
+        import torch
+        device = "GPU" if torch.cuda.is_available() else "CPU"
+    except Exception:
+        device = "CPU"
+    return jsonify({"status": "ok", "device": device})
 
 @app.route("/lessons")
 def lessons():
-    return jsonify({"lessons": get_all_lessons()})
+    """Lesson list with every step inlined, so the UI can show the whole plan.
+
+    `steps` stays an integer for older clients; `plan` carries the step objects.
+    """
+    out = []
+    for meta in get_all_lessons():
+        lesson = get_lesson(meta["grade"], meta["topic"])
+        item   = dict(meta)
+        item["plan"] = lesson["steps"] if lesson else []
+        out.append(item)
+    return jsonify({"lessons": out})
 
 @app.route("/session/start", methods=["POST"])
 def session_start():
@@ -87,9 +123,9 @@ def translate_audio():
         t2 = time.time()
         pivot = ""
         conf = 0.0
+        pl.hindi_tts(translated, "output_hindi.wav")
         t3 = time.time()
-        # No Hindi TTS currently setup, but could add gTTS here if needed.
-        
+
     os.unlink(tmp_path)
 
     _record(request.form.get("session_id", ""), direction,
@@ -100,7 +136,7 @@ def translate_audio():
         "translated_text": translated,
         "english_pivot":   pivot,
         "confidence":      conf,
-        "audio_url":       "/audio/output",
+        "audio_url":       _audio_url(direction),
         "latency": {
             "asr":   round(t1 - t0, 2),
             "nmt":   round(t2 - t1, 2),
@@ -127,6 +163,7 @@ def translate_text():
         pivot = ""
         conf = 0.0
         t1 = time.time()
+        pl.hindi_tts(translated, "output_hindi.wav")
         t2 = time.time()
 
     _record(data.get("session_id", ""), direction,
@@ -136,7 +173,7 @@ def translate_text():
         "translated_text": translated,
         "english_pivot":   pivot,
         "confidence":      conf,
-        "audio_url":       "/audio/output",
+        "audio_url":       _audio_url(direction),
         "latency": {
             "asr":   0.0,
             "nmt":   round(t1 - t0, 2),
@@ -144,6 +181,14 @@ def translate_text():
             "total": round(t2 - t0, 2)
         }
     })
+
+def _audio_url(direction):
+    """Which clip this request produced. Cache-busting is the caller's job."""
+    return "/audio/output" if direction == "hi-to-sat" else "/audio/hindi"
+
+@app.route("/audio/hindi")
+def audio_hindi():
+    return send_file("output_hindi.wav", mimetype="audio/wav")
 
 @app.route("/audio/output")
 def audio():
@@ -167,13 +212,38 @@ def session_next():
         "step":        step
     })
 
+@app.route("/session/goto", methods=["POST"])
+def session_goto():
+    """Jump the session to a specific step index. The UI lists all the lines."""
+    d   = request.json or {}
+    sid = d.get("session_id","")
+    if sid not in sessions:
+        return jsonify({"error": "Session not found"}), 404
+    sess = sessions[sid]
+    try:
+        sess.step_idx = max(0, min(int(d.get("step", 0)), sess.total_steps - 1))
+    except (TypeError, ValueError):
+        return jsonify({"error": "Bad step"}), 400
+    return jsonify({"step_index": sess.step_idx,
+                    "total_steps": sess.total_steps,
+                    "step": sess.current_step})
+
 @app.route("/session/response", methods=["POST"])
 def session_response():
     d   = request.json or {}
     sid = d.get("session_id","")
     if sid not in sessions:
         return jsonify({"error": "Session not found"}), 404
-    signal = sessions[sid].check_response(d.get("response",""))
+    sess = sessions[sid]
+    step = d.get("step")
+    if step is not None:
+        try:
+            # check_response grades step_idx-1, so aim it at the step the
+            # teacher is actually on
+            sess.step_idx = max(0, min(int(step) + 1, sess.total_steps))
+        except (TypeError, ValueError):
+            pass
+    signal = sess.check_response(d.get("response",""))
     msgs   = {
         "green":  "Correct — student understood",
         "yellow": "Partial — try again",

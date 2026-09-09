@@ -33,3 +33,8 @@ vaanisetu_feedback.db
 .idea/
 .DS_Store
 Thumbs.db
+
+# Editor backups and generated demo artifacts
+*.bak
+*_worksheet.pdf
+demo_*.pdf

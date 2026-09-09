@@ -33,20 +33,31 @@ NMT_LENGTH_PENALTY  = 1.0
 
 TRANSLATION_CACHE = {}
 
+# Offline speech. Piper runs locally from these ONNX voices, so nothing in the
+# request path needs the network. Download them with:
+#   python -m piper.download_voices <name> --data-dir models/piper
+PIPER_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "piper")
+PIPER_VOICES = {
+    "santali": "en_US-lessac-medium",   # reads the Latin transliteration
+    "hindi":   "hi_IN-pratham-medium",  # reads Devanagari directly
+}
+
 def _populate_nipun_cache(pipeline):
     """Background thread: pre-translate all NIPUN lesson sentences for reliability."""
     try:
         import lesson_engine
-        all_lessons = lesson_engine.get_all_lessons()
         sentences = []
-        for l in all_lessons:
-            for step in l.get("steps", []):
-                for mode in ["lesson_script", "activity_instruction", "assessment_prompt"]:
-                    h = step.get("hindi", "").strip()
-                    if h:
-                        key = f"{mode}::{h}"
-                        if key not in TRANSLATION_CACHE:
-                            sentences.append((h, mode))
+        for meta in lesson_engine.get_all_lessons():
+            lesson = lesson_engine.get_lesson(meta["grade"], meta["topic"])
+            if not lesson:
+                continue
+            for step in lesson["steps"]:
+                h = step.get("hindi", "").strip()
+                if not h:
+                    continue
+                mode = step.get("type", "lesson_script")
+                if f"{mode}::{h}" not in TRANSLATION_CACHE:
+                    sentences.append((h, mode))
         seen = set()
         unique = [(h, m) for h, m in sentences if not (h, m) in seen and not seen.add((h, m))]
         print(f"  Pre-caching {len(unique)} NIPUN sentences in background…")
@@ -91,6 +102,7 @@ class VaaniSetuPipeline:
 
         self.ip = IndicProcessor(inference=True)
         self._tts_lock = threading.Lock()
+        self._voices    = {}
 
         self._warmup()
 
@@ -109,6 +121,9 @@ class VaaniSetuPipeline:
             print("  Warmup complete.")
         except Exception as e:
             print(f"  Warmup skipped: {e}")
+        # Loading a Piper voice takes about 2s. Do it now, not mid-lesson.
+        for key in PIPER_VOICES:
+            self._piper(key)
 
     def _nmt(self, text, src_lang, tgt_lang, tokenizer, model):
         batch = self.ip.preprocess_batch(
@@ -233,12 +248,95 @@ class VaaniSetuPipeline:
             self.tok_nmt, self.mdl_nmt)
         return hindi
 
-    def santali_tts(self, santali_text, out_path="output_santali.wav"):
-        import soundfile as sf
-        import numpy as np
-        # Dummy audio
-        sf.write(out_path, np.zeros(16000), 16000)
+    # Ol Chiki has no fast TTS engine, so each letter is mapped to Latin and
+    # read back with an Indian English voice. Phonetically close, and fast.
+    OL_CHIKI_TO_LATIN = {
+        '\u1c5a': 'o',  '\u1c5b': 't',  '\u1c5c': 'g',  '\u1c5d': 'ng', '\u1c5e': 'l',
+        '\u1c5f': 'a',  '\u1c60': 'k',  '\u1c61': 'j',  '\u1c62': 'm',  '\u1c63': 'w',
+        '\u1c64': 'i',  '\u1c65': 's',  '\u1c66': 'h',  '\u1c67': 'ny', '\u1c68': 'r',
+        '\u1c69': 'u',  '\u1c6a': 'ch', '\u1c6b': 'd',  '\u1c6c': 'n',  '\u1c6d': 'y',
+        '\u1c6e': 'e',  '\u1c6f': 'p',  '\u1c70': 'd',  '\u1c71': 'n',  '\u1c72': 'r',
+        '\u1c73': 'o',  '\u1c74': 't',  '\u1c75': 'b',  '\u1c76': 'n',  '\u1c77': 'h',
+        ' ': ' ', '?': '?', '.': '.', ',': ',',
+    }
+
+    def transliterate_santali(self, santali_text):
+        """Ol Chiki to Latin, so a Latin-reading TTS voice can pronounce it."""
+        return "".join(self.OL_CHIKI_TO_LATIN.get(c, "") for c in santali_text)
+
+    def _piper(self, voice_key):
+        """Load a Piper voice once and keep it. Returns None when unavailable."""
+        if voice_key in self._voices:
+            return self._voices[voice_key]
+        voice = None
+        try:
+            from piper import PiperVoice
+            path = os.path.join(PIPER_DIR, PIPER_VOICES[voice_key] + ".onnx")
+            if os.path.exists(path):
+                voice = PiperVoice.load(path)
+                print(f"  Piper voice loaded: {PIPER_VOICES[voice_key]}")
+            else:
+                print(f"  Piper voice missing: {path}")
+        except Exception as e:
+            print(f"  Piper unavailable ({type(e).__name__}: {e})")
+        self._voices[voice_key] = voice
+        return voice
+
+    def _speak(self, text, voice_key, out_path, label):
+        """Synthesize `text` to out_path. Offline via Piper, cached by voice+text.
+
+        Falls back to gTTS when Piper is missing, and to silence when both fail,
+        so the audio endpoint always has a valid file to serve.
+        """
+        import hashlib, shutil
+
+        cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tts_cache")
+        os.makedirs(cache_dir, exist_ok=True)
+        # The voice is part of the key: the same string spoken by two voices is
+        # two different recordings, and old gTTS entries must not be reused.
+        digest = hashlib.md5(f"{voice_key}:{text}".encode("utf-8")).hexdigest()
+        cached_file = os.path.join(cache_dir, f"{digest}.wav")
+
+        if os.path.exists(cached_file) and os.path.getsize(cached_file) > 1024:
+            print(f"  [TTS CACHE HIT] {label} {text[:20]}...")
+            shutil.copy2(cached_file, out_path)
+            return out_path
+
+        with self._tts_lock:
+            voice = self._piper(voice_key)
+            if voice is not None:
+                try:
+                    import wave
+                    with wave.open(out_path, "wb") as wf:
+                        voice.synthesize_wav(text, wf)
+                    shutil.copy2(out_path, cached_file)
+                    return out_path
+                except Exception as e:
+                    print(f"  [PIPER FAILED] {type(e).__name__}: {e}")
+            try:
+                from gtts import gTTS
+                lang = "hi" if voice_key == "hindi" else "en"
+                gTTS(text, lang=lang, tld="co.in").save(out_path)
+                shutil.copy2(out_path, cached_file)
+            except Exception as e:
+                print(f"  [TTS FAILED] {type(e).__name__}: {e} - writing silence")
+                import soundfile as _sf, numpy as _np
+                _sf.write(out_path, _np.zeros(8000, dtype="float32"), 16000)
         return out_path
+
+    def santali_tts(self, santali_text, out_path="output_santali.wav"):
+        """Speak the Santali line, via Latin transliteration and an English voice."""
+        latin_text = self.transliterate_santali(santali_text).strip()
+        if not latin_text:
+            latin_text = "Translation unavailable"
+        return self._speak(latin_text, "santali", out_path, "sat")
+
+    def hindi_tts(self, hindi_text, out_path="output_hindi.wav"):
+        """Speak the Hindi line with the native Hindi voice."""
+        text = (hindi_text or "").strip()
+        if not text:
+            text = "अनुवाद उपलब्ध नहीं है"
+        return self._speak(text, "hindi", out_path, "hi")
     
     def full_forward(self, audio_path, content_mode="lesson_script"):
         t0 = time.time()

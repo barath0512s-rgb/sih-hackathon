@@ -1,29 +1,21 @@
 import re
 
-# Fix download_models.py
-with open('download_models.py', 'r', encoding='utf-8') as f:
-    code = f.read()
-code = re.sub(r'# ── 4\. Indic Parler-TTS.*?(?=# ── Verify)', '', code, flags=re.DOTALL)
-with open('download_models.py', 'w', encoding='utf-8') as f:
-    f.write(code)
+with open('frontend.html', 'r', encoding='utf-8') as f:
+    frontend_html = f.read()
 
-# Fix pipeline.py
-with open('pipeline.py', 'r', encoding='utf-8') as f:
-    code = f.read()
-code = code.replace('from parler_tts import ParlerTTSForConditionalGeneration', '# TTS removed')
-code = re.sub(r'# TTS: Santali speech synthesis.*?print\("  TTS ready."\)', 'print("  TTS dummy ready.")', code, flags=re.DOTALL)
+with open('frontend_v3.html', 'r', encoding='utf-8') as f:
+    v3_html = f.read()
 
-tts_replacement = '''def santali_tts(self, santali_text, out_path="output_santali.wav"):
-        import soundfile as sf
-        import numpy as np
-        # Dummy audio
-        sf.write(out_path, np.zeros(16000), 16000)
-        return out_path
+# Extract the script contents from frontend.html
+script_match = re.search(r'<script>(.*?)</script>', frontend_html, flags=re.DOTALL)
+if script_match:
+    script_content = script_match.group(1)
     
-    '''
-code = re.sub(r'def santali_tts\(self, santali_text, out_path="output_santali\.wav"\):.*?(?=def full_forward)', tts_replacement, code, flags=re.DOTALL)
-
-with open('pipeline.py', 'w', encoding='utf-8') as f:
-    f.write(code)
-
-print('Edited successfully')
+    # Replace the script contents in frontend_v3.html
+    v3_html_patched = re.sub(r'<script>.*?</script>', f'<script>{script_content}</script>', v3_html, flags=re.DOTALL)
+    
+    with open('frontend.html', 'w', encoding='utf-8') as f:
+        f.write(v3_html_patched)
+    print("Patched successfully!")
+else:
+    print("Could not find script block.")
