@@ -1,0 +1,2217 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>वाणीसेतु</title>
+<meta name="theme-color" content="#FFF7E6">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Baloo 2 carries Devanagari and Latin in one rounded, child-friendly face.
+     Noto Sans Ol Chiki is required or every Santali letter renders as a box.
+     Icons are an inlined Phosphor sprite, so nothing depends on an icon CDN. -->
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Kalam:wght@400;700&family=Noto+Sans+Ol+Chiki&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   वाणीसेतु — कक्षा का रंगीन पर्दा
+   Bright, light, high contrast. Every control is a chunky pressable
+   slab with a hard shadow that sinks when you push it.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --cream:#FFF7E6;
+  --cream-2:#FFEFD2;
+  --paper:#FFFFFF;
+  --ink:#2E2418;
+  --ink-2:#6B5B45;
+  --muted:#9A8A70;
+  --line:#E8DCC2;
+
+  --c1:#F5A623;  --c1-soft:#FFEFCE;   /* marigold  */
+  --c2:#FB6F5C;  --c2-soft:#FFE3DD;   /* coral     */
+  --c3:#12B3A8;  --c3-soft:#D3F3F0;   /* teal      */
+  --c4:#3B9BF0;  --c4-soft:#D9ECFF;   /* sky       */
+  --c5:#9B6BE0;  --c5-soft:#EBE0FB;   /* grape     */
+  --c6:#5FBF52;  --c6-soft:#DDF2D9;   /* leaf      */
+
+  --ok:#3E8E3A;   --ok-soft:#DDF2D9;
+  --warn:#C98008; --warn-soft:#FFEFCE;
+  --bad:#D2492F;  --bad-soft:#FFE3DD;
+
+  --deva:'Baloo 2','Noto Sans Devanagari',system-ui,sans-serif;
+  --olck:'Noto Sans Ol Chiki','Baloo 2',system-ui,sans-serif;
+  --ui:var(--deva);
+
+  --pop:cubic-bezier(.34,1.56,.64,1);
+  --ease:cubic-bezier(.2,.8,.3,1);
+  --scale:1;
+}
+html[lang="sat"]{ --ui:var(--olck); }
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--cream)}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--ui);font-size:calc(16px * var(--scale));line-height:1.5;font-weight:600;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(245,166,35,.10), transparent 42%),
+    radial-gradient(circle at 88% 4%, rgba(59,155,240,.10), transparent 40%),
+    radial-gradient(circle at 78% 92%, rgba(18,179,168,.10), transparent 44%);
+  background-attachment:fixed;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+button,a,input,select,textarea,[contenteditable]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{margin:0;font-weight:800;line-height:1.15;letter-spacing:-.01em}
+p{margin:0}
+::selection{background:var(--c1);color:var(--ink)}
+:focus-visible{outline:3px solid var(--c4);outline-offset:3px;border-radius:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+.ic{width:1.1em;height:1.1em;flex:none;fill:currentColor;vertical-align:-.16em}
+.deva{font-family:var(--deva)}
+.olck{font-family:var(--olck)}
+
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--paper);border:2.5px solid var(--ink);
+  border-radius:14px;padding:10px 16px;text-decoration:none;color:var(--ink)}
+.skip:focus{left:14px;top:10px}
+
+/* ═════════ THE CHUNKY SLAB, the base of every control ═════════ */
+.slab{
+  --slab:var(--paper);
+  background:var(--slab);border:2.5px solid var(--ink);border-radius:18px;
+  box-shadow:0 5px 0 var(--ink);
+}
+.press{
+  transition:transform .14s var(--ease), box-shadow .14s var(--ease), background .18s var(--ease);
+}
+.press:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--ink)}
+.press:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
+
+/* ═════════ TOP BAR ═════════ */
+.top{position:sticky;top:0;z-index:40;background:var(--cream);border-bottom:2.5px solid var(--ink)}
+.top-in{
+  max-width:1320px;margin:0 auto;min-height:68px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:10px max(20px,env(safe-area-inset-right)) 10px max(20px,env(safe-area-inset-left));
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex:none}
+.brand .b-mark{
+  width:42px;height:42px;border-radius:14px;background:var(--c1);border:2.5px solid var(--ink);
+  display:grid;place-items:center;font-size:22px;box-shadow:0 4px 0 var(--ink);
+}
+.brand b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs a{
+  display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--ink);
+  padding:8px 14px;border-radius:14px;border:2.5px solid transparent;font-weight:700;font-size:15px;
+  transition:background .16s var(--ease),border-color .16s var(--ease),transform .16s var(--pop);
+}
+.tabs a .e{font-size:18px;line-height:1}
+.tabs a:hover{background:var(--paper);border-color:var(--ink);transform:translateY(-2px)}
+.tabs a[aria-current]{background:var(--c1);border-color:var(--ink);box-shadow:0 4px 0 var(--ink)}
+
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+/* language switch */
+.lang{display:flex;background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;
+  box-shadow:0 4px 0 var(--ink);overflow:hidden}
+.lang button{
+  padding:8px 14px;font-weight:800;font-size:15px;color:var(--ink-2);
+  transition:background .18s var(--ease),color .18s var(--ease);
+}
+.lang button:first-child{font-family:var(--deva)}
+.lang button:last-child{font-family:var(--olck);border-left:2.5px solid var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--c3);color:var(--ink)}
+
+.round{
+  width:44px;height:44px;border-radius:14px;background:var(--paper);border:2.5px solid var(--ink);
+  display:grid;place-items:center;box-shadow:0 4px 0 var(--ink);font-size:18px;
+}
+.round[aria-pressed="true"]{background:var(--c5)}
+
+.conn{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.conn i{width:11px;height:11px;border-radius:50%;background:var(--muted);border:2px solid var(--ink);flex:none}
+.conn[data-up="1"] i{background:var(--c6);animation:blip 2s ease-in-out infinite}
+.conn[data-up="0"] i{background:var(--c2)}
+@keyframes blip{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+/* ═════════ PAGE ═════════ */
+.page{max-width:1320px;margin:0 auto;padding:26px 20px calc(90px + env(safe-area-inset-bottom))}
+.view{display:none}
+.view.on{display:block;animation:vin .4s var(--ease) both}
+@keyframes vin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;
+  border:2.5px solid var(--ink);font-size:13.5px;font-weight:800;background:var(--paper);
+}
+.chip.c1{background:var(--c1-soft)} .chip.c2{background:var(--c2-soft)}
+.chip.c3{background:var(--c3-soft)} .chip.c4{background:var(--c4-soft)}
+.chip.c5{background:var(--c5-soft)} .chip.c6{background:var(--c6-soft)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+
+.label{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.02em}
+
+/* ═════════ LESSON HEAD ═════════ */
+.head-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.lead{padding:22px 24px;--slab:var(--paper);position:relative;overflow:hidden}
+.lead::after{content:attr(data-emoji);position:absolute;right:-14px;bottom:-26px;font-size:120px;opacity:.13;pointer-events:none;line-height:1}
+.lead-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.lead h1{font-size:clamp(28px,3.6vw,42px)}
+.lead .goal{font-size:16px;color:var(--ink-2);margin-top:8px;max-width:40ch;font-weight:600}
+.picker{position:relative;display:flex;align-items:center;margin-left:auto}
+.picker select{
+  appearance:none;border:2.5px solid var(--ink);border-radius:14px;background:var(--paper);
+  padding:8px 34px 8px 14px;font-weight:700;font-size:14.5px;cursor:pointer;max-width:250px;
+  box-shadow:0 4px 0 var(--ink);font-family:var(--ui);
+}
+.picker .ic{position:absolute;right:12px;pointer-events:none;width:14px;height:14px}
+
+/* bead progress */
+.beads{display:flex;gap:9px;margin-top:20px;flex-wrap:wrap}
+.beads i{
+  width:30px;height:30px;border-radius:50%;border:2.5px solid var(--ink);background:var(--paper);
+  display:grid;place-items:center;font-size:12.5px;font-weight:800;color:var(--muted);
+  transition:transform .3s var(--pop),background .3s var(--ease),color .2s var(--ease);
+}
+.beads i.done{background:var(--c6);color:var(--ink)}
+.beads i.now{background:var(--c1);color:var(--ink);transform:scale(1.18);box-shadow:0 3px 0 var(--ink)}
+.beads-note{display:flex;justify-content:space-between;gap:14px;margin-top:12px;font-size:14px;color:var(--ink-2);font-weight:600}
+
+/* session panel */
+.session{padding:20px 22px;--slab:var(--c4-soft)}
+.session .r{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;font-size:14.5px}
+.session .r + .r{border-top:2px dashed rgba(46,36,24,.16)}
+.session .r b{font-weight:800}
+.session .plan{margin-top:14px;padding-top:12px;border-top:2.5px solid var(--ink)}
+.session .plan ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.session .plan li{
+  display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:12px;font-size:14px;
+  cursor:pointer;border:2.5px solid transparent;background:rgba(255,255,255,.55);
+  transition:transform .16s var(--pop),background .16s var(--ease),border-color .16s var(--ease);
+}
+.session .plan li:hover{transform:translateX(3px);background:var(--paper);border-color:var(--ink)}
+.session .plan li em{font-style:normal;font-weight:800;flex:none;width:20px}
+.session .plan li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;font-weight:600}
+.session .plan li.at{background:var(--c1);border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.session .plan li.was{opacity:.62}
+
+/* ═════════ THE LINE ═════════ */
+.say{margin-top:16px;padding:22px 24px;--slab:var(--paper)}
+.say-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:18px}
+.modes{display:flex;gap:8px;flex-wrap:wrap}
+.modes button{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;border:2.5px solid var(--ink);
+  background:var(--paper);font-weight:800;font-size:13.5px;
+  transition:transform .16s var(--pop),background .18s var(--ease),box-shadow .16s var(--ease);
+}
+.modes button:hover{transform:translateY(-2px)}
+.modes button[aria-selected="true"]{background:var(--c5);box-shadow:0 4px 0 var(--ink)}
+.say-top .step{margin-left:auto;font-size:14px;font-weight:800;color:var(--muted)}
+.say-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:26px;align-items:center}
+.say-line{font-size:clamp(26px,3.4vw,40px);font-weight:700;line-height:1.45;font-family:var(--deva)}
+.say-note{padding:16px 18px;border-radius:16px;background:var(--c1-soft);border:2.5px dashed var(--ink)}
+.say-note p{font-size:15.5px;margin-top:7px;font-weight:600}
+.say-next{margin-top:14px;padding-top:12px;border-top:2px dashed rgba(46,36,24,.2)}
+.say-next span{display:block;font-size:14.5px;color:var(--ink-2);margin-top:5px;font-family:var(--deva);font-weight:600}
+
+/* ═════════ THE PAIR ═════════ */
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;margin-top:16px;align-items:stretch}
+.panel{padding:18px 20px;display:flex;flex-direction:column;min-height:190px}
+.panel.a{--slab:var(--c1-soft)}
+.panel.b{--slab:var(--c3-soft)}
+.panel .head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.panel .who{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.panel .who .e{font-size:19px}
+.panel .tools{margin-left:auto;display:flex;gap:6px}
+.panel .tool{
+  width:34px;height:34px;border-radius:11px;border:2.5px solid var(--ink);background:var(--paper);
+  display:grid;place-items:center;box-shadow:0 3px 0 var(--ink);
+  transition:transform .14s var(--ease),box-shadow .14s var(--ease);
+}
+.panel .tool:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--ink)}
+.panel .tool:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+.text{
+  flex:1;outline:0;font-size:21px;line-height:1.6;font-weight:600;padding:10px 12px;border-radius:12px;
+  background:rgba(255,255,255,.72);border:2.5px dashed rgba(46,36,24,.22);min-height:74px;
+}
+.text:focus{border-style:solid;border-color:var(--ink);background:var(--paper)}
+.text:empty::before{content:attr(data-ph);color:var(--muted);font-weight:600}
+.panel.a .text{font-family:var(--deva)}
+.panel.b .text{font-family:var(--olck);font-size:19px}
+.panel .foot{margin-top:11px;font-size:13px;color:var(--ink-2);display:flex;gap:7px;align-items:center;font-weight:600}
+
+.swap-wrap{display:grid;place-items:center}
+.swap{
+  width:56px;height:56px;border-radius:50%;border:2.5px solid var(--ink);background:var(--c5);
+  display:grid;place-items:center;font-size:22px;box-shadow:0 5px 0 var(--ink);
+  transition:transform .45s var(--pop),box-shadow .15s var(--ease);
+}
+.swap:hover{box-shadow:0 7px 0 var(--ink)}
+.swap.turn{transform:rotate(180deg)}
+
+/* ═════════ ACTION ROW ═════════ */
+.acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;
+  border-radius:16px;border:2.5px solid var(--ink);font-weight:800;font-size:16px;
+  background:var(--paper);box-shadow:0 5px 0 var(--ink);
+  transition:transform .14s var(--ease),box-shadow .14s var(--ease),background .18s var(--ease);
+}
+.btn .e{font-size:19px;line-height:1}
+.btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--ink)}
+.btn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn.go{background:var(--c6)}
+.btn.mic{background:var(--c4)}
+.btn.mic2{background:var(--c3)}
+.btn.paper{background:var(--paper)}
+.btn.next{background:var(--c1);margin-left:auto}
+.btn.live{background:var(--c2);animation:rec 1.1s ease-in-out infinite}
+@keyframes rec{0%,100%{box-shadow:0 5px 0 var(--ink)}50%{box-shadow:0 5px 0 var(--ink),0 0 0 9px rgba(251,111,92,.28)}}
+.btn .t{font-weight:800;display:none}
+.btn.live .t{display:inline}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═════════ THREE PANELS ═════════ */
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.trio .box{padding:20px 22px;display:flex;flex-direction:column}
+.trio .box:nth-child(1){--slab:var(--c5-soft)}
+.trio .box:nth-child(2){--slab:var(--c6-soft)}
+.trio .box:nth-child(3){--slab:var(--c2-soft)}
+.trio h2{font-size:17px;display:flex;align-items:center;gap:8px}
+.trio .sub{font-size:13.5px;color:var(--ink-2);margin-top:5px;font-weight:600}
+.trio .body{margin-top:16px}
+
+.speed{display:flex;align-items:baseline;gap:8px}
+.speed b{font-size:40px;font-weight:800;letter-spacing:-.02em}
+.speed span{font-size:14px;color:var(--ink-2);font-weight:700}
+.bars{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.bar .track{height:12px;border-radius:999px;background:var(--paper);border:2.5px solid var(--ink);overflow:hidden}
+.bar .track i{display:block;height:100%;width:0;background:var(--c5);transition:width .55s var(--ease)}
+.bar:nth-child(2) .track i{background:var(--c1)}
+.bar:nth-child(3) .track i{background:var(--c3)}
+.foot-note{margin-top:auto;padding-top:16px;font-size:13px;color:var(--ink-2);font-weight:600}
+
+.entry{display:flex;gap:10px}
+.entry input{
+  flex:1;min-width:0;border:2.5px solid var(--ink);border-radius:14px;background:var(--paper);
+  padding:11px 14px;font-size:17px;font-weight:700;font-family:var(--deva);
+}
+.entry input:focus{outline:0;box-shadow:0 0 0 4px var(--c4-soft)}
+.entry .btn{padding:11px 18px;font-size:15px}
+.verdict{display:none;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:14px;
+  border:2.5px solid var(--ink);font-weight:800;font-size:15px}
+.verdict.on{display:flex;animation:pop .38s var(--pop)}
+.verdict .e{font-size:22px}
+.verdict.green{background:var(--ok-soft)}
+.verdict.amber{background:var(--warn-soft)}
+.verdict.rose{background:var(--bad-soft)}
+@keyframes pop{0%{transform:scale(.9);opacity:0}70%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
+.tally{display:flex;gap:8px;margin-top:auto;padding-top:18px;flex-wrap:wrap}
+
+.two{display:flex;gap:10px}
+.two .btn{flex:1;padding:11px 14px;font-size:15px}
+.fixbox{display:none;margin-top:14px}
+.fixbox.on{display:block;animation:pop .3s var(--pop)}
+.fixbox textarea{
+  width:100%;border:2.5px solid var(--ink);border-radius:14px;background:var(--paper);padding:11px 13px;
+  font-family:var(--olck);font-size:17px;resize:vertical;line-height:1.6;
+}
+.fixbox textarea:focus{outline:0;box-shadow:0 0 0 4px var(--c4-soft)}
+.fixbox .row{display:flex;gap:10px;margin-top:11px}
+.fixbox .row .btn{padding:10px 16px;font-size:15px}
+
+/* ═════════ SECTION HEADS ═════════ */
+.shead{padding:8px 0 24px;max-width:56ch}
+.shead h1{font-size:clamp(30px,4vw,46px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.shead p{font-size:17px;color:var(--ink-2);margin-top:12px;font-weight:600}
+
+/* ═════════ LESSON CARDS ═════════ */
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.filters button{
+  padding:9px 17px;border-radius:999px;border:2.5px solid var(--ink);background:var(--paper);
+  font-weight:800;font-size:14.5px;box-shadow:0 4px 0 var(--ink);
+  transition:transform .14s var(--ease),box-shadow .14s var(--ease),background .18s var(--ease);
+}
+.filters button:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
+.filters button:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.filters button[aria-pressed="true"]{background:var(--c1)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.lcard{
+  text-align:left;padding:22px;display:flex;flex-direction:column;gap:10px;min-height:210px;position:relative;overflow:hidden;
+}
+.lcard::after{content:attr(data-emoji);position:absolute;right:-8px;bottom:-16px;font-size:78px;opacity:.2;line-height:1;pointer-events:none;
+  transition:transform .3s var(--pop)}
+.lcard:hover::after{transform:scale(1.14) rotate(-8deg)}
+.lcard h2{font-size:24px}
+.lcard p{font-size:14.5px;color:var(--ink-2);font-weight:600;max-width:30ch}
+.lcard .end{margin-top:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.lcard.current{outline:5px solid var(--c6);outline-offset:3px}
+
+/* ═════════ FLASHCARDS ═════════ */
+.deck-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:20px}
+.fc{display:block;perspective:1200px;background:none;border:0;padding:0;height:250px;width:100%}
+.fc-in{
+  display:block;                       /* a span ignores width/height until it is a block */
+  position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  transition:transform .62s var(--pop);
+}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc:hover .fc-in{transform:translateY(-5px) rotate(-1.4deg)}
+.fc.flip:hover .fc-in{transform:rotateY(180deg) translateY(-5px)}
+.fc-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:2.5px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;
+  overflow:hidden;                     /* long emoji rows must never escape the card */
+}
+.fc-front{background:var(--paper)}
+.fc-back{transform:rotateY(180deg);background:var(--c3-soft)}
+.fc .emoji{font-size:var(--es,52px);line-height:1.18;letter-spacing:1px;
+  max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.fc .word{font-size:27px;font-weight:800;font-family:var(--deva)}
+.fc-back .word{font-family:var(--olck);font-size:22px}
+.fc .hint{font-size:12.5px;color:var(--muted);font-weight:700}
+.fc .listen{
+  padding:8px 15px;border-radius:999px;border:2.5px solid var(--ink);background:var(--c1);
+  font-weight:800;font-size:13.5px;box-shadow:0 3px 0 var(--ink);display:inline-flex;align-items:center;gap:7px;
+}
+.fc .listen:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+.fc .load{font-size:13px;color:var(--muted);font-weight:700}
+.fc:nth-child(6n+1) .fc-front{background:var(--c1-soft)}
+.fc:nth-child(6n+2) .fc-front{background:var(--c4-soft)}
+.fc:nth-child(6n+3) .fc-front{background:var(--c6-soft)}
+.fc:nth-child(6n+4) .fc-front{background:var(--c5-soft)}
+.fc:nth-child(6n+5) .fc-front{background:var(--c2-soft)}
+.fc:nth-child(6n+6) .fc-front{background:var(--c3-soft)}
+
+/* ═════════ PROGRESS ═════════ */
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:18px}
+.fig{padding:22px;text-align:center}
+.fig:nth-child(1){--slab:var(--c1-soft)} .fig:nth-child(2){--slab:var(--c4-soft)}
+.fig:nth-child(3){--slab:var(--c6-soft)} .fig:nth-child(4){--slab:var(--c5-soft)}
+.fig .e{font-size:30px}
+.fig b{display:block;font-size:44px;font-weight:800;line-height:1.05;margin:6px 0 4px}
+.fig span{font-size:14px;color:var(--ink-2);font-weight:700}
+.logwrap{padding:8px 22px 16px}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:18px;padding:14px 0;align-items:baseline}
+.lrow + .lrow{border-top:2px dashed rgba(46,36,24,.16)}
+.lrow .h{font-family:var(--deva);font-size:17px;font-weight:700}
+.lrow .s{font-family:var(--olck);font-size:16px;color:var(--ink-2);font-weight:600}
+.lrow .t{font-weight:800;font-size:14px;color:var(--muted)}
+.lhead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:18px;padding:12px 0;border-bottom:2.5px solid var(--ink)}
+.lhead span{font-size:13px;font-weight:800;color:var(--muted)}
+.blank{padding:44px 22px 50px;text-align:center}
+.blank .e{font-size:46px}
+.blank b{display:block;font-size:22px;margin:10px 0 6px}
+.blank p{font-size:15px;color:var(--ink-2);max-width:38ch;margin:0 auto;font-weight:600}
+
+/* ═════════ SETTINGS ═════════ */
+.acc{max-width:740px;display:flex;flex-direction:column;gap:14px}
+.acc .item{padding:0;overflow:hidden}
+.acc .open-btn{width:100%;display:flex;align-items:center;gap:14px;padding:18px 22px;text-align:left}
+.acc .open-btn b{font-size:20px;flex:1;font-weight:800}
+.acc .sign{width:32px;height:32px;border-radius:11px;border:2.5px solid var(--ink);background:var(--c1);
+  display:grid;place-items:center;font-size:19px;font-weight:800;flex:none;transition:transform .3s var(--pop)}
+.acc .item.open .sign{transform:rotate(135deg)}
+.acc .body{display:none;padding:0 22px 20px}
+.acc .item.open .body{display:block}
+.srow{display:flex;align-items:center;gap:18px;padding:14px 0}
+.srow + .srow{border-top:2px dashed rgba(46,36,24,.16)}
+.srow .txt{flex:1;min-width:0}
+.srow .txt b{display:block;font-size:15.5px;font-weight:800}
+.srow .txt small{display:block;font-size:13.5px;color:var(--ink-2);margin-top:2px;font-weight:600}
+.srow input[type=url],.srow select{
+  border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);padding:9px 12px;
+  font-size:15px;font-weight:700;min-width:200px;font-family:var(--ui);
+}
+.srow input:focus,.srow select:focus{outline:0;box-shadow:0 0 0 4px var(--c4-soft)}
+.toggle{
+  width:62px;height:34px;border-radius:999px;border:2.5px solid var(--ink);background:var(--paper);
+  position:relative;flex:none;box-shadow:0 3px 0 var(--ink);transition:background .24s var(--ease);
+}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;
+  background:var(--ink);transition:transform .3s var(--pop)}
+.toggle[aria-pressed="true"]{background:var(--c6)}
+.toggle[aria-pressed="true"]::after{transform:translateX(27px)}
+
+/* ═════════ SESSION NOTE ═════════ */
+.scrim{position:fixed;inset:0;background:rgba(46,36,24,.5);z-index:60;display:none;place-items:center;padding:20px}
+.scrim.on{display:grid;animation:vin .25s var(--ease)}
+.sheet{
+  width:min(560px,100%);background:var(--cream);border:3px solid var(--ink);border-radius:26px;
+  padding:28px 30px 26px;max-height:88dvh;overflow:auto;box-shadow:0 10px 0 var(--ink);
+  overscroll-behavior:contain;animation:sheetIn .45s var(--pop);
+}
+@keyframes sheetIn{from{transform:translateY(26px) scale(.94);opacity:0}to{transform:none;opacity:1}}
+.sheet h2{font-size:30px;display:flex;align-items:center;gap:11px}
+.sheet .who{font-size:14.5px;color:var(--ink-2);font-weight:700;margin-top:5px}
+.score{display:flex;align-items:center;gap:20px;margin:22px 0;flex-wrap:wrap}
+.score .pc{
+  width:118px;height:118px;border-radius:50%;border:3px solid var(--ink);background:var(--c6);
+  display:grid;place-items:center;font-size:36px;font-weight:800;box-shadow:0 6px 0 var(--ink);flex:none;
+}
+.score .txt{flex:1;min-width:180px}
+.score .txt b{display:block;font-size:20px;margin-bottom:5px}
+.score .txt p{font-size:14.5px;color:var(--ink-2);font-weight:600}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sgrid div{padding:12px 14px;border-radius:14px;border:2.5px solid var(--ink);background:var(--paper)}
+.sgrid span{display:block;font-size:12.5px;color:var(--ink-2);font-weight:700}
+.sgrid b{font-size:20px;font-weight:800}
+.sheet .row{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+
+/* ═════════ TOASTS ═════════ */
+.toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:70;display:flex;
+  flex-direction:column;gap:9px;align-items:center;pointer-events:none;width:max-content;max-width:calc(100vw - 32px)}
+.toast{
+  display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--cream);
+  padding:12px 18px;border-radius:16px;font-size:14.5px;font-weight:700;animation:tin .34s var(--pop);
+}
+.toast .e{font-size:18px}
+.toast.out{animation:tout .3s var(--ease) forwards}
+@keyframes tin{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0;transform:translateY(8px)}}
+.pending{opacity:.45}
+.spark{position:fixed;width:12px;height:12px;border-radius:3px;pointer-events:none;z-index:65}
+
+/* ═════════ RESPONSIVE ═════════ */
+@media (max-width:1080px){
+  .head-grid{grid-template-columns:1fr}
+  .say-body{grid-template-columns:1fr;gap:18px}
+  .trio{grid-template-columns:1fr}
+  .pair{grid-template-columns:1fr}
+  .swap-wrap{margin:-6px 0}
+  .swap.turn{transform:rotate(180deg)}
+}
+@media (max-width:760px){
+  .top-in{gap:10px;padding:10px 14px}
+  .brand b{display:none}
+  .tabs{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
+  .tabs a{white-space:nowrap;font-size:14px;padding:7px 12px}
+  .conn span{display:none}
+  .page{padding:18px 14px 80px}
+  .lead,.say,.session,.trio .box{padding:18px}
+  .say-line{font-size:25px}
+  .acts .btn{flex:1 1 auto}
+  .btn.next{margin-left:0;width:100%}
+  .sgrid{grid-template-columns:1fr}
+  .deck{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .fc{height:210px}
+  .fc .emoji{font-size:calc(var(--es,52px) * .78)}
+  .fc .word{font-size:22px}
+  .srow{flex-wrap:wrap}
+  .srow input[type=url],.srow select{width:100%;min-width:0}
+  .sheet{padding:22px 18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║                                                                           ║
+   ║   ▼ ▼ ▼   A R T I S A N   L A Y E R   —   B E G I N                       ║
+   ║                                                                           ║
+   ║   Everything below this line is an override. Nothing above it was         ║
+   ║   rewritten, no markup was restructured, and no behaviour was touched.    ║
+   ║   Delete this whole block and the page returns to exactly how it was.     ║
+   ║                                                                           ║
+   ║   What it does, in order:                                                 ║
+   ║     1. re-tunes the palette to dustier, hand-mixed tones                  ║
+   ║     2. lays paper grain and a woven fibre over everything                 ║
+   ║     3. pairs a handwriting face against the rounded sans                   ║
+   ║     4. breaks the geometry: uneven corners, small rotations, off-grid     ║
+   ║     5. adds the micro-interactions: settle, tilt, nudge, wobble           ║
+   ║     6. loosens the spacing rhythm so the columns stop lining up           ║
+   ║                                                                           ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ─── 1. palette ────────────────────────────────────────────────────────────
+   The originals were straight off the colour wheel. These are pulled toward
+   pigment: ochre instead of amber, madder instead of coral, verdigris instead
+   of teal. Same roles, same contrast, less screen-default.                    */
+:root{
+  --cream:#F6EFE0;
+  --cream-2:#EFE4CE;
+  --paper:#FFFDF8;
+  --ink:#241C14;
+  --ink-2:#5F5140;
+  --muted:#948569;
+  --line:#DFD2B6;
+
+  --c1:#E0982B;  --c1-soft:#FBEBCB;   /* ochre     */
+  --c2:#D95F4B;  --c2-soft:#FADFD7;   /* madder    */
+  --c3:#149C93;  --c3-soft:#CFEDE8;   /* verdigris */
+  --c4:#3D7FC1;  --c4-soft:#D8E6F5;   /* indigo    */
+  --c5:#8A5FC4;  --c5-soft:#E6DAF6;   /* mulberry  */
+  --c6:#5EA34C;  --c6-soft:#DDEDD3;   /* moss      */
+
+  --ok:#3B7A38;   --ok-soft:#DDEDD3;
+  --warn:#B0740B; --warn-soft:#FBEBCB;
+  --bad:#BE4028;  --bad-soft:#FADFD7;
+
+  --hand:'Kalam','Baloo 2','Noto Sans Ol Chiki',cursive;
+
+  /* two easings with real personality: one settles, one overshoots further */
+  --settle:cubic-bezier(.16,.84,.28,1);
+  --spring:cubic-bezier(.2,1.8,.4,1);
+}
+html[lang="en"]{ --ui:var(--deva); }   /* Baloo 2 covers Latin, so English keeps the voice */
+
+/* ─── 2. grain and fibre ────────────────────────────────────────────────────
+   Two fixed layers, never on a scrolling box, so nothing repaints on scroll.
+   Grain sits above the page but below the modal and the toasts.              */
+body::before{
+  content:"";position:fixed;inset:0;z-index:50;pointer-events:none;opacity:.5;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.14'/%3E%3C/svg%3E");
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.5;
+  background-image:
+    repeating-linear-gradient(94deg, rgba(120,96,60,.032) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(3deg,  rgba(120,96,60,.026) 0 1px, transparent 1px 7px);
+}
+
+/* ─── 3. the type pairing ───────────────────────────────────────────────────
+   Baloo 2 stays the voice of the interface. Kalam handles anything that reads
+   like a margin note in a teacher's own hand: labels, cues, hints, footnotes. */
+.label,.beads-note,.trio .sub,.foot-note,.fc .hint,.say-note p,.conn,
+.srow .txt small,.sheet .who,.score .txt p,.blank p{
+  font-family:var(--hand);font-weight:400;letter-spacing:.005em;
+}
+.label{font-size:14px;font-weight:700;letter-spacing:.01em;text-transform:none}
+.say-note p:not(.label){font-size:17.5px;line-height:1.45}
+.foot-note,.trio .sub{font-size:14.5px;line-height:1.4}
+.beads-note{font-size:15px}
+.beads-note b{font-family:var(--ui);font-weight:800}
+/* the handwriting face has no Ol Chiki, so Santali falls back cleanly */
+html[lang="sat"] .label,html[lang="sat"] .say-note p,html[lang="sat"] .foot-note,
+html[lang="sat"] .trio .sub,html[lang="sat"] .beads-note{font-family:var(--olck);font-weight:600}
+
+/* ─── 4. breaking the geometry ──────────────────────────────────────────────
+   Every corner radius is now four different values, so no two cards are cut
+   the same way. A few elements sit a fraction off true.                      */
+.slab{border-radius:22px 17px 24px 19px}
+.lead{border-radius:26px 18px 22px 20px;transform:rotate(-.28deg)}
+.session{border-radius:18px 25px 19px 23px;transform:rotate(.22deg);margin-top:6px}
+.say{border-radius:20px 24px 17px 25px}
+.panel.a{border-radius:24px 16px 22px 18px;transform:rotate(-.2deg)}
+.panel.b{border-radius:16px 24px 18px 23px;transform:rotate(.18deg)}
+.trio .box:nth-child(1){border-radius:23px 17px 21px 19px;transform:rotate(-.24deg)}
+.trio .box:nth-child(2){border-radius:17px 23px 19px 22px;transform:translateY(7px)}
+.trio .box:nth-child(3){border-radius:21px 19px 24px 16px;transform:rotate(.26deg)}
+.fig:nth-child(odd){border-radius:24px 17px 22px 19px;transform:rotate(-.3deg)}
+.fig:nth-child(even){border-radius:18px 24px 18px 23px;transform:rotate(.24deg) translateY(5px)}
+.lcard:nth-child(3n+1){border-radius:25px 17px 22px 20px;transform:rotate(-.35deg)}
+.lcard:nth-child(3n+2){border-radius:18px 24px 19px 23px}
+.lcard:nth-child(3n+3){border-radius:21px 20px 25px 16px;transform:rotate(.3deg)}
+.btn{border-radius:18px 14px 17px 15px}
+.btn.go{border-radius:15px 19px 14px 18px}
+.btn.next{border-radius:17px 20px 15px 19px}
+.chip{border-radius:999px 999px 998px 999px}
+.acc .item:nth-child(odd){border-radius:22px 17px 23px 18px}
+.acc .item:nth-child(even){border-radius:17px 23px 18px 22px}
+.fc-front{border-radius:26px 19px 24px 21px}
+.fc-back{border-radius:19px 26px 21px 24px}
+.sheet{border-radius:30px 22px 28px 24px}
+.text{border-radius:16px 12px 15px 13px}
+.say-note{border-radius:20px 15px 18px 16px;transform:rotate(.4deg)}
+.toast{border-radius:18px 13px 16px 14px}
+
+/* the brand mark leans, the way a stamp does */
+.brand .b-mark{border-radius:15px 11px 14px 12px;transform:rotate(-3.2deg)}
+.brand:hover .b-mark{transform:rotate(2.4deg) scale(1.06)}
+.brand .b-mark{transition:transform .32s var(--spring)}
+
+/* ─── 5. micro-interactions ─────────────────────────────────────────────────
+   Nothing here moves on its own. Everything reacts, and each family reacts
+   slightly differently so the page does not feel machine-tuned.              */
+.press,.btn,.tabs a,.chip,.lcard,.filters button,.modes button,.round,.lang button{
+  transition:transform .2s var(--settle), box-shadow .2s var(--settle),
+             background .22s var(--settle), border-color .2s var(--settle);
+}
+.btn:hover{transform:translateY(-3px) rotate(-.7deg)}
+.btn.go:hover{transform:translateY(-3px) rotate(.8deg)}
+.btn.next:hover{transform:translateY(-3px) rotate(1deg)}
+.btn:active{transform:translateY(5px) rotate(0deg)}
+.tabs a:hover{transform:translateY(-2px) rotate(-1.1deg)}
+.tabs a[aria-current]{transform:rotate(-.8deg)}
+.modes button:hover{transform:translateY(-2px) rotate(1.2deg)}
+.modes button[aria-selected="true"]{transform:rotate(-1deg)}
+.filters button:hover{transform:translateY(-2px) rotate(-1deg)}
+.round:hover{transform:translateY(-2px) rotate(6deg)}
+.lcard:hover{transform:translateY(-5px) rotate(.5deg);box-shadow:0 9px 0 var(--ink)}
+.session .plan li:hover{transform:translateX(4px) rotate(-.5deg)}
+.panel .tool:hover{transform:translateY(-2px) rotate(-8deg)}
+.swap:hover{transform:rotate(-14deg) scale(1.05)}
+.swap.turn{transform:rotate(180deg)}
+.swap.turn:hover{transform:rotate(194deg) scale(1.05)}
+.chip:hover{transform:rotate(-1.4deg)}
+
+/* the beads breathe when they land */
+.beads i.now{animation:bead .5s var(--spring)}
+@keyframes bead{0%{transform:scale(1) rotate(0)}55%{transform:scale(1.3) rotate(-7deg)}100%{transform:scale(1.18) rotate(0)}}
+
+/* cards lean a different way each, and the lean survives the flip */
+.fc:nth-child(4n+1){transform:rotate(-1.1deg)}
+.fc:nth-child(4n+2){transform:rotate(.7deg)}
+.fc:nth-child(4n+3){transform:rotate(-.4deg)}
+.fc:nth-child(4n+4){transform:rotate(1.2deg)}
+.fc{transition:transform .3s var(--spring)}
+.fc:hover{transform:rotate(0deg) scale(1.035)}
+.fc .listen:hover{transform:translateY(-2px) rotate(-3deg)}
+.fc .listen{transition:transform .2s var(--settle),box-shadow .2s var(--settle)}
+
+/* focus is a hand-drawn ring, not a browser rectangle */
+:focus-visible{outline:3px dashed var(--c4);outline-offset:4px;border-radius:14px 10px 13px 11px}
+
+/* ─── 6. loosening the rhythm ───────────────────────────────────────────────
+   The original grid had one gap value everywhere. These are deliberately
+   uneven so the eye stops finding the ruler.                                 */
+.head-grid{gap:18px 22px;align-items:start}
+.say{margin-top:22px}
+.pair{margin-top:19px;gap:16px}
+.acts{margin-top:24px;gap:13px}
+.trio{margin-top:21px;gap:18px}
+.deck{gap:22px 20px}
+.grid{gap:20px 18px}
+.page{padding-top:30px}
+.shead{padding-bottom:28px}
+.shead h1{letter-spacing:-.02em}
+.lead h1{letter-spacing:-.025em}
+
+/* the sticky bar gets a hairline of colour under the rule, like a printed edge */
+.top{box-shadow:0 2.5px 0 var(--c1), 0 5px 0 rgba(36,28,20,.06)}
+
+/* the hard shadows pick up a trace of warmth instead of pure ink */
+.slab,.btn,.chip,.round,.lang,.brand .b-mark,.panel .tool,.swap,.fc-face,.toggle{
+  box-shadow:0 5px 0 var(--ink), 0 6px 14px rgba(36,28,20,.07);
+}
+.btn:hover,.press:hover,.lcard:hover{box-shadow:0 8px 0 var(--ink), 0 10px 20px rgba(36,28,20,.09)}
+.btn:active,.press:active{box-shadow:0 0 0 var(--ink), 0 2px 6px rgba(36,28,20,.1)}
+.fc-face{box-shadow:0 7px 0 var(--ink), 0 9px 18px rgba(36,28,20,.08)}
+.sheet{box-shadow:0 12px 0 var(--ink), 0 20px 44px rgba(36,28,20,.22)}
+
+@media (max-width:760px){
+  /* on a phone the rotations read as misalignment, so they come off */
+  .lead,.session,.panel.a,.panel.b,.say-note,
+  .trio .box:nth-child(1),.trio .box:nth-child(3),
+  .fig:nth-child(odd),.fig:nth-child(even),
+  .lcard:nth-child(3n+1),.lcard:nth-child(3n+3){transform:none}
+  .trio .box:nth-child(2){transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .beads i.now{animation:none}
+}
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▲ ▲ ▲   A R T I S A N   L A Y E R   —   E N D                           ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║                                                                           ║
+   ║   ▼ ▼ ▼   R E F I N E M E N T   P A S S   —   B E G I N                   ║
+   ║                                                                           ║
+   ║   The layer above already re-tuned the palette, added grain, paired the  ║
+   ║   type, broken the grid and wired up the micro-interactions. This block  ║
+   ║   only finishes what that pass didn't reach yet — a handful of controls  ║
+   ║   (filters, the type-in row, the fix-it box) that were still on the      ║
+   ║   stock rounded-pill/rectangle treatment — and adds three small,         ║
+   ║   purely decorative touches. Nothing here changes markup or behaviour;   ║
+   ║   delete this block and the page falls back to the artisan layer above.  ║
+   ║                                                                           ║
+   ║   What it does, in order:                                                 ║
+   ║     7. gives the filter pills, the type-in row and the fix-it box the     ║
+   ║        same off-true corners and lean as everything else already has     ║
+   ║     8. a torn-paper edge under the sticky header instead of a hard rule   ║
+   ║     9. a hand-cut scrollbar and an ink-blot focus ring on text inputs     ║
+   ║                                                                           ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ─── 7. the last stock controls ────────────────────────────────────────────
+   Filter pills keep their pill shape (that's the right form for a toggle
+   row) but no two are trimmed identically, and they lean into a pressed
+   state rather than just changing colour. The type-in row and the fix-it
+   box pick up the same broken-corner language as .text and .fixbox's kin.  */
+.filters button{border-radius:999px 998px 999px 997px}
+.filters button:nth-child(3n+2){border-radius:998px 999px 997px 999px}
+.filters button:nth-child(3n+3){border-radius:999px 997px 999px 998px}
+.filters button[aria-pressed="true"]{transform:rotate(-1.1deg);box-shadow:0 4px 0 var(--ink),0 6px 12px rgba(36,28,20,.08)}
+
+.entry input{border-radius:16px 12px 15px 13px;transition:box-shadow .2s var(--settle),transform .2s var(--settle)}
+.entry input:focus{transform:rotate(-.3deg)}
+.fixbox textarea{border-radius:15px 19px 14px 18px}
+.fixbox{transform:rotate(.3deg)}
+
+/* ─── 8. a torn edge, not a ruled line ──────────────────────────────────────
+   The header used to end on a crisp 2.5px rule. A strip of irregular
+   triangles reads like a page torn from a notebook instead of a UI seam.   */
+.top{border-bottom:0;box-shadow:none}
+.top::after{
+  content:"";position:absolute;left:0;right:0;bottom:-7px;height:7px;pointer-events:none;
+  background:
+    linear-gradient(115deg, transparent 50%, var(--cream) 50%) 0 0/9px 9px,
+    linear-gradient(245deg, transparent 50%, var(--cream) 50%) 0 0/9px 9px,
+    var(--ink);
+  background-repeat:repeat-x;
+}
+
+/* ─── 9. crafted cursors & fields ───────────────────────────────────────────
+   A scrollbar and a focus ring that match the ink-and-paper voice instead
+   of the browser defaults peeking through underneath everything else.      */
+::-webkit-scrollbar{width:14px;height:14px}
+::-webkit-scrollbar-track{background:var(--cream-2)}
+::-webkit-scrollbar-thumb{
+  background:var(--muted);border:3px solid var(--cream-2);border-radius:10px 6px 10px 6px;
+}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-2)}
+* {scrollbar-color:var(--muted) var(--cream-2)}
+
+input:focus,textarea:focus,select:focus{
+  box-shadow:0 0 0 4px var(--c4-soft),0 0 0 5px var(--ink) inset!important;
+}
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▼ ▼ ▼   PLAYFUL CLASSROOM POLISH — BEGIN                              ║
+   ║   Targeted overrides only: DOM, copy, data, handlers, and behavior stay  ║
+   ║   intact.                                                               ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+.page{position:relative}
+.page::before,.page::after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%}
+.page::before{width:180px;height:180px;right:-70px;top:150px;background:var(--c1-soft);opacity:.55;filter:blur(2px)}
+.page::after{width:130px;height:130px;left:-52px;bottom:220px;background:var(--c3-soft);opacity:.62;filter:blur(1px)}
+
+/* A quick glint makes classroom controls feel tactile, not template-made. */
+.btn,.filters button,.modes button,.deck-bar button,.fc .listen{position:relative;overflow:hidden}
+.btn::after,.filters button::after,.modes button::after,.deck-bar button::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.42) 48%,transparent 70%);
+  transform:translateX(-125%);transition:transform .55s var(--settle);pointer-events:none
+}
+.btn:hover::after,.filters button:hover::after,.modes button:hover::after,.deck-bar button:hover::after{transform:translateX(125%)}
+.btn:focus-visible,.filters button:focus-visible,.modes button:focus-visible,.deck-bar button:focus-visible{transform:translateY(-2px) rotate(-.6deg)}
+
+/* Topic-coloured shadows and a more theatrical, still-accessible flip. */
+.deck{align-items:start}
+.fc{position:relative;isolation:isolate;will-change:transform}
+.fc::before{
+  content:"";position:absolute;z-index:-1;inset:9px 4px -3px;border-radius:26px 14px 22px 16px;
+  background:var(--c1);opacity:.16;transform:rotate(2.5deg);transition:transform .42s var(--spring),opacity .25s var(--ease)
+}
+.fc:nth-child(3n+2)::before{background:var(--c3);transform:rotate(-2.2deg)}
+.fc:nth-child(3n+3)::before{background:var(--c5);transform:rotate(1.6deg)}
+.fc:hover::before{opacity:.34;transform:rotate(-3deg) translateY(3px) scale(1.03)}
+.fc-in{transition:transform .72s var(--spring)}
+.fc.flip .fc-in{transform:rotateY(180deg) rotateZ(-1deg)}
+.fc.flip:hover .fc-in{transform:rotateY(180deg) translateY(-5px) rotateZ(1deg)}
+.fc .emoji{transition:transform .35s var(--spring);filter:saturate(1.08)}
+.fc:hover .emoji{transform:translateY(-4px) rotate(-5deg) scale(1.08)}
+.fc.flip .fc-back .emoji{animation:cardEmojiLand .58s var(--spring) both}
+@keyframes cardEmojiLand{0%{opacity:0;transform:scale(.55) rotate(14deg)}70%{transform:scale(1.16) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+.fc .listen:hover{transform:translateY(-3px) rotate(2deg);box-shadow:0 5px 0 var(--ink)}
+.fc .listen:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+
+.deck-bar button{transition:transform .22s var(--spring),box-shadow .2s var(--settle),background .2s var(--settle)}
+.deck-bar button:hover{transform:translateY(-3px) rotate(-1.2deg);box-shadow:0 7px 0 var(--ink)}
+.deck-bar button[aria-pressed="true"]{transform:rotate(1deg)}
+
+@media (max-width:760px){
+  .page::before{right:-110px;top:210px;opacity:.35}
+  .page::after{left:-90px;bottom:280px;opacity:.38}
+  .fc.flip .fc-in{transform:rotateY(180deg)}
+  .fc.flip:hover .fc-in{transform:rotateY(180deg) translateY(-3px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn::after,.filters button::after,.modes button::after,.deck-bar button::after{display:none}
+  .fc.flip .fc-back .emoji{animation:none}
+}
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▲ ▲ ▲   PLAYFUL CLASSROOM POLISH — END                                ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▲ ▲ ▲   R E F I N E M E N T   P A S S   —   E N D                       ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-translate" viewBox="0 0 256 256"><path d="M250.73,210.63l-56-112a12,12,0,0,0-21.46,0l-20.52,41A84.2,84.2,0,0,1,114,126.22,107.48,107.48,0,0,0,139.33,68H160a12,12,0,0,0,0-24H108V32a12,12,0,0,0-24,0V44H32a12,12,0,0,0,0,24h83.13A83.69,83.69,0,0,1,96,110.35,84,84,0,0,1,83.6,91a12,12,0,1,0-21.81,10A107.55,107.55,0,0,0,78,126.24,83.54,83.54,0,0,1,32,140a12,12,0,0,0,0,24,107.47,107.47,0,0,0,64-21.07,108.4,108.4,0,0,0,45.39,19.44l-24.13,48.26a12,12,0,1,0,21.46,10.73L151.41,196h65.17l12.68,25.36a12,12,0,1,0,21.47-10.73ZM163.41,172,184,130.83,204.58,172Z"/></symbol><symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></symbol><symbol id="i-arrows-lr" viewBox="0 0 256 256"><path d="M216.49,184.49l-32,32a12,12,0,0,1-17-17L179,188H48a12,12,0,0,1,0-24H179l-11.52-11.51a12,12,0,0,1,17-17l32,32A12,12,0,0,1,216.49,184.49Zm-145-64a12,12,0,0,0,17-17L77,92H208a12,12,0,0,0,0-24H77L88.49,56.49a12,12,0,0,0-17-17l-32,32a12,12,0,0,0,0,17Z"/></symbol><symbol id="i-eraser" viewBox="0 0 256 256"><path d="M216,204H141l86.84-86.84a28,28,0,0,0,0-39.6L186.43,36.19a28,28,0,0,0-39.6,0L28.19,154.82a28,28,0,0,0,0,39.6l30.06,30.07A12,12,0,0,0,66.74,228H216a12,12,0,0,0,0-24ZM163.8,53.16a4,4,0,0,1,5.66,0l41.38,41.38a4,4,0,0,1,0,5.65L160,151l-47-47ZM71.71,204,45.16,177.45a4,4,0,0,1,0-5.65L96,121l47,47-36,36Z"/></symbol><symbol id="i-speaker" viewBox="0 0 256 256"><path d="M160,32.25V223.69a8.29,8.29,0,0,1-3.91,7.18,8,8,0,0,1-9-.56l-65.57-51A4,4,0,0,1,80,176.16V79.84a4,4,0,0,1,1.55-3.15l65.57-51a8,8,0,0,1,10,.16A8.27,8.27,0,0,1,160,32.25ZM60,80H32A16,16,0,0,0,16,96v64a16,16,0,0,0,16,16H60a4,4,0,0,0,4-4V84A4,4,0,0,0,60,80Zm126.77,20.84a8,8,0,0,0-.72,11.3,24,24,0,0,1,0,31.72,8,8,0,1,0,12,10.58,40,40,0,0,0,0-52.88A8,8,0,0,0,186.74,100.84Zm40.89-26.17a8,8,0,1,0-11.92,10.66,64,64,0,0,1,0,85.34,8,8,0,1,0,11.92,10.66,80,80,0,0,0,0-106.66Z"/></symbol><symbol id="i-printer" viewBox="0 0 256 256"><path d="M214.67,68H204V40a12,12,0,0,0-12-12H64A12,12,0,0,0,52,40V68H41.33C25.16,68,12,80.56,12,96v80a12,12,0,0,0,12,12H52v28a12,12,0,0,0,12,12H192a12,12,0,0,0,12-12V188h28a12,12,0,0,0,12-12V96C244,80.56,230.84,68,214.67,68ZM76,52H180V68H76ZM180,204H76V172H180Zm40-40H204v-4a12,12,0,0,0-12-12H64a12,12,0,0,0-12,12v4H36V96c0-2.17,2.44-4,5.33-4H214.67c2.89,0,5.33,1.83,5.33,4Zm-16-44a16,16,0,1,1-16-16A16,16,0,0,1,204,120Z"/></symbol><symbol id="i-check" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></symbol><symbol id="i-pencil" viewBox="0 0 256 256"><path d="M230.14,70.54,185.46,25.85a20,20,0,0,0-28.29,0L33.86,149.17A19.85,19.85,0,0,0,28,163.31V208a20,20,0,0,0,20,20H92.69a19.86,19.86,0,0,0,14.14-5.86L230.14,98.82a20,20,0,0,0,0-28.28ZM91,204H52V165l84-84,39,39ZM192,103,153,64l18.34-18.34,39,39Z"/></symbol><symbol id="i-moon" viewBox="0 0 256 256"><path d="M236.37,139.4a12,12,0,0,0-12-3A84.07,84.07,0,0,1,119.6,31.59a12,12,0,0,0-15-15A108.86,108.86,0,0,0,49.69,55.07,108,108,0,0,0,136,228a107.09,107.09,0,0,0,64.93-21.69,108.86,108.86,0,0,0,38.44-54.94A12,12,0,0,0,236.37,139.4Zm-49.88,47.74A84,84,0,0,1,68.86,69.51,84.93,84.93,0,0,1,92.27,48.29Q92,52.13,92,56A108.12,108.12,0,0,0,200,164q3.87,0,7.71-.27A84.79,84.79,0,0,1,186.49,187.14Z"/></symbol><symbol id="i-sun" viewBox="0 0 256 256"><path d="M116,36V20a12,12,0,0,1,24,0V36a12,12,0,0,1-24,0Zm80,92a68,68,0,1,1-68-68A68.07,68.07,0,0,1,196,128Zm-24,0a44,44,0,1,0-44,44A44.05,44.05,0,0,0,172,128ZM51.51,68.49a12,12,0,1,0,17-17l-12-12a12,12,0,0,0-17,17Zm0,119-12,12a12,12,0,0,0,17,17l12-12a12,12,0,1,0-17-17ZM196,72a12,12,0,0,0,8.49-3.51l12-12a12,12,0,0,0-17-17l-12,12A12,12,0,0,0,196,72Zm8.49,115.51a12,12,0,0,0-17,17l12,12a12,12,0,0,0,17-17ZM48,128a12,12,0,0,0-12-12H20a12,12,0,0,0,0,24H36A12,12,0,0,0,48,128Zm80,80a12,12,0,0,0-12,12v16a12,12,0,0,0,24,0V220A12,12,0,0,0,128,208Zm108-92H220a12,12,0,0,0,0,24h16a12,12,0,0,0,0-24Z"/></symbol><symbol id="i-text-aa" viewBox="0 0 256 256"><path d="M90.86,50.89a12,12,0,0,0-21.72,0l-64,136a12,12,0,0,0,21.71,10.22L42.44,164h75.12l15.58,33.11a12,12,0,0,0,21.72-10.22ZM53.74,140,80,84.18,106.27,140ZM200,84c-13.85,0-24.77,3.86-32.45,11.48a12,12,0,1,0,16.9,17c3-3,8.26-4.52,15.55-4.52,11,0,20,7.18,20,16v4.39A47.28,47.28,0,0,0,200,124c-24.26,0-44,17.94-44,40s19.74,40,44,40a47.18,47.18,0,0,0,22-5.38A12,12,0,0,0,244,192V124C244,101.94,224.26,84,200,84Zm0,96c-11,0-20-7.18-20-16s9-16,20-16,20,7.18,20,16S211,180,200,180Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></symbol><symbol id="i-hand" viewBox="0 0 256 256"><path d="M224,104v50.93c0,46.2-36.85,84.55-83,85.06A83.71,83.71,0,0,1,80.6,215.4C58.79,192.33,34.15,136,34.15,136a16,16,0,0,1,6.53-22.23c7.66-4,17.1-.84,21.4,6.62l21,36.44a6.09,6.09,0,0,0,6,3.09l.12,0A8.19,8.19,0,0,0,96,151.74V32a16,16,0,0,1,16.77-16c8.61.4,15.23,7.82,15.23,16.43V104a8,8,0,0,0,8.53,8,8.17,8.17,0,0,0,7.47-8.25V88a16,16,0,0,1,16.77-16c8.61.4,15.23,7.82,15.23,16.43V112a8,8,0,0,0,8.53,8,8.17,8.17,0,0,0,7.47-8.25v-7.28c0-8.61,6.62-16,15.23-16.43A16,16,0,0,1,224,104Z"/></symbol><symbol id="i-check-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-x-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm37.66,130.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-redo" viewBox="0 0 256 256"><path d="M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11-11.63A80,80,0,1,0,71.43,71.39a3.07,3.07,0,0,1-.26.25L60.63,81.29l17,17A8,8,0,0,1,72,112H24a8,8,0,0,1-8-8V56A8,8,0,0,1,29.66,50.3L49.31,70,60.25,60A96,96,0,0,1,224,128Z"/></symbol><symbol id="i-info" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-4,48a12,12,0,1,1-12,12A12,12,0,0,1,124,72Zm12,112a16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40a8,8,0,0,1,0,16Z"/></symbol><symbol id="i-spinner" viewBox="0 0 256 256"><path d="M236,128a108,108,0,0,1-216,0c0-42.52,24.73-81.34,63-98.9A12,12,0,1,1,93,50.91C63.24,64.57,44,94.83,44,128a84,84,0,0,0,168,0c0-33.17-19.24-63.43-49-77.09A12,12,0,1,1,173,29.1C211.27,46.66,236,85.48,236,128Z"/></symbol><symbol id="i-mic" viewBox="0 0 256 256"><path d="M80,128V64a48,48,0,0,1,96,0v64a48,48,0,0,1-96,0Zm128,0a8,8,0,0,0-16,0,64,64,0,0,1-128,0,8,8,0,0,0-16,0,80.11,80.11,0,0,0,72,79.6V240a8,8,0,0,0,16,0V207.6A80.11,80.11,0,0,0,208,128Z"/></symbol><symbol id="i-flag" viewBox="0 0 256 256"><path d="M229,45a12,12,0,0,0-12.85,1.84c-24.71,21.41-44.53,13.31-74.82-1.68C113.19,31.27,78.17,13.94,40.14,46.88A12,12,0,0,0,36,56V224a12,12,0,0,0,24,0V181.71c22.84-17.13,42.1-9.11,70.68,5,16.23,8,34.74,17.2,54.8,17.2,14.72,0,30.28-4.94,46.38-18.88A12,12,0,0,0,236,176V56A12,12,0,0,0,229,45ZM185.48,83.91A63,63,0,0,0,212,78.08v32.15c-11,8.26-21.2,10.67-32,9.37V83.66C181.81,83.81,183.64,83.91,185.48,83.91ZM156,78.08v34.09c-4.64-2-9.5-4.4-14.68-7A255.21,255.21,0,0,0,116,93.83V59.75c4.64,2,9.5,4.4,14.68,7A252.91,252.91,0,0,0,156,78.08ZM92,52.32V88.24a63.33,63.33,0,0,0-32,5.61V61.68C71,53.42,81.2,51,92,52.32ZM86.52,148A63,63,0,0,0,60,153.86V121.7c11-8.25,21.2-10.66,32-9.36v35.94C90.19,148.13,88.36,148,86.52,148ZM116,153.86V119.77c4.64,2,9.5,4.4,14.68,7A252.91,252.91,0,0,0,156,138.1v34.09c-4.64-2.05-9.5-4.4-14.68-7A250.66,250.66,0,0,0,116,153.86Zm64,25.76V143.68c1.81.14,3.64.24,5.48.24A62.85,62.85,0,0,0,212,138.07v32.19C201,178.52,190.8,180.92,180,179.62Z"/></symbol><symbol id="i-book" viewBox="0 0 256 256"><path d="M235.57,193.73,202.38,35.93a20,20,0,0,0-23.76-15.48L131.81,30.51a19.82,19.82,0,0,0-11,6.65A20,20,0,0,0,104,28H56A20,20,0,0,0,36,48V208a20,20,0,0,0,20,20h48a20,20,0,0,0,20-20V90.25l25.62,121.82A20,20,0,0,0,169.15,228a20.27,20.27,0,0,0,4.23-.45l46.81-10.06A20.1,20.1,0,0,0,235.57,193.73ZM148.19,88.65l39-8.38,2.53,12-39,8.38Zm7.46,35.5,39-8.38,9.16,43.58-39,8.38Zm24.06-79.39,2.53,12-39,8.38-2.53-12ZM60,88h40v80H60Zm40-36V64H60V52ZM60,204V192h40v12Zm112.29-.76-2.53-12,39-8.38,2.53,12Z"/></symbol><symbol id="i-clipboard" viewBox="0 0 256 256"><path d="M172,164a12,12,0,0,1-12,12H96a12,12,0,0,1,0-24h64A12,12,0,0,1,172,164Zm-12-52H96a12,12,0,0,0,0,24h64a12,12,0,0,0,0-24Zm60-64V216a20,20,0,0,1-20,20H56a20,20,0,0,1-20-20V48A20,20,0,0,1,56,28H90.53a51.88,51.88,0,0,1,74.94,0H200A20,20,0,0,1,220,48ZM100.29,60h55.42a28,28,0,0,0-55.42,0ZM196,52H178.59A52.13,52.13,0,0,1,180,64v8a12,12,0,0,1-12,12H88A12,12,0,0,1,76,72V64a52.13,52.13,0,0,1,1.41-12H60V212H196Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></symbol><symbol id="i-sparkle" viewBox="0 0 256 256"><path d="M208,144a15.78,15.78,0,0,1-10.42,14.94L146,178l-19,51.62a15.92,15.92,0,0,1-29.88,0L78,178l-51.62-19a15.92,15.92,0,0,1,0-29.88L78,110l19-51.62a15.92,15.92,0,0,1,29.88,0L146,110l51.62,19A15.78,15.78,0,0,1,208,144ZM152,48h16V64a8,8,0,0,0,16,0V48h16a8,8,0,0,0,0-16H184V16a8,8,0,0,0-16,0V32H152a8,8,0,0,0,0,16Zm88,32h-8V72a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0V96h8a8,8,0,0,0,0-16Z"/></symbol><symbol id="i-wave" viewBox="0 0 256 256"><path d="M60,96v64a12,12,0,0,1-24,0V96a12,12,0,0,1,24,0ZM88,20A12,12,0,0,0,76,32V224a12,12,0,0,0,24,0V32A12,12,0,0,0,88,20Zm40,32a12,12,0,0,0-12,12V192a12,12,0,0,0,24,0V64A12,12,0,0,0,128,52Zm40,32a12,12,0,0,0-12,12v64a12,12,0,0,0,24,0V96A12,12,0,0,0,168,84Zm40-16a12,12,0,0,0-12,12v96a12,12,0,0,0,24,0V80A12,12,0,0,0,208,68Z"/></symbol></defs></svg><a class="skip" href="#main" data-t="skip">मुख्य भाग पर जाएँ</a>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#lesson"><span class="b-mark">🌉</span><b data-t="brand">वाणीसेतु</b></a>
+    <nav class="tabs" aria-label="मुख्य">
+      <a href="#lesson"     data-view="lesson"     aria-current="page"><span class="e">🏫</span><span data-t="nav_class">कक्षा</span></a>
+      <a href="#lessons"    data-view="lessons"><span class="e">📚</span><span data-t="nav_lessons">पाठ</span></a>
+      <a href="#flashcards" data-view="flashcards"><span class="e">🎴</span><span data-t="nav_cards">चित्र पत्ते</span></a>
+      <a href="#progress"   data-view="progress"><span class="e">📈</span><span data-t="nav_progress">प्रगति</span></a>
+      <a href="#settings"   data-view="settings"><span class="e">⚙️</span><span data-t="nav_settings">सेटिंग</span></a>
+    </nav>
+    <div class="top-right">
+      <span class="conn" id="conn" data-up="0"><i></i><span data-t="conn_wait">जुड़ रहे हैं</span></span>
+      <div class="lang" role="group" aria-label="भाषा">
+        <button id="langHi"  aria-pressed="true">हिंदी</button>
+        <button id="langSat" aria-pressed="false">ᱥᱟᱱᱛᱟᱲᱤ</button>
+        <button id="langEn"  aria-pressed="false">EN</button>
+      </div>
+      <button class="round" id="bigBtn" aria-pressed="false" data-tt="tip_big" title="बड़े अक्षर">🔍</button>
+    </div>
+  </div>
+</header>
+
+<main class="page" id="main" tabindex="-1">
+
+<!-- ═════════════ कक्षा ═════════════ -->
+<section class="view on" id="v-lesson">
+
+  <div class="head-grid">
+    <div class="slab lead" id="lead" data-emoji="➕">
+      <div class="lead-top">
+        <span class="chip c2" id="gradeTag">कक्षा २</span>
+        <span class="picker">
+          <label class="sr" for="pickLesson" data-t="pick_lesson">पाठ चुनें</label>
+          <select id="pickLesson"></select>
+          <svg class="ic" aria-hidden="true"><use href="#i-caret-down"/></svg>
+        </span>
+      </div>
+      <h1 id="title">जोड़ना</h1>
+      <p class="goal" id="goal"></p>
+      <div class="beads" id="beads" aria-hidden="true"></div>
+      <div class="beads-note">
+        <span id="hint" data-t="hint_say">पंक्ति बोलिए, फिर भेजिए</span>
+        <b id="count">०१ / ०४</b>
+      </div>
+    </div>
+
+    <div class="slab session">
+      <p class="label" data-t="sess_title">इस कक्षा में</p>
+      <div class="r"><span data-t="sess_time">समय</span><b id="clock">००:००</b></div>
+      <div class="r"><span data-t="sess_lines">पंक्तियाँ</span><b id="mLines">०</b></div>
+      <div class="r"><span data-t="sess_last">पिछली बार</span><b id="mLast">०.००</b></div>
+      <div class="r"><span data-t="sess_right">सही उत्तर</span><b id="mRight">०%</b></div>
+      <div class="plan">
+        <p class="label" data-t="sess_plan">पाठ की पंक्तियाँ</p>
+        <ol id="plan"></ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="slab say">
+    <div class="say-top">
+      <div class="modes" role="tablist" aria-label="प्रकार">
+        <button role="tab" aria-selected="true"  data-mode="lesson_script"><span class="e">🗣️</span><span data-t="mode_teach">सिखाना</span></button>
+        <button role="tab" aria-selected="false" data-mode="activity_instruction"><span class="e">✋</span><span data-t="mode_do">करना</span></button>
+        <button role="tab" aria-selected="false" data-mode="assessment_prompt"><span class="e">❓</span><span data-t="mode_ask">पूछना</span></button>
+      </div>
+      <span class="step" id="stepLabel">पंक्ति ०१</span>
+    </div>
+    <div class="say-body">
+      <p class="say-line" id="line"></p>
+      <div class="say-note">
+        <p class="label"><span class="e">💡</span> <span data-t="note_while">बोलते समय</span></p>
+        <p id="cue"></p>
+        <div class="say-next">
+          <p class="label" data-t="note_next">आगे</p>
+          <span id="nextLine"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pair">
+    <div class="slab panel a">
+      <div class="head">
+        <span class="who"><span class="e">👩‍🏫</span> <span data-t="pan_hindi">हिंदी</span></span>
+        <span class="tools">
+          <button class="tool" id="resetHi" data-tt="tip_reset" title="पंक्ति वापस लाएँ"><svg class="ic"><use href="#i-redo"/></svg></button>
+          <button class="tool" id="clearHi" data-tt="tip_clear" title="मिटाएँ"><svg class="ic"><use href="#i-eraser"/></svg></button>
+        </span>
+      </div>
+      <div class="text" id="hi" contenteditable="true" role="textbox" data-tt="ph_hi" data-ph="यहाँ लिखिए" aria-label="हिंदी"></div>
+      <p class="foot"><span class="e">✏️</span> <span data-t="pan_edit">भेजने से पहले बदल सकते हैं</span></p>
+    </div>
+
+    <div class="swap-wrap">
+      <button class="swap" id="swap" data-tt="tip_swap" title="दिशा बदलें">🔄</button>
+    </div>
+
+    <div class="slab panel b">
+      <div class="head">
+        <span class="who"><span class="e">🧒</span> <span data-t="pan_sat">ᱥᱟᱱᱛᱟᱲᱤ</span></span>
+        <span class="tools">
+          <button class="tool" id="playBtn" data-tt="tip_play" title="सुनिए"><svg class="ic"><use href="#i-speaker"/></svg></button>
+        </span>
+      </div>
+      <div class="text" id="sa" contenteditable="true" role="textbox" data-tt="ph_sa" data-ph="अनुवाद यहाँ आएगा" aria-label="ᱥᱟᱱᱛᱟᱲᱤ"></div>
+      <p class="foot"><span class="e">🔊</span> <span id="voiceNote" data-t="pan_voice">आधे सेकंड में बोलकर सुनाएगा</span></p>
+    </div>
+  </div>
+
+  <div class="acts">
+    <button class="btn go" id="goBtn"><span class="e">🔁</span> <span data-t="act_translate">अनुवाद</span></button>
+    <button class="btn mic" id="micHi"><span class="e">🎤</span> <span data-t="act_mic_hi">हिंदी बोलिए</span> <span class="t" id="tHi"></span></button>
+    <button class="btn mic2" id="micSa"><span class="e">🎙️</span> <span data-t="act_mic_sat">ᱥᱟᱱᱛᱟᱲᱤ</span> <span class="t" id="tSa"></span></button>
+    <button class="btn paper" id="sheetBtn"><span class="e">📄</span> <span data-t="act_sheet">कार्यपत्रक</span></button>
+    <button class="btn paper" id="wrapBtn"><span class="e">📋</span> <span data-t="act_wrap">समापन</span></button>
+    <button class="btn next" id="nextBtn"><span data-t="act_next">अगली पंक्ति</span> <span class="e">➡️</span></button>
+  </div>
+
+  <div class="trio">
+    <div class="slab box">
+      <h2><span class="e">⏱️</span> <span data-t="t1_title">कितना समय लगा</span></h2>
+      <p class="sub" data-t="t1_sub">बोलने से सुनाने तक</p>
+      <div class="body">
+        <div class="speed"><b id="total">०.००</b><span data-t="t1_sec">सेकंड</span></div>
+        <div class="bars">
+          <div class="bar"><span data-t="t1_hear">सुनना</span><span class="track"><i id="bA"></i></span><span id="vA">०.००</span></div>
+          <div class="bar"><span data-t="t1_trans">अनुवाद</span><span class="track"><i id="bN"></i></span><span id="vN">०.००</span></div>
+          <div class="bar"><span data-t="t1_speak">बोलना</span><span class="track"><i id="bT"></i></span><span id="vT">०.००</span></div>
+        </div>
+      </div>
+      <p class="foot-note" id="speedNote" data-t="t1_note">लिखी पंक्ति में सुनने का समय नहीं लगता</p>
+    </div>
+
+    <div class="slab box">
+      <h2><span class="e">🧒</span> <span data-t="t2_title">बच्चे ने क्या कहा</span></h2>
+      <p class="sub" id="expecting" data-t="t2_sub">जो सुना वह लिखिए</p>
+      <div class="body">
+        <div class="entry">
+          <label class="sr" for="answer" data-t="t2_title">बच्चे ने क्या कहा</label>
+          <input id="answer" name="student-answer" type="text" autocomplete="off" spellcheck="false" data-tt="ph_ans" placeholder="जैसे सात">
+          <button class="btn go" id="markBtn"><span data-t="t2_mark">जाँचें</span></button>
+        </div>
+        <p class="verdict" id="verdict" role="status" aria-live="polite"><span class="e" id="verdictEmoji">✅</span><span id="verdictText"></span></p>
+      </div>
+      <div class="tally">
+        <span class="chip ok"><b id="cG">०</b> <span data-t="t2_got">सही</span></span>
+        <span class="chip warn"><b id="cY">०</b> <span data-t="t2_near">लगभग</span></span>
+        <span class="chip bad"><b id="cR">०</b> <span data-t="t2_again">फिर से</span></span>
+      </div>
+    </div>
+
+    <div class="slab box">
+      <h2><span class="e">🎯</span> <span data-t="t3_title">अनुवाद ठीक था</span></h2>
+      <p class="sub" data-t="t3_sub">आपका सुधार अगली बार काम आएगा</p>
+      <div class="body">
+        <div class="two">
+          <button class="btn go" id="yesBtn"><span class="e">👍</span> <span data-t="t3_yes">ठीक</span></button>
+          <button class="btn paper" id="noBtn"><span class="e">✏️</span> <span data-t="t3_fix">सुधारें</span></button>
+        </div>
+        <div class="fixbox" id="fixBox">
+          <label class="sr" for="fixIn" data-t="t3_fix">सुधारें</label>
+          <textarea id="fixIn" rows="2" spellcheck="false" data-tt="ph_fix" placeholder="सही पंक्ति लिखिए"></textarea>
+          <div class="row">
+            <button class="btn go" id="fixSave"><span data-t="t3_save">सहेजें</span></button>
+            <button class="btn paper" id="fixCancel"><span data-t="t3_cancel">रहने दें</span></button>
+          </div>
+        </div>
+      </div>
+      <p class="foot-note" id="fixCount" data-t="t3_none">अभी कोई सुधार नहीं</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ पाठ ═════════════ -->
+<section class="view" id="v-lessons">
+  <div class="shead">
+    <h1><span>📚</span> <span data-t="les_title">पाठ</span></h1>
+    <p data-t="les_sub">कोई भी पाठ चुनिए, वह कक्षा में खुल जाएगा</p>
+  </div>
+  <div class="filters" id="filters">
+    <button aria-pressed="true"  data-g="all" data-t="les_all">सब</button>
+    <button aria-pressed="false" data-g="1"><span data-t="les_grade">कक्षा</span> १</button>
+    <button aria-pressed="false" data-g="2"><span data-t="les_grade">कक्षा</span> २</button>
+    <button aria-pressed="false" data-g="3"><span data-t="les_grade">कक्षा</span> ३</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- ═════════════ चित्र पत्ते ═════════════ -->
+<section class="view" id="v-flashcards">
+  <div class="shead">
+    <h1><span>🎴</span> <span data-t="fc_title">चित्र पत्ते</span></h1>
+    <p data-t="fc_sub">पत्ता दबाइए, वह पलटेगा और ᱥᱟᱱᱛᱟᱲᱤ दिखाएगा</p>
+  </div>
+  <div class="deck-bar">
+    <div class="filters" id="deckPick"></div>
+    <button class="btn paper" id="shuffleBtn"><span class="e">🔀</span> <span data-t="fc_shuffle">बदलिए</span></button>
+    <button class="btn paper" id="flipAllBtn"><span class="e">🔄</span> <span data-t="fc_flipall">सब पलटिए</span></button>
+  </div>
+  <div class="deck" id="deck"></div>
+</section>
+
+<!-- ═════════════ प्रगति ═════════════ -->
+<section class="view" id="v-progress">
+  <div class="shead">
+    <h1><span>📈</span> <span data-t="pr_title">प्रगति</span></h1>
+    <p data-t="pr_sub">आज की कक्षा का हिसाब</p>
+  </div>
+  <div class="figs">
+    <div class="slab fig"><span class="e">🔁</span><b id="fLines">०</b><span data-t="pr_lines">पंक्तियाँ</span></div>
+    <div class="slab fig"><span class="e">⏱️</span><b id="fSec">०.००</b><span data-t="pr_sec">औसत सेकंड</span></div>
+    <div class="slab fig"><span class="e">✅</span><b id="fRight">०%</b><span data-t="pr_right">सही उत्तर</span></div>
+    <div class="slab fig"><span class="e">🪜</span><b id="fSteps">०</b><span data-t="pr_steps">पूरी पंक्तियाँ</span></div>
+  </div>
+  <div class="slab logwrap" id="log">
+    <div class="blank">
+      <span class="e">🌱</span>
+      <b data-t="pr_blank_t">अभी कुछ नहीं</b>
+      <p data-t="pr_blank_p">कक्षा में एक पंक्ति का अनुवाद कीजिए, वह यहाँ दिखेगी</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ सेटिंग ═════════════ -->
+<section class="view" id="v-settings">
+  <div class="shead">
+    <h1><span>⚙️</span> <span data-t="se_title">सेटिंग</span></h1>
+    <p data-t="se_sub">दिन में एक बार सेट कीजिए</p>
+  </div>
+  <div class="acc" id="acc">
+    <div class="slab item open">
+      <button class="open-btn" aria-expanded="true"><span class="e">🏫</span><b data-t="se_room">कक्षा में</b><span class="sign">+</span></button>
+      <div class="body">
+        <div class="srow">
+          <span class="txt"><b data-t="se_auto">अपने आप बोले</b><small data-t="se_auto_s">अनुवाद आते ही सुनाई देगा</small></span>
+          <button class="toggle" id="tgAuto" aria-pressed="true" aria-label="अपने आप बोले"></button>
+        </div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_big">बड़े अक्षर</b><small data-t="se_big_s">पूरी कक्षा को दिखाने के लिए</small></span>
+          <button class="toggle" id="tgBig" aria-pressed="false" aria-label="बड़े अक्षर"></button>
+        </div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_msg">हर बार संदेश</b><small data-t="se_msg_s">अनुवाद होने पर छोटा संदेश</small></span>
+          <button class="toggle" id="tgAsk" aria-pressed="true" aria-label="हर बार संदेश"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slab item">
+      <button class="open-btn" aria-expanded="false"><span class="e">🖥️</span><b data-t="se_server">सर्वर</b><span class="sign">+</span></button>
+      <div class="body">
+        <div class="srow">
+          <span class="txt"><b data-t="se_addr">सर्वर का पता</b><small data-t="se_addr_s">दूसरे उपकरण से जुड़ने पर बदलिए</small></span>
+          <input type="url" id="server" name="server-address" inputmode="url" autocomplete="off" spellcheck="false" aria-label="सर्वर का पता">
+        </div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_grade">आपकी कक्षा</b></span>
+          <select id="defGrade" aria-label="आपकी कक्षा"><option value="1">१</option><option value="2" selected>२</option><option value="3">३</option></select>
+        </div>
+        <div class="srow" style="border:0">
+          <button class="btn go" id="saveSet"><span class="e">💾</span> <span data-t="se_save">सहेजें</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slab item">
+      <button class="open-btn" aria-expanded="false"><span class="e">🧠</span><b data-t="se_models">मॉडल</b><span class="sign">+</span></button>
+      <div class="body">
+        <div class="srow"><span class="txt"><b data-t="se_m_hear">सुनना</b><small>IndicConformer 600M</small></span><span class="chip c3" id="mAsr">…</span></div>
+        <div class="srow"><span class="txt"><b data-t="se_m_trans">अनुवाद</b><small>IndicTrans2 320M</small></span><span class="chip c5" id="mNmt">…</span></div>
+        <div class="srow"><span class="txt"><b data-t="se_m_speak">बोलना</b><small>gTTS</small></span><span class="chip c1" id="mTts">…</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet">
+    <h2 id="sheetTitle"><span>🎉</span> <span data-t="wr_title">कक्षा कैसी रही</span></h2>
+    <p class="who" id="sheetWho"></p>
+    <div class="score">
+      <span class="pc" id="pc">०%</span>
+      <span class="txt"><b id="verdictTitle"></b><p id="verdictBody"></p></span>
+    </div>
+    <div class="sgrid">
+      <div><span data-t="wr_steps">पंक्तियाँ पूरी</span><b id="nSteps">० / ०</b></div>
+      <div><span data-t="wr_lines">अनुवाद</span><b id="nLines">०</b></div>
+      <div><span data-t="wr_time">समय</span><b id="nTime">०</b></div>
+      <div><span data-t="wr_sec">औसत सेकंड</span><b id="nSec">०.००</b></div>
+    </div>
+    <div class="row">
+      <button class="btn go" id="sheetPdf"><span class="e">📄</span> <span data-t="act_sheet">कार्यपत्रक</span></button>
+      <button class="btn paper" id="sheetClose"><span data-t="wr_back">वापस</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   वाणीसेतु — कक्षा का पर्दा
+   Wired to the Flask backend in app.py. Endpoints used:
+     GET  /lessons /health /health/models /audio/output
+     POST /session/start /session/next /session/goto /session/response
+          /session/summary /translate/text /translate/audio /feedback /worksheet
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────────────────
+   भाषा  ·  ᱯᱟᱹᱨᱥᱤ
+   Every visible string lives here. The Santali column was written without a
+   native speaker to check it, so treat it as a first draft: correct anything
+   that reads wrong and nothing else in the file has to change.
+   ─────────────────────────────────────────────────────────────────────────── */
+const T = {
+hi: {
+  skip:"मुख्य भाग पर जाएँ", brand:"वाणीसेतु",
+  nav_class:"कक्षा", nav_lessons:"पाठ", nav_cards:"चित्र पत्ते", nav_progress:"प्रगति", nav_settings:"सेटिंग",
+  conn_wait:"जुड़ रहे हैं", conn_up:"सर्वर चालू", conn_down:"सर्वर बंद",
+  tip_big:"बड़े अक्षर", pick_lesson:"पाठ चुनें",
+  hint_say:"पंक्ति बोलिए, फिर भेजिए", hint_last:"आखिरी पंक्ति, फिर समापन",
+  sess_title:"इस कक्षा में", sess_time:"समय", sess_lines:"पंक्तियाँ", sess_last:"पिछली बार",
+  sess_right:"सही उत्तर", sess_plan:"पाठ की पंक्तियाँ",
+  mode_teach:"सिखाना", mode_do:"करना", mode_ask:"पूछना",
+  note_while:"बोलते समय", note_next:"आगे", note_none:"इसके बाद कुछ नहीं, समापन कीजिए",
+  note_plain:"जैसे रोज़ बोलते हैं वैसे ही बोलिए",
+  pan_hindi:"हिंदी", pan_sat:"ᱥᱟᱱᱛᱟᱲᱤ", pan_edit:"भेजने से पहले बदल सकते हैं",
+  pan_voice:"आधे सेकंड में बोलकर सुनाएगा", pan_voice_rev:"आवाज़ केवल ᱥᱟᱱᱛᱟᱲᱤ में",
+  ph_hi:"यहाँ लिखिए", ph_sa:"अनुवाद यहाँ आएगा", ph_ans:"जैसे सात", ph_fix:"सही पंक्ति लिखिए",
+  tip_reset:"पंक्ति वापस लाएँ", tip_clear:"मिटाएँ", tip_swap:"दिशा बदलें", tip_play:"सुनिए",
+  act_translate:"अनुवाद", act_translating:"हो रहा है", act_translate_rev:"वापस अनुवाद",
+  act_mic_hi:"हिंदी बोलिए", act_mic_sat:"ᱥᱟᱱᱛᱟᱲᱤ", act_sheet:"कार्यपत्रक", act_wrap:"समापन",
+  act_next:"अगली पंक्ति", act_finish:"पाठ पूरा", act_building:"बन रहा है",
+  t1_title:"कितना समय लगा", t1_sub:"बोलने से सुनाने तक", t1_sec:"सेकंड",
+  t1_hear:"सुनना", t1_trans:"अनुवाद", t1_speak:"बोलना",
+  t1_note:"लिखी पंक्ति में सुनने का समय नहीं लगता", t1_note_mic:"सबसे ज़्यादा समय सुनने में लगता है",
+  t1_conf:"मॉडल का भरोसा",
+  t2_title:"बच्चे ने क्या कहा", t2_sub:"जो सुना वह लिखिए", t2_sub_ask:"इस पंक्ति का उत्तर पूछा गया है",
+  t2_mark:"जाँचें", t2_got:"सही", t2_near:"लगभग", t2_again:"फिर से",
+  v_green:"बिलकुल सही, आगे बढ़िए", v_amber:"आधा सही, एक बार धीरे से फिर पूछिए",
+  v_rose:"अभी नहीं, चीज़ें दिखाकर समझाइए",
+  t3_title:"अनुवाद ठीक था", t3_sub:"आपका सुधार अगली बार काम आएगा",
+  t3_yes:"ठीक", t3_fix:"सुधारें", t3_save:"सहेजें", t3_cancel:"रहने दें",
+  t3_none:"अभी कोई सुधार नहीं", t3_saved:"सुधार सहेजे गए",
+  les_title:"पाठ", les_sub:"कोई भी पाठ चुनिए, वह कक्षा में खुल जाएगा",
+  les_all:"सब", les_grade:"कक्षा", les_lines:"पंक्तियाँ", les_open:"खोलिए", les_none:"इस कक्षा का कोई पाठ नहीं",
+  fc_title:"चित्र पत्ते", fc_sub:"पत्ता दबाइए, वह पलटेगा और ᱥᱟᱱᱛᱟᱲᱤ दिखाएगा",
+  fc_shuffle:"बदलिए", fc_flipall:"सब पलटिए", fc_tap:"दबाकर पलटिए", fc_listen:"सुनिए",
+  fc_wait:"आ रहा है", fc_off:"सर्वर से नहीं जुड़ा",
+  pr_title:"प्रगति", pr_sub:"आज की कक्षा का हिसाब", pr_lines:"पंक्तियाँ", pr_sec:"औसत सेकंड",
+  pr_right:"सही उत्तर", pr_steps:"पूरी पंक्तियाँ", pr_blank_t:"अभी कुछ नहीं",
+  pr_blank_p:"कक्षा में एक पंक्ति का अनुवाद कीजिए, वह यहाँ दिखेगी",
+  pr_hi:"हिंदी", pr_sat:"ᱥᱟᱱᱛᱟᱲᱤ", pr_took:"समय",
+  se_title:"सेटिंग", se_sub:"दिन में एक बार सेट कीजिए", se_room:"कक्षा में",
+  se_auto:"अपने आप बोले", se_auto_s:"अनुवाद आते ही सुनाई देगा",
+  se_big:"बड़े अक्षर", se_big_s:"पूरी कक्षा को दिखाने के लिए",
+  se_msg:"हर बार संदेश", se_msg_s:"अनुवाद होने पर छोटा संदेश",
+  se_server:"सर्वर", se_addr:"सर्वर का पता", se_addr_s:"दूसरे उपकरण से जुड़ने पर बदलिए",
+  se_grade:"आपकी कक्षा", se_save:"सहेजें", se_models:"मॉडल",
+  se_m_hear:"सुनना", se_m_trans:"अनुवाद", se_m_speak:"बोलना", se_on:"चालू", se_off:"बंद",
+  wr_title:"कक्षा कैसी रही", wr_steps:"पंक्तियाँ पूरी", wr_lines:"अनुवाद", wr_time:"समय",
+  wr_sec:"औसत सेकंड", wr_back:"वापस",
+  wr_early:"अभी कहना जल्दी है", wr_early_b:"कुछ उत्तर जाँचिए, तब हिसाब बनेगा",
+  wr_good:"बच्चों को समझ आ गया", wr_good_b:"कल अगला पाठ ले सकते हैं",
+  wr_half:"आधी कक्षा समझी", wr_half_b:"कल शुरू में इसी पाठ के शब्द दोहराइए",
+  wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
+  m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
+  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_mic_no:"माइक की अनुमति नहीं मिली",
+  m_mic_short:"बहुत छोटा था, थोड़ा देर तक बोलिए", m_mic_none:"इस ब्राउज़र में रिकॉर्डिंग नहीं होती",
+  m_listening:"सुन रहे हैं", m_heard:"सुन लिया", m_done_in:"सेकंड में हुआ",
+  m_ans_first:"पहले उत्तर लिखिए", m_fix_first:"पहले सही पंक्ति लिखिए",
+  m_saved:"सहेज लिया", m_thanks:"धन्यवाद, यही रखा जाएगा", m_sheet:"कार्यपत्रक मिल गया",
+  m_line_back:"पंक्ति वापस आ गई", m_prefs:"सेटिंग सहेजी गई",
+  m_dir_fwd:"हिंदी से ᱥᱟᱱᱛᱟᱲᱤ", m_dir_rev:"ᱥᱟᱱᱛᱟᱲᱤ से हिंदी",
+  m_loaded:"पाठ खुल गया", m_err:"नहीं हो पाया",
+  no_server_t:"सर्वर नहीं मिला", no_server_p:"python app.py चलाइए, फिर यह पन्ना दोबारा खोलिए",
+  step:"पंक्ति", grade:"कक्षा"
+},
+sat: {
+  skip:"ᱢᱩᱬᱩᱛ ᱠᱟᱛᱷᱟ ᱛᱮ ᱪᱟᱞᱟᱜ", brand:"ᱣᱟᱱᱤᱥᱮᱛᱩ",
+  nav_class:"ᱠᱞᱟᱥ", nav_lessons:"ᱥᱮᱪᱮᱫ", nav_cards:"ᱪᱤᱛᱟᱹᱨ ᱠᱟᱨᱰ", nav_progress:"ᱦᱤᱥᱟᱹᱵ", nav_settings:"ᱥᱮᱴᱤᱝ",
+  conn_wait:"ᱡᱚᱲᱟᱣ ᱠᱟᱱᱟ", conn_up:"ᱥᱟᱨᱵᱷᱟᱨ ᱪᱟᱹᱞᱩ", conn_down:"ᱥᱟᱨᱵᱷᱟᱨ ᱵᱚᱸᱫ",
+  tip_big:"ᱢᱟᱨᱟᱝ ᱚᱞ", pick_lesson:"ᱥᱮᱪᱮᱫ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+  hint_say:"ᱟᱲᱟᱝ ᱨᱚᱲ ᱢᱮ, ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱠᱩᱞ ᱢᱮ", hint_last:"ᱢᱩᱪᱟᱹᱫ ᱟᱲᱟᱝ, ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱢᱩᱪᱟᱹᱫ",
+  sess_title:"ᱱᱚᱶᱟ ᱠᱞᱟᱥ ᱨᱮ", sess_time:"ᱚᱠᱛᱚ", sess_lines:"ᱟᱲᱟᱝ ᱠᱚ", sess_last:"ᱢᱟᱲᱟᱝ ᱛᱮ",
+  sess_right:"ᱴᱷᱤᱠ ᱛᱮᱞᱟ", sess_plan:"ᱥᱮᱪᱮᱫ ᱨᱮᱭᱟᱜ ᱟᱲᱟᱝ ᱠᱚ",
+  mode_teach:"ᱥᱮᱪᱮᱫ", mode_do:"ᱠᱟᱹᱢᱤ", mode_ask:"ᱠᱩᱠᱞᱤ",
+  note_while:"ᱨᱚᱲ ᱡᱷᱚᱜ", note_next:"ᱟᱭᱩᱨ", note_none:"ᱱᱚᱶᱟ ᱛᱟᱭᱚᱢ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱝ, ᱢᱩᱪᱟᱹᱫ ᱢᱮ",
+  note_plain:"ᱡᱟᱦᱟᱸ ᱞᱮᱠᱟ ᱫᱤᱱ ᱨᱚᱲ ᱟᱢ, ᱚᱱᱟ ᱞᱮᱠᱟ ᱨᱚᱲ ᱢᱮ",
+  pan_hindi:"ᱦᱤᱱᱫᱤ", pan_sat:"ᱥᱟᱱᱛᱟᱲᱤ", pan_edit:"ᱠᱩᱞ ᱞᱟᱦᱟ ᱵᱚᱫᱚᱞ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ",
+  pan_voice:"ᱛᱟᱞᱟ ᱥᱮᱠᱮᱸᱰ ᱨᱮ ᱨᱚᱲ ᱩᱰᱩᱜᱼᱟ", pan_voice_rev:"ᱟᱬᱟᱨ ᱫᱚ ᱥᱟᱱᱛᱟᱲᱤ ᱨᱮ ᱨᱮ ᱜᱮ",
+  ph_hi:"ᱱᱚᱰᱮ ᱚᱞ ᱢᱮ", ph_sa:"ᱛᱚᱨᱡᱚᱢᱟ ᱱᱚᱰᱮ ᱦᱮᱡᱚᱜᱼᱟ", ph_ans:"ᱡᱮᱞᱮᱠᱟ ᱭᱟᱭ", ph_fix:"ᱴᱷᱤᱠ ᱟᱲᱟᱝ ᱚᱞ ᱢᱮ",
+  tip_reset:"ᱟᱲᱟᱝ ᱨᱩᱣᱟᱹᱲ", tip_clear:"ᱢᱮᱴᱟᱣ", tip_swap:"ᱩᱞᱴᱟᱹᱣ", tip_play:"ᱟᱸᱡᱚᱢ ᱢᱮ",
+  act_translate:"ᱛᱚᱨᱡᱚᱢᱟ", act_translating:"ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟ", act_translate_rev:"ᱨᱩᱣᱟᱹᱲ ᱛᱚᱨᱡᱚᱢᱟ",
+  act_mic_hi:"ᱦᱤᱱᱫᱤ ᱨᱚᱲ", act_mic_sat:"ᱥᱟᱱᱛᱟᱲᱤ ᱨᱚᱲ", act_sheet:"ᱠᱟᱹᱢᱤ ᱠᱟᱜᱚᱡ", act_wrap:"ᱢᱩᱪᱟᱹᱫ",
+  act_next:"ᱮᱴᱟᱜ ᱟᱲᱟᱝ", act_finish:"ᱥᱮᱪᱮᱫ ᱪᱟᱵᱟ", act_building:"ᱛᱮᱭᱟᱨ ᱠᱟᱱᱟ",
+  t1_title:"ᱛᱤᱱᱟᱜ ᱚᱠᱛᱚ ᱞᱟᱹᱜᱤᱫᱠᱮᱫᱟ", t1_sub:"ᱨᱚᱲ ᱠᱷᱚᱱ ᱟᱸᱡᱚᱢ ᱦᱟᱹᱵᱤᱡ", t1_sec:"ᱥᱮᱠᱮᱸᱰ",
+  t1_hear:"ᱟᱸᱡᱚᱢ", t1_trans:"ᱛᱚᱨᱡᱚᱢᱟ", t1_speak:"ᱨᱚᱲ",
+  t1_note:"ᱚᱞ ᱟᱠᱟᱱ ᱟᱲᱟᱝ ᱨᱮ ᱟᱸᱡᱚᱢ ᱚᱠᱛᱚ ᱵᱟᱝ ᱞᱟᱹᱜᱤᱫᱟ",
+  t1_note_mic:"ᱟᱸᱡᱚᱢ ᱨᱮ ᱜᱮ ᱡᱟᱹᱥᱛᱤ ᱚᱠᱛᱚ ᱞᱟᱹᱜᱤᱫᱟ", t1_conf:"ᱢᱚᱰᱮᱞ ᱨᱮᱭᱟᱜ ᱯᱟᱹᱛᱭᱟᱹᱣ",
+  t2_title:"ᱜᱤᱫᱽᱨᱟᱹ ᱪᱮᱫ ᱞᱟᱹᱭ ᱠᱮᱫᱟ", t2_sub:"ᱡᱟᱦᱟᱸ ᱟᱸᱡᱚᱢ ᱠᱮᱫᱟᱢ ᱚᱱᱟ ᱚᱞ ᱢᱮ",
+  t2_sub_ask:"ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱨᱮ ᱛᱮᱞᱟ ᱠᱩᱠᱞᱤ ᱟᱠᱟᱱᱟ",
+  t2_mark:"ᱧᱮᱞ ᱢᱮ", t2_got:"ᱴᱷᱤᱠ", t2_near:"ᱛᱟᱞᱟ", t2_again:"ᱫᱚᱦᱲᱟ",
+  v_green:"ᱴᱷᱤᱠ ᱜᱮ, ᱟᱭᱩᱨ ᱪᱟᱞᱟᱜ ᱢᱮ", v_amber:"ᱛᱟᱞᱟ ᱴᱷᱤᱠ, ᱫᱚᱦᱲᱟ ᱟᱞᱜᱟ ᱛᱮ ᱠᱩᱠᱞᱤ ᱢᱮ",
+  v_rose:"ᱱᱤᱛᱚᱜ ᱵᱟᱝ, ᱡᱤᱱᱤᱥ ᱩᱫᱩᱜ ᱠᱟᱛᱮ ᱵᱩᱡᱷᱟᱹᱣ ᱢᱮ",
+  t3_title:"ᱛᱚᱨᱡᱚᱢᱟ ᱴᱷᱤᱠ ᱛᱟᱦᱮᱸ", t3_sub:"ᱟᱢᱟᱜ ᱴᱷᱤᱠ ᱟᱲᱟᱝ ᱮᱴᱟᱜ ᱛᱷᱚᱠ ᱠᱟᱹᱢᱤᱭᱟ",
+  t3_yes:"ᱴᱷᱤᱠ", t3_fix:"ᱴᱷᱤᱠ ᱛᱮᱭᱟᱨ", t3_save:"ᱥᱟᱺᱪᱟᱣ", t3_cancel:"ᱵᱚᱸᱫ",
+  t3_none:"ᱱᱤᱛᱚᱜ ᱫᱷᱟᱹᱨᱛᱤ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱝ", t3_saved:"ᱴᱷᱤᱠ ᱟᱲᱟᱝ ᱥᱟᱺᱪᱟᱣ ᱮᱱᱟ",
+  les_title:"ᱥᱮᱪᱮᱫ", les_sub:"ᱡᱟᱦᱟᱸ ᱥᱮᱪᱮᱫ ᱵᱟᱪᱷᱟᱣ ᱢᱮ, ᱚᱱᱟ ᱠᱞᱟᱥ ᱨᱮ ᱡᱷᱤᱡᱽ ᱚᱰᱚᱠᱼᱟ",
+  les_all:"ᱡᱚᱛᱚ", les_grade:"ᱠᱞᱟᱥ", les_lines:"ᱟᱲᱟᱝ", les_open:"ᱡᱷᱤᱡᱽ", les_none:"ᱱᱚᱶᱟ ᱠᱞᱟᱥ ᱨᱮ ᱥᱮᱪᱮᱫ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+  fc_title:"ᱪᱤᱛᱟᱹᱨ ᱠᱟᱨᱰ", fc_sub:"ᱠᱟᱨᱰ ᱚᱛᱟ ᱢᱮ, ᱚᱱᱟ ᱩᱞᱴᱟᱹᱣᱜᱼᱟ ᱟᱨ ᱥᱟᱱᱛᱟᱲᱤ ᱩᱫᱩᱜᱼᱟ",
+  fc_shuffle:"ᱵᱚᱫᱚᱞ", fc_flipall:"ᱡᱚᱛᱚ ᱩᱞᱴᱟᱹᱣ", fc_tap:"ᱚᱛᱟ ᱠᱟᱛᱮ ᱩᱞᱴᱟᱹᱣ ᱢᱮ", fc_listen:"ᱟᱸᱡᱚᱢ",
+  fc_wait:"ᱦᱮᱡ ᱠᱟᱱᱟ", fc_off:"ᱥᱟᱨᱵᱷᱟᱨ ᱥᱟᱶ ᱵᱟᱝ ᱡᱚᱲᱟᱣ",
+  pr_title:"ᱦᱤᱥᱟᱹᱵ", pr_sub:"ᱛᱮᱦᱮᱸᱡ ᱠᱞᱟᱥ ᱨᱮᱭᱟᱜ ᱦᱤᱥᱟᱹᱵ", pr_lines:"ᱟᱲᱟᱝ ᱠᱚ", pr_sec:"ᱟᱣᱥᱚᱛ ᱥᱮᱠᱮᱸᱰ",
+  pr_right:"ᱴᱷᱤᱠ ᱛᱮᱞᱟ", pr_steps:"ᱪᱟᱵᱟ ᱟᱲᱟᱝ", pr_blank_t:"ᱱᱤᱛᱚᱜ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱝ",
+  pr_blank_p:"ᱠᱞᱟᱥ ᱨᱮ ᱢᱤᱫ ᱟᱲᱟᱝ ᱛᱚᱨᱡᱚᱢᱟ ᱢᱮ, ᱚᱱᱟ ᱱᱚᱰᱮ ᱧᱮᱞᱚᱜᱼᱟ",
+  pr_hi:"ᱦᱤᱱᱫᱤ", pr_sat:"ᱥᱟᱱᱛᱟᱲᱤ", pr_took:"ᱚᱠᱛᱚ",
+  se_title:"ᱥᱮᱴᱤᱝ", se_sub:"ᱫᱤᱱ ᱨᱮ ᱢᱤᱫ ᱛᱷᱚᱠ ᱥᱮᱴ ᱢᱮ", se_room:"ᱠᱞᱟᱥ ᱨᱮ",
+  se_auto:"ᱟᱡᱛᱮ ᱨᱚᱲᱚᱜᱼᱟ", se_auto_s:"ᱛᱚᱨᱡᱚᱢᱟ ᱦᱮᱡ ᱞᱮᱠᱟᱛᱮ ᱟᱸᱡᱚᱢᱚᱜᱼᱟ",
+  se_big:"ᱢᱟᱨᱟᱝ ᱚᱞ", se_big_s:"ᱡᱚᱛᱚ ᱠᱞᱟᱥ ᱩᱫᱩᱜ ᱞᱟᱹᱜᱤᱫ",
+  se_msg:"ᱡᱟᱦᱟᱸ ᱛᱷᱚᱠ ᱠᱷᱚᱵᱚᱨ", se_msg_s:"ᱛᱚᱨᱡᱚᱢᱟ ᱦᱩᱭ ᱞᱮᱠᱷᱟᱱ ᱠᱟᱴᱤᱡ ᱠᱷᱚᱵᱚᱨ",
+  se_server:"ᱥᱟᱨᱵᱷᱟᱨ", se_addr:"ᱥᱟᱨᱵᱷᱟᱨ ᱴᱷᱤᱠᱟᱹᱱᱟ", se_addr_s:"ᱮᱴᱟᱜ ᱡᱤᱱᱤᱥ ᱠᱷᱚᱱ ᱡᱚᱲᱟᱣ ᱡᱷᱚᱜ ᱵᱚᱫᱚᱞ ᱢᱮ",
+  se_grade:"ᱟᱢᱟᱜ ᱠᱞᱟᱥ", se_save:"ᱥᱟᱺᱪᱟᱣ", se_models:"ᱢᱚᱰᱮᱞ",
+  se_m_hear:"ᱟᱸᱡᱚᱢ", se_m_trans:"ᱛᱚᱨᱡᱚᱢᱟ", se_m_speak:"ᱨᱚᱲ", se_on:"ᱪᱟᱹᱞᱩ", se_off:"ᱵᱚᱸᱫ",
+  wr_title:"ᱠᱞᱟᱥ ᱪᱮᱫ ᱞᱮᱠᱟ ᱛᱟᱦᱮᱸ", wr_steps:"ᱪᱟᱵᱟ ᱟᱲᱟᱝ", wr_lines:"ᱛᱚᱨᱡᱚᱢᱟ", wr_time:"ᱚᱠᱛᱚ",
+  wr_sec:"ᱟᱣᱥᱚᱛ ᱥᱮᱠᱮᱸᱰ", wr_back:"ᱨᱩᱣᱟᱹᱲ",
+  wr_early:"ᱱᱤᱛᱚᱜ ᱞᱟᱹᱭ ᱫᱚ ᱡᱚᱛᱚᱱ", wr_early_b:"ᱛᱤᱱᱟᱜ ᱛᱮᱞᱟ ᱧᱮᱞ ᱢᱮ, ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱦᱤᱥᱟᱹᱵ ᱦᱩᱭᱩᱜᱼᱟ",
+  wr_good:"ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱵᱩᱡᱷᱟᱹᱣ ᱠᱮᱫᱟ", wr_good_b:"ᱜᱟᱯᱟ ᱮᱴᱟᱜ ᱥᱮᱪᱮᱫ ᱦᱟᱛᱟᱣ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ",
+  wr_half:"ᱛᱟᱞᱟ ᱠᱞᱟᱥ ᱵᱩᱡᱷᱟᱹᱣ ᱠᱮᱫᱟ", wr_half_b:"ᱜᱟᱯᱟ ᱮᱦᱚᱵ ᱨᱮ ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱠᱚ ᱫᱚᱦᱲᱟ ᱢᱮ",
+  wr_low:"ᱟᱨ ᱢᱤᱫ ᱛᱷᱚᱠ ᱥᱮᱪᱮᱫ ᱢᱮ", wr_low_b:"ᱡᱤᱱᱤᱥ ᱠᱚ ᱛᱤ ᱨᱮ ᱮᱢ ᱠᱟᱛᱮ ᱫᱚᱦᱲᱟ ᱢᱮ",
+  m_nothing:"ᱱᱚᱶᱟ ᱥᱮᱡ ᱨᱮ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱹᱱᱩᱜᱼᱟ", m_first:"ᱢᱟᱲᱟᱝ ᱛᱚᱨᱡᱚᱢᱟ ᱢᱮ", m_playing:"ᱟᱸᱡᱚᱢᱚᱜ ᱠᱟᱱᱟ",
+  m_blocked:"ᱢᱤᱫ ᱛᱷᱚᱠ ᱚᱛᱟ ᱠᱟᱛᱮ ᱟᱬᱟᱨ ᱪᱟᱹᱞᱩ ᱢᱮ", m_mic_no:"ᱢᱟᱭᱠ ᱨᱮᱭᱟᱜ ᱦᱩᱠᱩᱢ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+  m_mic_short:"ᱟᱹᱰᱤ ᱠᱟᱴᱤᱡ ᱛᱟᱦᱮᱸ, ᱟᱨ ᱡᱟᱹᱥᱛᱤ ᱨᱚᱲ ᱢᱮ", m_mic_none:"ᱱᱚᱶᱟ ᱵᱨᱟᱩᱡᱚᱨ ᱨᱮ ᱨᱮᱠᱚᱨᱰ ᱵᱟᱝ ᱦᱩᱭᱩᱜᱼᱟ",
+  m_listening:"ᱟᱸᱡᱚᱢ ᱠᱟᱱᱟ", m_heard:"ᱟᱸᱡᱚᱢ ᱠᱮᱫᱟ", m_done_in:"ᱥᱮᱠᱮᱸᱰ ᱨᱮ ᱦᱩᱭ ᱮᱱᱟ",
+  m_ans_first:"ᱢᱟᱲᱟᱝ ᱛᱮᱞᱟ ᱚᱞ ᱢᱮ", m_fix_first:"ᱢᱟᱲᱟᱝ ᱴᱷᱤᱠ ᱟᱲᱟᱝ ᱚᱞ ᱢᱮ",
+  m_saved:"ᱥᱟᱺᱪᱟᱣ ᱮᱱᱟ", m_thanks:"ᱥᱟᱨᱦᱟᱣ, ᱱᱚᱶᱟ ᱜᱮ ᱫᱚᱦᱚᱭᱟ", m_sheet:"ᱠᱟᱹᱢᱤ ᱠᱟᱜᱚᱡ ᱧᱟᱢ ᱮᱱᱟ",
+  m_line_back:"ᱟᱲᱟᱝ ᱨᱩᱣᱟᱹᱲ ᱮᱱᱟ", m_prefs:"ᱥᱮᱴᱤᱝ ᱥᱟᱺᱪᱟᱣ ᱮᱱᱟ",
+  m_dir_fwd:"ᱦᱤᱱᱫᱤ ᱠᱷᱚᱱ ᱥᱟᱱᱛᱟᱲᱤ", m_dir_rev:"ᱥᱟᱱᱛᱟᱲᱤ ᱠᱷᱚᱱ ᱦᱤᱱᱫᱤ",
+  m_loaded:"ᱥᱮᱪᱮᱫ ᱡᱷᱤᱡᱽ ᱮᱱᱟ", m_err:"ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ",
+  no_server_t:"ᱥᱟᱨᱵᱷᱟᱨ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ", no_server_p:"python app.py ᱪᱟᱹᱞᱩ ᱢᱮ, ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱱᱚᱶᱟ ᱥᱟᱦᱴᱟ ᱫᱚᱦᱲᱟ ᱡᱷᱤᱡᱽ ᱢᱮ",
+  step:"ᱟᱲᱟᱝ", grade:"ᱠᱞᱟᱥ"
+},
+en: {
+  skip:"Skip to the lesson", brand:"VaaniSetu",
+  nav_class:"Classroom", nav_lessons:"Lessons", nav_cards:"Flashcards", nav_progress:"Progress", nav_settings:"Settings",
+  conn_wait:"Connecting", conn_up:"Server up", conn_down:"No server",
+  tip_big:"Bigger type", pick_lesson:"Choose a lesson",
+  hint_say:"Say the line, then send it across", hint_last:"Last line, then wrap up",
+  sess_title:"This session", sess_time:"Time", sess_lines:"Lines", sess_last:"Last one took",
+  sess_right:"Answered right", sess_plan:"The lines in this lesson",
+  mode_teach:"Teaching", mode_do:"Doing", mode_ask:"Asking",
+  note_while:"While you say it", note_next:"Coming next", note_none:"Nothing after this one, wrap up when you are ready",
+  note_plain:"Say it the way you normally would",
+  pan_hindi:"Hindi", pan_sat:"Santali", pan_edit:"You can edit before you send it",
+  pan_voice:"Spoken back in about half a second", pan_voice_rev:"The voice only speaks Santali",
+  ph_hi:"Type it here", ph_sa:"The translation lands here", ph_ans:"e.g. seven", ph_fix:"Write the correct line",
+  tip_reset:"Put the lesson line back", tip_clear:"Clear", tip_swap:"Turn it around", tip_play:"Listen",
+  act_translate:"Translate", act_translating:"Working", act_translate_rev:"Translate back",
+  act_mic_hi:"Speak Hindi", act_mic_sat:"Speak Santali", act_sheet:"Worksheet", act_wrap:"Wrap up",
+  act_next:"Next line", act_finish:"Finish lesson", act_building:"Building",
+  t1_title:"How long the last line took", t1_sub:"From your voice to the spoken reply", t1_sec:"seconds",
+  t1_hear:"Hearing", t1_trans:"Translating", t1_speak:"Speaking",
+  t1_note:"A typed line skips the hearing step", t1_note_mic:"Hearing is where most of the time goes",
+  t1_conf:"Model confidence",
+  t2_title:"What did the child say", t2_sub:"Type the answer you heard", t2_sub_ask:"This line asks for an answer",
+  t2_mark:"Check", t2_got:"Right", t2_near:"Almost", t2_again:"Again",
+  v_green:"That is right, carry on", v_amber:"Half right, ask it once more slowly",
+  v_rose:"Not yet, show it with objects",
+  t3_title:"Was the translation right", t3_sub:"Your correction is reused next time",
+  t3_yes:"Right", t3_fix:"Fix it", t3_save:"Save", t3_cancel:"Never mind",
+  t3_none:"No corrections yet", t3_saved:"corrections saved",
+  les_title:"Lessons", les_sub:"Pick any lesson and it opens in the classroom",
+  les_all:"All", les_grade:"Grade", les_lines:"lines", les_open:"Open", les_none:"No lesson for that grade",
+  fc_title:"Flashcards", fc_sub:"Press a card, it flips over and shows the Santali",
+  fc_shuffle:"Shuffle", fc_flipall:"Flip all", fc_tap:"press to flip", fc_listen:"Listen",
+  fc_wait:"coming", fc_off:"not connected",
+  pr_title:"Progress", pr_sub:"What today's class added up to", pr_lines:"Lines", pr_sec:"Average seconds",
+  pr_right:"Answered right", pr_steps:"Lines finished", pr_blank_t:"Nothing yet",
+  pr_blank_p:"Translate a line in the classroom and it shows up here",
+  pr_hi:"Hindi", pr_sat:"Santali", pr_took:"Took",
+  se_title:"Settings", se_sub:"Set these once at the start of the day", se_room:"In the room",
+  se_auto:"Speak it automatically", se_auto_s:"You hear the translation the moment it lands",
+  se_big:"Bigger type", se_big_s:"For showing the whole class",
+  se_msg:"A note each time", se_msg_s:"A small message when a translation comes back",
+  se_server:"Server", se_addr:"Server address", se_addr_s:"Change it when another device connects",
+  se_grade:"Your grade", se_save:"Save", se_models:"Models",
+  se_m_hear:"Hearing", se_m_trans:"Translating", se_m_speak:"Speaking", se_on:"on", se_off:"off",
+  wr_title:"How the class went", wr_steps:"Lines finished", wr_lines:"Translations", wr_time:"Time",
+  wr_sec:"Average seconds", wr_back:"Back",
+  wr_early:"Too early to tell", wr_early_b:"Check a few answers and this fills in",
+  wr_good:"The children have it", wr_good_b:"You can take the next lesson tomorrow",
+  wr_half:"About half the class", wr_half_b:"Open tomorrow by repeating these words",
+  wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
+  m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
+  m_blocked:"Press once to allow sound", m_mic_no:"The microphone was not allowed",
+  m_mic_short:"That was too short, speak a little longer", m_mic_none:"This browser cannot record",
+  m_listening:"Listening", m_heard:"Heard it", m_done_in:"seconds",
+  m_ans_first:"Type the answer first", m_fix_first:"Write the correct line first",
+  m_saved:"Saved", m_thanks:"Thank you, this one will be kept", m_sheet:"Worksheet downloaded",
+  m_line_back:"The line is back", m_prefs:"Settings saved",
+  m_dir_fwd:"Hindi into Santali", m_dir_rev:"Santali into Hindi",
+  m_loaded:"The lesson is open", m_err:"That did not work",
+  no_server_t:"No server found", no_server_p:"Run python app.py, then open this page again",
+  step:"Line", grade:"Grade"
+}
+};
+
+/* lesson names in both scripts, keyed by the backend's topic */
+const LESSON = {
+  counting_1_10:{ e:"🔢", hi:["गिनती १ से १०","वस्तुएँ गिनना और क्रम से बोलना"],
+                        sat:["ᱦᱟᱹᱲᱤᱡ ᱢᱤᱫ ᱠᱷᱚᱱ ᱜᱮᱞ","ᱡᱤᱱᱤᱥ ᱦᱟᱹᱲᱤᱡ ᱟᱨ ᱠᱷᱟᱸᱡᱟ ᱛᱮ ᱨᱚᱲ"],
+                        en:["Counting 1 to 10","Counts objects up to 10 and says the numbers in order"] },
+  shapes:{ e:"🔺", hi:["आकार","गोल, चौकोर और तिकोन पहचानना"],
+                 sat:["ᱪᱤᱛᱟᱹᱨ","ᱜᱚᱞ, ᱪᱟᱩᱠᱟ ᱟᱨ ᱛᱮᱥᱠᱩᱬᱟᱹ ᱵᱟᱰᱟᱭ"],
+                        en:["Shapes","Picks out a circle, a square and a triangle"] },
+  addition:{ e:"➕", hi:["जोड़ना","दो अंकों को वस्तुओं से जोड़ना"],
+                   sat:["ᱡᱚᱲᱟᱣ","ᱵᱟᱨ ᱮᱞ ᱡᱤᱱᱤᱥ ᱛᱮ ᱡᱚᱲᱟᱣ"],
+                        en:["Adding","Adds two single digit numbers using objects"] },
+  reading_words:{ e:"📖", hi:["शब्द पढ़ना","दो अक्षर के शब्द बोलकर पढ़ना"],
+                        sat:["ᱟᱲᱟᱝ ᱯᱟᱲᱦᱟᱣ","ᱵᱟᱨ ᱚᱞ ᱨᱮᱭᱟᱜ ᱟᱲᱟᱝ ᱨᱚᱲ ᱠᱟᱛᱮ ᱯᱟᱲᱦᱟᱣ"],
+                        en:["Reading words","Reads two syllable words out loud"] },
+  subtraction:{ e:"➖", hi:["घटाना","एक अंक में से दूसरा घटाना"],
+                      sat:["ᱠᱚᱢ","ᱢᱤᱫ ᱮᱞ ᱠᱷᱚᱱ ᱮᱴᱟᱜ ᱠᱚᱢ"],
+                        en:["Taking away","Takes one single digit number away from another"] }
+};
+
+/* चित्र पत्ते — flashcard decks, one per lesson topic */
+const DECKS = {
+  counting_1_10:[
+    {e:"🍎",n:1,hi:"एक"},{e:"🍎",n:2,hi:"दो"},{e:"🍎",n:3,hi:"तीन"},
+    {e:"🍎",n:4,hi:"चार"},{e:"🍎",n:5,hi:"पांच"},{e:"🌰",n:6,hi:"छह"},
+    {e:"🌰",n:7,hi:"सात"},{e:"🌰",n:8,hi:"आठ"},{e:"🌰",n:9,hi:"नौ"},{e:"🌰",n:10,hi:"दस"}
+  ],
+  shapes:[
+    {e:"⭕",hi:"गोल"},{e:"🟦",hi:"चौकोर"},{e:"🔺",hi:"तिकोन"},{e:"⭐",hi:"तारा"},
+    {e:"🥚",hi:"अंडाकार"},{e:"➖",hi:"रेखा"}
+  ],
+  addition:[
+    {e:"🥭🥭 ➕ 🥭",hi:"दो और एक तीन"},{e:"🍌🍌 ➕ 🍌🍌",hi:"दो और दो चार"},
+    {e:"🪨🪨🪨 ➕ 🪨🪨",hi:"तीन और दो पांच"},{e:"🌼🌼🌼 ➕ 🌼🌼🌼🌼",hi:"तीन और चार सात"},
+    {e:"✋ ➕ ✋",hi:"पांच और पांच दस"}
+  ],
+  reading_words:[
+    {e:"👩",hi:"माँ"},{e:"💧",hi:"पानी"},{e:"🏠",hi:"घर"},{e:"🌸",hi:"फूल"},
+    {e:"📕",hi:"किताब"},{e:"🐄",hi:"गाय"}
+  ],
+  subtraction:[
+    {e:"🪨🪨🪨🪨🪨 ➖ 🪨🪨",hi:"पांच में से दो तीन"},
+    {e:"🍬🍬🍬🍬 ➖ 🍬",hi:"चार में से एक तीन"},
+    {e:"🐟🐟🐟🐟🐟🐟 ➖ 🐟🐟🐟",hi:"छह में से तीन तीन"},
+    {e:"🌟🌟🌟🌟🌟🌟🌟🌟 ➖ 🌟🌟🌟🌟🌟",hi:"आठ में से पांच तीन"}
+  ],
+};
+
+/* teaching notes for each step, in both scripts. lesson_engine.py stores these
+   in English; the classroom never shows English, so they are translated here.
+   Keyed by topic, in step order. */
+const NOTES = {
+  counting_1_10:[
+    ["उंगलियाँ दिखाइए, फिर शुरू कीजिए","ᱠᱟᱹᱴᱩᱢ ᱩᱫᱩᱜ ᱢᱮ, ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱮᱦᱚᱵ ᱢᱮ","Show your fingers, then begin"],
+    ["साथ में उंगलियों पर गिनिए","ᱠᱟᱹᱴᱩᱢ ᱛᱮ ᱢᱤᱫᱛᱮ ᱦᱟᱹᱲᱤᱡ ᱢᱮ","Count together on your fingers"],
+    ["असली चीज़ें मेज़ पर रखकर गिनवाइए","ᱥᱟᱹᱨᱤ ᱡᱤᱱᱤᱥ ᱫᱚᱦᱚ ᱠᱟᱛᱮ ᱦᱟᱹᱲᱤᱡ ᱪᱟᱵᱟ ᱢᱮ","Put real objects on the desk and count them"],
+    ["तीन चीज़ें ऊपर उठाकर पूछिए","ᱯᱮ ᱜᱚᱴᱟᱝ ᱡᱤᱱᱤᱥ ᱩᱫᱩᱜ ᱠᱟᱛᱮ ᱠᱩᱠᱞᱤ ᱢᱮ","Hold up three things and ask"]
+  ],
+  shapes:[
+    ["गोल चीज़ ऊँची करके दिखाइए","ᱜᱚᱞ ᱡᱤᱱᱤᱥ ᱪᱮᱛᱟᱱ ᱛᱮ ᱩᱫᱩᱜ ᱢᱮ","Hold the round thing up high"],
+    ["चौकोर दिखाइए, कोने गिनवाइए","ᱪᱟᱩᱠᱟ ᱩᱫᱩᱜ ᱢᱮ, ᱠᱩᱱᱟᱹ ᱦᱟᱹᱲᱤᱡ ᱪᱟᱵᱟ ᱢᱮ","Show the square, let them count the corners"],
+    ["कक्षा में गोल चीज़ें ढुँढवाइए","ᱠᱞᱟᱥ ᱨᱮ ᱜᱚᱞ ᱡᱤᱱᱤᱥ ᱯᱟᱱᱛᱮ ᱪᱟᱵᱟ ᱢᱮ","Let them find round things around the room"],
+    ["बोर्ड पर तिकोन दिखाकर पूछिए","ᱵᱚᱨᱰ ᱨᱮ ᱛᱮᱥᱠᱩᱬᱟᱹ ᱩᱫᱩᱜ ᱠᱟᱛᱮ ᱠᱩᱠᱞᱤ ᱢᱮ","Point at the triangle and ask"]
+  ],
+  addition:[
+    ["दो ढेर हाथ से मिलाकर दिखाइए","ᱵᱟᱨ ᱜᱟᱫᱮᱞ ᱛᱤ ᱛᱮ ᱢᱮᱥᱟᱣ ᱠᱟᱛᱮ ᱩᱫᱩᱜ ᱢᱮ","Push two piles together with your hands"],
+    ["मेज़ पर जो रखा है उसी से जोड़िए","ᱴᱮᱵᱩᱞ ᱨᱮ ᱡᱟᱦᱟᱸ ᱢᱮᱱᱟᱜᱼᱟ ᱚᱱᱟ ᱛᱮ ᱜᱮ ᱡᱚᱲᱟᱣ ᱢᱮ","Add using whatever is already on the desk"],
+    ["एक बच्चे से पूरी कक्षा को सवाल पुछवाइए","ᱢᱤᱫ ᱜᱤᱫᱽᱨᱟᱹ ᱛᱮ ᱡᱚᱛᱚ ᱠᱞᱟᱥ ᱠᱩᱠᱞᱤ ᱪᱟᱵᱟ ᱢᱮ","Let one child ask the whole class"],
+    ["रुकिए, उत्तर बच्चों को ही कहने दीजिए","ᱛᱟᱸᱦᱮᱸ ᱢᱮ, ᱛᱮᱞᱟ ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱜᱮ ᱞᱟᱹᱭ ᱢᱟ","Wait, let the children say the answer"]
+  ],
+  reading_words:[
+    ["पत्ता स्थिर रखिए, बच्चे देखते रहें","ᱠᱟᱨᱰ ᱴᱷᱟᱹᱣᱠᱟᱹ ᱫᱚᱦᱚ ᱢᱮ, ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱧᱮᱞ ᱢᱟ","Hold the card still while they look"],
+    ["पूरी कक्षा एक साथ बोलकर पढ़े","ᱡᱚᱛᱚ ᱠᱞᱟᱥ ᱢᱤᱫᱛᱮ ᱨᱚᱲ ᱠᱟᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱟ","The whole class reads it out together"],
+    ["एक-एक बच्चे से अलग पढ़वाइए","ᱢᱤᱫ ᱢᱤᱫ ᱜᱤᱫᱽᱨᱟᱹ ᱛᱮ ᱟᱞᱜᱟ ᱯᱟᱲᱦᱟᱣ ᱪᱟᱵᱟ ᱢᱮ","Let each child read it on their own"]
+  ],
+  subtraction:[
+    ["सामने से चीज़ें हटाकर दिखाइए","ᱥᱟᱢᱟᱝ ᱠᱷᱚᱱ ᱡᱤᱱᱤᱥ ᱚᱪᱚᱜ ᱠᱟᱛᱮ ᱩᱫᱩᱜ ᱢᱮ","Take the objects away where they can see"],
+    ["बच्चे के अपने हाथ से हटवाइए","ᱜᱤᱫᱽᱨᱟᱹ ᱨᱮᱭᱟᱜ ᱛᱤ ᱛᱮ ᱜᱮ ᱚᱪᱚᱜ ᱪᱟᱵᱟ ᱢᱮ","Let the child's own hands do the taking away"],
+    ["इस बार बिना चीज़ों के पूछिए","ᱱᱚᱶᱟ ᱛᱷᱚᱠ ᱡᱤᱱᱤᱥ ᱵᱟᱝ ᱛᱮ ᱠᱩᱠᱞᱤ ᱢᱮ","This time ask without any objects"]
+  ]
+};
+const LANG_COL = { hi:0, sat:1, en:2 };
+function stepNote(topic, i){
+  const arr = NOTES[topic];
+  if (!arr || !arr[i]) return "";
+  return arr[i][LANG_COL[S.lang] ?? 0] || arr[i][0];
+}
+
+/* ───────────────── digits, in the script the teacher is reading ───────────── */
+const DIG = { hi:"०१२३४५६७८९", sat:"᱐᱑᱒᱓᱔᱕᱖᱗᱘᱙", en:"0123456789" };
+function num(v){
+  if (S.lang === "en") return String(v);
+  const d = DIG[S.lang] || DIG.hi;
+  return String(v).replace(/[0-9]/g, c => d[+c]);
+}
+const p2 = n => num(String(n).padStart(2,"0"));
+const t  = k => (T[S.lang] && T[S.lang][k]) || T.hi[k] || k;
+
+/* ───────────────── server ───────────────── */
+let SERVER = localStorage.getItem("vs_server") || window.location.origin;
+if (SERVER === "null" || SERVER.startsWith("file://")) SERVER = "http://127.0.0.1:5000";
+
+async function api(path, opts = {}){
+  const r = await fetch(SERVER + path, opts);
+  if (!r.ok){
+    let detail = r.status + " " + r.statusText;
+    try { const j = await r.json(); if (j.error) detail = j.error; } catch(e){}
+    throw new Error(detail);
+  }
+  return r;
+}
+const getJSON  = p => api(p).then(r => r.json());
+const postJSON = (p, body) => api(p, {
+  method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body || {})
+}).then(r => r.json());
+
+const Api = {
+  health:       ()             => getJSON("/health"),
+  models:       ()             => getJSON("/health/models"),
+  lessons:      ()             => getJSON("/lessons").then(d => d.lessons || []),
+  startSession: (grade, topic) => postJSON("/session/start", {grade, topic}),
+  next:         (sid)          => postJSON("/session/next", {session_id:sid}),
+  goto:         (sid, step)    => postJSON("/session/goto", {session_id:sid, step}),
+  mark:      (sid, text, step) => postJSON("/session/response", {session_id:sid, response:text, step}),
+  summary:      (sid)          => postJSON("/session/summary", {session_id:sid}),
+  translateText:(text, direction, mode, sid) =>
+      postJSON("/translate/text", {text, direction, mode, session_id:sid}),
+  translateAudio:(blob, direction, mode, sid) => {
+    const fd = new FormData();
+    fd.append("audio", blob, "recording.webm");
+    fd.append("direction", direction); fd.append("mode", mode); fd.append("session_id", sid);
+    return api("/translate/audio", {method:"POST", body:fd}).then(r => r.json());
+  },
+  feedback:(hindi, santali, isCorrect, corrected) =>
+      postJSON("/feedback", {hindi_text:hindi, santali_text:santali,
+                             is_correct:isCorrect, corrected_text:corrected || ""}),
+  worksheet:(payload) => api("/worksheet", {
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
+    }).then(r => r.blob())
+};
+
+/* ───────────────── state ───────────────── */
+const S = {
+  lang: localStorage.getItem("vs_lang") || "hi",
+  lessons:[], index:0, lesson:null, step:0,
+  mode:"lesson_script", dir:"hi-to-sat", sid:"",
+  rec:null, mr:null, chunks:[], recTimer:null, secs:0, lastFocus:null,
+  began:Date.now(), log:[], times:[], counts:{green:0,amber:0,rose:0}, fixes:0,
+  autoplay:true, confirm:true, filter:"all", online:false, busy:false,
+  deck:"counting_1_10", cardSat:new Map(), lastLat:null, lastSpoken:false, lastConf:null
+};
+
+const $  = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const SIGNAL = { green:"green", yellow:"amber", red:"rose" };
+const SIGNAL_EMOJI = { green:"🎉", amber:"🤔", rose:"🔁" };
+
+/* ───────────────── toasts ───────────────── */
+function say(msg, emoji){
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = '<span class="e"></span><span></span>';
+  el.firstChild.textContent = emoji || "💬";
+  el.lastChild.textContent = msg;
+  $("#toasts").appendChild(el);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 320); }, 3200);
+}
+function fail(err){
+  console.error(err);
+  say(t("m_err"), "⚠️");
+  setOnline(false);
+}
+
+/* ───────────────── language ───────────────── */
+function applyLang(){
+  const L = S.lang;
+  document.documentElement.lang = L;
+  document.title = t("brand");
+  $$("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  $$("[data-tt]").forEach(el => {
+    const v = t(el.dataset.tt);
+    if (el.hasAttribute("placeholder")) el.setAttribute("placeholder", v);
+    if (el.hasAttribute("data-ph"))     el.setAttribute("data-ph", v);
+    if (el.hasAttribute("title"))       el.setAttribute("title", v);
+  });
+  $("#langHi").setAttribute("aria-pressed", String(L === "hi"));
+  $("#langSat").setAttribute("aria-pressed", String(L === "sat"));
+  $("#langEn").setAttribute("aria-pressed", String(L === "en"));
+  localStorage.setItem("vs_lang", L);
+  setOnline(S.online);
+  if (S.lesson) draw();
+  if (S.lastLat) timing(S.lastLat, S.lastSpoken, S.lastConf);
+  fillPicker();
+  cards(); buildDeckPicker(); buildDeck(); rows(); figures(); clock();
+}
+$("#langHi").onclick  = () => { S.lang = "hi";  applyLang(); };
+$("#langSat").onclick = () => { S.lang = "sat"; applyLang(); };
+$("#langEn").onclick  = () => { S.lang = "en";  applyLang(); };
+
+/* ───────────────── connection badge ───────────────── */
+function setOnline(up, extra){
+  S.online = !!up;
+  const el = $("#conn");
+  el.dataset.up = up ? "1" : "0";
+  el.lastChild.textContent = (up ? t("conn_up") : t("conn_down")) + (extra ? " · " + extra : "");
+}
+async function ping(){
+  try { const h = await Api.health(); setOnline(true, h.device); }
+  catch(e){ setOnline(false); }
+}
+async function modelBadges(){
+  try {
+    const m = await Api.models();
+    $("#mAsr").textContent = m.asr_backend === "indicconformer" ? t("se_on") : (m.asr_backend || "?");
+    $("#mNmt").textContent = m.nmt_loaded ? t("se_on") : t("se_off");
+    $("#mTts").textContent = m.tts_gtts_importable ? t("se_on") : t("se_off");
+  } catch(e){
+    ["#mAsr","#mNmt","#mTts"].forEach(s => $(s).textContent = t("se_off"));
+  }
+}
+
+/* ───────────────── big type ───────────────── */
+function bigType(on){
+  document.documentElement.style.setProperty("--scale", on ? "1.16" : "1");
+  $("#bigBtn").setAttribute("aria-pressed", String(on));
+  $("#tgBig").setAttribute("aria-pressed", String(on));
+  localStorage.setItem("vs_big", on ? "1" : "0");
+}
+$("#bigBtn").onclick = () => bigType($("#bigBtn").getAttribute("aria-pressed") !== "true");
+
+/* ───────────────── views ───────────────── */
+const VIEWS = ["lesson","lessons","flashcards","progress","settings"];
+function view(name){
+  $$(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + name));
+  $$(".tabs a").forEach(a => a.dataset.view === name
+    ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
+  if (name === "settings") modelBadges();
+  window.scrollTo({ top:0, behavior: still() ? "auto" : "smooth" });
+}
+function fromHash(){
+  const h = location.hash.replace("#","");
+  view(VIEWS.includes(h) ? h : "lesson");
+}
+window.addEventListener("hashchange", fromHash);
+
+/* ───────────────── modes ───────────────── */
+$$(".modes button").forEach(b => b.onclick = () => {
+  $$(".modes button").forEach(x => x.setAttribute("aria-selected","false"));
+  b.setAttribute("aria-selected","true");
+  S.mode = b.dataset.mode;
+});
+
+/* ───────────────── the current line ───────────────── */
+function lessonName(l){
+  const m = LESSON[l.topic];
+  if (!m) return [l.title, l.competency];
+  return m[S.lang] || m.hi;
+}
+function draw(){
+  const l = S.lesson;
+  if (!l || !l.plan || !l.plan.length) return;
+  const s = l.plan[S.step], last = S.step === l.plan.length - 1;
+  const [name, goal] = lessonName(l);
+
+  $("#gradeTag").textContent = t("grade") + " " + num(l.grade);
+  $("#title").textContent = name;
+  $("#goal").textContent  = goal;
+  $("#lead").dataset.emoji = (LESSON[l.topic] || {e:"📘"}).e;
+  $("#line").textContent = s.hindi;
+  $("#cue").textContent  = stepNote(l.topic, S.step) || t("note_plain");
+  $("#count").textContent = p2(S.step+1) + " / " + p2(l.plan.length);
+  $("#stepLabel").textContent = t("step") + " " + p2(S.step+1);
+  $("#hint").textContent = last ? t("hint_last") : t("hint_say");
+  $("#nextLine").textContent = l.plan[S.step+1] ? l.plan[S.step+1].hindi : t("note_none");
+
+  $("#beads").innerHTML = l.plan.map((_,i) =>
+    `<i class="${i < S.step ? "done" : i === S.step ? "now" : ""}">${i < S.step ? "✓" : num(i+1)}</i>`).join("");
+
+  $("#plan").innerHTML = l.plan.map((st,i) =>
+    `<li data-i="${i}" class="${i === S.step ? "at" : i < S.step ? "was" : ""}" tabindex="0" role="button"><em>${num(i+1)}</em><span></span></li>`).join("");
+  $$("#plan li").forEach((li,i) => {
+    li.querySelector("span").textContent = stepNote(l.topic, i) || l.plan[i].hindi;
+    const go = () => goStep(+li.dataset.i);
+    li.onclick = go;
+    li.onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); go(); } };
+  });
+
+  $("#hi").textContent = s.hindi;
+  $("#sa").textContent = "";
+
+  const mb = $(`.modes [data-mode="${s.type}"]`);
+  if (mb){ $$(".modes button").forEach(x => x.setAttribute("aria-selected","false")); mb.setAttribute("aria-selected","true"); S.mode = s.type; }
+
+  $("#expecting").textContent = s.accept_answers ? t("t2_sub_ask") : t("t2_sub");
+  $("#verdict").className = "verdict";
+  $("#nextBtn").innerHTML = `<span>${last ? t("act_finish") : t("act_next")}</span> <span class="e">${last ? "🏁" : "➡️"}</span>`;
+  markCurrentLesson();
+  figures();
+}
+
+async function goStep(i){
+  S.step = i;
+  draw();
+  if (!S.sid) return;
+  try { await Api.goto(S.sid, i); } catch(e){ fail(e); }
+}
+
+/* ───────────────── direction ───────────────── */
+function facing(){
+  const fwd = S.dir === "hi-to-sat";
+  $("#voiceNote").textContent = fwd ? t("pan_voice") : t("pan_voice_rev");
+  $("#playBtn").hidden = !fwd;
+  $("#goBtn").innerHTML = `<span class="e">🔁</span> <span>${fwd ? t("act_translate") : t("act_translate_rev")}</span>`;
+}
+$("#swap").onclick = () => {
+  $("#swap").classList.toggle("turn");
+  S.dir = S.dir === "hi-to-sat" ? "sat-to-hi" : "hi-to-sat";
+  facing();
+  say(S.dir === "hi-to-sat" ? t("m_dir_fwd") : t("m_dir_rev"), "🔄");
+};
+
+/* ───────────────── translate ───────────────── */
+async function translate(){
+  if (S.busy) return;
+  const src = S.dir === "hi-to-sat" ? $("#hi") : $("#sa");
+  const dst = S.dir === "hi-to-sat" ? $("#sa") : $("#hi");
+  const text = src.textContent.trim();
+  if (!text){ say(t("m_nothing"), "🤷"); return; }
+
+  S.busy = true;
+  const btn = $("#goBtn");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="e spin">⏳</span> <span>${t("act_translating")}</span>`;
+  dst.classList.add("pending");
+  try {
+    const r = await Api.translateText(text, S.dir, S.mode, S.sid);
+    dst.classList.remove("pending");
+    typeIn(dst, r.translated_text || "");
+    timing(r.latency, false, r.confidence);
+    keep(r.latency.total,
+      S.dir === "hi-to-sat" ? text : r.translated_text,
+      S.dir === "hi-to-sat" ? r.translated_text : text);
+    setOnline(true);
+    if (S.autoplay && S.dir === "hi-to-sat") play(true);
+    if (S.confirm) say(num(r.latency.total) + " " + t("m_done_in"), "✨");
+  } catch(e){ dst.classList.remove("pending"); fail(e); }
+  finally { S.busy = false; btn.disabled = false; facing(); }
+}
+$("#goBtn").onclick = translate;
+
+function typeIn(el, text){
+  if (still()){ el.textContent = text; return; }
+  el.textContent = "";
+  const chars = [...text];
+  let i = 0;
+  (function tick(){ el.textContent += chars[i++] ?? ""; if (i < chars.length) setTimeout(tick, 16); })();
+}
+
+function timing(l, spoken, confidence){
+  if (!l) return;
+  S.lastLat = l; S.lastSpoken = !!spoken; S.lastConf = (confidence == null ? null : confidence);
+  const tot = Math.max(l.total, .01);
+  $("#total").textContent = num(l.total.toFixed(2));
+  $("#mLast").textContent = num(l.total.toFixed(2));
+  [["A","asr"],["N","nmt"],["T","tts"]].forEach(([k,key]) => {
+    const v = l[key] || 0;
+    $("#v"+k).textContent = num(v.toFixed(2));
+    $("#b"+k).style.width = (v/tot*100) + "%";
+  });
+  const c = (confidence == null) ? "" :
+            `${t("t1_conf")} ${num(Math.round(confidence))}%. `;
+  $("#speedNote").textContent = c + (spoken ? t("t1_note_mic") : t("t1_note"));
+}
+
+function keep(sec, hindi, santali){
+  S.times.push(sec);
+  S.log.unshift({ h:hindi, s:santali, t:sec });
+  rows(); figures();
+}
+
+/* ───────────────── voice ───────────────── */
+const player = new Audio();
+function play(quiet){
+  if (!$("#sa").textContent.trim()){ say(t("m_first"), "🔇"); return; }
+  player.src = SERVER + "/audio/output?t=" + Date.now();
+  player.play().then(() => { if (!quiet) say(t("m_playing"), "🔊"); })
+               .catch(() => say(t("m_blocked"), "🔈"));
+}
+$("#playBtn").onclick = () => play();
+
+/* ───────────────── microphone ───────────────── */
+function stopRec(){
+  if (!S.rec) return;
+  $(S.rec === "hi-to-sat" ? "#micHi" : "#micSa").classList.remove("live");
+  clearInterval(S.recTimer); S.rec = null; S.secs = 0;
+}
+function pickMime(){
+  const want = ["audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus","audio/mp4"];
+  return want.find(x => window.MediaRecorder && MediaRecorder.isTypeSupported(x)) || "";
+}
+async function mic(dir){
+  const el = $(dir === "hi-to-sat" ? "#micHi" : "#micSa");
+  const tEl = $(dir === "hi-to-sat" ? "#tHi" : "#tSa");
+
+  if (S.rec === dir){
+    const mr = S.mr; stopRec();
+    if (mr && mr.state !== "inactive") mr.stop();
+    return;
+  }
+  if (!navigator.mediaDevices || !window.MediaRecorder){ say(t("m_mic_none"), "🚫"); return; }
+
+  stopRec();
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e){ say(t("m_mic_no"), "🚫"); return; }
+
+  S.dir = dir; facing();
+  S.rec = dir; el.classList.add("live");
+  S.secs = 0; tEl.textContent = num("0:00");
+  S.recTimer = setInterval(() => {
+    S.secs++;
+    tEl.textContent = num(Math.floor(S.secs/60) + ":" + String(S.secs%60).padStart(2,"0"));
+  }, 1000);
+
+  const type = pickMime();
+  S.chunks = [];
+  S.mr = new MediaRecorder(stream, type ? {mimeType:type} : undefined);
+  S.mr.ondataavailable = e => { if (e.data && e.data.size) S.chunks.push(e.data); };
+  S.mr.onstop = async () => {
+    stream.getTracks().forEach(x => x.stop());
+    const blob = new Blob(S.chunks, {type: type || "audio/webm"});
+    if (blob.size < 1200){ say(t("m_mic_short"), "⏱️"); return; }
+    const src = dir === "hi-to-sat" ? $("#hi") : $("#sa");
+    const dst = dir === "hi-to-sat" ? $("#sa") : $("#hi");
+    src.classList.add("pending"); dst.classList.add("pending");
+    say(t("m_listening"), "👂");
+    try {
+      const r = await Api.translateAudio(blob, dir, S.mode, S.sid);
+      src.classList.remove("pending"); dst.classList.remove("pending");
+      src.textContent = r.recognized_text || "";
+      typeIn(dst, r.translated_text || "");
+      timing(r.latency, true, r.confidence);
+      keep(r.latency.total,
+        dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
+        dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
+      setOnline(true);
+      if (S.autoplay && dir === "hi-to-sat") play(true);
+      say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
+    } catch(e){
+      src.classList.remove("pending"); dst.classList.remove("pending"); fail(e);
+    }
+  };
+  S.mr.start();
+}
+$("#micHi").onclick = () => mic("hi-to-sat");
+$("#micSa").onclick = () => mic("sat-to-hi");
+
+/* ───────────────── stepping ───────────────── */
+$("#nextBtn").onclick = async () => {
+  if (!S.lesson) return;
+  if (S.step >= S.lesson.plan.length - 1){ note(); return; }
+  try {
+    const r = await Api.next(S.sid);
+    S.step = r.completed ? S.lesson.plan.length - 1
+                         : (typeof r.step_index === "number" ? r.step_index : S.step + 1);
+    draw();
+    if (r.completed) note();
+  } catch(e){ fail(e); }
+};
+
+/* ───────────────── marking ───────────────── */
+$("#markBtn").onclick = async () => {
+  const v = $("#answer").value;
+  if (!v.trim()){ say(t("m_ans_first"), "✍️"); $("#answer").focus(); return; }
+  try {
+    const r = await Api.mark(S.sid, v, S.step);
+    const key = SIGNAL[r.signal] || "amber";
+    const box = $("#verdict");
+    box.className = "verdict on " + key;
+    $("#verdictEmoji").textContent = SIGNAL_EMOJI[key];
+    $("#verdictText").textContent = t("v_" + key);
+    S.counts[key]++;
+    $("#cG").textContent = num(S.counts.green);
+    $("#cY").textContent = num(S.counts.amber);
+    $("#cR").textContent = num(S.counts.rose);
+    $("#answer").value = "";
+    if (key === "green") burst($("#markBtn"));
+    figures();
+  } catch(e){ fail(e); }
+};
+$("#answer").addEventListener("keydown", e => { if (e.key === "Enter") $("#markBtn").click(); });
+
+function burst(from){
+  if (still()) return;
+  const r = from.getBoundingClientRect();
+  const cols = ["#F5A623","#FB6F5C","#12B3A8","#3B9BF0","#9B6BE0","#5FBF52"];
+  for (let i=0;i<18;i++){
+    const s = document.createElement("i");
+    s.className = "spark";
+    s.style.background = cols[i % cols.length];
+    s.style.left = (r.left + r.width/2) + "px";
+    s.style.top  = (r.top + r.height/2) + "px";
+    document.body.appendChild(s);
+    const a = Math.random()*Math.PI*2, d = 50 + Math.random()*80;
+    s.animate([
+      { transform:"translate(0,0) rotate(0)", opacity:1 },
+      { transform:`translate(${Math.cos(a)*d}px, ${Math.sin(a)*d + 46}px) rotate(${Math.random()*420}deg)`, opacity:0 }
+    ], { duration: 780 + Math.random()*360, easing:"cubic-bezier(.2,.8,.3,1)" }).onfinish = () => s.remove();
+  }
+}
+
+/* ───────────────── corrections ───────────────── */
+$("#yesBtn").onclick = async () => {
+  const hi = $("#hi").textContent.trim(), sa = $("#sa").textContent.trim();
+  if (!sa){ say(t("m_first"), "🤷"); return; }
+  try { await Api.feedback(hi, sa, true, ""); say(t("m_thanks"), "👍"); } catch(e){ fail(e); }
+};
+$("#noBtn").onclick = () => {
+  if (!$("#sa").textContent.trim()){ say(t("m_first"), "🤷"); return; }
+  $("#fixBox").classList.add("on");
+  $("#fixIn").value = $("#sa").textContent.trim();
+  $("#fixIn").focus();
+};
+$("#fixCancel").onclick = () => { $("#fixBox").classList.remove("on"); $("#fixIn").value = ""; };
+$("#fixSave").onclick = async () => {
+  const v = $("#fixIn").value.trim();
+  if (!v){ say(t("m_fix_first"), "✍️"); $("#fixIn").focus(); return; }
+  try {
+    await Api.feedback($("#hi").textContent.trim(), v, false, v);
+    $("#sa").textContent = v;
+    $("#fixIn").value = "";
+    $("#fixBox").classList.remove("on");
+    S.fixes++;
+    $("#fixCount").textContent = num(S.fixes) + " " + t("t3_saved");
+    say(t("m_saved"), "💾");
+  } catch(e){ fail(e); }
+};
+
+/* ───────────────── worksheet ───────────────── */
+async function worksheet(btn){
+  const html = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="e spin">⏳</span> <span>${t("act_building")}</span>`;
+  try {
+    const blob = await Api.worksheet({
+      session_id:  S.sid,
+      hindi_text:  $("#hi").textContent.trim(),
+      santali_text:$("#sa").textContent.trim(),
+      grade:       S.lesson ? S.lesson.grade : "2",
+      topic:       S.lesson ? S.lesson.title : "Lesson"
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "VaaniSetu_Worksheet.pdf";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    say(t("m_sheet"), "📄");
+  } catch(e){ fail(e); }
+  finally { btn.disabled = false; btn.innerHTML = html; }
+}
+$("#sheetBtn").onclick = e => worksheet(e.currentTarget);
+$("#sheetPdf").onclick = e => worksheet(e.currentTarget);
+
+/* ───────────────── session note ───────────────── */
+async function note(){
+  let sum = null;
+  try { sum = await Api.summary(S.sid); } catch(e){}
+
+  const answered = S.counts.green + S.counts.amber + S.counts.rose;
+  const localPct = answered ? Math.round(S.counts.green/answered*100) : 0;
+  const avg  = S.times.length ? S.times.reduce((a,b)=>a+b,0)/S.times.length : 0;
+  const secs = Math.floor((Date.now() - S.began)/1000);
+  const c    = sum && sum.comprehension ? sum.comprehension : null;
+  const pct  = c ? c.score_percent : localPct;
+  const [name] = S.lesson ? lessonName(S.lesson) : [""];
+
+  $("#sheetWho").textContent = name + " · " + t("grade") + " " + num(S.lesson ? S.lesson.grade : "2");
+  $("#pc").textContent = num(pct) + "%";
+  $("#nSteps").textContent = (sum ? num(sum.steps_completed) + " / " + num(sum.total_steps)
+                                  : p2(S.step+1) + " / " + p2(S.lesson.plan.length));
+  $("#nLines").textContent = num(sum ? sum.sentences_translated : S.times.length);
+  $("#nTime").textContent  = num(Math.floor(secs/60)) + ":" + num(String(secs%60).padStart(2,"0"));
+  $("#nSec").textContent   = num((sum ? sum.avg_latency_sec : avg).toFixed(2));
+
+  const key = !answered ? "early" : pct >= 70 ? "good" : pct >= 40 ? "half" : "low";
+  $("#verdictTitle").textContent = t("wr_" + key);
+  $("#verdictBody").textContent  = t("wr_" + key + "_b");
+  $("#pc").style.background = key === "good" ? "var(--c6)" : key === "half" ? "var(--c1)" :
+                              key === "low"  ? "var(--c2)" : "var(--c4)";
+
+  S.lastFocus = document.activeElement;
+  $("#scrim").classList.add("on");
+  $("#sheetClose").focus();
+  if (pct >= 70 && answered) burst($("#pc"));
+}
+function closeNote(){
+  $("#scrim").classList.remove("on");
+  if (S.lastFocus && S.lastFocus.focus) S.lastFocus.focus();
+}
+$("#wrapBtn").onclick = note;
+$("#sheetClose").onclick = closeNote;
+$("#scrim").addEventListener("click", e => { if (e.target === $("#scrim")) closeNote(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && $("#scrim").classList.contains("on")) closeNote();
+});
+
+function fillPicker(){
+  const pick = $("#pickLesson");
+  if (!pick || !S.lessons.length) return;
+  const keep = pick.value;
+  pick.innerHTML = "";
+  S.lessons.forEach((l,i) => {
+    const [nm] = lessonName(l);
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = t("grade") + " " + num(l.grade) + " · " + nm;
+    pick.appendChild(o);
+  });
+  pick.value = keep || String(S.index);
+}
+
+/* ───────────────── lesson cards ───────────────── */
+function cards(){
+  const g = $("#grid");
+  if (!g) return;
+  const list = S.lessons.filter(l => S.filter === "all" || l.grade === S.filter);
+  if (!list.length){
+    g.innerHTML = `<div class="slab blank" style="grid-column:1/-1"><span class="e">🤷</span><b>${t("les_none")}</b></div>`;
+    return;
+  }
+  g.innerHTML = list.map(l => {
+    const m = LESSON[l.topic] || {e:"📘"};
+    return `<button class="slab press lcard" data-topic="${l.topic}" data-grade="${l.grade}" data-emoji="${m.e}">
+      <span class="chip c1">${t("grade")} ${num(l.grade)}</span>
+      <h2></h2><p></p>
+      <span class="end"><span class="chip c4">${num((l.plan||[]).length)} ${t("les_lines")}</span>
+      <span class="chip c6">${t("les_open")} →</span></span></button>`;
+  }).join("");
+  $$(".lcard", g).forEach((c,i) => {
+    const [nm, go] = lessonName(list[i]);
+    c.querySelector("h2").textContent = nm;
+    c.querySelector("p").textContent  = go;
+    c.onclick = () => {
+      load(S.lessons.findIndex(x => x.topic === c.dataset.topic && x.grade === c.dataset.grade));
+      location.hash = "lesson";
+      say(t("m_loaded"), "📚");
+    };
+  });
+  markCurrentLesson();
+}
+function markCurrentLesson(){
+  $$(".lcard").forEach(c => c.classList.toggle("current",
+    !!S.lesson && c.dataset.topic === S.lesson.topic && c.dataset.grade === S.lesson.grade));
+}
+$$("#filters button").forEach(b => b.onclick = () => {
+  $$("#filters button").forEach(x => x.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed","true");
+  S.filter = b.dataset.g;
+  cards();
+});
+
+/* ───────────────── चित्र पत्ते ───────────────── */
+function buildDeckPicker(){
+  const bar = $("#deckPick");
+  if (!bar) return;
+  bar.innerHTML = Object.keys(DECKS).map(k => {
+    const m = LESSON[k] || {e:"🎴"};
+    const [nm] = m[S.lang] || m.hi;
+    return `<button data-deck="${k}" aria-pressed="${k === S.deck}">${m.e} ${nm}</button>`;
+  }).join("");
+  $$("button", bar).forEach(b => b.onclick = () => {
+    S.deck = b.dataset.deck;
+    buildDeckPicker(); buildDeck();
+  });
+}
+
+function buildDeck(){
+  const wrap = $("#deck");
+  if (!wrap) return;
+  const cardsArr = (DECKS[S.deck] || []).slice();
+  if (S.shuffled) cardsArr.sort(() => Math.random() - .5);
+  wrap.innerHTML = cardsArr.map((c,i) => {
+    const emoji = c.n ? c.e.repeat(c.n) : c.e;
+    // a row of ten emoji has to shrink or it bursts out of the card
+    const glyphs = [...emoji.replace(/\s/g,"")].length;
+    const es = glyphs <= 3 ? 52 : glyphs <= 5 ? 42 : glyphs <= 8 ? 32 : 26;
+    const cached = S.cardSat.get(c.hi);
+    return `<button class="fc" data-hi="${c.hi}" aria-label="${c.hi}">
+      <span class="fc-in">
+        <span class="fc-face fc-front">
+          <span class="emoji" style="--es:${es}px">${emoji}</span>
+          <span class="word">${c.n ? num(c.n) + " " + c.hi : c.hi}</span>
+          <span class="hint">${t("fc_tap")}</span>
+        </span>
+        <span class="fc-face fc-back">
+          <span class="emoji">${c.n ? c.e : c.e}</span>
+          <span class="word olck">${cached || "…"}</span>
+          <span class="listen">🔊 ${t("fc_listen")}</span>
+        </span>
+      </span></button>`;
+  }).join("");
+
+  $$(".fc", wrap).forEach(card => {
+    card.onclick = async (e) => {
+      if (e.target.closest(".listen")){
+        e.stopPropagation();
+        await speakCard(card.dataset.hi);
+        return;
+      }
+      card.classList.toggle("flip");
+      if (card.classList.contains("flip")) fillCard(card);
+    };
+  });
+}
+
+async function fillCard(card){
+  const hi = card.dataset.hi;
+  const slot = card.querySelector(".fc-back .word");
+  if (S.cardSat.has(hi)){ slot.textContent = S.cardSat.get(hi); return; }
+  slot.textContent = t("fc_wait");
+  try {
+    const r = await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
+    const out = (r.translated_text || "").trim();
+    S.cardSat.set(hi, out);
+    slot.textContent = out || "…";
+    setOnline(true);
+  } catch(e){
+    slot.textContent = t("fc_off");
+    setOnline(false);
+  }
+}
+
+async function speakCard(hi){
+  try {
+    if (!S.cardSat.has(hi)){
+      const r = await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
+      S.cardSat.set(hi, (r.translated_text || "").trim());
+    } else {
+      await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
+    }
+    player.src = SERVER + "/audio/output?t=" + Date.now();
+    player.play().catch(() => say(t("m_blocked"), "🔈"));
+  } catch(e){ say(t("fc_off"), "🔌"); }
+}
+
+$("#shuffleBtn").onclick = () => { S.shuffled = true; buildDeck(); say(t("fc_shuffle"), "🔀"); };
+$("#flipAllBtn").onclick = () => {
+  const all = $$(".fc");
+  const anyUp = all.some(c => !c.classList.contains("flip"));
+  all.forEach((c,i) => setTimeout(() => {
+    c.classList.toggle("flip", anyUp);
+    if (anyUp) fillCard(c);
+  }, i * 55));
+};
+
+/* ───────────────── progress ───────────────── */
+function rows(){
+  const box = $("#log");
+  if (!box || !S.log.length) return;
+  const esc = x => { const d = document.createElement("div"); d.textContent = x == null ? "" : x; return d.innerHTML; };
+  box.innerHTML =
+    `<div class="lhead"><span>${t("pr_hi")}</span><span>${t("pr_sat")}</span><span>${t("pr_took")}</span></div>` +
+    S.log.slice(0,14).map(r =>
+      `<div class="lrow"><span class="h">${esc(r.h)}</span><span class="s">${esc(r.s)}</span><span class="t">${num(r.t.toFixed(2))}</span></div>`).join("");
+}
+function figures(){
+  const answered = S.counts.green + S.counts.amber + S.counts.rose;
+  const avg = S.times.length ? S.times.reduce((a,b)=>a+b,0)/S.times.length : 0;
+  const pct = num(answered ? Math.round(S.counts.green/answered*100) : 0) + "%";
+  $("#fLines").textContent = num(S.times.length);  $("#mLines").textContent = num(S.times.length);
+  $("#fSec").textContent   = num(avg.toFixed(2));
+  $("#fRight").textContent = pct;                  $("#mRight").textContent = pct;
+  $("#fSteps").textContent = num(S.step + (S.times.length ? 1 : 0));
+  $("#cG").textContent = num(S.counts.green);
+  $("#cY").textContent = num(S.counts.amber);
+  $("#cR").textContent = num(S.counts.rose);
+}
+
+/* ───────────────── settings ───────────────── */
+$$("#acc .open-btn").forEach(b => b.onclick = () => {
+  const item = b.parentElement;
+  const open = item.classList.toggle("open");
+  b.setAttribute("aria-expanded", String(open));
+});
+function toggle(id, fn){
+  const el = $(id);
+  el.onclick = () => { const on = el.getAttribute("aria-pressed") !== "true"; el.setAttribute("aria-pressed", String(on)); fn(on); };
+}
+toggle("#tgAuto", v => { S.autoplay = v; localStorage.setItem("vs_autoplay", v?"1":"0"); });
+toggle("#tgBig",  v => bigType(v));
+toggle("#tgAsk",  v => { S.confirm = v; localStorage.setItem("vs_confirm", v?"1":"0"); });
+$("#saveSet").onclick = async () => {
+  const v = $("#server").value.trim().replace(/\/+$/,"");
+  if (v){ SERVER = v; localStorage.setItem("vs_server", v); }
+  say(t("m_prefs"), "💾");
+  await ping();
+  if (S.online) boot(true);
+};
+
+$("#clearHi").onclick = () => { $("#hi").textContent = ""; $("#hi").focus(); };
+$("#resetHi").onclick = () => {
+  if (S.lesson) $("#hi").textContent = S.lesson.plan[S.step].hindi;
+  say(t("m_line_back"), "↩️");
+};
+
+/* ───────────────── clock, shortcut ───────────────── */
+function clock(){
+  const s = Math.floor((Date.now() - S.began)/1000);
+  $("#clock").textContent = num(String(Math.floor(s/60)).padStart(2,"0")) + ":" + num(String(s%60).padStart(2,"0"));
+}
+setInterval(clock, 1000);
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); translate(); }
+});
+
+/* ───────────────── boot ───────────────── */
+async function load(i){
+  if (i < 0 || !S.lessons[i]) return;
+  S.index = i; S.lesson = S.lessons[i]; S.step = 0;
+  $("#pickLesson").value = String(i);
+  if (DECKS[S.lesson.topic]){ S.deck = S.lesson.topic; buildDeckPicker(); buildDeck(); }
+  draw();
+  try { const r = await Api.startSession(S.lesson.grade, S.lesson.topic); S.sid = r.session_id; setOnline(true); }
+  catch(e){ fail(e); }
+}
+
+async function boot(quiet){
+  $("#server").value = SERVER;
+  bigType(localStorage.getItem("vs_big") === "1");
+  if (localStorage.getItem("vs_autoplay") === "0"){ S.autoplay = false; $("#tgAuto").setAttribute("aria-pressed","false"); }
+  if (localStorage.getItem("vs_confirm") === "0"){ S.confirm  = false; $("#tgAsk").setAttribute("aria-pressed","false"); }
+
+  await ping();
+  try {
+    S.lessons = await Api.lessons();
+    if (!S.lessons.length) throw new Error("no lessons");
+    fillPicker();
+    $("#pickLesson").onchange = e => load(+e.target.value);
+    const want = S.lessons.findIndex(l => l.grade === "2" && l.topic === "addition");
+    await load(want >= 0 ? want : 0);
+    cards();
+  } catch(e){
+    setOnline(false);
+    $("#title").textContent = t("no_server_t");
+    $("#goal").textContent  = t("no_server_p");
+  }
+  facing();
+  figures();
+  buildDeckPicker();
+  buildDeck();
+  fromHash();
+  clock();
+}
+applyLang();
+boot(false);
+setInterval(ping, 20000);
+</script>
+</body>
+</html>
