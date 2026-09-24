@@ -11,7 +11,7 @@ since then are summarised in section 0.
 | `LICENSE` (MIT) for our code. `piper-tts` (GPL-3.0-or-later) is installed separately and not redistributed (`THIRD_PARTY_LICENSES.md`) | done | `54711f0` |
 | **Finale plan, not started:** move speech synthesis to **sherpa-onnx (Apache-2.0)** on both the laptop and Android, removing the GPL dependency | planned | |
 | WP14 curriculum import: paste or upload (.txt / .csv / .json); sentence split; script/activity/question labels the teacher can change; suggested Lakshya goals the teacher must confirm; Santali, audio, worksheet and flashcards; stored in SQLite; `pending_native_review` | done; the addendum's acceptance test passes (`tests/test_api.py::test_importing_a_ten_line_lesson`) | `4418c45`, `42ec510` |
-| 10 lessons the team wrote (`content/team_lessons.json`), imported through WP14 with `tools/import_lessons.py`: **15 lessons**, Balvatika to Grade 3, literacy and numeracy | done. The lessons are in the local database (not in git); run the script on each laptop | |
+| 10 lessons the team wrote (`content/team_lessons.json`), imported through WP14: 15 lessons. Then 2 more (Grade 3: numbers to 9999; read-aloud fluency): **17 lessons**. The server adds any missing team lesson on its first start | done; a fresh clone shows all 17 (checked) | `dfdb9cc` |
 | **Bug found and fixed:** two overlapping model translations could hang a request for ever. `IndicProcessor` shares one placeholder queue and clears it after each batch. It could hit two classroom requests at once, or a request during the start-up pre-cache. Reproduced (6 overlapping: 5 stuck after 300 s), fixed with a lock (6 of 6 in 5.5 s), regression test added. The 3 lessons imported before the fix were re-checked: 22 of 22 lines match a fresh translation | done | `8cc1c41` |
 | Real recordings: `bench/clips/real/` does not exist yet, so the benchmark was **not** re-run and CTC/RNN-T is not yet chosen per language | waiting for clips | |
 
@@ -29,7 +29,7 @@ Branch `sih-final`, not pushed. Numbers come from `python tools/deck_numbers.py`
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **PARTIAL**: Santali only | `test_pipeline.py`, `tests/test_api.py`. IndicTrans2 and IndicConformer do not support Ho or Mundari |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | **PARTIAL**: text and offline audio for every line. Accuracy is **NOT MEASURED**, and no native review has been done. Content modes do not change the translation (documented in README §5) | `tests/test_api.py`, `tests/test_offline.py`, `docs/native_review.md` |
 | 3 | Real-time voice to voice, no more than 3 s | **PARTIAL**: laptop, synthetic clips: median 1.51 s (hi→sat) and 1.57 s (sat→hi), 0 of 59 over 3 s. Real speech, tablet over Wi-Fi and on-device: **NOT MEASURED** | `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv` |
-| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat outcomes | **PARTIAL**: both are generated from the lessons and carry verbatim Lakshya IDs. 15 lessons (Balvatika to Grade 3, both domains); teachers can add lessons (WP14). Not met: the mapping is not teacher-reviewed; the reading-speed goals and G3-NUM-1 have no lesson | `tests/test_lakshya.py`, `tests/test_api.py::test_flashcards_are_built_from_the_lessons`, `docs/lakshya_mapping.md` |
+| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat outcomes | **PARTIAL**: both are generated from the lessons and carry verbatim Lakshya IDs. 17 lessons (Balvatika to Grade 3, both domains); every Lakshya except G2-LIT-2 has a lesson; teachers can add lessons (WP14). Not met: the mapping is not teacher-reviewed; words per minute is counted by the teacher, not measured by the app | `tests/test_lakshya.py`, `tests/test_api.py::test_flashcards_are_built_from_the_lessons`, `docs/lakshya_mapping.md` |
 | 5 | Whole application offline on low-cost tablets (2 GB RAM, Android 9+) after initial content synchronisation | **NOT MET**. Offline on the laptop only. A tablet browser can use the laptop hub (HTTPS for the mic, not yet tried on a tablet). No Android app, content pack or sync | `tests/test_offline.py`, `tests/test_https.py`; WP4 not started |
 | 6 | Working application, demo video, GitHub repository | **PARTIAL**: application and repository exist; no demo video. `sih-final` is not pushed | |
 
@@ -122,10 +122,10 @@ flashcard deck built from lessons (WP7).
 | ASR / NMT model files | 2.56 GB / 1.30 GB | disk |
 | Voice in use | 64 MB | disk |
 | Real recordings, tablet, peak RAM, chrF++, child WER | NOT MEASURED | |
-| Lessons / Lakshya-tagged / natively reviewed | 15 (5 built-in + 10 imported) / 15 / 0 | `lesson_engine.py` + local database |
-| Lessons by stage and domain | Balvatika 2 lit + 2 num; G1 1 + 3; G2 2 + 2; G3 1 + 2 | same |
-| Flashcard words in lessons | 75 | same |
-| Tests | 246 pytest (8 files) + `test_pipeline.py` 7 | `pytest --collect-only` |
+| Lessons / Lakshya-tagged / natively reviewed | 17 (5 built-in + 12 imported) / 17 / 0 | `lesson_engine.py` + local database |
+| Lessons by stage and domain | Balvatika 2 lit + 2 num; G1 1 + 3; G2 2 + 2; G3 2 + 3 | same |
+| Flashcard words in lessons | 89 | same |
+| Tests | 247 pytest (8 files) + `test_pipeline.py` 7; 222 of them run in CI without models | `pytest --collect-only` |
 
 The README previously said the Santali→Hindi median was 1.58 s. The raw median
 is 1574.55 ms, so the correct figure is 1.57 s (1.58 came from rounding twice).

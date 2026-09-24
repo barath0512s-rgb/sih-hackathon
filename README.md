@@ -52,7 +52,7 @@ laptop, offline, and checked by the named test or script.
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality: **NOT MEASURED** (no held-out test set yet). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
 | 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, **synthetic** clips (Piper reading the lines), in-process: median **1.51 s** Hindi→Santali and **1.57 s** Santali→Hindi; **0 of 59** over 3 s | Real teacher and child recordings: **NOT MEASURED**. Tablet over classroom Wi-Fi: **NOT MEASURED**. On a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py`, then `python tools/deck_numbers.py` |
-| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 15 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 10 written by the team and added through the teacher's import screen. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
+| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
 
@@ -61,7 +61,7 @@ laptop, offline, and checked by the named test or script.
 ## 3. What it does
 
 1. **Two-way classroom dialogue.** Hindi → Santali and Santali → Hindi, typed or spoken, with speech in both directions.
-2. **NIPUN Bharat lessons.** 15 lessons from Balvatika to Grade 3, in literacy and numeracy. Five are built in (counting, shapes, addition, reading words, subtraction). Ten were written by the team in simple Hindi (`content/team_lessons.json`) and added through the import screen below. Each lesson is a sequence of steps: the line to say, a teaching note, and for questions, the accepted answers.
+2. **NIPUN Bharat lessons.** 17 lessons from Balvatika to Grade 3, in literacy and numeracy. Five are built in (counting, shapes, addition, reading words, subtraction). Twelve were written by the team in simple Hindi (`content/team_lessons.json`). The server adds them on its first start, through the same import path a teacher uses (below). Each lesson is a sequence of steps: the line to say, a teaching note, and for questions, the accepted answers.
 2a. **Add a lesson (curriculum import).** The teacher pastes Hindi lesson text, or uploads a `.txt`, `.csv` or `.json` file (`grade, topic, line`). The app:
     - splits it into sentences;
     - labels each line as a lesson script, activity or question (the teacher taps a label to change it);
@@ -212,8 +212,10 @@ Ministry of Education, 2021, p. 11. The IDs are ours.
 | 2 | कहानी सुनो और समझो (listen to a story) | NIPUN-G2-LIT-1 | imported |
 | 3 | गुणा: बराबर समूह (multiplication) | NIPUN-G3-NUM-2 | imported |
 | 3 | पढ़कर समझना (reading for meaning) | NIPUN-G3-LIT-1 | imported |
+| 3 | हज़ार तक की संख्याएँ (numbers to 9999, place value) | NIPUN-G3-NUM-1 | imported |
+| 3 | ज़ोर से पढ़ना: रीना और तालाब (read-aloud fluency) | NIPUN-G3-LIT-2, NIPUN-G3-LIT-1 | imported |
 
-Every stage from Balvatika to Grade 3 now has at least one literacy and one numeracy lesson. The Grade 2 and 3 reading-speed goals (45–60 and 60 words per minute) are not assessed. For the imported lessons, the goals were suggested by keyword rules and confirmed by the team. Every mapping awaits teacher review.
+Every stage from Balvatika to Grade 3 now has at least one literacy and one numeracy lesson, and every Lakshya except G2-LIT-2 (45–60 words per minute) has a lesson. For reading fluency (G3-LIT-2), the read-aloud lesson has an 83-word passage: the teacher times one minute and counts the words read; the app does not measure words per minute itself. For the imported lessons, the goals were suggested by keyword rules and confirmed by the team. Every mapping awaits teacher review.
 Details: `docs/lakshya_mapping.md`.
 
 ---
@@ -240,7 +242,7 @@ source vaanisetu_env/bin/activate         # Mac/Linux
 pip install -r requirements.txt
 python download_models.py                  # models and voices, pinned revisions, checked against model_manifest.json
 python verify_models.py                    # loads everything, checks speech is audible
-python app.py                              # the first start also adds the team's lessons (about two minutes)
+python app.py                              # the first start also adds the team's lessons, so it takes longer
 ```
 
 Already have the models on another checkout? Copy (or link) its `models/`
@@ -378,7 +380,8 @@ A reply from `/translate/text`:
 | `tools/deck_numbers.py` | Prints every number the deck may use, with its source |
 | `tools/make_cert.py` | Certificate for the HTTPS laptop hub |
 | `curriculum.py` | Curriculum import: reading uploads, splitting, labels, goal suggestions, flashcard words |
-| `content/team_lessons.json`, `tools/import_lessons.py` | The team's 10 lessons, and the script that adds them through the import endpoints |
+| `content/team_lessons.json`, `tools/import_lessons.py` | The team's 12 lessons (added on first start), and a script to import other lesson files through the import endpoints |
+| `tools/demo_reset.py`, `docs/demo_video_script.md` | Getting ready to record the demo, and the shot list |
 | `docs/` | Lakshya mapping, glossary changes, the native-review list |
 | `THIRD_PARTY_LICENSES.md` | Model, voice, package and font licences |
 | `training_data/`, `train_nmt.py`, `generate_dataset.py` | A 33-pair corpus and a LoRA script. Not used for any accuracy figure |
@@ -399,7 +402,7 @@ virtual environment. A fresh clone must download the models (§9).
 | Santali is spoken by a Hindi voice reading a transliteration | How well children understand it: **NOT MEASURED** |
 | All speed figures use synthetic clips | Real classroom speech may be slower or less accurate |
 | Word lists in `education_glossary.py` are used only for flashcards | Translation uses whole verified sentences only |
-| Imported lessons are stored in the local database, not in git | Run `python tools/import_lessons.py` on each laptop. Content packs for tablets are work package 4 |
+| Imported lessons are stored in the local database, not in git | The team's lessons are added again on any laptop's first start. A teacher's own imports stay on that laptop; content packs for tablets are work package 4 |
 | Line labels and goal suggestions come from simple keyword rules | The teacher checks every label and must confirm the goals. The rules were tuned on the team's own lessons: they matched 7 of 10 goal suggestions before tuning and 9 of 10 after. That is not an independent accuracy figure |
 | The NIPUN goal text on the import screen is in English | It is quoted from the Ministry's English guidelines |
 | The worksheet's headings are in English | The on-screen interface is not |
