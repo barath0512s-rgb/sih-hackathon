@@ -359,6 +359,7 @@ def session_start():
         "session_id":  sid,
         "title":       lesson["title"],
         "competency":  lesson["competency"],
+        "lakshya_ids": lesson["lakshya_ids"],
         "total_steps": sess.total_steps,
         "step":        sess.current_step,
     })
@@ -459,7 +460,9 @@ def worksheet():
     d = request.json or {}
     sess = _session(d.get("session_id", ""))
     lesson_steps = None
+    lakshya_ids = None
     if sess:
+        lakshya_ids = sess.lesson.get("lakshya_ids")
         lesson_steps = []
         for t in sess.translations:
             si = t["step"]
@@ -472,7 +475,7 @@ def worksheet():
     buf = io.BytesIO()
     generate_worksheet(d.get("hindi_text", ""), d.get("santali_text", ""),
                        d.get("grade", "2"), d.get("topic", "Lesson"),
-                       lesson_steps=lesson_steps, out=buf)
+                       lesson_steps=lesson_steps, out=buf, lakshya_ids=lakshya_ids)
     buf.seek(0)
     return send_file(buf, mimetype="application/pdf",
                      download_name=f"{config.APP_NAME}_Worksheet.pdf")

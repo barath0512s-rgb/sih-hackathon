@@ -1694,7 +1694,9 @@ function draw(){
 
   $("#gradeTag").textContent = t("grade") + " " + num(l.grade);
   $("#title").textContent = name;
-  $("#goal").textContent  = goal;
+  // The NIPUN Lakshya IDs this lesson works towards; the goal text is the tooltip.
+  $("#goal").textContent  = goal + ((l.lakshya_ids || []).length ? "  ·  " + l.lakshya_ids.join(", ") : "");
+  $("#goal").title        = (l.lakshya || []).join("\n");
   $("#lead").dataset.emoji = (LESSON[l.topic] || {e:"📘"}).e;
   $("#line").textContent = s.hindi;
   $("#cue").textContent  = stepNote(l.topic, S.step) || t("note_plain");

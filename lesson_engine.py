@@ -1,8 +1,15 @@
 # lesson_engine.py — NIPUN Bharat FLN lesson templates, grading, sessions
+#
+# Every lesson carries the NIPUN Lakshya IDs it works towards (nipun/lakshya.py),
+# its domain, how closely it fits ("mapping": full or partial) and a review
+# status. The lesson's own grade is the class it is written for; a Lakshya can
+# belong to an earlier stage when the lesson revises it. docs/lakshya_mapping.md
+# explains each choice.
 
 import time as _time
 
 import database
+from nipun.lakshya import label
 from textnorm import normalize_key
 
 NIPUN_LESSONS = {
@@ -10,6 +17,10 @@ NIPUN_LESSONS = {
         "counting_1_10": {
             "title": "Counting 1 to 10",
             "competency": "Counts objects up to 10 and says numbers in order",
+            "lakshya_ids": ["NIPUN-BV-NUM-1", "NIPUN-G1-NUM-1"],
+            "domain": "numeracy",
+            "mapping": "full for BV-NUM-1 (numerals up to 10); partial for G1-NUM-1 (only up to 10 of 99)",
+            "review_status": "pending_teacher_review",
             "steps": [
                 {"type": "lesson_script",
                  "hindi": "आज हम एक से दस तक गिनना सीखेंगे।",
@@ -32,6 +43,10 @@ NIPUN_LESSONS = {
         "shapes": {
             "title": "Basic Shapes",
             "competency": "Identifies circle, square, and triangle",
+            "lakshya_ids": ["NIPUN-BV-NUM-2"],
+            "domain": "numeracy",
+            "mapping": "partial: the lesson names shapes; the goal is arranging shapes in a sequence",
+            "review_status": "pending_teacher_review",
             "steps": [
                 {"type": "lesson_script",
                  "hindi": "यह गोल है। यह एक वृत्त है।",
@@ -58,6 +73,10 @@ NIPUN_LESSONS = {
         "addition": {
             "title": "Simple Addition",
             "competency": "Adds two single-digit numbers using objects",
+            "lakshya_ids": ["NIPUN-G1-NUM-2"],
+            "domain": "numeracy",
+            "mapping": "full: single-digit addition is 'simple addition' (a Grade 1 goal, revised in Grade 2)",
+            "review_status": "pending_teacher_review",
             "steps": [
                 {"type": "lesson_script",
                  "hindi": "आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।",
@@ -81,6 +100,10 @@ NIPUN_LESSONS = {
         "reading_words": {
             "title": "Reading Simple Words",
             "competency": "Reads common two-syllable words aloud",
+            "lakshya_ids": ["NIPUN-BV-LIT-2", "NIPUN-G2-LIT-1"],
+            "domain": "literacy",
+            "mapping": "full for BV-LIT-2 (simple 2-3 letter words); partial for G2-LIT-1 (single words, not text)",
+            "review_status": "pending_teacher_review",
             "steps": [
                 {"type": "lesson_script",
                  "hindi": "यह शब्द है — माँ। इसे पढ़ो।",
@@ -105,6 +128,10 @@ NIPUN_LESSONS = {
         "subtraction": {
             "title": "Simple Subtraction",
             "competency": "Subtracts single-digit numbers using objects",
+            "lakshya_ids": ["NIPUN-G1-NUM-2", "NIPUN-G2-NUM-2"],
+            "domain": "numeracy",
+            "mapping": "full for G1-NUM-2; partial for G2-NUM-2 (single digits only, goal is up to 99)",
+            "review_status": "pending_teacher_review",
             "steps": [
                 {"type": "lesson_script",
                  "hindi": "आज हम घटाना सीखेंगे। दस में से तीन घटाओ।",
@@ -134,6 +161,10 @@ def get_all_lessons():
                 "grade": g, "topic": tk,
                 "title": lesson["title"],
                 "competency": lesson["competency"],
+                "lakshya_ids": lesson["lakshya_ids"],
+                "lakshya": [label(i) for i in lesson["lakshya_ids"]],
+                "domain": lesson["domain"],
+                "review_status": lesson["review_status"],
                 "steps": len(lesson["steps"])
             })
     return out

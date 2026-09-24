@@ -9,65 +9,79 @@ from reportlab.lib.units import cm
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-import datetime, os
+from xml.sax.saxutils import escape
+import datetime, os, re
 import config
+from nipun import lakshya
 
-# Register Unicode fonts for Ol Chiki (Santali) and Devanagari (Hindi)
+# Fonts. No single bundled font covers Latin, Devanagari and Ol Chiki: the
+# Noto Devanagari file has no Latin letters, so English text set in it came out
+# blank. Each run of text is set in the font for its script (see _mixed).
 _FONT_DIR = str(config.STATIC_DIR / "fonts")   # tracked in git; OFL licences alongside
-_UNICODE_FONT = "Helvetica"          # fallback
-_UNICODE_FONT_BOLD = "Helvetica-Bold"
+_SCRIPT_FONTS = {}                              # script -> registered font name
+
+
+def _register(name, filename, script):
+    path = os.path.join(_FONT_DIR, filename)
+    if not os.path.exists(path):
+        print(f"  Worksheet: {filename} missing, {script} will not render in the PDF")
+        return
+    pdfmetrics.registerFont(TTFont(name, path))
+    # Paragraph markup uses <b>, so the family needs a bold slot even though
+    # these are single-weight files, or reportlab raises on every <b>.
+    pdfmetrics.registerFontFamily(name, normal=name, bold=name, italic=name, boldItalic=name)
+    _SCRIPT_FONTS[script] = name
+
+
 try:
-    _olchiki_path = os.path.join(_FONT_DIR, "NotoSansOlChiki-Regular.ttf")
-    _deva_path    = os.path.join(_FONT_DIR, "NotoSansDevanagari-Regular.ttf")
-    if os.path.exists(_olchiki_path):
-        pdfmetrics.registerFont(TTFont("NotoSansOlChiki", _olchiki_path))
-    if os.path.exists(_deva_path):
-        pdfmetrics.registerFont(TTFont("NotoSansDevanagari", _deva_path))
-        # Paragraph markup uses <b>, so the family needs a bold slot even
-        # though this is a single-weight TTF, or reportlab raises on every <b>.
-        pdfmetrics.registerFontFamily(
-            "NotoSansDevanagari",
-            normal="NotoSansDevanagari", bold="NotoSansDevanagari",
-            italic="NotoSansDevanagari", boldItalic="NotoSansDevanagari")
-        _UNICODE_FONT = "NotoSansDevanagari"
-        _UNICODE_FONT_BOLD = "NotoSansDevanagari"
-        print("  Worksheet: Unicode fonts loaded.")
-    else:
-        print("  Worksheet: NotoSansDevanagari missing, using Helvetica "
-              "(Hindi and Santali will not render in the PDF)")
+    _register("NotoSansDevanagari", "NotoSansDevanagari-Regular.ttf", "devanagari")
+    _register("NotoSansOlChiki", "NotoSansOlChiki-Regular.ttf", "olchiki")
 except Exception as _e:
-    print(f"  Worksheet: font load warning ({_e}), falling back to Helvetica")
+    print(f"  Worksheet: font load warning ({_e}), Hindi and Santali may not render")
 
-_OLCHIKI_FONT      = "Helvetica"      # fallback if font missing
-_OLCHIKI_FONT_BOLD = "Helvetica-Bold"
-if os.path.exists(_olchiki_path):
-    _OLCHIKI_FONT      = "NotoSansOlChiki"
-    _OLCHIKI_FONT_BOLD = "NotoSansOlChiki"
+_RUNS = re.compile(r"([ऀ-ॿ᳐-᳿꣠-ꣿ]+)|([᱐-᱿]+)")
 
-def ps(name, size, bold=False, color="#111111", align=TA_LEFT):
-    """Style for Hindi / general text (Devanagari)."""
-    fname = (_UNICODE_FONT_BOLD if bold else _UNICODE_FONT)
+
+def _mixed(text):
+    """Escape `text` for a Paragraph and put each Devanagari or Ol Chiki run in
+    its own font. Spaces and punctuation between words of one script stay in
+    that script's run, so shaping is not broken up."""
+    out, pos = [], 0
+    text = str(text)
+    for m in _RUNS.finditer(text):
+        out.append(escape(text[pos:m.start()]))
+        script = "devanagari" if m.group(1) else "olchiki"
+        font = _SCRIPT_FONTS.get(script)
+        run = escape(m.group(0))
+        out.append(f'<font name="{font}">{run}</font>' if font else run)
+        pos = m.end()
+    out.append(escape(text[pos:]))
+    return "".join(out)
+
+
+def P(text, style, bold=False):
+    """A Paragraph of plain (unescaped) text in any mix of scripts."""
+    body = _mixed(text)
+    return Paragraph(f"<b>{body}</b>" if bold else body, style)
+
+
+def ps(name, size, bold=False, color="#111111", align=TA_LEFT, leading=1.4):
+    """Style: Latin base font; Hindi and Santali runs switch font inline."""
     return ParagraphStyle(name, fontSize=size,
-        fontName=fname,
+        fontName="Helvetica-Bold" if bold else "Helvetica",
         textColor=colors.HexColor(color),
-        alignment=align, spaceAfter=4, leading=size*1.4)
+        alignment=align, spaceAfter=4, leading=size*leading)
+
 
 def ps_sat(name, size, bold=False, color="#111111", align=TA_LEFT):
-    """Style for Santali text (Ol Chiki script)."""
-    fname = (_OLCHIKI_FONT_BOLD if bold else _OLCHIKI_FONT)
-    return ParagraphStyle(name, fontSize=size,
-        fontName=fname,
-        textColor=colors.HexColor(color),
-        alignment=align, spaceAfter=4, leading=size*1.5)
+    """Style for Santali text: Ol Chiki needs a little more line height."""
+    return ps(name, size, bold, color, align, leading=1.5)
 
-NIPUN = {
-    "1": "Recognises letters, numbers 1-20, and simple words in mother tongue",
-    "2": "Reads two-syllable words; adds and subtracts single-digit numbers",
-    "3": "Reads short paragraphs; multiplication tables 1-5"
-}
 
 def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
-                       lesson_steps=None, out=None):
+                       lesson_steps=None, out=None, lakshya_ids=None):
+    """lakshya_ids: the NIPUN goals the lesson works towards (nipun/lakshya.py).
+    None for a sheet made outside a lesson: then no goal is printed."""
     if out is None:
         out = str(config.DATA_DIR / "last_worksheet.pdf")
     doc = SimpleDocTemplate(out, pagesize=A4,
@@ -78,29 +92,32 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     S   = ps("S",  10, False, "#1A5276", TA_CENTER)
     LB  = ps("LB", 11, True,  "#0D2137")
     BD  = ps("BD", 10, False, "#111111")
-    SAT = ps_sat("SAT", 11, False, "#111111")   # Ol Chiki font for Santali
+    SAT = ps_sat("SAT", 11, False, "#111111")
     FT  = ps("FT",  7, False, "#888888", TA_CENTER)
 
     s += [
-        Paragraph(f"{config.APP_NAME} — Bilingual Classroom Worksheet", H),
-        Paragraph(
-            f"Grade {grade}  |  {topic}  |  "
-            f"{datetime.date.today().strftime('%d %B %Y')}", S),
+        P(f"{config.APP_NAME} — Bilingual Classroom Worksheet", H),
+        P(f"Grade {grade}  |  {topic}  |  "
+          f"{datetime.date.today().strftime('%d %B %Y')}", S),
         Spacer(1, 0.5*cm),
         HRFlowable(width="100%", thickness=1, color=colors.HexColor("#AED6F1"),
                    spaceBefore=0, spaceAfter=15),
     ]
 
-    goal = NIPUN.get(str(grade), "Aligned with FLN learning outcomes")
-    s.append(Paragraph("<b>NIPUN Bharat Competency Goal:</b>", LB))
-    s.append(Paragraph(goal, BD))
+    s.append(P("NIPUN Bharat Lakshya (learning goal):", LB, bold=True))
+    if lakshya_ids:
+        for lid in lakshya_ids:
+            s.append(P(lakshya.label(lid), BD))
+        s.append(P(f"Goal text quoted from {lakshya.SOURCE}.", FT))
+    else:
+        s.append(P("None: this sheet was not made from a lesson.", BD))
     s.append(Spacer(1, 0.8*cm))
 
     # Master Translation Pair
-    s.append(Paragraph("<b>Key Concept Translation:</b>", LB))
+    s.append(P("Key Concept Translation:", LB, bold=True))
     data = [
-        [Paragraph("Hindi (Teacher)", LB), Paragraph("Santali / ᱥᱟᱱᱛᱟᱲᱤ (Student)", LB)],
-        [Paragraph(hindi or "—", BD),      Paragraph(santali or "—", SAT)]
+        [P("Hindi (Teacher)", LB, bold=True), P("Santali / ᱥᱟᱱᱛᱟᱲᱤ (Student)", LB, bold=True)],
+        [P(hindi or "—", BD),                 P(santali or "—", SAT)]
     ]
     t = Table(data, colWidths=[8.5*cm, 8.5*cm])
     t.setStyle(TableStyle([
@@ -114,14 +131,15 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
 
     # Lesson Step History
     if lesson_steps:
-        s.append(Paragraph("<b>Lesson Progression:</b>", LB))
-        h_data = [["Step", "Mode", "Hindi Instruction", "Santali / ᱥᱟᱱᱛᱟᱲᱤ"]]
+        s.append(P("Lesson Progression:", LB, bold=True))
+        h_data = [[P(h, LB, bold=True) for h in
+                   ("#", "Mode", "Hindi Instruction", "Santali / ᱥᱟᱱᱛᱟᱲᱤ")]]
         for i, stp in enumerate(lesson_steps):
             m = stp['type'].replace('_', ' ').title()
             h_data.append([
-                str(i+1), m,
-                Paragraph(stp.get('hindi', ''), BD),
-                Paragraph(stp.get('santali', ''), SAT)
+                P(str(i+1), BD), P(m, BD),
+                P(stp.get('hindi', ''), BD),
+                P(stp.get('santali', ''), SAT)
             ])
         ht = Table(h_data, colWidths=[1.2*cm, 3*cm, 6.4*cm, 6.4*cm])
         ht.setStyle(TableStyle([
@@ -136,7 +154,7 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     s += [
         Spacer(1, 2*cm),
         HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#BDC3C7")),
-        Paragraph(f"Generated automatically by {config.APP_NAME} AI Teaching Assistant", FT)
+        P(f"Generated automatically by {config.APP_NAME} AI Teaching Assistant", FT)
     ]
 
     doc.build(s)
