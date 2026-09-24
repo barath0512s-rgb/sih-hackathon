@@ -89,6 +89,7 @@ def _speak(direction, text):
             pl.hindi_tts(text, str(out), info=info)
     except TTSError as e:
         out.unlink(missing_ok=True)
+        app.logger.error("TTS failed (%s): %s | text: %.60s", direction, e, text)
         return None, str(e), "none"
     with _audio_lock:
         _latest[direction] = aid
@@ -216,13 +217,14 @@ def _model_versions():
             "santali_script": config.SANTALI_TTS_SCRIPT}
 
 
-def _log(rid, device_id, direction, input_type, r, tts_engine, lat):
-    """One latency_log row; the client later adds what the user actually waited."""
+def _log(rid, device_id, direction, input_type, r, tts_engine, lat, tts_error=None):
+    """One latency_log row; the client later adds what the user actually waited.
+    A failed clip is recorded here too, with the reason."""
     database.log_latency(
         rid, device_id=device_id or None, direction=direction, input_type=input_type,
         source=r["source"], tts_engine=tts_engine,
         asr_ms=lat["asr"] * 1000, nmt_ms=lat["nmt"] * 1000, tts_ms=lat["tts"] * 1000,
-        server_ms=lat["total"] * 1000, model_versions=_model_versions())
+        server_ms=lat["total"] * 1000, model_versions=_model_versions(), tts_error=tts_error)
 
 
 def _translation_json(r, audio_url, tts_error, latency, rid=None, tts_engine=None):
@@ -277,7 +279,7 @@ def translate_audio():
     lat = {"asr": round(t1 - t0, 3), "nmt": round(t2 - t1, 3),
            "tts": round(t3 - t2, 3), "total": round(t3 - t0, 3)}
     rid = uuid.uuid4().hex
-    _log(rid, request.form.get("device_id"), direction, "voice", r, tts_engine, lat)
+    _log(rid, request.form.get("device_id"), direction, "voice", r, tts_engine, lat, tts_error)
     out = _translation_json(r, audio_url, tts_error, lat, rid, tts_engine)
     out["recognized_text"] = recognized
     return jsonify(out)
@@ -302,7 +304,7 @@ def translate_text():
     lat = {"asr": 0.0, "nmt": round(t1 - t0, 3),
            "tts": round(t2 - t1, 3), "total": round(t2 - t0, 3)}
     rid = uuid.uuid4().hex
-    _log(rid, data.get("device_id"), direction, "typed", r, tts_engine, lat)
+    _log(rid, data.get("device_id"), direction, "typed", r, tts_engine, lat, tts_error)
     return jsonify(_translation_json(r, audio_url, tts_error, lat, rid, tts_engine))
 
 

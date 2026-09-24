@@ -154,6 +154,19 @@ def test_latency_is_logged_and_completed_by_the_client(api):
     assert summary["paths"][key]["client_total_ms"]["n"] >= 1
 
 
+def test_speech_failure_keeps_the_text_and_is_logged(api, monkeypatch):
+    import database
+    monkeypatch.setitem(config.PIPER_VOICES, "hindi", "no-such-voice")
+    monkeypatch.setattr(config, "TTS_CACHE_DIR", config.TTS_CACHE_DIR / "empty_for_failure")
+    code, r = post(api, "/translate/text", text="ᱫᱟᱜ ᱮᱢ ᱢᱮ", direction="sat-to-hi")
+    assert code == 200 and r["translated_text"]
+    assert r["audio_url"] is None and r["tts_error"] and r["tts_engine"] == "none"
+    with database._db() as c:
+        row = c.execute("SELECT tts_error, tts_engine FROM latency_log WHERE id=?",
+                        (r["request_id"],)).fetchone()
+    assert row["tts_engine"] == "none" and "no-such-voice" in row["tts_error"]
+
+
 def test_client_timing_is_validated(api):
     assert post(api, "/metrics/client", request_id="nope", client_total_ms=1, response_ms=1)[0] == 404
     assert post(api, "/metrics/client", request_id="x", client_total_ms="a", response_ms=1)[0] == 400

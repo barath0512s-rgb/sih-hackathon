@@ -105,7 +105,7 @@ CLASSROOM_HI_SAT = {
     "शिक्षक":     "ᱜᱩᱨᱩ",
     "माँ":        "ᱟᱭᱳ",
     "पानी":       "ᱫᱟᱜ",
-    "घर":         "ᱦᱚᱨᱚ",
+    "घर":         "ᱳᱲᱟᱜ",        # was ᱦᱚᱨᱚ ("person"); see GLOSSARY_CHANGES
     "जमीन":       "ᱦᱟᱥᱟ",
     "पेड़":        "ᱫᱟᱨᱮ",
     "सूरज":       "ᱧᱤᱫᱟ",
@@ -113,6 +113,14 @@ CLASSROOM_HI_SAT = {
 }
 
 CLASSROOM_SAT_HI = {v: k for k, v in CLASSROOM_HI_SAT.items()}
+
+# Every change to an entry above, for the native reviewer. docs/glossary_changes.md
+# is the readable copy; keep the two in step.
+GLOSSARY_CHANGES = [
+    {"hindi": "घर", "old": "ᱦᱚᱨᱚ", "new": "ᱳᱲᱟᱜ", "date": "2026-09-24",
+     "reason": "ᱦᱚᱨᱚ means person; ᱳᱲᱟᱜ (oṛak') is house. Decided by the team.",
+     "review_status": "pending_native_review"},
+]
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 COLORS_HI_SAT = {

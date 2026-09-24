@@ -862,6 +862,13 @@ input:focus,textarea:focus,select:focus{
    ║   ▲ ▲ ▲   R E F I N E M E N T   P A S S   —   E N D                       ║
    ╚═══════════════════════════════════════════════════════════════════════════╝ */
 
+/* Where a translation came from: verified glossary, teacher-verified, cached, model. */
+.src-badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;border:2px solid var(--ink);
+  background:var(--paper);margin-right:6px;white-space:nowrap;align-self:center}
+.src-badge[data-src="glossary"]{background:var(--c6-soft,#dff3e4)}
+.src-badge[data-src="teacher"]{background:var(--c1-soft,#fff1c7)}
+.src-badge[data-src="cached"]{background:var(--cream-2,#f3ecdf)}
+.src-badge[data-src="model"]{background:var(--c3-soft,#e3ecff)}
 </style>
 </head>
 <body>
@@ -953,6 +960,7 @@ input:focus,textarea:focus,select:focus{
       <div class="head">
         <span class="who"><span class="e">👩‍🏫</span> <span data-t="pan_hindi">हिंदी</span></span>
         <span class="tools">
+          <span class="src-badge" id="srcHi" hidden></span>
           <button class="tool" id="resetHi" data-tt="tip_reset" title="पंक्ति वापस लाएँ"><svg class="ic"><use href="#i-redo"/></svg></button>
           <button class="tool" id="clearHi" data-tt="tip_clear" title="मिटाएँ"><svg class="ic"><use href="#i-eraser"/></svg></button>
         </span>
@@ -969,6 +977,7 @@ input:focus,textarea:focus,select:focus{
       <div class="head">
         <span class="who"><span class="e">🧒</span> <span data-t="pan_sat">ᱥᱟᱱᱛᱟᱲᱤ</span></span>
         <span class="tools">
+          <span class="src-badge" id="srcSa" hidden></span>
           <button class="tool" id="playBtn" data-tt="tip_play" title="सुनिए"><svg class="ic"><use href="#i-speaker"/></svg></button>
         </span>
       </div>
@@ -1236,7 +1245,8 @@ hi: {
   wr_half:"आधी कक्षा समझी", wr_half_b:"कल शुरू में इसी पाठ के शब्द दोहराइए",
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
-  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"आवाज़ नहीं बन पाई",
+  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"इस पंक्ति की आवाज़ नहीं बन पाई। अनुवाद ऊपर लिखा है।",
+  src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद",
   m_fix_reused:"आपका सुधार इस वाक्य के लिए दोबारा इस्तेमाल होगा", tip_ans_mic:"बोलकर जवाब", m_ans_heard:"सुना",
   t1_note_typed:"लिखी पंक्ति, सुनना (ASR) नहीं हुआ", t1_note_cache:"पहले से तैयार (कैश से)",
   t1_note_noaudio:"आवाज़ नहीं चली: यह जवाब आने तक का समय है", t1_note_server:"नीचे: सर्वर के हिस्से", m_mic_no:"माइक की अनुमति नहीं मिली",
@@ -1366,7 +1376,8 @@ en: {
   wr_half:"About half the class", wr_half_b:"Open tomorrow by repeating these words",
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
-  m_blocked:"Press once to allow sound", m_no_voice:"The voice could not be produced",
+  m_blocked:"Press once to allow sound", m_no_voice:"The voice for this line could not be made. The translation is shown above.",
+  src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model",
   m_fix_reused:"Your correction will be reused for this sentence", tip_ans_mic:"Answer by voice", m_ans_heard:"Heard",
   t1_note_typed:"Typed line, no ASR", t1_note_cache:"From cache",
   t1_note_noaudio:"No audio played: this is the time until the reply arrived", t1_note_server:"Below: server stages", m_mic_no:"The microphone was not allowed",
@@ -1566,7 +1577,20 @@ function say(msg, emoji){
 }
 // Play the answer, or say why there is no audio. The server never sends
 // silence: when speech fails, audio_url is null and tts_error says why.
+// Label the translation with the layer that produced it. No confidence number
+// is shown: the model's score does not tell good output from bad.
+function badge(source){
+  const on = $(S.dir === "hi-to-sat" ? "#srcSa" : "#srcHi");
+  const off = $(S.dir === "hi-to-sat" ? "#srcHi" : "#srcSa");
+  off.hidden = true;
+  if (!source){ on.hidden = true; return; }
+  on.dataset.src = source;
+  on.textContent = t("src_" + source);
+  on.hidden = false;
+}
+
 function voice(r){
+  badge(r.source);
   S.audioUrl = r.audio_url || null;
   if (r.tts_error){ console.warn(r.tts_error); say(t("m_no_voice"), "🔇"); return; }
   if (S.autoplay && r.audio_url) play(true);

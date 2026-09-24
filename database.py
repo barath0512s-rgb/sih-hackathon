@@ -95,8 +95,11 @@ def init_db():
                 asr_ms REAL, nmt_ms REAL, tts_ms REAL, server_ms REAL,
                 network_ms REAL,                     -- client: round trip minus server time
                 client_total_ms REAL,                -- client: input end -> audio playing
-                model_versions TEXT
+                model_versions TEXT,
+                tts_error TEXT                       -- why no audio was made, if none was
             )""")
+        if "tts_error" not in {r["name"] for r in c.execute("PRAGMA table_info(latency_log)")}:
+            c.execute("ALTER TABLE latency_log ADD COLUMN tts_error TEXT")
 
 
 # ── Corrections ───────────────────────────────────────────────────────────────
@@ -187,14 +190,14 @@ def load_session(sid):
 
 # ── Latency ───────────────────────────────────────────────────────────────────
 def log_latency(rid, *, device_id, direction, input_type, source, tts_engine,
-                asr_ms, nmt_ms, tts_ms, server_ms, model_versions):
+                asr_ms, nmt_ms, tts_ms, server_ms, model_versions, tts_error=None):
     with _db() as c:
         c.execute("""
             INSERT INTO latency_log (id, ts, device_id, direction, input_type, source,
-                tts_engine, asr_ms, nmt_ms, tts_ms, server_ms, model_versions)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                tts_engine, asr_ms, nmt_ms, tts_ms, server_ms, model_versions, tts_error)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (rid, time.time(), device_id, direction, input_type, source, tts_engine,
-             asr_ms, nmt_ms, tts_ms, server_ms, json.dumps(model_versions)))
+             asr_ms, nmt_ms, tts_ms, server_ms, json.dumps(model_versions), tts_error))
 
 
 def report_client_timing(rid, client_total_ms, response_ms):

@@ -91,11 +91,12 @@ NIPUN_LESSONS = {
                 {"type": "assessment_prompt",
                  "hindi": "यह शब्द क्या है? पढ़कर बताओ।",
                  "note": "Hold up word card: घर",
-                 # The glossary gives ᱦᱚᱨᱚ for घर, which may mean "person";
-                 # it is left out until a native speaker confirms it.
+                 # ᱳᱲᱟᱜ is the corrected glossary word (was ᱦᱚᱨᱚ, "person");
+                 # ᱚᱲᱟᱜ is the model's spelling of the same word.
                  "accept_answers": {"hi": ["घर", "ghar"],
-                                    "sat": ["ᱚᱲᱟᱜ"],
-                                    "sat_sources": {"ᱚᱲᱟᱜ": "IndicTrans2 output"},
+                                    "sat": ["ᱳᱲᱟᱜ", "ᱚᱲᱟᱜ"],
+                                    "sat_sources": {"ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+                                                    "ᱚᱲᱟᱜ": "IndicTrans2 output"},
                                     "review_status": "pending_native_review"}},
             ]
         }
