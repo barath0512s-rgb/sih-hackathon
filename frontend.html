@@ -365,6 +365,8 @@ p{margin:0}
 
 /* ═════════ FLASHCARDS ═════════ */
 .deck-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.deck-tag{margin:-10px 0 18px;font-size:13px;font-weight:700;opacity:.75}
+.fc-back .src-badge{margin:4px 0 0;font-size:11px}
 .deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:20px}
 .fc{display:block;perspective:1200px;background:none;border:0;padding:0;height:300px;width:100%}
 .fc-in{
@@ -1077,6 +1079,7 @@ input:focus,textarea:focus,select:focus{
     <button class="btn paper" id="shuffleBtn"><span class="e">🔀</span> <span data-t="fc_shuffle">बदलिए</span></button>
     <button class="btn paper" id="flipAllBtn"><span class="e">🔄</span> <span data-t="fc_flipall">सब पलटिए</span></button>
   </div>
+  <p class="deck-tag" id="deckTag"></p>
   <div class="deck" id="deck"></div>
 </section>
 
@@ -1181,8 +1184,8 @@ input:focus,textarea:focus,select:focus{
 /* ═══════════════════════════════════════════════════════════════════════════
    वाणीसेतु — कक्षा का पर्दा
    Wired to the Flask backend in app.py. Endpoints used:
-     GET  /lessons /health /health/models /config /audio/<id>
-     POST /session/start /session/next /session/goto /session/response
+     GET  /lessons /flashcards /health /health/models /config /audio/<id>
+     POST /session/start /session/next /session/goto /session/response /speak
           /session/summary /translate/text /translate/audio /feedback /worksheet
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -1246,7 +1249,7 @@ hi: {
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
   m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"इस पंक्ति की आवाज़ नहीं बन पाई। अनुवाद ऊपर लिखा है।",
-  src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद",
+  src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद", src_pending:"समीक्षा बाकी",
   m_fix_reused:"आपका सुधार इस वाक्य के लिए दोबारा इस्तेमाल होगा", tip_ans_mic:"बोलकर जवाब", m_ans_heard:"सुना",
   t1_note_typed:"लिखी पंक्ति, सुनना (ASR) नहीं हुआ", t1_note_cache:"पहले से तैयार (कैश से)",
   t1_note_noaudio:"आवाज़ नहीं चली: यह जवाब आने तक का समय है", t1_note_server:"नीचे: सर्वर के हिस्से", m_mic_no:"माइक की अनुमति नहीं मिली",
@@ -1377,7 +1380,7 @@ en: {
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
   m_blocked:"Press once to allow sound", m_no_voice:"The voice for this line could not be made. The translation is shown above.",
-  src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model",
+  src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model", src_pending:"review pending",
   m_fix_reused:"Your correction will be reused for this sentence", tip_ans_mic:"Answer by voice", m_ans_heard:"Heard",
   t1_note_typed:"Typed line, no ASR", t1_note_cache:"From cache",
   t1_note_noaudio:"No audio played: this is the time until the reply arrived", t1_note_server:"Below: server stages", m_mic_no:"The microphone was not allowed",
@@ -1412,33 +1415,8 @@ const LESSON = {
                         en:["Taking away","Takes one single digit number away from another"] }
 };
 
-/* चित्र पत्ते — flashcard decks, one per lesson topic */
-const DECKS = {
-  counting_1_10:[
-    {e:"🍎",n:1,hi:"एक"},{e:"🍎",n:2,hi:"दो"},{e:"🍎",n:3,hi:"तीन"},
-    {e:"🍎",n:4,hi:"चार"},{e:"🍎",n:5,hi:"पांच"},{e:"🌰",n:6,hi:"छह"},
-    {e:"🌰",n:7,hi:"सात"},{e:"🌰",n:8,hi:"आठ"},{e:"🌰",n:9,hi:"नौ"},{e:"🌰",n:10,hi:"दस"}
-  ],
-  shapes:[
-    {e:"⭕",hi:"गोल"},{e:"🟦",hi:"चौकोर"},{e:"🔺",hi:"तिकोन"},{e:"⭐",hi:"तारा"},
-    {e:"🥚",hi:"अंडाकार"},{e:"➖",hi:"रेखा"}
-  ],
-  addition:[
-    {e:"🥭🥭 ➕ 🥭",hi:"दो और एक तीन"},{e:"🍌🍌 ➕ 🍌🍌",hi:"दो और दो चार"},
-    {e:"🪨🪨🪨 ➕ 🪨🪨",hi:"तीन और दो पांच"},{e:"🌼🌼🌼 ➕ 🌼🌼🌼🌼",hi:"तीन और चार सात"},
-    {e:"✋ ➕ ✋",hi:"पांच और पांच दस"}
-  ],
-  reading_words:[
-    {e:"👩",hi:"माँ"},{e:"💧",hi:"पानी"},{e:"🏠",hi:"घर"},{e:"🌸",hi:"फूल"},
-    {e:"📕",hi:"किताब"},{e:"🐄",hi:"गाय"}
-  ],
-  subtraction:[
-    {e:"🪨🪨🪨🪨🪨 ➖ 🪨🪨",hi:"पांच में से दो तीन"},
-    {e:"🍬🍬🍬🍬 ➖ 🍬",hi:"चार में से एक तीन"},
-    {e:"🐟🐟🐟🐟🐟🐟 ➖ 🐟🐟🐟",hi:"छह में से तीन तीन"},
-    {e:"🌟🌟🌟🌟🌟🌟🌟🌟 ➖ 🌟🌟🌟🌟🌟",hi:"आठ में से पांच तीन"}
-  ],
-};
+/* चित्र पत्ते — the decks come from GET /flashcards, built from the lessons in
+   lesson_engine.py. Nothing about them is hard-coded here. */
 
 /* teaching notes for each step, in both scripts. lesson_engine.py stores these
    in English; the classroom never shows English, so they are translated here.
@@ -1518,6 +1496,8 @@ const Api = {
   health:       ()             => getJSON("/health"),
   models:       ()             => getJSON("/health/models"),
   lessons:      ()             => getJSON("/lessons").then(d => d.lessons || []),
+  flashcards:   ()             => getJSON("/flashcards").then(d => d.decks || []),
+  speak:        (text, lang)   => postJSON("/speak", {text, lang}),
   startSession: (grade, topic) => postJSON("/session/start", {grade, topic}),
   next:         (sid)          => postJSON("/session/next", {session_id:sid}),
   goto:         (sid, step)    => postJSON("/session/goto", {session_id:sid, step}),
@@ -1556,7 +1536,7 @@ const S = {
   rec:null, mr:null, chunks:[], recTimer:null, secs:0, lastFocus:null,
   began:Date.now(), log:[], times:[], counts:{green:0,amber:0,rose:0}, fixes:0,
   autoplay:true, confirm:true, filter:"all", online:false, busy:false,
-  deck:"counting_1_10", cardSat:new Map(), lastLat:null, lastSpoken:false, lastConf:null
+  deck:"counting_1_10", decks:{}, cardSat:new Map(), lastLat:null, lastSpoken:false, lastConf:null
 };
 
 const $  = (s,r=document) => r.querySelector(s);
@@ -2167,7 +2147,7 @@ $$("#filters button").forEach(b => b.onclick = () => {
 function buildDeckPicker(){
   const bar = $("#deckPick");
   if (!bar) return;
-  bar.innerHTML = Object.keys(DECKS).map(k => {
+  bar.innerHTML = Object.keys(S.decks).map(k => {
     const m = LESSON[k] || {e:"🎴"};
     const [nm] = m[S.lang] || m.hi;
     return `<button data-deck="${k}" aria-pressed="${k === S.deck}">${m.e} ${nm}</button>`;
@@ -2178,13 +2158,31 @@ function buildDeckPicker(){
   });
 }
 
+async function loadDecks(){
+  try {
+    const decks = await Api.flashcards();
+    S.decks = {};
+    for (const d of decks){
+      S.decks[d.topic] = d;
+      for (const c of d.cards) if (c.sat) S.cardSat.set(c.hi, c.sat);
+    }
+  } catch(e){ S.decks = {}; }
+}
+
 function buildDeck(){
   const wrap = $("#deck");
   if (!wrap) return;
-  const cardsArr = (DECKS[S.deck] || []).slice();
+  const deck = S.decks[S.deck];
+  // The NIPUN Lakshya this deck practises; the goal text is the tooltip.
+  const tag = $("#deckTag");
+  if (tag){
+    tag.textContent = deck ? "NIPUN: " + deck.lakshya_ids.join(", ") : (Object.keys(S.decks).length ? "" : t("fc_off"));
+    tag.title = deck ? deck.lakshya.join("\n") : "";
+  }
+  const cardsArr = (deck ? deck.cards : []).slice();
   if (S.shuffled) cardsArr.sort(() => Math.random() - .5);
   wrap.innerHTML = cardsArr.map((c,i) => {
-    const emoji = c.n ? c.e.repeat(c.n) : c.e;
+    const emoji = c.n ? c.emoji.repeat(c.n) : c.emoji;
     // a row of ten emoji has to shrink or it bursts out of the card
     const glyphs = [...emoji.replace(/\s/g,"")].length;
     const es = glyphs <= 3 ? 52 : glyphs <= 5 ? 42 : glyphs <= 8 ? 32 : 26;
@@ -2199,6 +2197,7 @@ function buildDeck(){
         <span class="fc-face fc-back">
           <span class="emoji" style="--es:${es}px">${emoji}</span>
           <span class="word olck">${cached || "…"}</span>
+          ${c.source ? `<span class="src-badge" data-src="${c.source}">${t("src_" + c.source)}${c.review_status === "pending_native_review" ? " · " + t("src_pending") : ""}</span>` : ""}
           <span class="listen">🔊 ${t("fc_listen")}</span>
         </span>
       </span></button>`;
@@ -2234,10 +2233,12 @@ async function fillCard(card){
   }
 }
 
+// Speaks the Santali printed on the card, not a fresh translation of the Hindi.
 async function speakCard(hi){
   try {
-    const r = await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
-    S.cardSat.set(hi, (r.translated_text || "").trim());
+    const sat = S.cardSat.get(hi);
+    if (!sat){ say(t("fc_off"), "🔌"); return; }
+    const r = await Api.speak(sat, "sat");
     if (!r.audio_url){ say(t("m_no_voice"), "🔇"); return; }
     player.src = SERVER + r.audio_url;
     player.play().catch(() => say(t("m_blocked"), "🔈"));
@@ -2319,7 +2320,7 @@ async function load(i){
   if (i < 0 || !S.lessons[i]) return;
   S.index = i; S.lesson = S.lessons[i]; S.step = 0;
   $("#pickLesson").value = String(i);
-  if (DECKS[S.lesson.topic]){ S.deck = S.lesson.topic; buildDeckPicker(); buildDeck(); }
+  if (S.decks[S.lesson.topic]){ S.deck = S.lesson.topic; buildDeckPicker(); buildDeck(); }
   draw();
   try { const r = await Api.startSession(S.lesson.grade, S.lesson.topic); S.sid = r.session_id; setOnline(true); }
   catch(e){ fail(e); }
@@ -2355,6 +2356,8 @@ async function boot(quiet){
   }
   facing();
   figures();
+  await loadDecks();
+  if (S.lesson && S.decks[S.lesson.topic]) S.deck = S.lesson.topic;
   buildDeckPicker();
   buildDeck();
   fromHash();

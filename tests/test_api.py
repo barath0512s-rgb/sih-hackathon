@@ -185,6 +185,46 @@ def test_health_models_reports_each_language(api):
     assert "greedy" in h["languages"]["hi"]["nmt"]["engine"]
 
 
+# ── WP7: flashcards come from the lessons ────────────────────────────────────
+def test_flashcards_are_built_from_the_lessons(api):
+    from lesson_engine import get_lesson
+    c = api.app.test_client()
+    r = c.get("/flashcards?grade=2&topic=reading_words")
+    assert r.status_code == 200
+    (deck,) = r.get_json()["decks"]
+    lesson = get_lesson("2", "reading_words")
+    assert [x["hi"] for x in deck["cards"]] == [x["hi"] for x in lesson["flashcards"]]
+    assert deck["lakshya_ids"] == lesson["lakshya_ids"]
+    for card in deck["cards"]:
+        # Every card says which layer answered it and whether it was reviewed.
+        assert card["sat"] and card["source"] in ("teacher", "glossary", "cached", "model")
+        assert card["review_status"]
+        assert not card["sat"].endswith(("᱾", "।"))       # a card is a word, not a sentence
+    # घर comes from the corrected word list, marked as not yet reviewed.
+    ghar = next(x for x in deck["cards"] if x["hi"] == "घर")
+    assert ghar["sat"] == "ᱳᱲᱟᱜ" and ghar["source"] == "glossary"
+    assert ghar["review_status"] == "pending_native_review"
+    # A card with no word-list entry falls through to the model, labelled so.
+    phool = next(x for x in deck["cards"] if x["hi"] == "फूल")
+    assert phool["source"] in ("cached", "model") and phool["review_status"] == "unreviewed_model_output"
+
+    everything = c.get("/flashcards").get_json()["decks"]
+    assert {d["topic"] for d in everything} == {
+        "counting_1_10", "shapes", "addition", "reading_words", "subtraction"}
+    assert c.get("/flashcards?grade=9").status_code == 404
+
+
+def test_speak_says_the_given_text(api):
+    code, r = post(api, "/speak", text="ᱳᱲᱟᱜ", lang="sat")
+    assert code == 200 and r["audio_url"] and r["tts_error"] is None
+    spoken = api.pl.transliterate_santali("ᱳᱲᱟᱜ")
+    digest = hashlib.md5(f"piper:{api.pl._voice_model('santali')}:{spoken}".encode("utf-8")).hexdigest()
+    assert api.app.test_client().get(r["audio_url"]).data == \
+        (config.TTS_CACHE_DIR / f"{digest}.wav").read_bytes()
+    assert post(api, "/speak", text="", lang="sat")[0] == 400
+    assert post(api, "/speak", text="x", lang="en")[0] == 400
+
+
 def test_worksheet_is_a_pdf(api):
     r = api.app.test_client().post("/worksheet", json={"hindi_text": "आज", "santali_text": "ᱛᱮᱦᱮᱸᱡ"})
     assert r.status_code == 200 and r.data[:4] == b"%PDF"

@@ -13,6 +13,7 @@ from flask_cors import CORS
 
 import config
 import database
+from education_glossary import lookup_word_hi_to_sat
 from lesson_engine import LessonSession, get_all_lessons, get_lesson
 from pipeline import TRANSLATION_CACHE, TTSError, VaaniSetuPipeline
 from worksheet import generate_worksheet
@@ -207,6 +208,59 @@ def lessons():
         item["plan"] = lesson["steps"] if lesson else []
         out.append(item)
     return jsonify({"lessons": out})
+
+
+@app.route("/flashcards")
+def flashcards():
+    """Flashcard decks made from the lessons: GET /flashcards?grade=2&topic=addition.
+    Both filters are optional. Each card's Santali comes from, in order: a
+    teacher's correction, the glossary word list (a card is one word or a short
+    phrase, which the sentence glossary does not hold), then the translation
+    layers (cached, model). `source` says which one answered, and
+    `review_status` says whether a native speaker has checked it."""
+    grade, topic = request.args.get("grade"), request.args.get("topic")
+    decks = []
+    for meta in get_all_lessons():
+        if grade and meta["grade"] != str(grade):
+            continue
+        if topic and meta["topic"] != topic:
+            continue
+        lesson = get_lesson(meta["grade"], meta["topic"])
+        cards = []
+        for c in lesson.get("flashcards", []):
+            cards.append({"hi": c["hi"], "emoji": c.get("emoji", ""), "n": c.get("n"),
+                          **_card_santali(c["hi"])})
+        decks.append({"grade": meta["grade"], "topic": meta["topic"],
+                      "title": meta["title"], "lakshya_ids": meta["lakshya_ids"],
+                      "lakshya": meta["lakshya"], "cards": cards})
+    if (grade or topic) and not decks:
+        return jsonify({"error": "No lesson matches that grade and topic"}), 404
+    return jsonify({"decks": decks})
+
+
+def _card_santali(hi):
+    fixed = database.get_correction(hi, "hi-to-sat")
+    if fixed:
+        return {"sat": fixed, "source": "teacher", "review_status": "teacher_verified"}
+    word = lookup_word_hi_to_sat(hi)
+    if word:
+        return {"sat": word[0], "source": "glossary", "review_status": "pending_native_review"}
+    r = pl.translate(hi, "hi-to-sat", "lesson_script")
+    # The model ends even one word with a full stop (᱾); a card has none.
+    return {"sat": r["text"].strip().rstrip("᱾।.").strip(), "source": r["source"],
+            "review_status": "unreviewed_model_output"}
+
+
+@app.route("/speak", methods=["POST"])
+def speak():
+    """Speak a given line as it is, without translating it: {text, lang: "sat"|"hi"}.
+    Flashcards use it so the voice says the word printed on the card."""
+    d = request.json or {}
+    text, lang = (d.get("text") or "").strip(), d.get("lang", "sat")
+    if not text or lang not in ("sat", "hi"):
+        return jsonify({"error": "text and lang (sat or hi) are required"}), 400
+    audio_url, tts_error, tts_engine = _speak("hi-to-sat" if lang == "sat" else "sat-to-hi", text)
+    return jsonify({"audio_url": audio_url, "tts_error": tts_error, "tts_engine": tts_engine})
 
 
 # ── Translation ───────────────────────────────────────────────────────────────

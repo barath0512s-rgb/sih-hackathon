@@ -56,6 +56,16 @@ def test_lesson_list_carries_the_tags():
         assert item["lakshya"][0].startswith(item["lakshya_ids"][0])
 
 
+def test_every_lesson_has_flashcards_and_the_frontend_has_none_of_its_own():
+    from pathlib import Path
+    for name, lesson in all_lessons():
+        assert lesson.get("flashcards"), name
+        for c in lesson["flashcards"]:
+            assert c["hi"] and c["emoji"], name
+    html = (Path(__file__).parent.parent / "frontend.html").read_text(encoding="utf-8")
+    assert "const DECKS" not in html and "/flashcards" in html
+
+
 def test_worksheet_prints_the_tag(tmp_path):
     import fitz     # pymupdf, in requirements-dev.txt
     from worksheet import generate_worksheet

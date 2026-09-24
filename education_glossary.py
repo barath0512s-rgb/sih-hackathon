@@ -269,6 +269,13 @@ def lookup_sat_to_hi(text: str):
     return _lookup(VERIFIED_SENTENCES_SAT_HI, text)
 
 
+def lookup_word_hi_to_sat(text: str):
+    """The word-list Santali when `text` is exactly one entry (a flashcard word),
+    or None. Used for flashcards only: the model is poor at single words (दो came
+    back as "this happens"). The word lists have not had a native review yet."""
+    return _lookup(ALL_HI_SAT, text)
+
+
 def apply_word_glossary_hi_sat(nmt_output: str, hindi_input: str) -> str:
     """
     Post-process NMT output: for every education word in the Hindi source that

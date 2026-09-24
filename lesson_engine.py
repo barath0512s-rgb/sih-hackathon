@@ -16,6 +16,13 @@ NIPUN_LESSONS = {
     "grade1": {
         "counting_1_10": {
             "title": "Counting 1 to 10",
+            "flashcards": [
+                {"hi": "एक", "emoji": "🍎", "n": 1}, {"hi": "दो", "emoji": "🍎", "n": 2},
+                {"hi": "तीन", "emoji": "🍎", "n": 3}, {"hi": "चार", "emoji": "🍎", "n": 4},
+                {"hi": "पांच", "emoji": "🍎", "n": 5}, {"hi": "छह", "emoji": "🌰", "n": 6},
+                {"hi": "सात", "emoji": "🌰", "n": 7}, {"hi": "आठ", "emoji": "🌰", "n": 8},
+                {"hi": "नौ", "emoji": "🌰", "n": 9}, {"hi": "दस", "emoji": "🌰", "n": 10},
+            ],
             "competency": "Counts objects up to 10 and says numbers in order",
             "lakshya_ids": ["NIPUN-BV-NUM-1", "NIPUN-G1-NUM-1"],
             "domain": "numeracy",
@@ -42,6 +49,11 @@ NIPUN_LESSONS = {
         },
         "shapes": {
             "title": "Basic Shapes",
+            "flashcards": [
+                {"hi": "गोल", "emoji": "⭕"}, {"hi": "चौकोर", "emoji": "🟦"},
+                {"hi": "तिकोन", "emoji": "🔺"}, {"hi": "तारा", "emoji": "⭐"},
+                {"hi": "अंडाकार", "emoji": "🥚"}, {"hi": "रेखा", "emoji": "➖"},
+            ],
             "competency": "Identifies circle, square, and triangle",
             "lakshya_ids": ["NIPUN-BV-NUM-2"],
             "domain": "numeracy",
@@ -72,6 +84,13 @@ NIPUN_LESSONS = {
     "grade2": {
         "addition": {
             "title": "Simple Addition",
+            "flashcards": [
+                {"hi": "दो और एक तीन", "emoji": "🥭🥭 ➕ 🥭"},
+                {"hi": "दो और दो चार", "emoji": "🍌🍌 ➕ 🍌🍌"},
+                {"hi": "तीन और दो पांच", "emoji": "🪨🪨🪨 ➕ 🪨🪨"},
+                {"hi": "तीन और चार सात", "emoji": "🌼🌼🌼 ➕ 🌼🌼🌼🌼"},
+                {"hi": "पांच और पांच दस", "emoji": "✋ ➕ ✋"},
+            ],
             "competency": "Adds two single-digit numbers using objects",
             "lakshya_ids": ["NIPUN-G1-NUM-2"],
             "domain": "numeracy",
@@ -99,6 +118,11 @@ NIPUN_LESSONS = {
         },
         "reading_words": {
             "title": "Reading Simple Words",
+            "flashcards": [
+                {"hi": "माँ", "emoji": "👩"}, {"hi": "पानी", "emoji": "💧"},
+                {"hi": "घर", "emoji": "🏠"}, {"hi": "फूल", "emoji": "🌸"},
+                {"hi": "किताब", "emoji": "📕"}, {"hi": "गाय", "emoji": "🐄"},
+            ],
             "competency": "Reads common two-syllable words aloud",
             "lakshya_ids": ["NIPUN-BV-LIT-2", "NIPUN-G2-LIT-1"],
             "domain": "literacy",
@@ -127,6 +151,12 @@ NIPUN_LESSONS = {
     "grade3": {
         "subtraction": {
             "title": "Simple Subtraction",
+            "flashcards": [
+                {"hi": "पांच में से दो तीन", "emoji": "🪨🪨🪨🪨🪨 ➖ 🪨🪨"},
+                {"hi": "चार में से एक तीन", "emoji": "🍬🍬🍬🍬 ➖ 🍬"},
+                {"hi": "छह में से तीन तीन", "emoji": "🐟🐟🐟🐟🐟🐟 ➖ 🐟🐟🐟"},
+                {"hi": "आठ में से पांच तीन", "emoji": "🌟🌟🌟🌟🌟🌟🌟🌟 ➖ 🌟🌟🌟🌟🌟"},
+            ],
             "competency": "Subtracts single-digit numbers using objects",
             "lakshya_ids": ["NIPUN-G1-NUM-2", "NIPUN-G2-NUM-2"],
             "domain": "numeracy",
@@ -165,6 +195,7 @@ def get_all_lessons():
                 "lakshya": [label(i) for i in lesson["lakshya_ids"]],
                 "domain": lesson["domain"],
                 "review_status": lesson["review_status"],
+                "flashcards": len(lesson.get("flashcards", [])),
                 "steps": len(lesson["steps"])
             })
     return out

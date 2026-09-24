@@ -46,6 +46,9 @@ def _populate_nipun_cache(pipeline):
                     continue
                 mode = step.get("type", "lesson_script")
                 sentences.append((h, mode))
+            # Flashcard words too, so the flashcard view does not wait on the model.
+            for card in lesson.get("flashcards", []):
+                sentences.append((card["hi"], "lesson_script"))
         seen = set()
         unique = [(h, m) for h, m in sentences if not (h, m) in seen and not seen.add((h, m))]
         print(f"  Pre-caching {len(unique)} NIPUN sentences in background…")
