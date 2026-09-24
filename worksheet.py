@@ -13,7 +13,7 @@ import datetime, os
 import config
 
 # Register Unicode fonts for Ol Chiki (Santali) and Devanagari (Hindi)
-_FONT_DIR = os.path.join(os.path.dirname(__file__), "models", "fonts")
+_FONT_DIR = str(config.STATIC_DIR / "fonts")   # tracked in git; OFL licences alongside
 _UNICODE_FONT = "Helvetica"          # fallback
 _UNICODE_FONT_BOLD = "Helvetica-Bold"
 try:

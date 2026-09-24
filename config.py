@@ -35,8 +35,30 @@ DB_FILE = BASE_DIR / "vaanisetu_feedback.db"
 # and may only be used when this is explicitly switched on.
 ALLOW_ONLINE_TTS = False
 
+# Models are read from disk only. These stop transformers and huggingface_hub
+# from contacting the Hub (update checks, telemetry, silent re-downloads).
+OFFLINE_ENV = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
+               "HF_HUB_DISABLE_TELEMETRY": "1"}
+
+# ── Speech ────────────────────────────────────────────────────────────────────
+# No offline voice reads Ol Chiki, so Santali is transliterated first
+# (translit/olchiki.py) and read by an existing Piper voice:
+#   "devanagari": the hi_IN voice, Indian phonetics (default)
+#   "latin":      the en_US voice, kept for A/B comparison
+SANTALI_TTS_SCRIPT = "devanagari"
+PIPER_VOICES = {
+    "hindi":              "hi_IN-pratham-medium",
+    "santali_devanagari": "hi_IN-pratham-medium",   # same file: loaded once
+    "santali_latin":      "en_US-lessac-medium",
+}
+
 # ── Server ────────────────────────────────────────────────────────────────────
 HOST = "0.0.0.0"
 PORT = 5000
 
 DATA_DIR.mkdir(exist_ok=True)
+
+# Must run before transformers is imported, so modules import config first.
+import os as _os
+for _k, _v in OFFLINE_ENV.items():
+    _os.environ.setdefault(_k, _v)

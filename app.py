@@ -3,7 +3,8 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os, time, tempfile
-from pipeline import VaaniSetuPipeline
+from pathlib import Path
+from pipeline import VaaniSetuPipeline, TTSError
 from lesson_engine import get_all_lessons, get_lesson, LessonSession
 from worksheet import generate_worksheet
 import database
@@ -36,7 +37,7 @@ def _record(sid, direction, source_text, translated_text, latency):
 
 @app.route("/")
 def index():
-    return send_file("frontend.html")
+    return send_file(config.BASE_DIR / "frontend.html")
 
 @app.route("/config")
 def client_config():
@@ -44,24 +45,46 @@ def client_config():
     return jsonify({"app_name": config.APP_NAME,
                     "app_name_local": config.APP_NAME_LOCAL})
 
+def _size(path):
+    p = Path(path)
+    if p.is_file():
+        return p.stat().st_size
+    return sum(f.stat().st_size for f in p.rglob("*") if f.is_file() and ".cache" not in f.parts)
+
+# Model files on disk, measured once at start.
+_ASR_MODEL = {"engine": "IndicConformer 600M multilingual, ONNX, RNN-T decoding",
+              "path": str(config.ASR_DIR), "bytes": _size(config.ASR_DIR)}
+_NMT_MODEL = {"engine": "IndicTrans2 indic-indic-dist-320M, PyTorch",
+              "path": str(config.NMT_DIR / "model.safetensors"),
+              "bytes": _size(config.NMT_DIR / "model.safetensors")}
+
+def _tts_engine(lang):
+    model = pl._voice_model(lang)
+    path = config.PIPER_DIR / f"{model}.onnx"
+    via = ""
+    if lang == "santali":
+        via = f", reading Ol Chiki transliterated to {config.SANTALI_TTS_SCRIPT.title()}"
+    return {"engine": f"Piper {model}{via}", "path": str(path),
+            "bytes": path.stat().st_size if path.exists() else 0,
+            "loaded": pl._voices.get(model) is not None}
+
 @app.route("/health/models")
 def health_models():
-    """What actually loaded, so a broken model is visible without reading logs."""
-    import os
-    ok_tts = False
-    try:
-        from gtts import gTTS  # noqa: F401
-        ok_tts = True
-    except Exception:
-        pass
+    """What actually runs for each language, and whether anything needs the network."""
+    online = ["gTTS (Google Text-to-Speech), used only if Piper fails"] if config.ALLOW_ONLINE_TTS else []
     return jsonify({
-        "asr_backend": getattr(pl, "asr_backend", "unknown"),
-        "nmt_loaded":  hasattr(pl, "mdl_nmt"),
-        "tts_gtts_importable": ok_tts,
-        "tts_cache_files": len([f for f in os.listdir("tts_cache")
-                                if f.endswith(".wav")]) if os.path.isdir("tts_cache") else 0,
+        "languages": {
+            "hi":  {"asr": _ASR_MODEL, "nmt": _NMT_MODEL, "tts": _tts_engine("hindi")},
+            "sat": {"asr": _ASR_MODEL, "nmt": _NMT_MODEL, "tts": _tts_engine("santali")},
+        },
+        "online_dependencies": online,
+        "tts_engine_counts": pl.tts_engine_counts,
+        "tts_cache_files": sum(1 for _ in config.TTS_CACHE_DIR.glob("*.wav")) if config.TTS_CACHE_DIR.exists() else 0,
         "translation_cache_entries": len(__import__("pipeline").TRANSLATION_CACHE),
         "active_sessions": len(sessions),
+        # kept for older clients
+        "asr_backend": pl.asr_backend,
+        "nmt_loaded": hasattr(pl, "mdl_nmt"),
     })
 
 @app.route("/health")
@@ -121,19 +144,16 @@ def translate_audio():
         recognized = pl.transcribe_hindi(tmp_path)
         t1 = time.time()
         translated, pivot, conf = pl.hindi_to_santali(recognized, mode)
-        t2 = time.time()
-        pl.santali_tts(translated, "output_santali.wav")
-        t3 = time.time()
     else:
         # sat-to-hi
         recognized = pl.transcribe_santali(tmp_path)
         t1 = time.time()
         translated = pl.santali_to_hindi(recognized)
-        t2 = time.time()
         pivot = ""
         conf = 0.0
-        pl.hindi_tts(translated, "output_hindi.wav")
-        t3 = time.time()
+    t2 = time.time()
+    audio_url, tts_error = _speak(direction, translated)
+    t3 = time.time()
 
     os.unlink(tmp_path)
 
@@ -145,7 +165,8 @@ def translate_audio():
         "translated_text": translated,
         "english_pivot":   pivot,
         "confidence":      conf,
-        "audio_url":       _audio_url(direction),
+        "audio_url":       audio_url,
+        "tts_error":       tts_error,
         "latency": {
             "asr":   round(t1 - t0, 2),
             "nmt":   round(t2 - t1, 2),
@@ -164,16 +185,13 @@ def translate_text():
     t0 = time.time()
     if direction == "hi-to-sat":
         translated, pivot, conf = pl.hindi_to_santali(text, mode)
-        t1 = time.time()
-        pl.santali_tts(translated, "output_santali.wav")
-        t2 = time.time()
     else:
         translated = pl.santali_to_hindi(text)
         pivot = ""
         conf = 0.0
-        t1 = time.time()
-        pl.hindi_tts(translated, "output_hindi.wav")
-        t2 = time.time()
+    t1 = time.time()
+    audio_url, tts_error = _speak(direction, translated)
+    t2 = time.time()
 
     _record(data.get("session_id", ""), direction,
             text, translated, round(t2 - t0, 2))
@@ -182,7 +200,8 @@ def translate_text():
         "translated_text": translated,
         "english_pivot":   pivot,
         "confidence":      conf,
-        "audio_url":       _audio_url(direction),
+        "audio_url":       audio_url,
+        "tts_error":       tts_error,
         "latency": {
             "asr":   0.0,
             "nmt":   round(t1 - t0, 2),
@@ -191,17 +210,37 @@ def translate_text():
         }
     })
 
+_OUT = {"hi-to-sat": config.BASE_DIR / "output_santali.wav",
+        "sat-to-hi": config.BASE_DIR / "output_hindi.wav"}
+
 def _audio_url(direction):
     """Which clip this request produced. Cache-busting is the caller's job."""
     return "/audio/output" if direction == "hi-to-sat" else "/audio/hindi"
 
+def _speak(direction, text):
+    """Synthesise the translated line offline. Returns (audio_url, error).
+
+    On failure the previous clip is deleted, so the browser can never replay the
+    last sentence as if it were this one, and the error is shown to the teacher.
+    """
+    out = _OUT["hi-to-sat" if direction == "hi-to-sat" else "sat-to-hi"]
+    try:
+        if direction == "hi-to-sat":
+            pl.santali_tts(text, str(out))
+        else:
+            pl.hindi_tts(text, str(out))
+        return _audio_url(direction), None
+    except TTSError as e:
+        out.unlink(missing_ok=True)
+        return None, str(e)
+
 @app.route("/audio/hindi")
 def audio_hindi():
-    return send_file("output_hindi.wav", mimetype="audio/wav")
+    return send_file(_OUT["sat-to-hi"], mimetype="audio/wav")
 
 @app.route("/audio/output")
 def audio():
-    return send_file("output_santali.wav", mimetype="audio/wav")
+    return send_file(_OUT["hi-to-sat"], mimetype="audio/wav")
 
 @app.route("/session/next", methods=["POST"])
 def session_next():

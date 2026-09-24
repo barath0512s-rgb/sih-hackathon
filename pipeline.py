@@ -1,5 +1,6 @@
-# pipeline.py — accuracy-first configuration with IndicConformer ASR + DB learning
+# pipeline.py — IndicConformer ASR, IndicTrans2 NMT, Piper TTS. All local.
 
+import config          # first: sets the offline environment before transformers loads
 import torch, time, os, threading
 import numpy as np
 import soundfile as sf
@@ -11,21 +12,19 @@ from education_glossary import lookup_hi_to_sat, lookup_sat_to_hi
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-# ── ASR Backend Selection ─────────────────────────────────────────────────────
-# Try IndicConformer first (native Indian language support including Santali).
-# Falls back to Whisper if model isn't downloaded yet.
-_USE_INDIC_CONFORMER = False
-try:
-    _IC_DIR = os.path.join(os.path.dirname(__file__), "models", "indicconformer")
-    if os.path.isdir(_IC_DIR) and os.path.exists(os.path.join(_IC_DIR, "model_onnx.py")):
-        from indicconformer_asr import IndicConformerASR
-        _USE_INDIC_CONFORMER = True
-        print("ASR backend: IndicConformer 600M Multilingual (Hindi + Santali native)")
-    else:
-        raise FileNotFoundError("IndicConformer not downloaded yet")
-except Exception as _e:
-    import whisper as _whisper_module
-    print(f"ASR backend: Whisper small (fallback — {_e})")
+# ── ASR ───────────────────────────────────────────────────────────────────────
+# IndicConformer is required. It is the only local ASR that reads Santali, so a
+# missing model is an error with instructions, not a silent downgrade.
+if not (config.ASR_DIR / "model_onnx.py").exists():
+    raise FileNotFoundError(
+        f"IndicConformer ASR model not found in {config.ASR_DIR}. "
+        "Run: python download_models.py")
+from indicconformer_asr import IndicConformerASR
+from translit import olchiki
+
+
+class TTSError(RuntimeError):
+    """Speech could not be produced offline. Never replaced by silence."""
 
 NMT_BEAMS           = 4      # Beam search for better quality (still <8s on CPU)
 NMT_MAX_TOKENS      = 128    # Shorter max tokens for faster processing
@@ -34,14 +33,6 @@ NMT_LENGTH_PENALTY  = 1.0
 
 TRANSLATION_CACHE = {}
 
-# Offline speech. Piper runs locally from these ONNX voices, so nothing in the
-# request path needs the network. Download them with:
-#   python -m piper.download_voices <name> --data-dir models/piper
-PIPER_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "piper")
-PIPER_VOICES = {
-    "hindi":   "hi_IN-pratham-medium",  # reads Devanagari directly
-    # Santali intentionally omitted to force fallback to Indian English gTTS
-}
 
 def _populate_nipun_cache(pipeline):
     """Background thread: pre-translate all NIPUN lesson sentences for reliability."""
@@ -77,17 +68,17 @@ class VaaniSetuPipeline:
         print(f"Loading pipeline on {DEVICE}...")
 
         # ── ASR ─────────────────────────────────────────────────────────────
-        if _USE_INDIC_CONFORMER:
-            self.asr = IndicConformerASR()
-            self.asr_backend = "indicconformer"
-        else:
-            import whisper
-            self.asr = whisper.load_model("small", download_root="./models/whisper")
-            self.asr_backend = "whisper"
+        self.asr = IndicConformerASR()
+        self.asr_backend = "indicconformer"
         print(f"  ASR ready ({self.asr_backend}).")
 
         # ── NMT: Direct Indic-to-Indic ──────────────────────────────────────────────
-        MODEL_ID = "./models/indictrans2-indic-indic" if os.path.exists("./models/indictrans2-indic-indic") else "ai4bharat/indictrans2-indic-indic-dist-320M"
+        # Absolute path: a relative one failed when started from another folder
+        # and silently fell back to downloading the model from the Hub.
+        if not (config.NMT_DIR / "config.json").exists():
+            raise FileNotFoundError(
+                f"IndicTrans2 model not found in {config.NMT_DIR}. Run: python download_models.py")
+        MODEL_ID = str(config.NMT_DIR)
         self.tok_nmt = AutoTokenizer.from_pretrained(
             MODEL_ID, trust_remote_code=True)
         self.mdl_nmt = AutoModelForSeq2SeqLM.from_pretrained(
@@ -96,10 +87,10 @@ class VaaniSetuPipeline:
         self.mdl_nmt.eval()
         print("  NMT Indic->Indic (Direct) ready.")
 
-        # ── TTS: Fast gTTS Transliteration ─────────────────────────────────────
-        # ParlerTTS is removed because it takes 30s on CPU.
-        # We now transliterate Ol Chiki to Latin and let Google TTS read it in <1s.
-        print("  TTS ready (gTTS transliteration).")
+        # ── TTS: Piper, offline. Voices are loaded in _warmup. ────────────────────
+        # Santali: Ol Chiki -> config.SANTALI_TTS_SCRIPT -> a Piper voice.
+        # Counts which engine produced each clip, so tests can prove no online call.
+        self.tts_engine_counts = {"piper": 0, "cache": 0, "gtts": 0}
 
         self.ip = IndicProcessor(inference=True)
         self._tts_lock = threading.Lock()
@@ -123,8 +114,9 @@ class VaaniSetuPipeline:
         except Exception as e:
             print(f"  Warmup skipped: {e}")
         # Loading a Piper voice takes about 2s. Do it now, not mid-lesson.
-        for key in PIPER_VOICES:
-            self._piper(key)
+        # Only the voices this configuration speaks with are loaded.
+        for lang in ("hindi", "santali"):
+            self._piper(self._voice_model(lang))
 
     def _nmt(self, text, src_lang, tgt_lang, tokenizer, model):
         batch = self.ip.preprocess_batch(
@@ -172,31 +164,12 @@ class VaaniSetuPipeline:
         return wav_path
 
     def transcribe_hindi(self, audio_path):
-        """Transcribe Hindi audio. Uses IndicConformer (native) or Whisper (fallback)."""
-        audio_path = self._to_wav(audio_path)
-        if self.asr_backend == "indicconformer":
-            return self.asr.transcribe(audio_path, lang="hi", decoding="rnnt")
-        else:
-            vocab_prompt = "नमस्ते, आज हम जोड़ना और घटाना सीखेंगे। एक, दो, तीन, चार, पांच, आम, संख्या, उंगलियां, जवाब।"
-            result = self.asr.transcribe(
-                audio_path, language="hi", task="transcribe",
-                initial_prompt=vocab_prompt,
-                beam_size=5, best_of=5, temperature=0.0,
-                condition_on_previous_text=False
-            )
-            return result["text"].strip()
+        """Transcribe Hindi audio with IndicConformer (RNN-T)."""
+        return self.asr.transcribe(self._to_wav(audio_path), lang="hi", decoding="rnnt")
 
     def transcribe_santali(self, audio_path):
-        """Transcribe Santali (Ol Chiki). IndicConformer: native. Whisper: best-effort."""
-        audio_path = self._to_wav(audio_path)
-        if self.asr_backend == "indicconformer":
-            return self.asr.transcribe(audio_path, lang="sat", decoding="rnnt")
-        else:
-            result = self.asr.transcribe(
-                audio_path, task="transcribe",
-                beam_size=5, temperature=0.0, condition_on_previous_text=False
-            )
-            return result["text"].strip()
+        """Transcribe Santali audio to Ol Chiki with IndicConformer (RNN-T)."""
+        return self.asr.transcribe(self._to_wav(audio_path), lang="sat", decoding="rnnt")
 
     def _apply_domain_glossary(self, text, lang):
         glossary = {
@@ -267,100 +240,94 @@ class VaaniSetuPipeline:
             self.tok_nmt, self.mdl_nmt)
         return hindi
 
-    # Ol Chiki has no fast TTS engine, so each letter is mapped to Latin and
-    # read back with an Indian English voice. Phonetically close, and fast.
-    OL_CHIKI_TO_LATIN = {
-        '\u1c5a': 'o',  '\u1c5b': 't',  '\u1c5c': 'g',  '\u1c5d': 'ng', '\u1c5e': 'l',
-        '\u1c5f': 'a',  '\u1c60': 'k',  '\u1c61': 'j',  '\u1c62': 'm',  '\u1c63': 'w',
-        '\u1c64': 'i',  '\u1c65': 's',  '\u1c66': 'h',  '\u1c67': 'ny', '\u1c68': 'r',
-        '\u1c69': 'u',  '\u1c6a': 'ch', '\u1c6b': 'd',  '\u1c6c': 'n',  '\u1c6d': 'y',
-        '\u1c6e': 'e',  '\u1c6f': 'p',  '\u1c70': 'd',  '\u1c71': 'n',  '\u1c72': 'r',
-        '\u1c73': 'o',  '\u1c74': 't',  '\u1c75': 'b',  '\u1c76': 'n',  '\u1c77': 'h',
-        ' ': ' ', '?': '?', '.': '.', ',': ',',
-    }
+    # ── Speech ────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _voice_model(lang):
+        """Piper voice file that speaks `lang` ("hindi" or "santali")."""
+        if lang == "hindi":
+            return config.PIPER_VOICES["hindi"]
+        return config.PIPER_VOICES[f"santali_{config.SANTALI_TTS_SCRIPT}"]
 
     def transliterate_santali(self, santali_text):
-        """Ol Chiki to Latin, so a Latin-reading TTS voice can pronounce it."""
-        return "".join(self.OL_CHIKI_TO_LATIN.get(c, "") for c in santali_text)
+        """The text actually handed to the voice for a Santali line."""
+        if config.SANTALI_TTS_SCRIPT == "latin":
+            return olchiki.to_latin(santali_text)
+        return olchiki.to_devanagari(santali_text)
 
-    def _piper(self, voice_key):
-        """Load a Piper voice once and keep it. Returns None when unavailable."""
-        if voice_key in self._voices:
-            return self._voices[voice_key]
+    def _piper(self, model):
+        """Load a Piper voice file once, keyed by file name. None if unavailable."""
+        if model in self._voices:
+            return self._voices[model]
         voice = None
+        path = config.PIPER_DIR / f"{model}.onnx"
         try:
             from piper import PiperVoice
-            path = os.path.join(PIPER_DIR, PIPER_VOICES[voice_key] + ".onnx")
-            if os.path.exists(path):
-                voice = PiperVoice.load(path)
-                print(f"  Piper voice loaded: {PIPER_VOICES[voice_key]}")
+            if path.exists():
+                voice = PiperVoice.load(str(path))
+                print(f"  Piper voice loaded: {model}")
             else:
                 print(f"  Piper voice missing: {path}")
         except Exception as e:
             print(f"  Piper unavailable ({type(e).__name__}: {e})")
-        self._voices[voice_key] = voice
+        self._voices[model] = voice
         return voice
 
-    def _speak(self, text, voice_key, out_path, label):
-        """Synthesize `text` to out_path. Offline via Piper, cached by voice+text.
+    def _speak(self, text, lang, out_path, gtts_lang):
+        """Synthesise `text` to out_path with the Piper voice for `lang`.
 
-        Falls back to gTTS when Piper is missing, and to silence when both fail,
-        so the audio endpoint always has a valid file to serve.
+        Raises TTSError if no offline voice can speak it. gTTS is tried only when
+        config.ALLOW_ONLINE_TTS is True. Silence is never written.
         """
-        import hashlib, shutil
+        import hashlib, shutil, wave
 
-        cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tts_cache")
-        os.makedirs(cache_dir, exist_ok=True)
-        # The voice is part of the key: the same string spoken by two voices is
-        # two different recordings, and old gTTS entries must not be reused.
-        digest = hashlib.md5(f"{voice_key}:{text}".encode("utf-8")).hexdigest()
-        cached_file = os.path.join(cache_dir, f"{digest}.wav")
+        model = self._voice_model(lang)
+        cache_dir = config.TTS_CACHE_DIR
+        cache_dir.mkdir(exist_ok=True)
+        # Engine and voice file are part of the key, so audio from one engine is
+        # never served as another's. Old gTTS entries are simply never matched.
+        digest = hashlib.md5(f"piper:{model}:{text}".encode("utf-8")).hexdigest()
+        cached_file = cache_dir / f"{digest}.wav"
 
-        if os.path.exists(cached_file) and os.path.getsize(cached_file) > 1024:
-            print(f"  [TTS CACHE HIT] {label} {text[:20]}...")
+        if cached_file.exists() and cached_file.stat().st_size > 1024:
             shutil.copy2(cached_file, out_path)
+            self.tts_engine_counts["cache"] += 1
             return out_path
 
         with self._tts_lock:
-            voice = self._piper(voice_key)
+            voice = self._piper(model)
+            err = f"voice {model} is not installed"
             if voice is not None:
                 try:
-                    import wave
-                    with wave.open(out_path, "wb") as wf:
+                    with wave.open(str(out_path), "wb") as wf:
                         voice.synthesize_wav(text, wf)
                     shutil.copy2(out_path, cached_file)
+                    self.tts_engine_counts["piper"] += 1
                     return out_path
                 except Exception as e:
-                    print(f"  [PIPER FAILED] {type(e).__name__}: {e}")
-            try:
+                    err = f"{type(e).__name__}: {e}"
+                    print(f"  [PIPER FAILED] {err}")
+            if config.ALLOW_ONLINE_TTS:
                 from gtts import gTTS
-                if voice_key == "hindi":
-                    gTTS(text, lang="hi").save(out_path)
-                else:
-                    # Santali: use Indian English accent (tld=co.in) for the
-                    # Latin transliteration — closer to how Santali actually sounds
-                    gTTS(text, lang="en", tld="co.in").save(out_path)
-                shutil.copy2(out_path, cached_file)
-            except Exception as e:
-                print(f"  [TTS FAILED] {type(e).__name__}: {e} - writing silence")
-                import soundfile as _sf, numpy as _np
-                _sf.write(out_path, _np.zeros(8000, dtype="float32"), 16000)
-        return out_path
+                gTTS(text, lang=gtts_lang).save(str(out_path))
+                self.tts_engine_counts["gtts"] += 1
+                return out_path
+        raise TTSError(f"Offline speech failed ({err}).")
 
     def santali_tts(self, santali_text, out_path="output_santali.wav"):
-        """Speak the Santali line, via Latin transliteration and an English voice."""
-        latin_text = self.transliterate_santali(santali_text).strip()
-        if not latin_text:
-            latin_text = "Translation unavailable"
-        return self._speak(latin_text, "santali", out_path, "sat")
+        """Speak a Santali line: Ol Chiki is transliterated, then read by Piper."""
+        spoken = self.transliterate_santali(santali_text).strip()
+        if not spoken:
+            raise TTSError("The Santali text has nothing that can be spoken.")
+        gtts_lang = "en" if config.SANTALI_TTS_SCRIPT == "latin" else "hi"
+        return self._speak(spoken, "santali", out_path, gtts_lang)
 
     def hindi_tts(self, hindi_text, out_path="output_hindi.wav"):
-        """Speak the Hindi line with the native Hindi voice."""
+        """Speak a Hindi line with the Hindi Piper voice."""
         text = (hindi_text or "").strip()
         if not text:
-            text = "अनुवाद उपलब्ध नहीं है"
+            raise TTSError("There is no Hindi text to speak.")
         return self._speak(text, "hindi", out_path, "hi")
-    
+
     def full_forward(self, audio_path, content_mode="lesson_script"):
         t0 = time.time()
         hindi   = self.transcribe_hindi(audio_path)

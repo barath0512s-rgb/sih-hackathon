@@ -81,7 +81,7 @@ Around that core sits the part that makes it a *lesson* rather than a phrasebook
 │        │   DIRECT hi↔sat — no English pivot                   │
 │        ▼                                                     │
 │   ③ TTS    Piper (offline neural)                            │
-│            sat → Ol Chiki transliterated to Latin → en_US    │
+│            sat → Ol Chiki → Devanagari → hi_IN voice          │
 │            hi → Devanagari read directly by hi_IN            │
 └───────────────────────────┬──────────────────────────────────┘
                             │
@@ -119,7 +119,7 @@ Only on a miss do the neural models run.
 
 **Why RNN-T over CTC?** RNN-T uses a joint prediction network, so it decodes using linguistic context rather than frame-by-frame guesses. Markedly more robust to classroom noise and accented speech.
 
-Whisper remains as an automatic fallback if the IndicConformer files are missing.
+There is no fallback: IndicConformer is the only local ASR that reads Santali, so if its files are missing the server stops with instructions (`python download_models.py`) rather than silently degrading.
 
 ### ② Translation — AI4Bharat IndicTrans2 (Direct Indic→Indic)
 
@@ -150,10 +150,11 @@ Whisper remains as an automatic fallback if the IndicConformer files are missing
 
 | Voice | Model | Reads |
 |---|---|---|
-| Santali | `en_US-lessac-medium` | Latin transliteration of Ol Chiki |
+| Santali | `hi_IN-pratham-medium` | Ol Chiki transliterated to Devanagari (default) |
+| Santali, A/B option | `en_US-lessac-medium` | Ol Chiki transliterated to Latin (`SANTALI_TTS_SCRIPT = "latin"`) |
 | Hindi | `hi_IN-pratham-medium` | Devanagari directly |
 
-**The Ol Chiki problem.** No fast TTS engine speaks Santali. VaaniSetu maps each Ol Chiki letter to its Latin phonetic equivalent in Python (`transliterate_santali()`, a 34-entry table covering U+1C5A–U+1C77 plus space and basic punctuation), then has an English-reading voice pronounce it. `ᱛᱮᱦᱮᱧ ᱟᱢ ᱥᱮᱞᱮᱫ` becomes `teheny am seled` — phonetically close enough for a child to recognise their own language.
+**The Ol Chiki problem.** No offline TTS voice reads Ol Chiki. `translit/olchiki.py` rewrites Santali in Devanagari so the offline Hindi voice can pronounce it with Indian phonetics: `ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ` becomes `तेहेँच् आले`. It is a parser, not a lookup table, because Ol Chiki consonants carry no vowel while Devanagari consonants do. It covers the whole Ol Chiki block, including digits (spoken as Santali number words, whatever script they arrive in), the sentence marks and every diacritic. Its core is cross-checked against the independent Aksharamukha transliterator on every Santali string in the project; the phonetic rules where it departs from Aksharamukha are documented in the module and await native review. 125 reference vectors live in `tests/data/olchiki_vectors.json`.
 
 **Why Piper, and the road to it:**
 
@@ -164,7 +165,7 @@ Whisper remains as an automatic fallback if the IndicConformer files are missing
 | gTTS (Google) | Fast (~0.8 s) but **requires internet** — fatal for rural schools. |
 | **Piper** | **~0.15 s, fully offline, neural quality.** ✅ |
 
-Piper is the current engine. gTTS remains a fallback if a voice file is missing, and a short silence is written if both fail, so the audio endpoint never returns an error.
+Piper is the only engine in the default configuration. gTTS is used only if `config.ALLOW_ONLINE_TTS = True` (off by default). If a clip cannot be produced offline, the translation is still returned, with `audio_url: null` and a `tts_error` the UI shows. Silence is never written.
 
 ---
 
@@ -185,7 +186,9 @@ The project was rebuilt in six phases. Each solved a measured problem.
 
 ## 6. Measured Performance
 
-Measured on this project, CPU only, no GPU:
+> **NOT MEASURED by a re-runnable script yet.** The figures below were taken by hand during development. They will be replaced by the output of `bench/bench_latency.py` (work package 3). Do not quote them.
+
+Measured by hand on this project, CPU only, no GPU:
 
 | Stage | Cold | Cached |
 |---|---|---|
@@ -377,7 +380,7 @@ Kept on disk but git-ignored: `OfficeSetup.exe`, the saved SIH portal page and i
 Consequence: a fresh clone has **no models, no voices and no audio cache**. Section 10's download steps are mandatory, not optional.
 
 ### Dependencies
-`requirements.txt` pins **161 packages**. The ones that matter: `torch` (CPU build), `transformers==4.46.1`, `onnxruntime`, `IndicTransToolkit`, `piper-tts==1.8.0`, `Flask`, `flask-cors`, `reportlab`, `gTTS` (fallback only), `soundfile`.
+`requirements.txt` pins **14 packages**: `torch` (CPU build), `transformers`, `tokenizers`, `huggingface_hub`, `safetensors`, `sentencepiece`, `IndicTransToolkit`, `onnxruntime`, `soundfile`, `numpy`, `piper-tts`, `Flask`, `flask-cors`, `reportlab`. gTTS is not required.
 
 ### Data model
 ```sql
@@ -472,15 +475,14 @@ Every **AI stage** runs locally:
 | NMT | PyTorch, local weights | ❌ None |
 | TTS | Piper, local ONNX voices | ❌ None |
 | Lessons / grading / worksheet | Pure Python | ❌ None |
-| **UI fonts** | **Google Fonts CDN** | ⚠️ **Yes — see below** |
+| UI fonts | Served from `static/fonts/` (SIL OFL, licences alongside) | ❌ None |
 
-**Verified:** with Python's socket layer forcibly disabled, gTTS raises `gTTSError` while Piper synthesises both voices successfully. The served audio is 22 050 Hz RIFF/WAV — gTTS emits MP3 — confirming Piper produced it.
+**How this is verified** (all re-runnable):
 
-### ⚠️ One remaining network dependency: the fonts
-
-`frontend.html` loads **Baloo 2** and **Noto Sans Ol Chiki** from `fonts.googleapis.com`. The models are offline; the *typeface* is not. On a school laptop with no internet this matters more than it sounds — as the file's own comment warns, without Noto Sans Ol Chiki **every Santali letter renders as an empty box**, which breaks the core feature.
-
-**The fix is small and the asset is already in the repo:** `models/fonts/NotoSansOlChiki-Regular.ttf` and `NotoSansDevanagari-Regular.ttf` are already vendored for the PDF generator. Serving those from Flask and swapping the `<link>` for a local `@font-face` makes the whole application genuinely offline. **This should be done before any offline demo.**
+- `tests/test_offline.py` blocks network sockets *before the pipeline is imported*, then loads every model, translates both ways, and synthesises Hindi and Santali speech (including Santali numbers) into an empty cache. It asserts the audio is audible, that gTTS was never called, and that a real network call would have failed.
+- `verify_models.py` (`run_vaanisetu.bat verify`) does the same from pipeline load onward.
+- `tests/test_frontend_offline.py` checks the page loads no external URL and that every font it references exists locally.
+- `GET /health/models` reports the engine, file and size per language, and `online_dependencies: []`.
 
 This matters because the target deployment is a school with no reliable connectivity.
 
@@ -493,10 +495,10 @@ Things a reviewer should know rather than discover:
 | # | Item | Impact |
 |---|---|---|
 | 1 | A HuggingFace token was hard-coded in an early *local* version of `run_setup.ps1` (commit `6406ab0`). That commit was replaced before anything was pushed: no branch, local or on GitHub, reaches it, and the pushed history is clean | Revoke the token anyway: it sat in plaintext on disk |
-| 2 | **UI fonts load from Google Fonts** (§12) | ⚠️ **Breaks the offline claim.** With no internet, every Santali letter renders as a box. Fix before any offline demo |
+| 2 | ~~UI fonts load from Google Fonts~~ | **Fixed**: fonts are served from `static/fonts/` |
 | 3 | `/audio/hindi` exists on the backend but the current UI never calls it; autoplay is gated to Hindi→Santali | Reverse direction is **silent in the UI** even though the backend speaks it |
 | 4 | Direction must be switched with the swap button; typing Santali does not auto-switch | UX friction |
-| 5 | Ol Chiki transliteration drops the danda `᱾` and diacritics such as `ᱹ` | Slight pronunciation loss |
+| 5 | ~~Ol Chiki transliteration drops digits, `᱾` and diacritics~~ | **Fixed**: `translit/olchiki.py` covers the whole block. Its phonetic choices still need native review |
 | 6 | Confidence is hard-coded to 95% (greedy decoding returns no sequence scores) | Displayed number is not a real measure |
 | 7 | Sessions live in an in-memory dict | **Restarting the server loses every active lesson**; no multi-worker deployment |
 | 8 | Single shared `output_*.wav` per direction | Concurrent users could collide |

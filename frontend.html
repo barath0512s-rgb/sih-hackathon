@@ -6,12 +6,18 @@
 <title>वाणीसेतु</title>
 <meta name="theme-color" content="#FFF7E6">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Baloo 2 carries Devanagari and Latin in one rounded, child-friendly face.
+<!-- Every font is served from static/fonts, so the page renders with no network.
+     Baloo 2 carries Devanagari and Latin in one rounded, child-friendly face.
      Noto Sans Ol Chiki is required or every Santali letter renders as a box.
-     Icons are an inlined Phosphor sprite, so nothing depends on an icon CDN. -->
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Kalam:wght@400;700&family=Noto+Sans+Ol+Chiki&display=swap" rel="stylesheet">
+     Icons are an inlined Phosphor sprite, so nothing depends on an icon CDN.
+     All four families are SIL OFL 1.1; the licences sit next to the files. -->
+<style>
+@font-face{font-family:'Baloo 2';src:url('/static/fonts/Baloo2[wght].ttf') format('truetype');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Kalam';src:url('/static/fonts/Kalam-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Kalam';src:url('/static/fonts/Kalam-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:'Noto Sans Ol Chiki';src:url('/static/fonts/NotoSansOlChiki-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'Noto Sans Devanagari';src:url('/static/fonts/NotoSansDevanagari-Regular.ttf') format('truetype');font-display:swap}
+</style>
 
 <style>
 /* ══════════════════════════════════════════════════════════════════
@@ -39,7 +45,7 @@
   --warn:#C98008; --warn-soft:#FFEFCE;
   --bad:#D2492F;  --bad-soft:#FFE3DD;
 
-  --deva:'Baloo 2','Noto Sans Devanagari',system-ui,sans-serif;
+  --deva:'Baloo 2','Noto Sans Devanagari','Noto Sans Ol Chiki',system-ui,sans-serif;
   --olck:'Noto Sans Ol Chiki','Baloo 2',system-ui,sans-serif;
   --ui:var(--deva);
 
@@ -1229,7 +1235,7 @@ hi: {
   wr_half:"आधी कक्षा समझी", wr_half_b:"कल शुरू में इसी पाठ के शब्द दोहराइए",
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
-  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_mic_no:"माइक की अनुमति नहीं मिली",
+  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"आवाज़ नहीं बन पाई", m_mic_no:"माइक की अनुमति नहीं मिली",
   m_mic_short:"बहुत छोटा था, थोड़ा देर तक बोलिए", m_mic_none:"इस ब्राउज़र में रिकॉर्डिंग नहीं होती",
   m_listening:"सुन रहे हैं", m_heard:"सुन लिया", m_done_in:"सेकंड में हुआ",
   m_ans_first:"पहले उत्तर लिखिए", m_fix_first:"पहले सही पंक्ति लिखिए",
@@ -1356,7 +1362,7 @@ en: {
   wr_half:"About half the class", wr_half_b:"Open tomorrow by repeating these words",
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
-  m_blocked:"Press once to allow sound", m_mic_no:"The microphone was not allowed",
+  m_blocked:"Press once to allow sound", m_no_voice:"The voice could not be produced", m_mic_no:"The microphone was not allowed",
   m_mic_short:"That was too short, speak a little longer", m_mic_none:"This browser cannot record",
   m_listening:"Listening", m_heard:"Heard it", m_done_in:"seconds",
   m_ans_first:"Type the answer first", m_fix_first:"Write the correct line first",
@@ -1536,6 +1542,12 @@ function say(msg, emoji){
   $("#toasts").appendChild(el);
   setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 320); }, 3200);
 }
+// Play the answer, or say why there is no audio. The server never sends
+// silence: when speech fails, audio_url is null and tts_error says why.
+function voice(r, dir){
+  if (r.tts_error){ console.warn(r.tts_error); say(t("m_no_voice"), "🔇"); return; }
+  if (S.autoplay && r.audio_url) play(true, dir);
+}
 function fail(err){
   console.error(err);
   say(t("m_err"), "⚠️");
@@ -1712,7 +1724,7 @@ async function translate(){
       S.dir === "hi-to-sat" ? text : r.translated_text,
       S.dir === "hi-to-sat" ? r.translated_text : text);
     setOnline(true);
-    if (S.autoplay) play(true, S.dir);
+    voice(r, S.dir);
     if (S.confirm) say(num(r.latency.total) + " " + t("m_done_in"), "✨");
   } catch(e){ dst.classList.remove("pending"); fail(e); }
   finally { S.busy = false; btn.disabled = false; facing(); }
@@ -1821,7 +1833,7 @@ async function mic(dir){
         dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
         dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
       setOnline(true);
-      if (S.autoplay) play(true, dir);
+      voice(r, dir);
       say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
     } catch(e){
       src.classList.remove("pending"); dst.classList.remove("pending"); fail(e);

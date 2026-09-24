@@ -95,7 +95,7 @@ def _dir(p, label):
     return f
 check("models/indicconformer      (ASR)", _dir("models/indicconformer", "ASR"))
 check("models/indictrans2-indic-indic (NMT)", _dir("models/indictrans2-indic-indic", "NMT"))
-check("models/fonts              (worksheet)", _dir("models/fonts", "fonts"))
+check("static/fonts              (UI + worksheet)", _dir("static/fonts", "fonts"))
 
 def _manifest():
     import subprocess
@@ -130,7 +130,19 @@ for rel, why in _unused:
 log(f"  total reclaimable: {_reclaim/1e9:.2f} GB" if _reclaim else "  none found")
 
 # ── 3. load the pipeline ──────────────────────────────────────────────────────
-log("\n[3] Pipeline load  (first run downloads models, be patient)")
+# From here on the network is blocked: loading and every stage must be offline.
+# Only connect() is refused, so local socketpairs some libraries use still work.
+import socket as _socket, tempfile as _tempfile
+from pathlib import Path as _Path
+class _NoNetwork(_socket.socket):
+    def connect(self, *a, **k):
+        raise OSError("network access attempted: the app must run offline")
+    connect_ex = connect
+_socket.socket = _NoNetwork
+# Synthesise into an empty cache, so the speech checks prove Piper really runs.
+config.TTS_CACHE_DIR = _Path(_tempfile.mkdtemp(prefix="verify_tts_"))
+
+log("\n[3] Pipeline load  (network blocked from here on)")
 pl = None
 def _load():
     global pl
@@ -141,10 +153,6 @@ if not check("VaaniSetuPipeline()", _load):
     log("\nCannot continue without the pipeline.")
     io.open(REPORT, "w", encoding="utf-8").write("\n".join(lines))
     sys.exit(1)
-
-if pl.asr_backend != "indicconformer":
-    log("  NOTE  ASR fell back to Whisper. Santali speech input will be poor.")
-    log("        Expected models/indicconformer/model_onnx.py to exist.")
 
 # ── 4. translation ────────────────────────────────────────────────────────────
 log("\n[4] Translation")
@@ -191,14 +199,14 @@ def _cached():
 check("Translation cache", _cached)
 
 # ── 5. speech out ─────────────────────────────────────────────────────────────
-log("\n[5] Speech (this is what was stubbed out before)")
+log("\n[5] Speech, offline (this is what was stubbed out before)")
 
 def _translit():
-    latin = pl.transliterate_santali(state.get("sat", "ᱡᱚᱦᱟᱨ"))
-    if not latin.strip():
+    spoken = pl.transliterate_santali(state.get("sat", "ᱡᱚᱦᱟᱨ"))
+    if not spoken.strip():
         raise AssertionError("transliteration produced nothing")
-    return f"'{state.get('sat','')[:18]}' -> '{latin[:34]}'"
-check("Ol Chiki to Latin", _translit)
+    return f"'{state.get('sat','')[:18]}' -> '{spoken[:34]}'"
+check(f"Ol Chiki to {config.SANTALI_TTS_SCRIPT.title()}", _translit)
 
 def _tts():
     out = os.path.join(HERE, "_verify_tts.wav")
@@ -212,10 +220,25 @@ def _tts():
     if silent:
         raise AssertionError(
             f"the audio is silent ({kb} KB, rms {rms:.5f}). "
-            "gTTS did not run. Check the internet connection, or that "
-            "santali_tts was not replaced with a stub.")
+            "Check that santali_tts was not replaced with a stub.")
     return f"{kb} KB, {secs:.1f}s, rms {rms:.3f}"
-check("Santali speech is audible", _tts)
+check("Santali speech is audible (Piper, offline)", _tts)
+
+def _tts_hi():
+    out = os.path.join(HERE, "_verify_tts_hi.wav")
+    pl.hindi_tts("यहाँ कितने पत्थर हैं?", out)
+    silent, rms, secs = audio_is_silent(out)
+    if silent:
+        raise AssertionError(f"the Hindi audio is silent (rms {rms:.5f})")
+    return f"{secs:.1f}s, rms {rms:.3f}"
+check("Hindi speech is audible (Piper, offline)", _tts_hi)
+
+def _numbers():
+    spoken = pl.transliterate_santali("᱗ ᱫᱷᱤᱨᱤ")
+    if "एयाय्" not in spoken and "eyay" not in spoken:
+        raise AssertionError(f"the digit was not spoken as a Santali number: {spoken!r}")
+    return f"'᱗ ᱫᱷᱤᱨᱤ' -> '{spoken}'"
+check("Santali numbers are spoken", _numbers)
 
 def _tts_cache():
     out = os.path.join(HERE, "_verify_tts2.wav")
@@ -224,6 +247,13 @@ def _tts_cache():
         raise AssertionError(f"cached speech took {dt:.2f}s, the cache is not working")
     return f"cache hit in {dt*1000:.0f} ms"
 check("Speech cache", _tts_cache)
+
+def _no_online():
+    c = pl.tts_engine_counts
+    if c["gtts"]:
+        raise AssertionError(f"gTTS (online) produced {c['gtts']} clip(s)")
+    return f"piper {c['piper']}, cache {c['cache']}, gTTS 0"
+check("No online speech engine was used", _no_online)
 
 # ── 6. lessons, grading, corrections, worksheet ───────────────────────────────
 log("\n[6] Lessons, grading and storage")
@@ -301,7 +331,7 @@ else:
     log("Every check passed. Start the server with:  python app.py")
 log("=" * 68)
 
-for tmp in ("_verify_tts.wav", "_verify_tts2.wav", "_verify_worksheet.pdf"):
+for tmp in ("_verify_tts.wav", "_verify_tts2.wav", "_verify_tts_hi.wav", "_verify_worksheet.pdf"):
     with contextlib.suppress(Exception):
         os.remove(os.path.join(HERE, tmp))
 
