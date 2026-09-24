@@ -53,17 +53,22 @@ def audio_is_silent(path):
 
 
 log("=" * 68)
-log("VaaniSetu model verification")
+import config
+log(f"{config.APP_NAME} model verification")
 log(f"python {sys.version.split()[0]}   cwd {HERE}")
 log("=" * 68)
 
 # ── 1. dependencies ───────────────────────────────────────────────────────────
 log("\n[1] Dependencies")
-for mod, why in [("torch", "NMT runtime"), ("transformers", "NMT loader"),
-                 ("IndicTransToolkit", "pre and post processing"),
-                 ("gtts", "Santali speech"), ("soundfile", "audio io"),
-                 ("flask", "server"), ("flask_cors", "browser access"),
-                 ("reportlab", "worksheet pdf"), ("onnxruntime", "IndicConformer ASR")]:
+_deps = [("torch", "NMT runtime"), ("transformers", "NMT loader"),
+         ("IndicTransToolkit", "pre and post processing"),
+         ("piper", "offline speech"), ("soundfile", "audio io"),
+         ("flask", "server"), ("flask_cors", "browser access"),
+         ("reportlab", "worksheet pdf"), ("onnxruntime", "IndicConformer ASR")]
+# gTTS is an online service. It is only a dependency when explicitly enabled.
+if config.ALLOW_ONLINE_TTS:
+    _deps.append(("gtts", "online speech, ALLOW_ONLINE_TTS=True"))
+for mod, why in _deps:
     def _imp(m=mod):
         __import__(m)
         return ""
@@ -91,6 +96,38 @@ def _dir(p, label):
 check("models/indicconformer      (ASR)", _dir("models/indicconformer", "ASR"))
 check("models/indictrans2-indic-indic (NMT)", _dir("models/indictrans2-indic-indic", "NMT"))
 check("models/fonts              (worksheet)", _dir("models/fonts", "fonts"))
+
+def _manifest():
+    import subprocess
+    r = subprocess.run([sys.executable, os.path.join(HERE, "download_models.py"),
+                        "--verify-only"], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise AssertionError((r.stdout + r.stderr).strip().splitlines()[0])
+    return r.stdout.strip().splitlines()[-1]
+check("model files match model_manifest.json", _manifest)
+
+# Leftovers from the retired architecture. Reported, never deleted: remove them
+# yourself once you are sure. Not a failure.
+log("\n[2b] Unused model data on disk (safe to delete, not required)")
+_unused = [
+    ("models/indictrans2-indic-indic/pytorch_model.bin", "duplicate of model.safetensors"),
+    ("models/tts",      "Parler-TTS, retired"),
+    ("models/whisper",  "Whisper ASR, retired"),
+    ("models/en_indic", "English->Indic pivot model, retired"),
+    ("models/indic_en", "Indic->English pivot model, retired"),
+]
+_reclaim = 0
+for rel, why in _unused:
+    p = os.path.join(HERE, rel)
+    if os.path.isfile(p):
+        b = os.path.getsize(p)
+    elif os.path.isdir(p):
+        b = sum(os.path.getsize(os.path.join(r, x)) for r, _, fs in os.walk(p) for x in fs)
+    else:
+        continue
+    _reclaim += b
+    log(f"  UNUSED  {rel:52} {b/1e9:5.2f} GB  {why}")
+log(f"  total reclaimable: {_reclaim/1e9:.2f} GB" if _reclaim else "  none found")
 
 # ── 3. load the pipeline ──────────────────────────────────────────────────────
 log("\n[3] Pipeline load  (first run downloads models, be patient)")

@@ -1,0 +1,7 @@
+# Test, evaluation and data tooling. Install on top of requirements.txt.
+-r requirements.txt
+pytest==8.4.2
+sacrebleu==2.5.1
+jiwer==4.0.0
+pandas==3.0.5
+pymupdf==1.28.2

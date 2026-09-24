@@ -345,21 +345,31 @@ curl -X POST http://127.0.0.1:5000/translate/text \
 |---|---|
 | `README.md` | This file |
 | `WORKFLOW.md` | The phase-by-phase architectural decision log |
-| `VaaniSetu_WINNER_Build_Guide.md` | 1,636-line original build guide (historical; predates the current architecture) |
+| `_archive/README.md` | What was archived and why |
 
-### Setup, legacy and scratch files
-These exist in the folder but are **not part of the running application**:
-
-| File | Status |
+### Setup and configuration
+| File | Role |
 |---|---|
-| `download_models.py` | ⚠️ **Stale** — still downloads Whisper, the two pivot models and Parler-TTS, none of which the current pipeline uses |
-| `optimize_models.py` | Legacy warm-up for the retired pivot models |
-| `run_setup.ps1` | ⚠️ One-shot setup script — **contains a committed HuggingFace token** |
-| `extract.py` | One-shot: pulled the original source files out of the build guide |
-| `patch.py` | ⚠️ **Destructive** one-shot rewriter — previously stubbed TTS to silence. Do not run |
+| `config.py` | Product name (`APP_NAME`), absolute paths, feature flags. A rename is one edit here |
+| `download_models.py` | Fetches only the three model sets in use, at pinned revisions, and checks every file against `model_manifest.json` (size + SHA-256) |
+| `model_manifest.json` | 423 files, 3.98 GB: the exact model files the app was tested with |
+| `requirements.txt` | 14 runtime packages (was 161, UTF-16). UTF-8 now |
+| `requirements-dev.txt` | Tests and evaluation: pytest, sacrebleu, jiwer, pandas, pymupdf |
 | `generate_dataset.py` | Regenerates the 33-pair training CSV |
-| `frontend_v2…v6.html`, `frontend_old_backup.html` | Design iterations kept for reference |
-| `app.py.bak`, `pipeline.py.bak`, `worksheet.py.bak` | Manual backups |
+
+### Moved to `_archive/` (branch `sih-final`)
+None of these are used by the running application.
+
+| From | To | Why |
+|---|---|---|
+| `extract.py`, `patch.py` | `_archive/legacy_scripts/` | One-shot scaffolding. `patch.py` once stubbed Santali TTS to silence. **Do not run either** |
+| `optimize_models.py`, `run_setup.ps1` | `_archive/legacy_scripts/` | Targeted the retired pivot-model architecture |
+| `VaaniSetu_WINNER_Build_Guide.md` | `_archive/` | Original build guide; predates the current design |
+| `frontend_updated.html` | `_archive/frontend_drafts/` | Merged into `frontend.html` already; stale |
+| `frontend_v2…v6.html`, `frontend_old_backup.html`, `test_card.html` | `_archive/frontend_drafts/` (local only, git-ignored) | Design drafts |
+| `*.bak`, `test_*.wav`, `_net_probe.mp3`, sample PDFs | `_archive/scratch/` (local only, git-ignored) | Scratch |
+
+Kept on disk but git-ignored: `OfficeSetup.exe`, the saved SIH portal page and its `_files/` folder, the submission deck (`Team_*.pptx`, `Team_*.pdf`).
 
 ### What git ignores
 `models/` · `tts_cache/` · `vaanisetu_env/` · `*.wav *.mp3 *.webm` · `*.onnx *.pt *.bin *.safetensors` · `vaanisetu_feedback.db` · `__pycache__/`
@@ -482,7 +492,7 @@ Things a reviewer should know rather than discover:
 
 | # | Item | Impact |
 |---|---|---|
-| 1 | **Live HuggingFace token committed in `run_setup.ps1`**, present in git history | ⚠️ **Security — revoke it.** Deleting the line is not enough |
+| 1 | A HuggingFace token was hard-coded in an early *local* version of `run_setup.ps1` (commit `6406ab0`). That commit was replaced before anything was pushed: no branch, local or on GitHub, reaches it, and the pushed history is clean | Revoke the token anyway: it sat in plaintext on disk |
 | 2 | **UI fonts load from Google Fonts** (§12) | ⚠️ **Breaks the offline claim.** With no internet, every Santali letter renders as a box. Fix before any offline demo |
 | 3 | `/audio/hindi` exists on the backend but the current UI never calls it; autoplay is gated to Hindi→Santali | Reverse direction is **silent in the UI** even though the backend speaks it |
 | 4 | Direction must be switched with the swap button; typing Santali does not auto-switch | UX friction |

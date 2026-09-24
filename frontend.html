@@ -1928,7 +1928,7 @@ async function worksheet(btn){
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "VaaniSetu_Worksheet.pdf";
+    a.href = url; a.download = (S.appName || T.en.brand) + "_Worksheet.pdf";
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
     say(t("m_sheet"), "📄");
@@ -2208,6 +2208,14 @@ async function boot(quiet){
   if (localStorage.getItem("vs_confirm") === "0"){ S.confirm  = false; $("#tgAsk").setAttribute("aria-pressed","false"); }
 
   await ping();
+  // The product name lives in config.py on the server. The strings in T are
+  // only fallbacks for when the server cannot be reached.
+  try {
+    const c = await (await api("/config")).json();
+    for (const k of Object.keys(c.app_name_local || {})) if (T[k]) T[k].brand = c.app_name_local[k];
+    S.appName = c.app_name;
+    applyLang();
+  } catch(e){ /* keep the built-in names */ }
   try {
     S.lessons = await Api.lessons();
     if (!S.lessons.length) throw new Error("no lessons");

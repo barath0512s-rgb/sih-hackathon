@@ -38,3 +38,20 @@ Thumbs.db
 *.bak
 *_worksheet.pdf
 demo_*.pdf
+
+# Local-only files: kept on disk, never committed
+OfficeSetup.exe
+CLAUDE_CODE_PROMPT.md
+Team_*.pptx
+Team_*.pdf
+Problem Statement ID*
+# Untracked scratch moved into the archive (tracked legacy files there stay tracked)
+_archive/scratch/
+_archive/frontend_drafts/frontend_v*.html
+_archive/frontend_drafts/frontend_old_backup.html
+_archive/frontend_drafts/test_card.html
+
+# Runtime outputs
+tts_out/
+verify_report.txt
+data/

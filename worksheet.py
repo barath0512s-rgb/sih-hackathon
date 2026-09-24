@@ -10,6 +10,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import datetime, os
+import config
 
 # Register Unicode fonts for Ol Chiki (Santali) and Devanagari (Hindi)
 _FONT_DIR = os.path.join(os.path.dirname(__file__), "models", "fonts")
@@ -66,7 +67,9 @@ NIPUN = {
 }
 
 def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
-                       lesson_steps=None, out="vaanisetu_worksheet.pdf"):
+                       lesson_steps=None, out=None):
+    if out is None:
+        out = str(config.DATA_DIR / "last_worksheet.pdf")
     doc = SimpleDocTemplate(out, pagesize=A4,
                             leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=1.5*cm, bottomMargin=1.5*cm)
@@ -79,7 +82,7 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     FT  = ps("FT",  7, False, "#888888", TA_CENTER)
 
     s += [
-        Paragraph("VaaniSetu — Bilingual Classroom Worksheet", H),
+        Paragraph(f"{config.APP_NAME} — Bilingual Classroom Worksheet", H),
         Paragraph(
             f"Grade {grade}  |  {topic}  |  "
             f"{datetime.date.today().strftime('%d %B %Y')}", S),
@@ -133,7 +136,7 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     s += [
         Spacer(1, 2*cm),
         HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#BDC3C7")),
-        Paragraph("Generated automatically by VaaniSetu AI Teaching Assistant", FT)
+        Paragraph(f"Generated automatically by {config.APP_NAME} AI Teaching Assistant", FT)
     ]
 
     doc.build(s)

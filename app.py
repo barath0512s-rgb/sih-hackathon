@@ -1,4 +1,4 @@
-# app.py — full REST API for the Android frontend
+# app.py — REST API for the browser frontend (and, later, the tablet app)
 
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -7,8 +7,11 @@ from pipeline import VaaniSetuPipeline
 from lesson_engine import get_all_lessons, get_lesson, LessonSession
 from worksheet import generate_worksheet
 import database
+import config
 
-app      = Flask(__name__, static_folder=".", static_url_path="")
+# Only static/ is public. The project root used to be the static folder, which
+# let anyone on the classroom Wi-Fi download the database and the source code.
+app      = Flask(__name__, static_folder=str(config.STATIC_DIR), static_url_path="/static")
 CORS(app)
 # /feedback writes to SQLite. pipeline.py also calls this on import, but the
 # route must not depend on that side effect. init_db is idempotent.
@@ -34,6 +37,12 @@ def _record(sid, direction, source_text, translated_text, latency):
 @app.route("/")
 def index():
     return send_file("frontend.html")
+
+@app.route("/config")
+def client_config():
+    """Product name for the UI, so a rename is one edit in config.py."""
+    return jsonify({"app_name": config.APP_NAME,
+                    "app_name_local": config.APP_NAME_LOCAL})
 
 @app.route("/health/models")
 def health_models():
@@ -290,7 +299,7 @@ def worksheet():
         d.get("grade","2"), d.get("topic","Lesson"),
         lesson_steps=lesson_steps)
     return send_file(path, mimetype="application/pdf",
-                     download_name="VaaniSetu_Worksheet.pdf")
+                     download_name=f"{config.APP_NAME}_Worksheet.pdf")
 
 @app.route("/feedback", methods=["POST"])
 def save_feedback():
@@ -307,7 +316,5 @@ def save_feedback():
     return jsonify({"error": "Missing text"}), 400
 
 if __name__ == "__main__":
-    print("\nVaaniSetu server started.")
-    print("Get your IP: ifconfig (Mac/Linux) | ipconfig (Windows)")
-    print("Update SERVER in MainActivity.kt with your IP")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    print(f"\n{config.APP_NAME} server started on port {config.PORT}.")
+    app.run(host=config.HOST, port=config.PORT, debug=False)
