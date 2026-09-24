@@ -318,11 +318,17 @@ check("Worksheet PDF", _ws)
 
 # ── 7. full speech to speech, if a sample recording exists ────────────────────
 log("\n[7] Speech in, speech out")
-# A real recording if there is one, else a synthetic benchmark clip
-# (python bench/make_synthetic_clips.py) so the whole path is still exercised.
+# A real recording if there is one, else a benchmark clip, else a clip made
+# here: the offline Hindi voice reads a lesson line. Clips are not in git, so
+# on a fresh clone the last case keeps the whole path exercised.
 sample = next((os.path.join(HERE, f) for f in
                ("bench/clips/real/hi_01.webm", "bench/clips/synthetic/hi/hi_01.webm")
                if os.path.exists(os.path.join(HERE, f))), None)
+if not sample:
+    with contextlib.suppress(Exception):
+        made = os.path.join(HERE, "_verify_sample_hi.wav")
+        pl.hindi_tts("आज हम एक से दस तक गिनना सीखेंगे।", made)
+        sample = made
 if sample:
     def _full():
         r = pl.full_forward(sample, "lesson_script")
@@ -343,7 +349,8 @@ else:
     log("Every check passed. Start the server with:  python app.py")
 log("=" * 68)
 
-for tmp in ("_verify_tts.wav", "_verify_tts2.wav", "_verify_tts_hi.wav", "_verify_worksheet.pdf"):
+for tmp in ("_verify_tts.wav", "_verify_tts2.wav", "_verify_tts_hi.wav", "_verify_worksheet.pdf",
+            "_verify_sample_hi.wav"):
     with contextlib.suppress(Exception):
         os.remove(os.path.join(HERE, tmp))
 
