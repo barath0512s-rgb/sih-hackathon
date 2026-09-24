@@ -11,9 +11,10 @@ import unicodedata
 
 _DIGITS = {**{chr(0x0966 + i): str(i) for i in range(10)},      # Devanagari
            **{chr(0x1C50 + i): str(i) for i in range(10)}}      # Ol Chiki
-_SENTENCE_MARKS = "।॥᱾᱿"
-_TRAILING = "।॥᱾᱿.!?,;:'\"‘’“”-–— "
 _INVISIBLE = "​‌‍﻿"          # zero-width space/non-joiner/joiner, BOM
+
+# Bump when normalize_key changes, so stored keys are recomputed (database.py).
+KEY_VERSION = 2
 
 
 def normalize_key(text: str) -> str:
@@ -24,8 +25,9 @@ def normalize_key(text: str) -> str:
       both are routinely typed either way
     - zero-width characters removed
     - Devanagari and Ol Chiki digits become ASCII digits
-    - danda / Ol Chiki sentence marks become "." ; trailing punctuation dropped
-    - whitespace collapsed, spaces before punctuation removed, Latin lower-cased
+    - all punctuation removed (dandas, Ol Chiki sentence marks, ?, commas...):
+      speech recognition writes none, so a spoken line must match a typed one
+    - whitespace collapsed, Latin lower-cased
     """
     if not text:
         return ""
@@ -35,12 +37,8 @@ def normalize_key(text: str) -> str:
     for ch in _INVISIBLE:
         s = s.replace(ch, "")
     s = "".join(_DIGITS.get(c, c) for c in s)
-    for m in _SENTENCE_MARKS:
-        s = s.replace(m, ".")
-    s = re.sub(r"\s+", " ", s)
-    s = re.sub(r" ([.!?,;:])", r"\1", s)
-    s = s.strip(_TRAILING)
-    return s.lower()
+    s = "".join(" " if unicodedata.category(c).startswith("P") else c for c in s)
+    return re.sub(r"\s+", " ", s).strip().lower()
 
 
 def digits_of(text: str) -> str:

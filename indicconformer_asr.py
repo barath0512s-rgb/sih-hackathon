@@ -85,14 +85,15 @@ class IndicConformerASR:
             )
         return torch.tensor(audio, dtype=torch.float32).unsqueeze(0)
 
-    def transcribe(self, audio_path, lang="hi", decoding="ctc"):
+    def transcribe(self, audio_path, lang="hi", decoding="ctc", trim=False):
         """
         Transcribe audio to text.
 
         Args:
             audio_path : path to .wav / .webm file
             lang       : language code, e.g. 'hi' (Hindi) or 'sat' (Santali)
-            decoding   : 'ctc' (fast, default) or 'rnnt' (slower, sometimes better)
+            decoding   : 'ctc' or 'rnnt'
+            trim       : cut leading and trailing silence first (trim_silence)
         Returns:
             Transcribed text string
         """
@@ -102,6 +103,31 @@ class IndicConformerASR:
             )
 
         wav = self._load_audio(audio_path)          # (1, T) float32
+        if trim:
+            wav = trim_silence(wav)
         with torch.no_grad():
             text = self.model.forward(wav, lang=lang, decoding=decoding)
         return text.strip()
+
+
+def trim_silence(wav, sr=16000, frame_ms=20, floor_db=-40.0, keep_ms=(150, 200)):
+    """Drop leading and trailing silence from a (1, T) waveform.
+
+    A frame counts as speech if its RMS is within |floor_db| dB of the loudest
+    frame. keep_ms pads the kept region (before, after) so word onsets and
+    trailing consonants are not clipped. Returns the input unchanged if no
+    speech is found, so a quiet recording is never emptied.
+    """
+    x = wav[0].numpy() if hasattr(wav, "numpy") else np.asarray(wav[0])
+    n = int(sr * frame_ms / 1000)
+    if len(x) < 2 * n:
+        return wav
+    frames = x[: len(x) // n * n].reshape(-1, n)
+    rms = np.sqrt(np.mean(frames ** 2, axis=1)) + 1e-10
+    db = 20 * np.log10(rms / rms.max())
+    speech = np.where(db > floor_db)[0]
+    if len(speech) == 0:
+        return wav
+    start = max(0, speech[0] * n - int(sr * keep_ms[0] / 1000))
+    end = min(len(x), (speech[-1] + 1) * n + int(sr * keep_ms[1] / 1000))
+    return wav[:, start:end]

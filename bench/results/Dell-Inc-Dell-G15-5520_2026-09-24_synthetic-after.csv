@@ -1,0 +1,61 @@
+clip,lang,direction,clip_seconds,cold,pipeline_ms,asr_ms,nmt_ms,tts_ms,server_ms,source,tts_engine,audio_bytes,tts_error,cer,reference,recognized
+bench/clips/synthetic/hi/hi_01.webm,hi,hi-to-sat,4.05,True,1536.0,483.0,1.0,988.0,1472.0,glossary,piper,131116,,0.0,आज हम एक से दस तक गिनना सीखेंगे।,आज हम एक से दस तक गिनना सीखेंगे
+bench/clips/synthetic/hi/hi_02.webm,hi,hi-to-sat,4.04,False,1675.8,611.0,898.0,158.0,1667.0,model,piper,125484,,0.028,अपनी उंगलियां दिखाओ और मेरे साथ गिनो।,अपनी उँंगलियाँ दिखाओ और मेरे साथ गिनो
+bench/clips/synthetic/hi/hi_03.webm,hi,hi-to-sat,4.58,False,1551.8,680.0,708.0,155.0,1542.0,model,piper,113708,,0.045,अब तुम्हारे सामने पांच पत्थर हैं। उन्हें गिनो।,अब तुम्हारे सामने पाँच पत्थर हैं उन्हें गििन
+bench/clips/synthetic/hi/hi_04.webm,hi,hi-to-sat,3.64,False,1441.8,601.0,3.0,827.0,1432.0,glossary,piper,102956,,0.0,यहाँ कितने पत्थर हैं? बताओ।,यहाँ कितने पत्थर हैं बताओ
+bench/clips/synthetic/hi/hi_05.webm,hi,hi-to-sat,3.95,False,1602.6,612.0,66.0,910.0,1588.0,glossary,piper,134188,,0.0,यह गोल है। यह एक वृत्त है।,यह गोल है यह एक वृत्त है
+bench/clips/synthetic/hi/hi_06.webm,hi,hi-to-sat,4.12,False,1574.8,618.0,37.0,905.0,1560.0,glossary,piper,148524,,0.0,यह चौकोर है। इसके चार कोने हैं।,यह चौकोर है इसके चार कोने हैं
+bench/clips/synthetic/hi/hi_07.webm,hi,hi-to-sat,3.68,False,1584.6,611.0,823.0,139.0,1573.0,model,piper,102956,,0.038,अपने आसपास गोल चीज़ें ढूंढो।,अपने आसपास गोद चीज़ें ढूंढो
+bench/clips/synthetic/hi/hi_08.webm,hi,hi-to-sat,2.82,False,1035.7,504.0,3.0,518.0,1025.0,glossary,piper,64044,,0.0,यह कौन सा आकार है?,यह कौन सा आकार है
+bench/clips/synthetic/hi/hi_09.webm,hi,hi-to-sat,4.66,False,2081.8,840.0,1033.0,196.0,2068.0,model,piper,149036,,0.029,आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।,आज हम जोड़ना सीखेंगे एक और एक मिलाव
+bench/clips/synthetic/hi/hi_10.webm,hi,hi-to-sat,4.2,False,1841.7,669.0,975.0,187.0,1831.0,model,piper,136748,,0.0,दो आम और तीन आम मिलाओ। कुल कितने हुए?,दो आम और तीन आम मिलाओ कुल कितने हुए
+bench/clips/synthetic/hi/hi_11.webm,hi,hi-to-sat,3.63,False,1543.6,626.0,3.0,905.0,1534.0,glossary,piper,110124,,0.0,अब तुम एक जोड़ का सवाल बनाओ।,अब तुम एक जोड़ का सवाल बनाओ
+bench/clips/synthetic/hi/hi_12.webm,hi,hi-to-sat,3.13,False,1220.4,615.0,3.0,591.0,1209.0,glossary,piper,69164,,0.0,तीन और चार कितने होते हैं?,तीन और चार कितने होते हैं
+bench/clips/synthetic/hi/hi_13.webm,hi,hi-to-sat,3.65,False,1673.4,697.0,3.0,963.0,1663.0,glossary,piper,146988,,0.0,यह शब्द है माँ। इसे पढ़ो।,यह शब्द है माँ इसे पढ़ो
+bench/clips/synthetic/hi/hi_14.webm,hi,hi-to-sat,3.34,False,1521.2,581.0,784.0,148.0,1512.0,model,piper,102444,,0.0,इस शब्द को तीन बार पढ़ो।,इस शब्द को तीन बार पढ़ो
+bench/clips/synthetic/hi/hi_15.webm,hi,hi-to-sat,3.56,False,1599.4,623.0,3.0,961.0,1587.0,glossary,piper,137260,,0.0,यह शब्द क्या है? पढ़कर बताओ।,यह शब्द क्या है पढ़कर बताओ
+bench/clips/synthetic/hi/hi_16.webm,hi,hi-to-sat,4.74,False,1606.4,702.0,3.0,888.0,1593.0,glossary,piper,143404,,0.0,आज हम घटाना सीखेंगे। दस में से तीन घटाओ।,आज हम घटाना सीखेंगे दस में से तीन घटाओ
+bench/clips/synthetic/hi/hi_17.webm,hi,hi-to-sat,4.87,False,1623.5,585.0,27.0,1000.0,1612.0,glossary,piper,171052,,0.0,सात पत्थर लो। तीन हटा दो। अब कितने बचे?,सात पत्थर लो तीन हटा दो अब कितने बचे
+bench/clips/synthetic/hi/hi_18.webm,hi,hi-to-sat,3.94,False,1636.0,656.0,3.0,966.0,1625.0,glossary,piper,122924,,0.0,आठ में से पांच घटाओ। उत्तर क्या है?,आठ में से पाँच घटाओ उत्तर क्या है
+bench/clips/synthetic/hi/hi_19.webm,hi,hi-to-sat,2.71,False,1353.0,557.0,685.0,100.0,1341.0,model,piper,60460,,0.2,सुप्रभात बच्चों।,सुप्रभात बचो
+bench/clips/synthetic/hi/hi_20.webm,hi,hi-to-sat,3.4,False,1456.1,588.0,713.0,146.0,1446.0,model,piper,106028,,0.0,कृपया अपनी जगह पर बैठ जाओ।,कृपया अपनी जगह पर बैठ जाओ
+bench/clips/synthetic/hi/hi_21.webm,hi,hi-to-sat,3.01,False,1407.4,447.0,828.0,124.0,1398.0,model,piper,85036,,0.0,मेरी बात ध्यान से सुनो।,मेरी बात ध्यान से सुनो
+bench/clips/synthetic/hi/hi_22.webm,hi,hi-to-sat,2.49,False,1352.8,504.0,635.0,204.0,1343.0,model,piper,50732,,0.1,शोर मत करो।,शूर मत करो
+bench/clips/synthetic/hi/hi_23.webm,hi,hi-to-sat,2.97,False,1401.7,560.0,723.0,108.0,1391.0,model,piper,81452,,0.0,अपना हाथ उठाओ।,अपना हाथ उठाओ
+bench/clips/synthetic/hi/hi_24.webm,hi,hi-to-sat,3.3,False,1434.0,577.0,507.0,339.0,1423.0,model,piper,64556,,0.0,"बहुत अच्छा, शाबाश!",बहुत अच्छा शाबाश
+bench/clips/synthetic/hi/hi_25.webm,hi,hi-to-sat,2.74,False,1472.1,577.0,715.0,169.0,1460.0,model,piper,87084,,0.0,बोर्ड पर आकर लिखो।,बोर्ड पर आकर लिखो
+bench/clips/synthetic/hi/hi_26.webm,hi,hi-to-sat,3.49,False,1482.3,559.0,782.0,129.0,1470.0,model,piper,98348,,0.0,तुम्हारा जवाब बिल्कुल सही है।,तुम्हारा जवाब बिल्कुल सही है
+bench/clips/synthetic/hi/hi_27.webm,hi,hi-to-sat,3.99,False,1475.8,552.0,768.0,144.0,1465.0,model,piper,106028,,0.0,"यह गलत है, फिर से कोशिश करो।",यह ग़लत है फिर से कोशिश करो
+bench/clips/synthetic/hi/hi_28.webm,hi,hi-to-sat,2.68,False,1462.1,563.0,602.0,285.0,1451.0,model,piper,88620,,0.067,अपनी किताब खोलो।,अपनी किताब खुलो
+bench/clips/synthetic/hi/hi_29.webm,hi,hi-to-sat,2.58,False,1396.2,463.0,808.0,114.0,1385.0,model,piper,74796,,0.0,पानी पीकर आओ।,पानी पीकर आओ
+bench/clips/synthetic/hi/hi_30.webm,hi,hi-to-sat,2.56,False,1507.7,469.0,891.0,136.0,1497.0,model,piper,95788,,0.0,कल फिर मिलेंगे।,कल फिर मिलेंगे
+bench/clips/synthetic/sat/sat_01.webm,sat,sat-to-hi,4.48,False,1840.5,733.0,894.0,202.0,1829.0,model,piper,153132,,0.19,ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱢᱤᱫ ᱠᱷᱚᱱ ᱜᱮᱞ ᱛᱩᱨᱩᱭ ᱜᱤᱱᱛᱤ ᱥᱮᱪᱮᱫᱟ।,ᱛᱮᱦᱮᱡᱽ ᱟᱞᱮ ᱢᱤᱛᱠᱷᱳᱚᱱ ᱜᱮᱮᱞ ᱛᱩᱨᱩᱭ ᱜᱤᱱᱛᱤ ᱥᱮ ᱪᱮᱛᱟ
+bench/clips/synthetic/sat/sat_02.webm,sat,sat-to-hi,4.33,False,1853.0,741.0,911.0,191.0,1843.0,model,piper,151084,,0.31,ᱟᱢᱟᱜ ᱩᱝᱜᱽᱞᱤ ᱫᱮᱠᱷᱟᱣ ᱢᱮ ᱟᱨ ᱟᱢᱟᱜ ᱥᱟᱝ ᱜᱤᱱᱛᱤ ᱢᱮ।,ᱟᱢᱟ ᱩᱵᱞᱤ ᱫᱮᱠᱷᱷᱟᱟᱣ ᱢᱮ ᱟᱨᱟᱨ ᱟᱢᱟᱠ ᱥᱟᱶᱟᱸᱜ ᱜᱤᱱᱛᱤ ᱢᱮ
+bench/clips/synthetic/sat/sat_03.webm,sat,sat-to-hi,5.2,False,1833.5,741.0,900.0,183.0,1824.0,model,piper,138796,,0.082,ᱱᱤᱛᱚᱜ ᱟᱢᱟᱜ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ। ᱱᱤᱭᱟᱹ ᱜᱤᱱᱛᱤ ᱢᱮ।,ᱱᱤᱛᱚᱜ ᱦᱟᱢᱟᱜ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜ ᱟᱠᱟ ᱱᱤᱭᱟᱹ ᱜᱤᱱᱛᱤ ᱢᱮ
+bench/clips/synthetic/sat/sat_04.webm,sat,sat-to-hi,3.62,False,1565.8,668.0,755.0,132.0,1556.0,model,piper,94252,,0.29,ᱱᱮᱞᱮ ᱡᱚᱛᱚ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ? ᱞᱟᱹᱭ ᱢᱮ।,ᱱᱮᱞ ᱡᱛᱟ ᱫᱷᱤᱨᱤ ᱢᱮ ᱱᱟ ᱠᱷᱷᱟ ᱞᱟᱹᱭ ᱢᱮᱸ
+bench/clips/synthetic/sat/sat_05.webm,sat,sat-to-hi,4.33,False,1485.8,702.0,606.0,168.0,1475.0,model,piper,95788,,0.132,ᱱᱚᱶᱟ ᱜᱚᱞ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱢᱤᱫ ᱜᱚᱞ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ।,ᱱᱟ ᱜᱚᱞ ᱠᱟᱱᱟ ᱱᱟᱣᱟ ᱢᱤᱫᱜᱚᱞ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ
+bench/clips/synthetic/sat/sat_06.webm,sat,sat-to-hi,4.69,False,1808.8,685.0,942.0,171.0,1797.0,model,piper,132652,,0.273,ᱱᱚᱶᱟ ᱪᱟᱩᱠᱟ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱨᱮᱭᱟᱜ ᱯᱩᱱ ᱠᱩᱱᱟᱹ ᱢᱮᱱᱟᱜᱼᱟ।,ᱱᱚᱣᱟ ᱪᱟᱣᱠᱟ ᱠᱟᱱᱟ ᱱᱚᱣᱟ ᱨᱤᱭᱟᱠ ᱯᱩᱱᱠᱩᱩᱱ ᱢᱮ ᱱᱟᱠᱟ
+bench/clips/synthetic/sat/sat_07.webm,sat,sat-to-hi,3.55,False,1729.8,682.0,851.0,186.0,1720.0,model,piper,140844,,0.2,ᱟᱢᱟᱜ ᱥᱩᱨ ᱨᱮ ᱜᱚᱞ ᱡᱤᱱᱤᱥ ᱯᱟᱱᱛᱮ ᱢᱮ।,ᱟᱢᱟᱠ ᱥᱩᱨᱨᱤ ᱜᱳᱡᱤᱱᱤᱥ ᱯᱟᱱᱛᱮ ᱢᱮ
+bench/clips/synthetic/sat/sat_08.webm,sat,sat-to-hi,2.97,False,1458.4,573.0,436.0,440.0,1448.0,model,piper,67116,,0.1,ᱱᱚᱶᱟ ᱚᱠᱟ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ?,ᱱᱟᱣᱟ ᱚᱠᱟ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ
+bench/clips/synthetic/sat/sat_09.webm,sat,sat-to-hi,5.15,False,2242.5,774.0,1172.0,285.0,2231.0,model,piper,201260,,0.326,ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱡᱚᱲᱟᱣ ᱥᱮᱪᱮᱫᱟ। ᱢᱤᱫ ᱟᱨ ᱢᱤᱫ ᱢᱮᱥᱟᱣ ᱢᱮ।,ᱛᱮᱮᱦᱮᱡ ᱟᱞᱮ ᱡᱲᱟᱣ ᱥᱤ ᱪᱮᱛᱟ ᱢᱛ ᱟᱨ ᱨ ᱢᱤᱛ ᱢᱮ ᱥᱟᱯᱷ ᱢᱮ
+bench/clips/synthetic/sat/sat_10.webm,sat,sat-to-hi,6.1,False,2251.1,794.0,1219.0,227.0,2240.0,model,piper,173612,,0.279,ᱵᱟᱨ ᱩᱞ ᱟᱨ ᱯᱮ ᱩᱞ ᱢᱮᱥᱟᱣ ᱢᱮ। ᱡᱚᱛᱚ ᱛᱤᱱᱟᱜ ᱦᱩᱭᱮᱱᱟ? ᱩᱝᱜᱽᱞᱤ ᱨᱮ ᱜᱤᱱᱛᱤ ᱢᱮ।,ᱵᱟᱨᱩᱞ ᱟᱨᱚᱨ ᱯᱮᱳᱞ ᱢᱤᱥᱟᱵ ᱢᱮ ᱡᱛ ᱛᱱᱟᱠ ᱦᱩᱭᱩᱭ ᱱᱟ ᱩᱝᱜᱞᱤᱤᱨ ᱜᱤᱱᱛᱤ ᱢᱮ
+bench/clips/synthetic/sat/sat_11.webm,sat,sat-to-hi,3.72,False,1582.1,648.0,766.0,159.0,1573.0,model,piper,105004,,0.182,ᱱᱤᱛᱚᱜ ᱟᱢ ᱢᱤᱫ ᱡᱚᱲᱟᱣ ᱠᱩᱠᱞᱤ ᱛᱮᱭᱟᱨ ᱢᱮ।,ᱱᱤᱛᱚᱠᱟᱟᱢ ᱢᱮ ᱡᱚᱲᱟᱣᱵ ᱠᱩᱠᱞᱤ ᱛᱭᱟᱨ ᱢᱮ
+bench/clips/synthetic/sat/sat_12.webm,sat,sat-to-hi,3.03,False,1546.9,645.0,336.0,556.0,1537.0,model,piper,54316,,0.091,ᱯᱮ ᱟᱨ ᱯᱩᱱ ᱡᱚᱛᱚ ᱦᱩᱭᱩᱜᱼᱟ?,ᱯᱮᱭᱟᱨ ᱯᱩᱱ ᱡᱚᱛᱚ ᱦᱩᱭᱩᱜᱠᱟ
+bench/clips/synthetic/sat/sat_13.webm,sat,sat-to-hi,4.58,False,1542.8,709.0,604.0,219.0,1533.0,model,piper,80428,,0.212,ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱠᱟᱱᱟ — ᱟᱭᱳ। ᱱᱚᱶᱟ ᱯᱟᱲᱦᱟᱣ ᱢᱮ।,ᱱᱟᱣᱟ ᱟᱲᱟ ᱠᱟᱱᱟ ᱟ ᱭᱟ ᱱᱟᱣᱟ ᱯᱟᱲᱦᱟᱣ ᱢᱮ
+bench/clips/synthetic/sat/sat_14.webm,sat,sat-to-hi,3.97,False,1525.2,639.0,506.0,368.0,1513.0,model,piper,81964,,0.129,ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱯᱮ ᱛᱷᱚᱠ ᱯᱟᱲᱦᱟᱣ ᱢᱮ — ᱫᱟᱜ।,ᱱᱟᱣᱟ ᱟᱲᱟ ᱯᱮ ᱛᱷᱚᱠ ᱯᱟᱲᱦᱟᱣ ᱢᱮ ᱫᱟᱜᱽ
+bench/clips/synthetic/sat/sat_15.webm,sat,sat-to-hi,4.4,False,1585.1,736.0,592.0,243.0,1571.0,model,piper,74284,,0.105,ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱪᱮᱫ ᱠᱟᱱᱟ? ᱯᱟᱲᱦᱟᱣ ᱠᱟᱛᱮ ᱞᱟᱹᱭ ᱢᱮ।,ᱱᱟᱣᱟ ᱟᱲᱟᱝ ᱪᱤᱫ ᱠᱟᱱᱟ ᱯᱟᱲᱦᱟᱣ ᱠᱟᱛᱮᱭ ᱞᱟᱹᱭ ᱢᱮ
+bench/clips/synthetic/sat/sat_16.webm,sat,sat-to-hi,4.59,False,1773.5,709.0,881.0,173.0,1764.0,model,piper,122412,,0.15,ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱠᱚᱢ ᱥᱮᱪᱮᱫᱟ। ᱜᱮᱞ ᱠᱷᱚᱱ ᱯᱮ ᱠᱚᱢ ᱢᱮ।,ᱛᱮᱦᱮ ᱪᱟᱞᱠ ᱠᱚᱢ ᱥᱮ ᱪᱮᱛᱟ ᱜᱮᱞ ᱠᱷᱚᱱ ᱯᱮ ᱠᱚᱢ ᱢᱮ
+bench/clips/synthetic/sat/sat_17.webm,sat,sat-to-hi,5.23,False,2019.3,777.0,989.0,244.0,2010.0,model,piper,184364,,0.143,ᱮᱭᱟᱭ ᱫᱷᱤᱨᱤ ᱦᱟᱛᱟᱣ ᱢᱮ। ᱯᱮ ᱚᱪᱚᱜ ᱢᱮ। ᱱᱤᱛᱚᱜ ᱡᱚᱛᱚ ᱛᱟᱦᱮᱸᱱᱟ?,ᱮᱭᱟᱭ ᱫᱷᱤᱨᱤ ᱦᱟᱛᱟᱣ ᱢᱮ ᱯᱮᱭ ᱚᱥᱚᱠ ᱢᱮᱮ ᱱᱤᱛᱳᱚᱵ ᱡᱚᱛᱚ ᱛᱟᱦᱮᱱᱟ
+bench/clips/synthetic/sat/sat_18.webm,sat,sat-to-hi,4.16,False,1655.7,716.0,765.0,164.0,1646.0,model,piper,114732,,0.111,ᱤᱨᱟᱹᱞ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱠᱚᱢ ᱢᱮ। ᱛᱮᱞᱟ ᱪᱮᱫ ᱠᱟᱱᱟ?,ᱤᱨᱞ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱠᱚᱢ ᱢᱮ ᱛᱮᱞᱟ ᱪᱤᱛ ᱠᱟᱱᱟ
+bench/clips/synthetic/sat/sat_19.webm,sat,sat-to-hi,3.07,False,1409.1,581.0,658.0,161.0,1400.0,model,piper,78892,,0.333,ᱥᱮᱛᱟᱜ ᱡᱚᱦᱟᱨ ᱜᱤᱫᱽᱨᱟᱹᱠᱚ᱾,ᱥᱮᱮᱛᱟᱛ ᱡᱦᱟᱨ ᱜᱤᱫᱨ ᱠ
+bench/clips/synthetic/sat/sat_20.webm,sat,sat-to-hi,4.07,False,1567.0,683.0,755.0,118.0,1556.0,model,piper,79916,,0.333,ᱛᱮᱦᱮᱧ ᱟᱵᱚ ᱢᱤᱫᱴᱟᱹᱝ ᱱᱟᱶᱟ ᱯᱟᱴᱷ ᱵᱚᱱ ᱯᱟᱲᱦᱟᱣᱟ᱾,ᱛᱮᱦ ᱟᱵᱳᱢᱴᱟᱨ ᱱᱟᱣᱟ ᱯᱟᱴ ᱵᱚᱨᱱ ᱯᱲᱦᱣᱟ
+bench/clips/synthetic/sat/sat_21.webm,sat,sat-to-hi,4.06,False,1766.8,660.0,914.0,184.0,1757.0,model,piper,142892,,0.059,ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱟᱯᱮᱭᱟᱜ ᱡᱟᱭᱜᱟ ᱨᱮ ᱫᱩᱲᱩᱵ ᱯᱮ᱾,ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱟᱮᱭᱟᱜ ᱡᱟᱭᱜᱟ ᱨᱮ ᱫᱩᱲᱩᱯ ᱯᱮ
+bench/clips/synthetic/sat/sat_22.webm,sat,sat-to-hi,3.69,False,1493.3,679.0,681.0,123.0,1484.0,model,piper,78892,,0.143,ᱪᱮᱫ ᱡᱚᱛᱚ ᱦᱚᱲ ᱯᱮ ᱥᱟᱯᱲᱟᱣ ᱟᱠᱟᱱᱟ?,ᱪᱤᱛ ᱡᱚᱛᱚ ᱦᱚᱲᱯᱤ ᱥᱟᱯᱲᱟᱣ ᱟᱠᱟᱱᱟ
+bench/clips/synthetic/sat/sat_23.webm,sat,sat-to-hi,4.17,False,1682.2,720.0,807.0,146.0,1672.0,model,piper,105516,,0.229,ᱤᱧᱟᱜ ᱠᱟᱛᱷᱟ ᱢᱚᱱᱮ ᱞᱟᱜᱟᱣ ᱠᱟᱛᱮ ᱟᱸᱡᱚᱢ ᱯᱮ᱾,ᱮᱱᱟ ᱠᱟᱛᱷᱟ ᱢᱚᱱ ᱞᱟᱜ ᱠᱟᱛᱮ ᱟᱱᱡᱚᱢᱯᱮ
+bench/clips/synthetic/sat/sat_24.webm,sat,sat-to-hi,2.69,False,1460.9,568.0,634.0,249.0,1451.0,model,piper,93740,,0.357,ᱟᱞᱚ ᱯᱮ ᱜᱚᱞᱢᱟᱞᱟ᱾,ᱟᱞᱟᱚᱯ ᱮ ᱜᱚᱲᱢᱟᱞᱞᱟ
+bench/clips/synthetic/sat/sat_25.webm,sat,sat-to-hi,2.85,False,1471.1,673.0,652.0,136.0,1462.0,model,piper,80940,,0.312,ᱟᱯᱮᱭᱟᱜ ᱛᱤ ᱛᱩᱞ ᱯᱮ᱾,ᱟᱯᱮ ᱟᱸᱠᱛᱮ ᱛᱩᱞᱯᱮ
+bench/clips/synthetic/sat/sat_26.webm,sat,sat-to-hi,2.39,False,1326.9,555.0,480.0,281.0,1317.0,model,piper,49708,,0.2,ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ!,ᱟᱫᱤ ᱱᱟᱯᱟᱭ
+bench/clips/synthetic/sat/sat_27.webm,sat,sat-to-hi,2.13,False,1052.0,543.0,284.0,213.0,1040.0,model,piper,28716,,0.2,ᱥᱟᱵᱟᱥ!,ᱛᱟᱵᱟᱥ
+bench/clips/synthetic/sat/sat_28.webm,sat,sat-to-hi,4.47,False,1652.5,861.0,627.0,155.0,1642.0,model,piper,78380,,0.053,"ᱢᱤᱫ, ᱵᱟᱨ, ᱯᱮ, ᱯᱩᱱ, ᱢᱚᱬᱮ᱾",ᱢᱤᱫᱛ ᱵᱟᱨ ᱯᱮ ᱯᱩᱱ ᱢᱚᱬᱮ
+bench/clips/synthetic/sat/sat_29.webm,sat,sat-to-hi,2.86,False,1541.7,615.0,761.0,157.0,1532.0,model,piper,110124,,0.389,ᱤᱧ ᱥᱟᱶᱛᱮ ᱞᱮᱠᱷᱟᱭ ᱯᱮ᱾,ᱥᱟᱵᱚᱛ ᱞᱠᱷᱟᱭ ᱯᱮ
+bench/clips/synthetic/sat/sat_30.webm,sat,sat-to-hi,3.25,False,1387.3,605.0,517.0,255.0,1377.0,model,piper,71212,,0.179,ᱟᱢ ᱴᱷᱮᱱ ᱛᱤᱱᱟᱹᱜ ᱯᱚᱛᱚᱵ ᱢᱮᱱᱟᱜᱼᱟ?,ᱟᱢ ᱴᱷᱮᱱ ᱛᱤᱱᱟᱹᱜ ᱯᱚᱛᱯ ᱢᱮ ᱱᱟᱟᱜᱜᱟ

@@ -1237,7 +1237,9 @@ hi: {
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
   m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"आवाज़ नहीं बन पाई",
-  m_fix_reused:"आपका सुधार इस वाक्य के लिए दोबारा इस्तेमाल होगा", tip_ans_mic:"बोलकर जवाब", m_ans_heard:"सुना", m_mic_no:"माइक की अनुमति नहीं मिली",
+  m_fix_reused:"आपका सुधार इस वाक्य के लिए दोबारा इस्तेमाल होगा", tip_ans_mic:"बोलकर जवाब", m_ans_heard:"सुना",
+  t1_note_typed:"लिखी पंक्ति, सुनना (ASR) नहीं हुआ", t1_note_cache:"पहले से तैयार (कैश से)",
+  t1_note_noaudio:"आवाज़ नहीं चली: यह जवाब आने तक का समय है", t1_note_server:"नीचे: सर्वर के हिस्से", m_mic_no:"माइक की अनुमति नहीं मिली",
   m_mic_short:"बहुत छोटा था, थोड़ा देर तक बोलिए", m_mic_none:"इस ब्राउज़र में रिकॉर्डिंग नहीं होती",
   m_listening:"सुन रहे हैं", m_heard:"सुन लिया", m_done_in:"सेकंड में हुआ",
   m_ans_first:"पहले उत्तर लिखिए", m_fix_first:"पहले सही पंक्ति लिखिए",
@@ -1365,7 +1367,9 @@ en: {
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
   m_blocked:"Press once to allow sound", m_no_voice:"The voice could not be produced",
-  m_fix_reused:"Your correction will be reused for this sentence", tip_ans_mic:"Answer by voice", m_ans_heard:"Heard", m_mic_no:"The microphone was not allowed",
+  m_fix_reused:"Your correction will be reused for this sentence", tip_ans_mic:"Answer by voice", m_ans_heard:"Heard",
+  t1_note_typed:"Typed line, no ASR", t1_note_cache:"From cache",
+  t1_note_noaudio:"No audio played: this is the time until the reply arrived", t1_note_server:"Below: server stages", m_mic_no:"The microphone was not allowed",
   m_mic_short:"That was too short, speak a little longer", m_mic_none:"This browser cannot record",
   m_listening:"Listening", m_heard:"Heard it", m_done_in:"seconds",
   m_ans_first:"Type the answer first", m_fix_first:"Write the correct line first",
@@ -1476,6 +1480,12 @@ const p2 = n => num(String(n).padStart(2,"0"));
 const t  = k => (T[S.lang] && T[S.lang][k]) || T.hi[k] || k;
 
 /* ───────────────── server ───────────────── */
+let DEVICE_ID = "";
+try {
+  DEVICE_ID = localStorage.getItem("vs_device") ||
+              (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2));
+  localStorage.setItem("vs_device", DEVICE_ID);
+} catch(e) { DEVICE_ID = "no-storage"; }
 let SERVER = localStorage.getItem("vs_server") || window.location.origin;
 if (SERVER === "null" || SERVER.startsWith("file://")) SERVER = "http://127.0.0.1:5000";
 
@@ -1503,16 +1513,19 @@ const Api = {
   mark:      (sid, text, step) => postJSON("/session/response", {session_id:sid, response:text, step}),
   summary:      (sid)          => postJSON("/session/summary", {session_id:sid}),
   translateText:(text, direction, mode, sid) =>
-      postJSON("/translate/text", {text, direction, mode, session_id:sid}),
+      postJSON("/translate/text", {text, direction, mode, session_id:sid, device_id:DEVICE_ID}),
   translateAudio:(blob, direction, mode, sid) => {
     const fd = new FormData();
     fd.append("audio", blob, "recording.webm");
     fd.append("direction", direction); fd.append("mode", mode); fd.append("session_id", sid);
+    fd.append("device_id", DEVICE_ID);
     return api("/translate/audio", {method:"POST", body:fd}).then(r => r.json());
   },
   feedback:(hindi, santali, isCorrect, corrected, direction) =>
       postJSON("/feedback", {hindi_text:hindi, santali_text:santali, direction:direction || "hi-to-sat",
                              is_correct:isCorrect, corrected_text:corrected || ""}),
+  clientTiming:(rid, totalMs, responseMs) =>
+      postJSON("/metrics/client", {request_id:rid, client_total_ms:totalMs, response_ms:responseMs}),
   markVoice:(sid, blob, step, lang) => {
     const fd = new FormData();
     fd.append("audio", blob, "answer.webm");
@@ -1720,6 +1733,7 @@ async function translate(){
   const text = src.textContent.trim();
   if (!text){ say(t("m_nothing"), "🤷"); return; }
 
+  const t0 = performance.now();
   S.busy = true;
   const btn = $("#goBtn");
   btn.disabled = true;
@@ -1729,11 +1743,11 @@ async function translate(){
     const r = await Api.translateText(text, S.dir, S.mode, S.sid);
     dst.classList.remove("pending");
     typeIn(dst, r.translated_text || "");
-    timing(r.latency, false, r.confidence);
     keep(r.latency.total,
       S.dir === "hi-to-sat" ? text : r.translated_text,
       S.dir === "hi-to-sat" ? r.translated_text : text);
     setOnline(true);
+    clock_reply(r, t0, false);
     voice(r);
     if (S.confirm) say(num(r.latency.total) + " " + t("m_done_in"), "✨");
   } catch(e){ dst.classList.remove("pending"); fail(e); }
@@ -1749,20 +1763,55 @@ function typeIn(el, text){
   (function tick(){ el.textContent += chars[i++] ?? ""; if (i < chars.length) setTimeout(tick, 16); })();
 }
 
-function timing(l, spoken, confidence){
+// The big number is what the user waited, measured in this browser: from the
+// end of input (mic released, or Translate pressed) to the reply's audio
+// starting to play. The bars under it are the server's own stages.
+function timing(l, spoken, confidence, client){
   if (!l) return;
   S.lastLat = l; S.lastSpoken = !!spoken; S.lastConf = (confidence == null ? null : confidence);
+  if (client !== undefined) S.lastClient = client;
+  const c = S.lastClient;
+  const head = c ? c.seconds : l.total;
+  $("#total").textContent = num(head.toFixed(2));
+  $("#mLast").textContent = num(head.toFixed(2));
   const tot = Math.max(l.total, .01);
-  $("#total").textContent = num(l.total.toFixed(2));
-  $("#mLast").textContent = num(l.total.toFixed(2));
   [["A","asr"],["N","nmt"],["T","tts"]].forEach(([k,key]) => {
     const v = l[key] || 0;
     $("#v"+k).textContent = num(v.toFixed(2));
     $("#b"+k).style.width = (v/tot*100) + "%";
   });
-  const c = (confidence == null) ? "" :
-            `${t("t1_conf")} ${num(Math.round(confidence))}%. `;
-  $("#speedNote").textContent = c + (spoken ? t("t1_note_mic") : t("t1_note"));
+  const notes = [];
+  if (c && !c.played) notes.push(t("t1_note_noaudio"));
+  if (!spoken) notes.push(t("t1_note_typed"));
+  if (c && c.cached) notes.push(t("t1_note_cache"));
+  notes.push(spoken ? t("t1_note_mic") : t("t1_note_server"));
+  $("#speedNote").textContent = notes.join(" · ");
+}
+
+// Called with the input-end timestamp once a reply arrives. Waits for the
+// audio to start, then shows and reports the real voice-to-voice time.
+function clock_reply(r, t0, spoken){
+  const tResp = performance.now();
+  const cached = r.source !== "model" && r.tts_engine === "cache";
+  const done = (played) => {
+    const end = played ? performance.now() : tResp;
+    const client = {seconds: (end - t0) / 1000, played, cached};
+    timing(r.latency, spoken, null, client);
+    if (S.log[0]) { S.log[0].t = +client.seconds.toFixed(2); rows(); }
+    if (played && r.request_id)
+      Api.clientTiming(r.request_id, end - t0, tResp - t0).catch(() => {});
+  };
+  S.lastClient = null;
+  timing(r.latency, spoken, null);
+  // Only the newest reply is ever being timed, so an old reply whose audio
+  // never started cannot be paired with a later clip's playback.
+  S.pendingDone = null;
+  if (S.autoplay && r.audio_url && !r.tts_error){
+    let settled = false;
+    S.pendingDone = (played) => { if (!settled){ settled = true; S.pendingDone = null; done(played); } };
+  } else {
+    done(false);
+  }
 }
 
 function keep(sec, hindi, santali){
@@ -1773,13 +1822,14 @@ function keep(sec, hindi, santali){
 
 /* ───────────────── voice ───────────────── */
 const player = new Audio();
+player.addEventListener("playing", () => { if (S.pendingDone) S.pendingDone(true); });
 // Every reply has its own clip (audio_url), so this can never play the
 // previous sentence, and two tablets never share a file.
 function play(quiet){
   if (!S.audioUrl){ say(t("m_first"), "🔇"); return; }
   player.src = SERVER + S.audioUrl;
   player.play().then(() => { if (!quiet) say(t("m_playing"), "🔊"); })
-               .catch(() => say(t("m_blocked"), "🔈"));
+               .catch(() => { if (S.pendingDone) S.pendingDone(false); say(t("m_blocked"), "🔈"); });
 }
 $("#playBtn").onclick = () => play();
 
@@ -1798,6 +1848,7 @@ async function mic(dir){
   const tEl = $(dir === "hi-to-sat" ? "#tHi" : "#tSa");
 
   if (S.rec === dir){
+    S.tStop = performance.now();          // input end: the clock starts here
     const mr = S.mr; stopRec();
     if (mr && mr.state !== "inactive") mr.stop();
     return;
@@ -1834,11 +1885,11 @@ async function mic(dir){
       src.classList.remove("pending"); dst.classList.remove("pending");
       src.textContent = r.recognized_text || "";
       typeIn(dst, r.translated_text || "");
-      timing(r.latency, true, r.confidence);
       keep(r.latency.total,
         dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
         dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
       setOnline(true);
+      clock_reply(r, S.tStop, true);
       voice(r);
       say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
     } catch(e){

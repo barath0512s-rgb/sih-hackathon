@@ -76,22 +76,24 @@ def _prune_audio():
 
 
 def _speak(direction, text):
-    """Synthesise the translated line offline. Returns (audio_url, error)."""
+    """Synthesise the translated line offline.
+    Returns (audio_url, error, tts_engine) where tts_engine is piper|cache|gtts|none."""
     config.TTS_OUT_DIR.mkdir(exist_ok=True)
     aid = uuid.uuid4().hex
     out = config.TTS_OUT_DIR / f"{aid}.wav"
+    info = {}
     try:
         if direction == "hi-to-sat":
-            pl.santali_tts(text, str(out))
+            pl.santali_tts(text, str(out), info=info)
         else:
-            pl.hindi_tts(text, str(out))
+            pl.hindi_tts(text, str(out), info=info)
     except TTSError as e:
         out.unlink(missing_ok=True)
-        return None, str(e)
+        return None, str(e), "none"
     with _audio_lock:
         _latest[direction] = aid
         _prune_audio()
-    return f"/audio/{aid}", None
+    return f"/audio/{aid}", None, info.get("tts_engine", "none")
 
 
 @app.route("/audio/<aid>")
@@ -207,8 +209,26 @@ def lessons():
 
 
 # ── Translation ───────────────────────────────────────────────────────────────
-def _translation_json(r, audio_url, tts_error, latency):
+def _model_versions():
+    return {"asr": config.ASR_REVISION[:10], "nmt": config.NMT_REVISION[:10],
+            "nmt_beams": config.NMT_NUM_BEAMS,
+            "tts_hindi": pl._voice_model("hindi"), "tts_santali": pl._voice_model("santali"),
+            "santali_script": config.SANTALI_TTS_SCRIPT}
+
+
+def _log(rid, device_id, direction, input_type, r, tts_engine, lat):
+    """One latency_log row; the client later adds what the user actually waited."""
+    database.log_latency(
+        rid, device_id=device_id or None, direction=direction, input_type=input_type,
+        source=r["source"], tts_engine=tts_engine,
+        asr_ms=lat["asr"] * 1000, nmt_ms=lat["nmt"] * 1000, tts_ms=lat["tts"] * 1000,
+        server_ms=lat["total"] * 1000, model_versions=_model_versions())
+
+
+def _translation_json(r, audio_url, tts_error, latency, rid=None, tts_engine=None):
     return {
+        # Send back with POST /metrics/client once the audio is playing.
+        "request_id":      rid,
         "translated_text": r["text"],
         # teacher | glossary | cached | model: which layer answered
         "source":          r["source"],
@@ -217,6 +237,7 @@ def _translation_json(r, audio_url, tts_error, latency):
         "model_score":     r["model_score"],
         "audio_url":       audio_url,
         "tts_error":       tts_error,
+        "tts_engine":      tts_engine,          # piper | cache | gtts | none
         "latency":         latency,
         # Deprecated, kept empty for older clients: there is no English pivot,
         # and there is no meaningful confidence number.
@@ -249,13 +270,15 @@ def translate_audio():
     t1 = time.time()
     r = pl.translate(recognized, direction, mode)
     t2 = time.time()
-    audio_url, tts_error = _speak(direction, r["text"])
+    audio_url, tts_error, tts_engine = _speak(direction, r["text"])
     t3 = time.time()
 
     _record(request.form.get("session_id", ""), direction, recognized, r["text"], round(t3 - t0, 2))
-    out = _translation_json(r, audio_url, tts_error, {
-        "asr": round(t1 - t0, 2), "nmt": round(t2 - t1, 2),
-        "tts": round(t3 - t2, 2), "total": round(t3 - t0, 2)})
+    lat = {"asr": round(t1 - t0, 3), "nmt": round(t2 - t1, 3),
+           "tts": round(t3 - t2, 3), "total": round(t3 - t0, 3)}
+    rid = uuid.uuid4().hex
+    _log(rid, request.form.get("device_id"), direction, "voice", r, tts_engine, lat)
+    out = _translation_json(r, audio_url, tts_error, lat, rid, tts_engine)
     out["recognized_text"] = recognized
     return jsonify(out)
 
@@ -272,13 +295,15 @@ def translate_text():
     t0 = time.time()
     r = pl.translate(text, direction, mode)
     t1 = time.time()
-    audio_url, tts_error = _speak(direction, r["text"])
+    audio_url, tts_error, tts_engine = _speak(direction, r["text"])
     t2 = time.time()
 
     _record(data.get("session_id", ""), direction, text, r["text"], round(t2 - t0, 2))
-    return jsonify(_translation_json(r, audio_url, tts_error, {
-        "asr": 0.0, "nmt": round(t1 - t0, 2),
-        "tts": round(t2 - t1, 2), "total": round(t2 - t0, 2)}))
+    lat = {"asr": 0.0, "nmt": round(t1 - t0, 3),
+           "tts": round(t2 - t1, 3), "total": round(t2 - t0, 3)}
+    rid = uuid.uuid4().hex
+    _log(rid, data.get("device_id"), direction, "typed", r, tts_engine, lat)
+    return jsonify(_translation_json(r, audio_url, tts_error, lat, rid, tts_engine))
 
 
 @app.route("/translate/reverse", methods=["POST"])
@@ -289,6 +314,31 @@ def reverse():
         return jsonify({"error": "No text"}), 400
     r = pl.translate(text, "sat-to-hi")
     return jsonify({"hindi_text": r["text"], "source": r["source"]})
+
+
+# ── Latency metrics ───────────────────────────────────────────────────────────
+@app.route("/metrics/client", methods=["POST"])
+def metrics_client():
+    """The browser reports what the user actually waited for one request.
+    {request_id, client_total_ms (input end -> audio playing),
+     response_ms (input end -> response received)}"""
+    d = request.json or {}
+    try:
+        total, resp = float(d["client_total_ms"]), float(d["response_ms"])
+    except (KeyError, TypeError, ValueError):
+        return jsonify({"error": "request_id, client_total_ms and response_ms are required"}), 400
+    if not (0 <= resp <= total < 10 * 60 * 1000):
+        return jsonify({"error": "timings out of range"}), 400
+    if not database.report_client_timing(d.get("request_id", ""), total, resp):
+        return jsonify({"error": "unknown request_id"}), 404
+    return jsonify({"status": "ok"})
+
+
+@app.route("/metrics/latency")
+def metrics_latency():
+    """Count, median, p90 and max per path (voice/typed, direction, cached/computed)."""
+    return jsonify({"paths": database.latency_summary(),
+                    "model_versions": _model_versions()})
 
 
 # ── Lesson sessions ───────────────────────────────────────────────────────────

@@ -133,6 +133,33 @@ def test_lesson_survives_a_restart_and_grades_the_given_step(api):
     assert summ["comprehension"]["green"] == 1
 
 
+# ── B9: latency is measured where the user is ────────────────────────────────
+def test_latency_is_logged_and_completed_by_the_client(api):
+    import database
+    _, r = post(api, "/translate/text", text="गांव के बच्चे खेत में खेल रहे हैं।", device_id="tab-7")
+    rid = r["request_id"]
+    assert rid and r["tts_engine"] in ("piper", "cache")
+    code, _ = post(api, "/metrics/client", request_id=rid, client_total_ms=812.0, response_ms=640.0)
+    assert code == 200
+    with database._db() as c:
+        row = c.execute("SELECT * FROM latency_log WHERE id=?", (rid,)).fetchone()
+    assert row["device_id"] == "tab-7" and row["input_type"] == "typed"
+    assert row["client_total_ms"] == 812.0
+    assert row["network_ms"] == pytest.approx(max(0.0, 640.0 - row["server_ms"]))
+    assert "nmt" in row["model_versions"]
+
+    summary = api.app.test_client().get("/metrics/latency").get_json()
+    key = "typed hi-to-sat computed"
+    assert summary["paths"][key]["count"] >= 1
+    assert summary["paths"][key]["client_total_ms"]["n"] >= 1
+
+
+def test_client_timing_is_validated(api):
+    assert post(api, "/metrics/client", request_id="nope", client_total_ms=1, response_ms=1)[0] == 404
+    assert post(api, "/metrics/client", request_id="x", client_total_ms="a", response_ms=1)[0] == 400
+    assert post(api, "/metrics/client", request_id="x", client_total_ms=100, response_ms=500)[0] == 400
+
+
 # ── B8 ────────────────────────────────────────────────────────────────────────
 def test_health_models_reports_each_language(api):
     h = api.app.test_client().get("/health/models").get_json()

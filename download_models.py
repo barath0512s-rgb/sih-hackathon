@@ -26,16 +26,16 @@ MANIFEST = config.BASE_DIR / "model_manifest.json"
 HF_MODELS = [
     {   # IndicConformer 600M multilingual, ONNX. RNN-T and CTC heads for 22 languages.
         "name": "asr",
-        "repo": "ai4bharat/indic-conformer-600m-multilingual",
-        "revision": "e9b71b369c048e2c6b634d4c131061c34e441179",
+        "repo": config.ASR_REPO,
+        "revision": config.ASR_REVISION,
         "dir": config.ASR_DIR,
         "ignore": [],
     },
     {   # IndicTrans2 distilled, direct Indic<->Indic. The repo ships the weights
         # twice; transformers loads model.safetensors, so the 1.2 GB .bin is skipped.
         "name": "nmt",
-        "repo": "ai4bharat/indictrans2-indic-indic-dist-320M",
-        "revision": "ffb7582b6d43791f1fb26b2153fc065f2e9ea575",
+        "repo": config.NMT_REPO,
+        "revision": config.NMT_REVISION,
         "dir": config.NMT_DIR,
         "ignore": ["pytorch_model.bin"],
     },

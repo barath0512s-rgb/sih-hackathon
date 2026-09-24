@@ -132,7 +132,9 @@ class VaaniSetuPipeline:
             out = model.generate(
                 **enc,
                 num_beams=config.NMT_NUM_BEAMS,
-                max_new_tokens=config.NMT_MAX_TOKENS,
+                max_new_tokens=min(config.NMT_MAX_TOKENS,
+                                   config.NMT_LIMIT_FACTOR * enc["input_ids"].shape[1]
+                                   + config.NMT_LIMIT_MARGIN),
                 no_repeat_ngram_size=config.NMT_NO_REPEAT_NGRAM,
                 return_dict_in_generate=True,
                 output_scores=True)
@@ -163,13 +165,18 @@ class VaaniSetuPipeline:
         ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
         return wav_path
 
+    def _transcribe(self, audio_path, lang):
+        return self.asr.transcribe(self._to_wav(audio_path), lang=lang,
+                                   decoding=config.ASR_DECODING[lang],
+                                   trim=config.ASR_TRIM_SILENCE[lang])
+
     def transcribe_hindi(self, audio_path):
-        """Transcribe Hindi audio with IndicConformer (RNN-T)."""
-        return self.asr.transcribe(self._to_wav(audio_path), lang="hi", decoding="rnnt")
+        """Transcribe Hindi audio with IndicConformer (settings in config.py)."""
+        return self._transcribe(audio_path, "hi")
 
     def transcribe_santali(self, audio_path):
-        """Transcribe Santali audio to Ol Chiki with IndicConformer (RNN-T)."""
-        return self.asr.transcribe(self._to_wav(audio_path), lang="sat", decoding="rnnt")
+        """Transcribe Santali audio to Ol Chiki with IndicConformer."""
+        return self._transcribe(audio_path, "sat")
 
     def _apply_domain_glossary(self, text, lang):
         glossary = {
@@ -268,12 +275,14 @@ class VaaniSetuPipeline:
         self._voices[model] = voice
         return voice
 
-    def _speak(self, text, lang, out_path, gtts_lang):
+    def _speak(self, text, lang, out_path, gtts_lang, info=None):
         """Synthesise `text` to out_path with the Piper voice for `lang`.
 
         Raises TTSError if no offline voice can speak it. gTTS is tried only when
         config.ALLOW_ONLINE_TTS is True. Silence is never written.
+        If `info` is a dict, info["tts_engine"] is set to piper, cache or gtts.
         """
+        info = info if info is not None else {}
         import hashlib, shutil, wave
 
         model = self._voice_model(lang)
@@ -287,6 +296,7 @@ class VaaniSetuPipeline:
         if cached_file.exists() and cached_file.stat().st_size > 1024:
             shutil.copy2(cached_file, out_path)
             self.tts_engine_counts["cache"] += 1
+            info["tts_engine"] = "cache"
             return out_path
 
         with self._tts_lock:
@@ -298,6 +308,7 @@ class VaaniSetuPipeline:
                         voice.synthesize_wav(text, wf)
                     shutil.copy2(out_path, cached_file)
                     self.tts_engine_counts["piper"] += 1
+                    info["tts_engine"] = "piper"
                     return out_path
                 except Exception as e:
                     err = f"{type(e).__name__}: {e}"
@@ -306,23 +317,24 @@ class VaaniSetuPipeline:
                 from gtts import gTTS
                 gTTS(text, lang=gtts_lang).save(str(out_path))
                 self.tts_engine_counts["gtts"] += 1
+                info["tts_engine"] = "gtts"
                 return out_path
         raise TTSError(f"Offline speech failed ({err}).")
 
-    def santali_tts(self, santali_text, out_path="output_santali.wav"):
+    def santali_tts(self, santali_text, out_path="output_santali.wav", info=None):
         """Speak a Santali line: Ol Chiki is transliterated, then read by Piper."""
         spoken = self.transliterate_santali(santali_text).strip()
         if not spoken:
             raise TTSError("The Santali text has nothing that can be spoken.")
         gtts_lang = "en" if config.SANTALI_TTS_SCRIPT == "latin" else "hi"
-        return self._speak(spoken, "santali", out_path, gtts_lang)
+        return self._speak(spoken, "santali", out_path, gtts_lang, info)
 
-    def hindi_tts(self, hindi_text, out_path="output_hindi.wav"):
+    def hindi_tts(self, hindi_text, out_path="output_hindi.wav", info=None):
         """Speak a Hindi line with the Hindi Piper voice."""
         text = (hindi_text or "").strip()
         if not text:
             raise TTSError("There is no Hindi text to speak.")
-        return self._speak(text, "hindi", out_path, "hi")
+        return self._speak(text, "hindi", out_path, "hi", info)
 
     def full_forward(self, audio_path, content_mode="lesson_script"):
         t0 = time.time()

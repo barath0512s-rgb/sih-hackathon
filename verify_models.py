@@ -318,8 +318,10 @@ check("Worksheet PDF", _ws)
 
 # ── 7. full speech to speech, if a sample recording exists ────────────────────
 log("\n[7] Speech in, speech out")
+# A real recording if there is one, else a synthetic benchmark clip
+# (python bench/make_synthetic_clips.py) so the whole path is still exercised.
 sample = next((os.path.join(HERE, f) for f in
-               ("test_latin.wav", "test_bn.wav", "test_out.wav")
+               ("bench/clips/real/hi_01.webm", "bench/clips/synthetic/hi/hi_01.webm")
                if os.path.exists(os.path.join(HERE, f))), None)
 if sample:
     def _full():

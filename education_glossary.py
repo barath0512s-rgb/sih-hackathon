@@ -227,33 +227,38 @@ ALL_SAT_HI.update(COLORS_SAT_HI)
 ALL_SAT_HI.update(INSTRUCTIONS_SAT_HI)
 
 
+_INDEX = {}
+
+
+def _index(table):
+    """table keyed by textnorm.normalize_key, built once."""
+    if id(table) not in _INDEX:
+        from textnorm import normalize_key
+        _INDEX[id(table)] = {normalize_key(k): v for k, v in table.items()}
+    return _INDEX[id(table)]
+
+
+def _lookup(table, text):
+    from textnorm import normalize_key
+    hit = _index(table).get(normalize_key(text or ""))
+    return (hit, 100.0) if hit else None
+
+
 def lookup_hi_to_sat(text: str):
-    """
-    Returns a verified Santali translation for the given Hindi text, or None.
-    Checks full-sentence matches first, then word-level glossary substitution.
-    """
-    text = text.strip()
-    # 1. Exact full-sentence match
-    if text in VERIFIED_SENTENCES_HI_SAT:
-        return VERIFIED_SENTENCES_HI_SAT[text], 100.0
+    """The verified Santali for a whole Hindi sentence, or None.
 
-    # 2. Check without trailing punctuation
-    clean = text.rstrip("।.?!")
-    if clean in VERIFIED_SENTENCES_HI_SAT:
-        return VERIFIED_SENTENCES_HI_SAT[clean], 100.0
-
-    return None
+    Matched on textnorm.normalize_key, so punctuation, spacing, nukta and
+    digit-script differences do not matter. That is what lets a spoken line
+    (speech recognition writes no punctuation) find its verified translation.
+    Returns (text, 100.0); the number is only kept for older callers.
+    Only whole sentences are matched: the word lists above are not applied.
+    """
+    return _lookup(VERIFIED_SENTENCES_HI_SAT, text)
 
 
 def lookup_sat_to_hi(text: str):
-    """Returns a verified Hindi translation for Santali text, or None."""
-    text = text.strip()
-    if text in VERIFIED_SENTENCES_SAT_HI:
-        return VERIFIED_SENTENCES_SAT_HI[text], 100.0
-    clean = text.rstrip("।.?!")
-    if clean in VERIFIED_SENTENCES_SAT_HI:
-        return VERIFIED_SENTENCES_SAT_HI[clean], 100.0
-    return None
+    """The verified Hindi for a whole Santali sentence, or None. See lookup_hi_to_sat."""
+    return _lookup(VERIFIED_SENTENCES_SAT_HI, text)
 
 
 def apply_word_glossary_hi_sat(nmt_output: str, hindi_input: str) -> str:

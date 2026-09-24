@@ -90,6 +90,28 @@ def test_legacy_database_is_migrated(tmp_path, monkeypatch):
     assert rows == [("hi-to-sat", normalize_key("आज हम गणित पढ़ेंगे"))]
 
 
+def test_spoken_line_without_punctuation_finds_correction_and_glossary(db):
+    """Speech recognition writes no punctuation: a spoken line must still match."""
+    from education_glossary import lookup_hi_to_sat
+    db.save_feedback("दो आम लो। तीन आम दो।", "ᱢᱚᱰᱮᱞ", False, "ᱴᱤᱪᱚᱨ")
+    assert db.get_correction("दो आम लो तीन आम दो") == "ᱴᱤᱪᱚᱨ"
+    assert lookup_hi_to_sat("आज हम जोड़ना सीखेंगे एक और एक मिलाओ")
+
+
+def test_keys_from_an_older_normaliser_are_recomputed(tmp_path, monkeypatch):
+    path = tmp_path / "v1.db"
+    monkeypatch.setattr(database, "DB_FILE", path)
+    database.init_db()
+    c = sqlite3.connect(path)
+    c.execute("INSERT INTO feedback (hindi_text, santali_text, is_correct, corrected_text,"
+              " timestamp, direction, source_key) VALUES ('दो आम लो। तीन आम दो।', 'ᱟ', 0,"
+              " 'ᱵ', 1.0, 'hi-to-sat', 'दो आम लो. तीन आम दो')")        # a version-1 key
+    c.execute("PRAGMA user_version = 1")
+    c.commit(); c.close()
+    database.init_db()
+    assert database.get_correction("दो आम लो तीन आम दो") == "ᱵ"
+
+
 # ── B7: grading ───────────────────────────────────────────────────────────────
 import lesson_engine
 from lesson_engine import LessonSession, get_lesson, grade

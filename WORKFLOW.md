@@ -29,3 +29,12 @@ This document logs the major architectural decisions and pipeline optimizations 
 
 ## Phase 5: TTS Caching
 - **Solution:** Added MD5-based `.wav` caching (`./tts_cache/`). Commonly repeated classroom phrases (e.g., "What is your name?", "Sit down") hit the cache and return audio instantly (0.01s) without hitting the network.
+
+## Phase 6: Offline speech (branch sih-final)
+- **Problem:** Santali speech went through Google's gTTS (online), and the Ol Chiki to Latin map dropped digits, sentence marks and diacritics.
+- **Solution:** `translit/olchiki.py` transliterates Ol Chiki to Devanagari for the offline Piper Hindi voice; gTTS runs only if `ALLOW_ONLINE_TTS` is switched on.
+
+## Phase 7: Measuring latency honestly (branch sih-final)
+- **Problem:** The UI showed the server's own time as "from speaking to hearing", excluding upload, download and audio start-up.
+- **Solution:** The browser now times input end to audio playing, stores it per request (`latency_log`), and `GET /metrics/latency` summarises it. `bench/` measures the pipeline on recorded clips.
+- **Decision:** RNN-T (Phase 1) was replaced by CTC decoding: on the same clips CTC was about twice as fast with no worse error rate (`bench/results/asr_decoding_synthetic.md`). The clips were synthetic, so this is re-checked on real recordings.

@@ -74,7 +74,7 @@ Around that core sits the part that makes it a *lesson* rather than a phrasebook
 │   Microphone (.webm)                                         │
 │        │  ffmpeg → 16 kHz mono float32                       │
 │        ▼                                                     │
-│   ① ASR    IndicConformer 600M (ONNX, RNN-T)                 │
+│   ① ASR    IndicConformer 600M (ONNX, CTC decoding)          │
 │        │   native Hindi + Santali, 22 Indian languages        │
 │        ▼                                                     │
 │   ② NMT    IndicTrans2 indic-indic-dist-320M                 │
@@ -112,12 +112,12 @@ Only on a miss do the neural models run.
 |---|---|
 | **Model** | `ai4bharat/indic-conformer-600m-multilingual` |
 | **Runtime** | ONNX Runtime, CPU |
-| **Decoding** | RNN-T (transducer) |
+| **Decoding** | CTC, per language in `config.ASR_DECODING` |
 | **Languages** | 22 — `as bn brx doi kok gu hi kn ks mai ml mr mni ne or pa sa sat sd ta te ur` |
 
 **Why not Whisper?** Whisper had roughly a 2-in-10 success rate on Hindi in a noisy classroom and has no Santali support at all. IndicConformer supports both **natively**, including Santali (`sat`) in Ol Chiki.
 
-**Why RNN-T over CTC?** RNN-T uses a joint prediction network, so it decodes using linguistic context rather than frame-by-frame guesses. Markedly more robust to classroom noise and accented speech.
+**Why CTC, not RNN-T?** The model offers both. Measured on the same clips (`bench/asr_decoding.py`), CTC was about twice as fast with no worse character error rate, so it is the default for both languages. The clips were synthetic, and RNN-T's joint network may cope better with real classroom noise, so this is re-checked once real recordings exist. Leading and trailing silence is trimmed for Hindi, not for Santali, whose quiet word-final stops were being clipped.
 
 There is no fallback: IndicConformer is the only local ASR that reads Santali, so if its files are missing the server stops with instructions (`python download_models.py`) rather than silently degrading.
 
@@ -181,26 +181,63 @@ The project was rebuilt in six phases. Each solved a measured problem.
 | **4** | Model repeats the same mistake | SQLite feedback loop + `train_nmt.py` LoRA | Corrections apply instantly |
 | **5** | Repeated phrases re-synthesised | MD5 TTS cache + NIPUN pre-cache | Cache hits ~0.01–0.02 s |
 | **6** | gTTS needs internet | **Piper offline neural TTS** | **Zero network at runtime** |
+| **7** | Latency was reported from the server only | Browser-measured voice-to-voice timer, latency log, benchmarks; CTC decoding, trimmed silence | Median 1.5–1.6 s on the laptop (synthetic clips, §6) |
 
 ---
 
 ## 6. Measured Performance
 
-> **NOT MEASURED by a re-runnable script yet.** The figures below were taken by hand during development. They will be replaced by the output of `bench/bench_latency.py` (work package 3). Do not quote them.
+Every figure here comes from a script in `bench/` and can be re-run (see
+`bench/README.md`). Laptop: Dell G15 5520, Intel Core i7-12700H, 16 GB RAM,
+Windows, CPU only.
 
-Measured by hand on this project, CPU only, no GPU:
+### Voice to voice on the laptop (synthetic clips)
 
-| Stage | Cold | Cached |
-|---|---|---|
-| Translation (NMT) | 0.35 – 0.65 s | ~0.02 s |
-| Speech (Piper TTS) | ~0.15 s | ~0.01 s |
-| **Typed round trip** | **~0.5 s** | **~0.02 s** |
-| Server boot (all models) | ~30 s | — |
-| Piper voice load | ~2 s each, at startup | — |
+60 clips of Piper reading classroom lines (**synthetic, not real speech**),
+each sent to `/translate/audio` exactly as the browser sends it, from upload to
+the reply audio being received. In-process, so Wi-Fi is not included. Warm
+requests, empty caches. Source: `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.md`.
 
-TTS improved from **~0.80 s (gTTS) to ~0.15 s (Piper)** — roughly 5× faster *and* offline.
+| Direction | Median | p90 | Max |
+|---|---|---|---|
+| Hindi → Santali | 1.51 s | 1.68 s | 2.08 s |
+| Santali → Hindi | 1.58 s | 1.85 s | 2.25 s |
 
-*Note: the microphone (ASR) path has not been benchmarked with a stopwatch in this build; the figures above are the text path. The design target for full speech-to-speech is under 4 s.*
+0 of 59 warm requests took over 3 s. Server boot with all models loaded: 20.4 s.
+
+Before the work-package-3 changes, the same benchmark gave 2.19 / 2.69 / 3.06 s
+and 2.20 / 2.53 / 2.92 s, with 1 request over 3 s (`…_synthetic-baseline.md`).
+Single runs on a laptop vary: the NMT stage alone moved about 30% between the
+two runs although nothing about NMT changed. Read the before/after gap as
+indicative; the measurements below isolate each change.
+
+### What each change did
+
+| Change | Measured effect | Decision | Source |
+|---|---|---|---|
+| CTC instead of RNN-T decoding | ASR about 2x faster (Hindi 693 vs 1521 ms), no worse CER | CTC for both languages | `asr_decoding_synthetic.md` |
+| Trim leading/trailing silence | 115–155 ms less ASR time; CER better for Hindi, slightly worse for Santali | On for Hindi, off for Santali | `asr_decoding_synthetic.md` |
+| Warm the ASR up at start | The first request after start costs nothing extra (−105 ms, noise) | Not added | `cold_start.md` |
+| Size the NMT decode limit to the input | No time saved, no output changed: no line ran on | Kept only as a worst-case cap | `nmt_limits.md` |
+| Play the first sentence early | At most 86 ms (median), on 22 of 60 replies | Not built | `tts_first_sentence.md` |
+| Match glossary sentences ignoring punctuation | Spoken lesson lines answered by the verified glossary: 0 → 11 of 59 | Done | the two benchmark files |
+
+### What the teacher sees
+
+The latency card's big number is measured **in the browser**: from releasing
+the microphone (or pressing Translate) to the reply audio starting to play. The
+bars under it are the server's own ASR / NMT / TTS stages. On one measured typed
+line the server took 0.80 s and the teacher waited 1.05 s: the rest was
+fetching, decoding and starting the audio. The old card showed only the server
+time. Typed and cached lines are labelled. Every request's numbers are stored,
+and `GET /metrics/latency` returns count, median, p90 and max per path.
+
+### Not measured yet
+
+- Real teacher and child recordings: **NOT MEASURED** (`bench/clips/real/` is empty).
+- Voice to voice over classroom Wi-Fi on a tablet: **NOT MEASURED**. The browser
+  records it on every request, so `/metrics/latency` will show it once used in class.
+- Anything on a 2 GB Android tablet: **NOT MEASURED** (work package 4).
 
 ---
 
@@ -546,7 +583,7 @@ A 17-slide deck. Each row names the section to pull content from.
 | 4 | **Our Solution** | 8 bullets: bidirectional · 3 FLN modes · NIPUN lessons · comprehension signals · summary · worksheet · instant learning · offline | §2 |
 | 5 | **System Architecture** | The ASCII block diagram, redrawn as boxes: Browser → Flask → Pipeline (ASR/NMT/TTS) → SQLite / Lessons / PDF | §3 |
 | 6 | **Three Short-Circuits** | Correction DB → memory cache → TTS cache → models. Emphasise: *models only run on a miss* | §3 |
-| 7 | **① Speech Recognition** | IndicConformer 600M, ONNX, RNN-T, 22 languages. *Why not Whisper:* 2/10 on Hindi, no Santali | §4① |
+| 7 | **① Speech Recognition** | IndicConformer 600M, ONNX, CTC decoding (measured 2x faster than RNN-T), 22 languages. *Why not Whisper:* 2/10 on Hindi, no Santali | §4① |
 | 8 | **② Translation** | IndicTrans2 320M direct Indic→Indic. *Why no English pivot:* आप vs तुम collapse to "you" | §4② |
 | 9 | **③ Speech Synthesis** | Ol Chiki has no TTS → transliterate to Latin. Table of 4 attempts ending at Piper | §4③ |
 | 10 | **Engineering Evolution** | The 6-phase table — problem → solution → result | §5 |

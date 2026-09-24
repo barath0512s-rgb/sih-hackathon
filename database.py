@@ -12,7 +12,7 @@ import sqlite3
 import time
 
 import config
-from textnorm import normalize_key
+from textnorm import KEY_VERSION, normalize_key
 
 DB_FILE = config.DB_FILE          # module-level so tests can point it elsewhere
 
@@ -48,13 +48,17 @@ def init_db():
             c.execute("ALTER TABLE feedback ADD COLUMN direction TEXT NOT NULL DEFAULT 'hi-to-sat'")
         if "source_key" not in cols:
             c.execute("ALTER TABLE feedback ADD COLUMN source_key TEXT")
+        # Keys made by an older normalize_key are recomputed once.
+        key_version = c.execute("PRAGMA user_version").fetchone()[0]
+        stale = "" if key_version >= KEY_VERSION else " OR 1"
         for r in c.execute("SELECT id, direction, hindi_text, santali_text "
-                           "FROM feedback WHERE source_key IS NULL").fetchall():
+                           f"FROM feedback WHERE source_key IS NULL{stale}").fetchall():
             src = r["hindi_text"] if r["direction"] == "hi-to-sat" else r["santali_text"]
             c.execute("UPDATE feedback SET source_key=? WHERE id=?",
                       (normalize_key(src or ""), r["id"]))
         c.execute("CREATE INDEX IF NOT EXISTS idx_feedback_key "
                   "ON feedback(direction, source_key, timestamp)")
+        c.execute(f"PRAGMA user_version = {KEY_VERSION}")
 
         c.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
@@ -76,6 +80,23 @@ def init_db():
             )""")
         c.execute("CREATE INDEX IF NOT EXISTS idx_events_session "
                   "ON session_events(session_id, id)")
+
+        # One row per translation. The server fills its stage times; the browser
+        # then reports what the user actually waited (report_client_timing).
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS latency_log (
+                id TEXT PRIMARY KEY,                 -- request id, also sent to the client
+                ts REAL NOT NULL,
+                device_id TEXT,
+                direction TEXT NOT NULL,
+                input_type TEXT NOT NULL,            -- 'voice' | 'typed'
+                source TEXT NOT NULL,                -- teacher | glossary | cached | model
+                tts_engine TEXT NOT NULL,            -- piper | cache | gtts | none
+                asr_ms REAL, nmt_ms REAL, tts_ms REAL, server_ms REAL,
+                network_ms REAL,                     -- client: round trip minus server time
+                client_total_ms REAL,                -- client: input end -> audio playing
+                model_versions TEXT
+            )""")
 
 
 # ── Corrections ───────────────────────────────────────────────────────────────
@@ -162,6 +183,66 @@ def load_session(sid):
         ev = c.execute("SELECT kind, step, payload, ts FROM session_events "
                        "WHERE session_id=? ORDER BY id", (sid,)).fetchall()
     return dict(s), [dict(e, payload=json.loads(e["payload"])) for e in ev]
+
+
+# ── Latency ───────────────────────────────────────────────────────────────────
+def log_latency(rid, *, device_id, direction, input_type, source, tts_engine,
+                asr_ms, nmt_ms, tts_ms, server_ms, model_versions):
+    with _db() as c:
+        c.execute("""
+            INSERT INTO latency_log (id, ts, device_id, direction, input_type, source,
+                tts_engine, asr_ms, nmt_ms, tts_ms, server_ms, model_versions)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (rid, time.time(), device_id, direction, input_type, source, tts_engine,
+             asr_ms, nmt_ms, tts_ms, server_ms, json.dumps(model_versions)))
+
+
+def report_client_timing(rid, client_total_ms, response_ms):
+    """The browser's own measurements for a request. response_ms is from the end
+    of input to the response arriving; network = that minus the server's time.
+    Returns False if the request id is unknown."""
+    with _db() as c:
+        r = c.execute("SELECT server_ms FROM latency_log WHERE id=?", (rid,)).fetchone()
+        if not r:
+            return False
+        network = max(0.0, float(response_ms) - (r["server_ms"] or 0.0))
+        c.execute("UPDATE latency_log SET client_total_ms=?, network_ms=? WHERE id=?",
+                  (float(client_total_ms), network, rid))
+    return True
+
+
+def _pct(values, p):
+    """Nearest-rank percentile of a non-empty list."""
+    v = sorted(values)
+    return v[max(0, min(len(v) - 1, -(-len(v) * p // 100) - 1))]
+
+
+def latency_summary():
+    """Count, median, p90 and max per path.
+
+    A path is input type + direction + whether it was served from caches, so
+    cached lines (tens of ms) never flatter the numbers for computed ones.
+    'client' figures are what users waited, from browser reports; 'server'
+    figures are the server's own stage times.
+    """
+    import statistics
+    with _db() as c:
+        rows = c.execute("SELECT * FROM latency_log").fetchall()
+    groups = {}
+    for r in rows:
+        cached = r["source"] != "model" and r["tts_engine"] == "cache"
+        key = f'{r["input_type"]} {r["direction"]} {"cached" if cached else "computed"}'
+        groups.setdefault(key, []).append(r)
+    out = {}
+    for key, rs in sorted(groups.items()):
+        entry = {"count": len(rs)}
+        for field in ("client_total_ms", "server_ms", "asr_ms", "nmt_ms", "tts_ms", "network_ms"):
+            vals = [r[field] for r in rs if r[field] is not None]
+            if vals:
+                entry[field] = {"n": len(vals), "median": round(statistics.median(vals), 1),
+                                "p90": round(_pct(vals, 90), 1), "max": round(max(vals), 1)}
+        out[key] = entry
+    return out
 
 
 if __name__ == "__main__":

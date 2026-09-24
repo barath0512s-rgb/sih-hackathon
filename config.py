@@ -27,6 +27,11 @@ TTS_CACHE_DIR = BASE_DIR / "tts_cache"       # synthesised audio, keyed by conte
 TTS_OUT_DIR   = BASE_DIR / "tts_out"         # per-request audio files
 STATIC_DIR    = BASE_DIR / "static"          # the only folder served as-is over HTTP
 
+# Exact model revisions in use (download_models.py fetches these). Every
+# latency measurement records them, so numbers are tied to a model version.
+ASR_REPO, ASR_REVISION = "ai4bharat/indic-conformer-600m-multilingual", "e9b71b369c048e2c6b634d4c131061c34e441179"
+NMT_REPO, NMT_REVISION = "ai4bharat/indictrans2-indic-indic-dist-320M", "ffb7582b6d43791f1fb26b2153fc065f2e9ea575"
+
 # The feedback database predates this file and sits in the project root.
 DB_FILE = BASE_DIR / "vaanisetu_feedback.db"
 
@@ -40,9 +45,22 @@ ALLOW_ONLINE_TTS = False
 OFFLINE_ENV = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
                "HF_HUB_DISABLE_TELEMETRY": "1"}
 
+# ── Speech recognition ────────────────────────────────────────────────────────
+# Chosen per language from bench/asr_decoding.py (results in bench/results/).
+# On the synthetic clips CTC was about twice as fast as RNN-T with no worse
+# character error rate. Trimming silence helped Hindi but slightly hurt Santali,
+# whose unreleased word-final stops are quiet enough to be clipped.
+# Re-run bench/asr_decoding.py on real recordings before trusting this.
+ASR_DECODING = {"hi": "ctc", "sat": "ctc"}
+ASR_TRIM_SILENCE = {"hi": True, "sat": False}
+
 # ── Translation ───────────────────────────────────────────────────────────────
 NMT_NUM_BEAMS       = 1      # greedy; beam search is slower on CPU for short lines
 NMT_MAX_TOKENS      = 128
+# The limit is also sized to the input: min(128, 3 x input tokens + 10). On the
+# benchmark lines this changed no output and saved no time (no line ran on:
+# bench/results/nmt_limits.md); it caps the worst case if the model loops.
+NMT_LIMIT_FACTOR, NMT_LIMIT_MARGIN = 3, 10
 NMT_NO_REPEAT_NGRAM = 3      # blocks the repeating-phrase loops this model can fall into
 
 # ── Speech ────────────────────────────────────────────────────────────────────

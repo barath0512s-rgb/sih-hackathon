@@ -1,0 +1,422 @@
+[
+ {
+  "file": "bench/clips/synthetic/hi/hi_01.webm",
+  "lang": "hi",
+  "reference": "आज हम एक से दस तक गिनना सीखेंगे।",
+  "seconds": 4.05,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_02.webm",
+  "lang": "hi",
+  "reference": "अपनी उंगलियां दिखाओ और मेरे साथ गिनो।",
+  "seconds": 4.04,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_03.webm",
+  "lang": "hi",
+  "reference": "अब तुम्हारे सामने पांच पत्थर हैं। उन्हें गिनो।",
+  "seconds": 4.58,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_04.webm",
+  "lang": "hi",
+  "reference": "यहाँ कितने पत्थर हैं? बताओ।",
+  "seconds": 3.64,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_05.webm",
+  "lang": "hi",
+  "reference": "यह गोल है। यह एक वृत्त है।",
+  "seconds": 3.95,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_06.webm",
+  "lang": "hi",
+  "reference": "यह चौकोर है। इसके चार कोने हैं।",
+  "seconds": 4.12,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_07.webm",
+  "lang": "hi",
+  "reference": "अपने आसपास गोल चीज़ें ढूंढो।",
+  "seconds": 3.68,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_08.webm",
+  "lang": "hi",
+  "reference": "यह कौन सा आकार है?",
+  "seconds": 2.82,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_09.webm",
+  "lang": "hi",
+  "reference": "आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।",
+  "seconds": 4.66,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_10.webm",
+  "lang": "hi",
+  "reference": "दो आम और तीन आम मिलाओ। कुल कितने हुए?",
+  "seconds": 4.2,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_11.webm",
+  "lang": "hi",
+  "reference": "अब तुम एक जोड़ का सवाल बनाओ।",
+  "seconds": 3.63,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_12.webm",
+  "lang": "hi",
+  "reference": "तीन और चार कितने होते हैं?",
+  "seconds": 3.13,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_13.webm",
+  "lang": "hi",
+  "reference": "यह शब्द है माँ। इसे पढ़ो।",
+  "seconds": 3.65,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_14.webm",
+  "lang": "hi",
+  "reference": "इस शब्द को तीन बार पढ़ो।",
+  "seconds": 3.34,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_15.webm",
+  "lang": "hi",
+  "reference": "यह शब्द क्या है? पढ़कर बताओ।",
+  "seconds": 3.56,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_16.webm",
+  "lang": "hi",
+  "reference": "आज हम घटाना सीखेंगे। दस में से तीन घटाओ।",
+  "seconds": 4.74,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_17.webm",
+  "lang": "hi",
+  "reference": "सात पत्थर लो। तीन हटा दो। अब कितने बचे?",
+  "seconds": 4.87,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_18.webm",
+  "lang": "hi",
+  "reference": "आठ में से पांच घटाओ। उत्तर क्या है?",
+  "seconds": 3.94,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_19.webm",
+  "lang": "hi",
+  "reference": "सुप्रभात बच्चों।",
+  "seconds": 2.71,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_20.webm",
+  "lang": "hi",
+  "reference": "कृपया अपनी जगह पर बैठ जाओ।",
+  "seconds": 3.4,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_21.webm",
+  "lang": "hi",
+  "reference": "मेरी बात ध्यान से सुनो।",
+  "seconds": 3.01,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_22.webm",
+  "lang": "hi",
+  "reference": "शोर मत करो।",
+  "seconds": 2.49,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_23.webm",
+  "lang": "hi",
+  "reference": "अपना हाथ उठाओ।",
+  "seconds": 2.97,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_24.webm",
+  "lang": "hi",
+  "reference": "बहुत अच्छा, शाबाश!",
+  "seconds": 3.3,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_25.webm",
+  "lang": "hi",
+  "reference": "बोर्ड पर आकर लिखो।",
+  "seconds": 2.74,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_26.webm",
+  "lang": "hi",
+  "reference": "तुम्हारा जवाब बिल्कुल सही है।",
+  "seconds": 3.49,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_27.webm",
+  "lang": "hi",
+  "reference": "यह गलत है, फिर से कोशिश करो।",
+  "seconds": 3.99,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_28.webm",
+  "lang": "hi",
+  "reference": "अपनी किताब खोलो।",
+  "seconds": 2.68,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_29.webm",
+  "lang": "hi",
+  "reference": "पानी पीकर आओ।",
+  "seconds": 2.58,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/hi/hi_30.webm",
+  "lang": "hi",
+  "reference": "कल फिर मिलेंगे।",
+  "seconds": 2.56,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_01.webm",
+  "lang": "sat",
+  "reference": "ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱢᱤᱫ ᱠᱷᱚᱱ ᱜᱮᱞ ᱛᱩᱨᱩᱭ ᱜᱤᱱᱛᱤ ᱥᱮᱪᱮᱫᱟ।",
+  "seconds": 4.48,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_02.webm",
+  "lang": "sat",
+  "reference": "ᱟᱢᱟᱜ ᱩᱝᱜᱽᱞᱤ ᱫᱮᱠᱷᱟᱣ ᱢᱮ ᱟᱨ ᱟᱢᱟᱜ ᱥᱟᱝ ᱜᱤᱱᱛᱤ ᱢᱮ।",
+  "seconds": 4.33,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_03.webm",
+  "lang": "sat",
+  "reference": "ᱱᱤᱛᱚᱜ ᱟᱢᱟᱜ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ। ᱱᱤᱭᱟᱹ ᱜᱤᱱᱛᱤ ᱢᱮ।",
+  "seconds": 5.2,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_04.webm",
+  "lang": "sat",
+  "reference": "ᱱᱮᱞᱮ ᱡᱚᱛᱚ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ? ᱞᱟᱹᱭ ᱢᱮ।",
+  "seconds": 3.62,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_05.webm",
+  "lang": "sat",
+  "reference": "ᱱᱚᱶᱟ ᱜᱚᱞ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱢᱤᱫ ᱜᱚᱞ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ।",
+  "seconds": 4.33,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_06.webm",
+  "lang": "sat",
+  "reference": "ᱱᱚᱶᱟ ᱪᱟᱩᱠᱟ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱨᱮᱭᱟᱜ ᱯᱩᱱ ᱠᱩᱱᱟᱹ ᱢᱮᱱᱟᱜᱼᱟ।",
+  "seconds": 4.69,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_07.webm",
+  "lang": "sat",
+  "reference": "ᱟᱢᱟᱜ ᱥᱩᱨ ᱨᱮ ᱜᱚᱞ ᱡᱤᱱᱤᱥ ᱯᱟᱱᱛᱮ ᱢᱮ।",
+  "seconds": 3.55,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_08.webm",
+  "lang": "sat",
+  "reference": "ᱱᱚᱶᱟ ᱚᱠᱟ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ?",
+  "seconds": 2.97,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_09.webm",
+  "lang": "sat",
+  "reference": "ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱡᱚᱲᱟᱣ ᱥᱮᱪᱮᱫᱟ। ᱢᱤᱫ ᱟᱨ ᱢᱤᱫ ᱢᱮᱥᱟᱣ ᱢᱮ।",
+  "seconds": 5.15,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_10.webm",
+  "lang": "sat",
+  "reference": "ᱵᱟᱨ ᱩᱞ ᱟᱨ ᱯᱮ ᱩᱞ ᱢᱮᱥᱟᱣ ᱢᱮ। ᱡᱚᱛᱚ ᱛᱤᱱᱟᱜ ᱦᱩᱭᱮᱱᱟ? ᱩᱝᱜᱽᱞᱤ ᱨᱮ ᱜᱤᱱᱛᱤ ᱢᱮ।",
+  "seconds": 6.1,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_11.webm",
+  "lang": "sat",
+  "reference": "ᱱᱤᱛᱚᱜ ᱟᱢ ᱢᱤᱫ ᱡᱚᱲᱟᱣ ᱠᱩᱠᱞᱤ ᱛᱮᱭᱟᱨ ᱢᱮ।",
+  "seconds": 3.72,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_12.webm",
+  "lang": "sat",
+  "reference": "ᱯᱮ ᱟᱨ ᱯᱩᱱ ᱡᱚᱛᱚ ᱦᱩᱭᱩᱜᱼᱟ?",
+  "seconds": 3.03,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_13.webm",
+  "lang": "sat",
+  "reference": "ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱠᱟᱱᱟ — ᱟᱭᱳ। ᱱᱚᱶᱟ ᱯᱟᱲᱦᱟᱣ ᱢᱮ।",
+  "seconds": 4.58,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_14.webm",
+  "lang": "sat",
+  "reference": "ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱯᱮ ᱛᱷᱚᱠ ᱯᱟᱲᱦᱟᱣ ᱢᱮ — ᱫᱟᱜ।",
+  "seconds": 3.97,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_15.webm",
+  "lang": "sat",
+  "reference": "ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱪᱮᱫ ᱠᱟᱱᱟ? ᱯᱟᱲᱦᱟᱣ ᱠᱟᱛᱮ ᱞᱟᱹᱭ ᱢᱮ।",
+  "seconds": 4.4,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_16.webm",
+  "lang": "sat",
+  "reference": "ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱠᱚᱢ ᱥᱮᱪᱮᱫᱟ। ᱜᱮᱞ ᱠᱷᱚᱱ ᱯᱮ ᱠᱚᱢ ᱢᱮ।",
+  "seconds": 4.59,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_17.webm",
+  "lang": "sat",
+  "reference": "ᱮᱭᱟᱭ ᱫᱷᱤᱨᱤ ᱦᱟᱛᱟᱣ ᱢᱮ। ᱯᱮ ᱚᱪᱚᱜ ᱢᱮ। ᱱᱤᱛᱚᱜ ᱡᱚᱛᱚ ᱛᱟᱦᱮᱸᱱᱟ?",
+  "seconds": 5.23,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_18.webm",
+  "lang": "sat",
+  "reference": "ᱤᱨᱟᱹᱞ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱠᱚᱢ ᱢᱮ। ᱛᱮᱞᱟ ᱪᱮᱫ ᱠᱟᱱᱟ?",
+  "seconds": 4.16,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_19.webm",
+  "lang": "sat",
+  "reference": "ᱥᱮᱛᱟᱜ ᱡᱚᱦᱟᱨ ᱜᱤᱫᱽᱨᱟᱹᱠᱚ᱾",
+  "seconds": 3.07,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_20.webm",
+  "lang": "sat",
+  "reference": "ᱛᱮᱦᱮᱧ ᱟᱵᱚ ᱢᱤᱫᱴᱟᱹᱝ ᱱᱟᱶᱟ ᱯᱟᱴᱷ ᱵᱚᱱ ᱯᱟᱲᱦᱟᱣᱟ᱾",
+  "seconds": 4.07,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_21.webm",
+  "lang": "sat",
+  "reference": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱟᱯᱮᱭᱟᱜ ᱡᱟᱭᱜᱟ ᱨᱮ ᱫᱩᱲᱩᱵ ᱯᱮ᱾",
+  "seconds": 4.06,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_22.webm",
+  "lang": "sat",
+  "reference": "ᱪᱮᱫ ᱡᱚᱛᱚ ᱦᱚᱲ ᱯᱮ ᱥᱟᱯᱲᱟᱣ ᱟᱠᱟᱱᱟ?",
+  "seconds": 3.69,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_23.webm",
+  "lang": "sat",
+  "reference": "ᱤᱧᱟᱜ ᱠᱟᱛᱷᱟ ᱢᱚᱱᱮ ᱞᱟᱜᱟᱣ ᱠᱟᱛᱮ ᱟᱸᱡᱚᱢ ᱯᱮ᱾",
+  "seconds": 4.17,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_24.webm",
+  "lang": "sat",
+  "reference": "ᱟᱞᱚ ᱯᱮ ᱜᱚᱞᱢᱟᱞᱟ᱾",
+  "seconds": 2.69,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_25.webm",
+  "lang": "sat",
+  "reference": "ᱟᱯᱮᱭᱟᱜ ᱛᱤ ᱛᱩᱞ ᱯᱮ᱾",
+  "seconds": 2.85,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_26.webm",
+  "lang": "sat",
+  "reference": "ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ!",
+  "seconds": 2.39,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_27.webm",
+  "lang": "sat",
+  "reference": "ᱥᱟᱵᱟᱥ!",
+  "seconds": 2.13,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_28.webm",
+  "lang": "sat",
+  "reference": "ᱢᱤᱫ, ᱵᱟᱨ, ᱯᱮ, ᱯᱩᱱ, ᱢᱚᱬᱮ᱾",
+  "seconds": 4.47,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_29.webm",
+  "lang": "sat",
+  "reference": "ᱤᱧ ᱥᱟᱶᱛᱮ ᱞᱮᱠᱷᱟᱭ ᱯᱮ᱾",
+  "seconds": 2.86,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ },
+ {
+  "file": "bench/clips/synthetic/sat/sat_30.webm",
+  "lang": "sat",
+  "reference": "ᱟᱢ ᱴᱷᱮᱱ ᱛᱤᱱᱟᱹᱜ ᱯᱚᱛᱚᱵ ᱢᱮᱱᱟᱜᱼᱟ?",
+  "seconds": 3.25,
+  "kind": "synthetic: Piper hi_IN-pratham-medium, not real speech"
+ }
+]
