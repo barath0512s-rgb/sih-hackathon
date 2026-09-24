@@ -84,6 +84,11 @@ AUDIO_KEEP_MAX     = 200
 HOST = "0.0.0.0"
 PORT = 5000
 
+# Hub mode over HTTPS (python app.py --https): tablets on the Wi-Fi need
+# https:// for the microphone. tools/make_cert.py writes the files here.
+HTTPS_PORT = 5443
+CERT_DIR   = BASE_DIR / "certs"
+
 DATA_DIR.mkdir(exist_ok=True)
 
 # Must run before transformers is imported, so modules import config first.

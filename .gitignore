@@ -57,3 +57,9 @@ verify_report.txt
 /data/
 CLAUDE_CODE_PROMPT_ADDENDUM.md
 Claude outputs/
+
+# Hub-mode HTTPS keys and certificates (tools/make_cert.py). Never commit.
+/certs/
+
+# Local Claude Code preview config
+/.claude/

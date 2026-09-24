@@ -559,6 +559,29 @@ def save_feedback():
                                "Saved."})
 
 
+@app.route("/hub-ca.crt")
+def hub_ca():
+    """The laptop hub's CA certificate (public), for installing on a tablet so
+    https://<laptop-ip>:5443 opens without a warning. See tools/make_cert.py."""
+    ca = config.CERT_DIR / "hub-ca.crt"
+    if not ca.exists():
+        abort(404)
+    return send_file(ca, mimetype="application/x-x509-ca-cert",
+                     download_name=f"{config.APP_NAME}-hub-ca.crt")
+
+
 if __name__ == "__main__":
-    print(f"\n{config.APP_NAME} server started on port {config.PORT}.")
-    app.run(host=config.HOST, port=config.PORT, debug=False, threaded=True)
+    import sys
+    if "--https" in sys.argv:
+        # Laptop hub for tablets on the same Wi-Fi: the microphone needs https.
+        from tools.make_cert import make_server_cert
+        ips = make_server_cert(config.CERT_DIR)
+        print(f"\n{config.APP_NAME} laptop hub (HTTPS) on port {config.HTTPS_PORT}.")
+        for ip in ips:
+            if ip != "127.0.0.1":
+                print(f"  On the tablet, open: https://{ip}:{config.HTTPS_PORT}")
+        app.run(host=config.HOST, port=config.HTTPS_PORT, debug=False, threaded=True,
+                ssl_context=(str(config.CERT_DIR / "hub.crt"), str(config.CERT_DIR / "hub.key")))
+    else:
+        print(f"\n{config.APP_NAME} server started on port {config.PORT}.")
+        app.run(host=config.HOST, port=config.PORT, debug=False, threaded=True)

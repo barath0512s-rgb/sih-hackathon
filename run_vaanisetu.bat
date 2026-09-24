@@ -20,6 +20,16 @@ if "%1"=="verify" (
   exit /b %errorlevel%
 )
 
+if "%1"=="https" (
+  echo Starting the laptop hub over HTTPS, so tablets on this Wi-Fi can use the microphone.
+  echo The first run loads the models, which takes a minute.
+  echo On the tablet, open the https address printed below. See README, "Laptop hub".
+  echo.
+  python app.py --https
+  pause
+  exit /b %errorlevel%
+)
+
 echo Starting VaaniSetu. The first run loads the models, which takes a minute.
 echo When it says Running on http://127.0.0.1:5000, open that in your browser.
 echo.

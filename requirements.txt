@@ -27,6 +27,10 @@ piper-tts==1.8.0
 # Worksheets
 reportlab==5.0.1
 
+# Hub mode over HTTPS (tools/make_cert.py): a browser only allows the
+# microphone on https:// or localhost, so a tablet on the Wi-Fi needs https.
+cryptography==50.0.1
+
 # Not listed on purpose:
 #   gTTS    online Google TTS. Only used when config.ALLOW_ONLINE_TTS = True.
 #   whisper retired ASR. Needed only if the IndicConformer files are missing.
