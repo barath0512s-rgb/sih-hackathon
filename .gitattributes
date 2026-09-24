@@ -1,0 +1,22 @@
+# Line endings: LF in the repository and on every checkout, whatever the
+# machine's core.autocrlf, so a file never shows as modified only because a
+# different git (Windows, WSL, an IDE) sees different line endings.
+* text=auto eol=lf
+
+# Windows scripts need CRLF to run reliably in cmd.exe.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files: never convert.
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.pdf binary
+*.wav binary
+*.webm binary
+*.onnx binary
+*.db binary
