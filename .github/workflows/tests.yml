@@ -1,0 +1,22 @@
+name: tests
+
+# The tests that need no model weights: transliteration, text normalisation,
+# corrections, lessons and Lakshya tags, curriculum import rules, worksheets,
+# the offline frontend and the HTTPS certificate. The model tests skip
+# themselves here because the weights (about 4 GB) are not in the repository.
+on:
+  push:
+  pull_request:
+
+jobs:
+  no-model-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - run: pip install -r requirements-ci.txt
+      - run: python -m pytest -q -rs
