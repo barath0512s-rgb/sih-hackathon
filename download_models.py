@@ -16,10 +16,16 @@ The two AI4Bharat repos are gated: accept their terms on huggingface.co, then ru
 `huggingface-cli login` once before downloading.
 """
 
-import argparse, hashlib, json, subprocess, sys
+import argparse, hashlib, json, os, subprocess, sys
 from pathlib import Path
 
-import config
+# This is the one script that must reach the internet. config.py switches the
+# Hugging Face libraries to offline mode for the app (setdefault), so set them
+# online here first, or a fresh clone cannot download anything.
+os.environ["HF_HUB_OFFLINE"] = "0"
+os.environ["TRANSFORMERS_OFFLINE"] = "0"
+
+import config  # noqa: E402
 
 MANIFEST = config.BASE_DIR / "model_manifest.json"
 

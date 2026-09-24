@@ -238,12 +238,14 @@ python -m venv vaanisetu_env
 vaanisetu_env\Scripts\activate            # Windows
 source vaanisetu_env/bin/activate         # Mac/Linux
 pip install -r requirements.txt
-python download_models.py                  # pinned revisions, checked against model_manifest.json
-python -m piper.download_voices hi_IN-pratham-medium --data-dir models/piper
+python download_models.py                  # models and voices, pinned revisions, checked against model_manifest.json
 python verify_models.py                    # loads everything, checks speech is audible
-python tools/import_lessons.py             # adds the team's 10 lessons (stored in the local database)
-python app.py
+python app.py                              # the first start also adds the team's lessons (about two minutes)
 ```
+
+Already have the models on another checkout? Copy (or link) its `models/`
+folder into the new one and run `python download_models.py --verify-only`
+instead of downloading again.
 
 Open **http://127.0.0.1:5000**. On Windows, double-click `run_vaanisetu.bat`,
 or use `run_vaanisetu.bat verify` to check everything first.
