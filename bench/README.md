@@ -36,6 +36,33 @@ They are good for **timing**. They are **not** good for accuracy: the voice is
 clean and synthetic, so the CER columns compare settings on identical audio and
 say nothing about accuracy on children or teachers in a noisy classroom.
 
+## Public-dataset clips (adult speech)
+
+`fetch_public_clips.py` downloads a fixed, seeded selection of public clips.
+Only the manifest (`clips/public/manifest.json`) is in git. Each entry records
+the dataset, revision, file, row, licence and the SHA-256 of the audio, so a
+re-fetch can be checked with `--check`.
+
+| Language | Source | Licence | Status |
+|---|---|---|---|
+| Hindi | `google/fleurs`, `hi_in` test: 80 of the 187 utterances of 3-10 s | CC BY 4.0 | fetched |
+| Santali | `ai4bharat/IndicVoices`, `santali` valid split | CC BY 4.0 | **gated**: accept the terms on the dataset page, then re-run |
+
+```bash
+python bench/fetch_public_clips.py
+python bench/asr_decoding.py  --clips bench/clips/public/manifest.json --label public
+python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public
+python tools/deck_numbers.py --write
+```
+
+Every result from these clips is labelled **"public dataset, adult speech"**.
+None of them is child speech: child-speech accuracy is **NOT MEASURED**.
+`asr_decoding.py` reports corpus-level WER and CER (all errors over all
+reference words or characters). Both sides are normalised with
+`textnorm.normalize_key`, so punctuation, nukta and spacing do not count.
+Numbers written as digits in the reference but spoken as words (or the reverse)
+still count as errors.
+
 ## Real recordings (needed)
 
 Put 10 or more real teacher (Hindi) and child (Santali) recordings in

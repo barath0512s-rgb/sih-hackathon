@@ -116,6 +116,7 @@ def main():
             "source": j.get("source"), "tts_engine": j.get("tts_engine"),
             "audio_bytes": len(audio), "tts_error": j.get("tts_error") or "",
             "cer": round(jiwer.cer(ref, hyp), 3) if ref else "",
+            "wer": round(jiwer.wer(ref, hyp), 3) if ref else "",
             "reference": c["reference"], "recognized": j.get("recognized_text", ""),
         })
         print(f"  {i+1:>2}/{len(manifest)} {c['lang']:>3}  {wall:7.0f} ms  "
@@ -143,6 +144,9 @@ def main():
              f"- Cold request (first after boot, {rows[0]['lang']}): {rows[0]['pipeline_ms']:.0f} ms",
              "- Caches empty at start; database throw-away.",
              ""]
+    if any("public" in c.get("kind", "") for c in manifest):
+        lines += ["> **Public dataset, adult speech** (sources and licences per clip in the",
+                  f"> manifest). Child speech: NOT MEASURED. Laptop, offline, in-process.", ""]
     if synthetic:
         lines += ["> **Synthetic clips**: Piper reading the lines, not real speech. Timings are",
                   "> representative; the CER column is NOT a measure of ASR accuracy on real",

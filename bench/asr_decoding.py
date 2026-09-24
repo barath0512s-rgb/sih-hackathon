@@ -2,8 +2,9 @@
 
     python bench/asr_decoding.py [--clips bench/clips/synthetic/manifest.json]
 
-Runs every clip through IndicConformer four ways and reports median ASR time
-and median CER per language, so the default decoder can be chosen per language
+Runs every clip through IndicConformer four ways and reports median ASR time,
+WER and CER per language (text normalised with textnorm.normalize_key on both
+sides: punctuation, nukta and spacing do not count), so the default decoder can be chosen per language
 on evidence. Writes bench/results/asr_decoding_<label>.md.
 With synthetic clips, the CER compares variants on the same audio; it is not
 a measure of accuracy on real classroom speech.
@@ -48,28 +49,46 @@ def main():
             t0 = time.perf_counter()
             hyp = asr.transcribe(wav, lang=c["lang"], decoding=dec, trim=trim)
             ms = (time.perf_counter() - t0) * 1000
-            cer = jiwer.cer(normalize_key(c["reference"]), normalize_key(hyp))
-            res.setdefault((c["lang"], dec, trim), []).append((ms, cer))
+            ref, h = normalize_key(c["reference"]), normalize_key(hyp)
+            cer = jiwer.cer(ref, h)
+            wer = jiwer.wer(ref, h) if ref else 0.0
+            res.setdefault((c["lang"], dec, trim), []).append((ms, cer, wer, ref, h))
         print(f"  done: {dec} trim={trim}")
 
+    # Raw per-clip results first, so nothing is lost if the report fails.
+    raw = ROOT / "bench" / "results" / f"asr_decoding_{a.label}.jsonl"
+    raw.parent.mkdir(parents=True, exist_ok=True)
+    with open(raw, "w", encoding="utf-8") as f:
+        for (lang, dec, trim), v in res.items():
+            for c_, (ms, cer, wer, ref, h) in zip([c for c, _ in wavs if c["lang"] == lang], v):
+                f.write(json.dumps({"clip": c_["file"], "lang": lang, "decoding": dec, "trim": trim,
+                                    "asr_ms": round(ms, 1), "cer": round(cer, 4), "wer": round(wer, 4),
+                                    "reference_norm": ref, "hypothesis_norm": h}, ensure_ascii=False) + "\n")
     synthetic = any("synthetic" in c.get("kind", "") for c in manifest)
+    public = any("public" in c.get("kind", "") for c in manifest)
     lines = [f"# ASR decoding and silence trimming ({a.label})", "",
              f"{len(manifest)} clips; ASR only (audio already decoded to WAV); times in ms.", ""]
     if synthetic:
         lines += ["> Synthetic clips. CER compares the variants on identical audio; it is not",
                   "> ASR accuracy on real speech.", ""]
-    lines += ["| Language | Decoding | Trim silence | ASR median ms | ASR p90 ms | CER median | CER mean |",
-              "|---|---|---|---|---|---|---|"]
+    if public:
+        lines += ["> **Public dataset, adult speech.** Child speech: NOT MEASURED. Sources and",
+                  f"> licences per clip: `{Path(a.clips).resolve().relative_to(ROOT).as_posix()}`. Laptop, offline.",
+                  "> WER and CER are corpus-level (all errors / all reference words or characters).", ""]
+    lines += ["| Language | Decoding | Trim silence | ASR median ms | ASR p90 ms | WER | CER | CER median per clip |",
+              "|---|---|---|---|---|---|---|---|"]
     for lang in ("hi", "sat"):
         for dec, trim in variants:
             v = res.get((lang, dec, trim))
             if not v:
                 continue
-            ms = sorted(x for x, _ in v)
-            cers = [y for _, y in v]
+            ms = sorted(x[0] for x in v)
+            cers = [x[1] for x in v]
+            refs, hyps = [x[3] for x in v], [x[4] for x in v]
             p90 = ms[max(0, -(-len(ms) * 90 // 100) - 1)]
             lines.append(f"| {lang} | {dec} | {'yes' if trim else 'no'} | {statistics.median(ms):.0f} | "
-                         f"{p90:.0f} | {statistics.median(cers):.3f} | {statistics.mean(cers):.3f} |")
+                         f"{p90:.0f} | {jiwer.wer(refs, hyps):.3f} | {jiwer.cer(refs, hyps):.3f} | "
+                         f"{statistics.median(cers):.3f} |")
     out = ROOT / "bench" / "results" / f"asr_decoding_{a.label}.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")

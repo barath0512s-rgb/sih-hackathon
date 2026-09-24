@@ -1,0 +1,1522 @@
+[
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00000_1766.wav",
+  "lang": "hi",
+  "reference": "कुछ अणुओं में अस्थिर केंद्रक होता है जिसका मतलब यह है कि उनमें थोड़े या बिना किसी झटके से टूटने की प्रवृत्ति होती है",
+  "seconds": 9.12,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 0,
+   "id": "1766"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "38cf0e883d64ae257288bce89cf41a9c4a693b218c3381d5bd462d90bf7b7ed6",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00015_1992.wav",
+  "lang": "hi",
+  "reference": "विशेष रूप से सवाना पर बेहतरीन अफ़्रीकी वन्य जीवन को संपूर्ण रूप से देखने के लिए आमतौर पर सफ़ारी शब्द का उपयोग किया जाता है",
+  "seconds": 8.88,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 15,
+   "id": "1992"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "6f0956783aada0340f60f83c68acfaa067a336bfcca2ae747f823727d01e75e2",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00026_1957.wav",
+  "lang": "hi",
+  "reference": "उन्होंने अफवाहों को राजनीतिक बकवास और मूर्खतापूर्ण कहा",
+  "seconds": 4.08,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 26,
+   "id": "1957"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8bfe5ea95bf9524b477f684730971f665194660c9d888b734e1e4e43dda083fb",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00027_1802.wav",
+  "lang": "hi",
+  "reference": "इंटरनेट लोगों और अंतर-परस्पर संचार दोनों के तत्वों को मिलाता है",
+  "seconds": 5.46,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 27,
+   "id": "1802"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "cfa6da1445888f9b41623b762f6ea6df9b9d4bd8f307a92cedf6fa9d5a6a0fb3",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00033_1910.wav",
+  "lang": "hi",
+  "reference": "ऐसा माना जाता है कि पेरिस के निवासी अहंकारी असभ्य और अभिमानी होते हैं",
+  "seconds": 7.02,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 33,
+   "id": "1910"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "edb3fc76eff770949a3340fb2f26f7734cf1e35dc42cda5673ad88d37742c47c",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00034_1721.wav",
+  "lang": "hi",
+  "reference": "1963 में बांध बनने के बाद मौसमी बाढ़ जो पूरे नदी में तलछट फैला देगी वह रुक गई थी",
+  "seconds": 8.22,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 34,
+   "id": "1721"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8dc462631b6d7fdbeb3ac116446ecddda27db9426ba7c84d5637a8bcf3cb4761",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00050_1958.wav",
+  "lang": "hi",
+  "reference": "यह शहर देश के बाकी शहरों से अलग है क्योंकि यह किसी अफ्रीकी शहर की बजाय अरब शहर लगता है",
+  "seconds": 7.68,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 50,
+   "id": "1958"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "9e559e482b17be8dcfd1f9f65ae39bf519390535d4970e7e4d4b60ef61283d19",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00053_1966.wav",
+  "lang": "hi",
+  "reference": "अक्टूबर में शुरू हुए व्यापक शासन विरोधी प्रदर्शनों के लिए आयोग का गठन मार्टेली की प्रतिक्रिया स्वरूप हुआ था",
+  "seconds": 9.66,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 53,
+   "id": "1966"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "683fc8bbed8f6be2db4d439cb9603cab1b9e21ddd9bd4e891a51ca3cd5d90c8c",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00059_1772.wav",
+  "lang": "hi",
+  "reference": "इसलिए यह माना जा रहा है कि नोटेशन को सिर्फ़ एक लेबल के रूप में जोड़ा गया था",
+  "seconds": 6.36,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 59,
+   "id": "1772"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "cefa065ebe1b7560baa11ec3a63163d799389895de4838a02cf5c8b1ee9b67ac",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00060_1803.wav",
+  "lang": "hi",
+  "reference": "आपके हाथों की नमी बाहरी परतों के साथ क्रिया करेगी जो अजीब महसूस करेगी और एक तरह का आवरण बनाएगी",
+  "seconds": 9.72,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 60,
+   "id": "1803"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "42a07dc0e908bf596892a171b6faaf198e93e81b519fdc1014e35937d399b17d",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00064_1844.wav",
+  "lang": "hi",
+  "reference": "चांद की सतह चट्टानों और धूल से बनी है चांद की बाहरी परत को क्रस्ट कहते हैं",
+  "seconds": 6.24,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 64,
+   "id": "1844"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "1777f0b4d8ab9986bc47ec2d1131a7bdc84bd293e10dcf1b1e69e3ec35bef95e",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00067_1974.wav",
+  "lang": "hi",
+  "reference": "इसी तरह पुरुषों के लिए घुटनों को ढंकने वाले ट्राउज़र पहनना ज़रूरी है",
+  "seconds": 5.82,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 67,
+   "id": "1974"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "ab1b74638d371fbb05c495e6dec0913a2bf70a16ed9d638a268bb5d776efa244",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00075_1993.wav",
+  "lang": "hi",
+  "reference": "अटलांटिक तूफ़ान मौसम का दसवां तूफ़ान उपोष्णकटिबंधीय तूफ़ान जेरी आज अटलांटिक महासागर में बना है",
+  "seconds": 9.78,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 75,
+   "id": "1993"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "110197dcb70185fb1f34d38fcc6297189a516230e27f10b8bbfd516082ea2e46",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00102_1998.wav",
+  "lang": "hi",
+  "reference": "उनके पैरों में पपड़ियां और पंजे हैं वे अंडे देते हैं और वे किसी टी-रेक्स की तरह अपने दो पीछे वाले पैरों पर चलते हैं",
+  "seconds": 8.58,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 102,
+   "id": "1998"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "66136abb1a4bc5404803b8a966eb688dd6d9b6edc93388802e4c419a9a3f5c84",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00114_1741.wav",
+  "lang": "hi",
+  "reference": "उत्तर की ओर के बड़े क्षेत्र में आबादी बहुत ही कम है और कुछ इलाकों में तो लगभग कोई इंसानी आबादी नहीं है",
+  "seconds": 7.62,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 114,
+   "id": "1741"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "544adeef99ac948b42c48884de813cc6ac4eb1223ed7518c0af4f96dfabb65be",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00122_1747.wav",
+  "lang": "hi",
+  "reference": "लूना को साथी पहलवानों ने भी श्रद्धांजलि दी",
+  "seconds": 4.74,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 122,
+   "id": "1747"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "cdedc3a9e5f7e5d685008793cf46ac528fe548075a6e99f3a4bc9bd39525811e",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00126_1988.wav",
+  "lang": "hi",
+  "reference": "1920 के दशक के दौरान ज़्यादातर नागरिकों और देशों में शांतिवाद और अलगाव का नज़रिया प्रचलित था",
+  "seconds": 9.9,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 126,
+   "id": "1988"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "251511ac2f9196599732089c86b3bb681c50bcfce1728dd9e2ab4c51138c3b91",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00127_2007.wav",
+  "lang": "hi",
+  "reference": "यू.एस. कॉर्प्स ऑफ़ इंजीनियर्स ने अंदाजा लगाया कि 6 इंच बारिश पहले से क्षतिग्रस्त बांधों को तोड़ सकती है",
+  "seconds": 7.8,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 127,
+   "id": "2007"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "aa2e47245266cebdc1e83eca3b4ad5895110e0e5f3cf89b138f62e3a4eaf6308",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00135_1761.wav",
+  "lang": "hi",
+  "reference": "फ़ोटोग्राफ़रों ने बाद में एक वृद्ध महिला की जगह ले ली क्योंकि उसे शौचालय जाना ज़रूरी था मेंडोज़ा को गोली मार दी गई थी",
+  "seconds": 9.84,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 135,
+   "id": "1761"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "900ff0322b296cc54c44e5a61b60d2ee76d6424df2d93ca741da2b449fad980f",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00141_1692.wav",
+  "lang": "hi",
+  "reference": "जापान की परमाणु एजेंसी के अनुसार प्लांट में रेडियोधर्मी सीज़ियम और आयोडीन की पहचान की गई है",
+  "seconds": 8.52,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 141,
+   "id": "1692"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "e448d5073196269be97f6e1f77689f7562694b7c5a70b944b9923342f547681e",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00145_1988.wav",
+  "lang": "hi",
+  "reference": "1920 के दशक के दौरान ज़्यादातर नागरिकों और देशों में शांतिवाद और अलगाव का नज़रिया प्रचलित था",
+  "seconds": 8.7,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 145,
+   "id": "1988"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "48a9215f78b8be8e75dfab589d02effefa242391621872105d5597e0760a5beb",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00148_1891.wav",
+  "lang": "hi",
+  "reference": "लक्खा सिंह ने छप्पन भोग भजन भी प्रस्तुत किया गायक राजू खंडेलवाल उनके साथ थे",
+  "seconds": 7.44,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 148,
+   "id": "1891"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "27aef2d7116bd2ff284c4e9b82809dd3544d2fd9475d007247934530e182741c",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00150_1691.wav",
+  "lang": "hi",
+  "reference": "चुनिंदा रूट पर बड़ी कंपनियों के खुद के विमान हैं लेकिन अन्य रूट पर और छोटी फ़र्म के लिए यह एक समस्या है",
+  "seconds": 9.9,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 150,
+   "id": "1691"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "9dbaf8d547532498c0964c132fe767f684800aa1f81205bdfefe9953b2130f47",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00157_1918.wav",
+  "lang": "hi",
+  "reference": "सुंदरबन को यूनेस्को द्वारा विश्व धरोहर घोषित किया है जंगल का वह हिस्सा जो भारत में है उसको सुंदरबन नेशनल पार्क कहा जाता है",
+  "seconds": 8.88,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 157,
+   "id": "1918"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "22d667f11dc562396004148306a80492dac7ff3653b5b759146976420c27b8a8",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00159_1941.wav",
+  "lang": "hi",
+  "reference": "ये जोड़े अपने बच्चे के लिए गोद लेने की योजना बनाने का विकल्प चुन सकते हैं",
+  "seconds": 5.64,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 159,
+   "id": "1941"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "c43ee2e78a65879a7183c4d882d1cc66df2e18fce716ca7605f9821203e1ce0c",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00162_1876.wav",
+  "lang": "hi",
+  "reference": "उत्तरी मैरिएनस इमरजेंसी प्रबंधन कार्यलय की ओर से कहा गया कि राष्ट्र में नुकसान की कोई सूचना प्राप्त नहीं हुई थी",
+  "seconds": 9.24,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 162,
+   "id": "1876"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "797586e771ae60b5c79d2e1117dbb40baebdf63121346eb0740479b2918dbf0a",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00165_1754.wav",
+  "lang": "hi",
+  "reference": "पपड़ी पतली होने के कारण आस-पास पर कई मारिया होंगी लावा के लिए सतह पर बढ़ना आसान था",
+  "seconds": 9.96,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 165,
+   "id": "1754"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8a0165e421af081910513d6f42e780817f28d2313032562452ee4c79053c8f82",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00166_1679.wav",
+  "lang": "hi",
+  "reference": "एरोस्मिथ ने अपने दौरे के अपने शेष संगीत कार्यक्रमों को रद्द कर दिया है",
+  "seconds": 7.38,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 166,
+   "id": "1679"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "c1b74c47371c376fa0985d6ae8012243244635227f66fa9a2842b9a9bce13bad",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00173_1823.wav",
+  "lang": "hi",
+  "reference": "यातायात बहाव दो बिंदुओं के बीच व्यक्तिगत चालकों और वाहनों की गतिविधि और एक दूसरे के साथ की जाने वाली पारस्परिक क्रिया का अध्ययन है",
+  "seconds": 9.0,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 173,
+   "id": "1823"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "7173e1dfd8f0e0e0e0bc4eb2c9e61ed41c2d934ba9ea5fa18b7de539181f1763",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00174_1880.wav",
+  "lang": "hi",
+  "reference": "इस प्रकार जब पेंसिल आई तो यह कई लोगों के लिए एक अच्छी दोस्त थी",
+  "seconds": 8.16,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 174,
+   "id": "1880"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "68c2b936e4c91fdfe1c064b96760adb134905ed0298c73ee990803ac754c986b",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00178_1754.wav",
+  "lang": "hi",
+  "reference": "पपड़ी पतली होने के कारण आस-पास पर कई मारिया होंगी लावा के लिए सतह पर बढ़ना आसान था",
+  "seconds": 9.54,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 178,
+   "id": "1754"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "1c2df7927ed3bc74185a28e4af86a99df70fed1bca99ec40d97ea8f6689cd80a",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00183_1838.wav",
+  "lang": "hi",
+  "reference": "गीज़ा में मौजूद ग्रेट पिरामिड सात अजूबा में से केवल एक है जो आज भी खड़ा है",
+  "seconds": 7.32,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 183,
+   "id": "1838"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "a069a6f103497db71185e81d5ccfa89f848074ca88a5820f6eb7ba3230daee0b",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00185_1762.wav",
+  "lang": "hi",
+  "reference": "यह बीमारी सूअरों के कारण होती है जो बाद में मच्छरों के माध्यम से मनुष्यों में आती है",
+  "seconds": 6.84,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 185,
+   "id": "1762"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "63f1eca65bb99df5d2f896f96df6ce3a74cd20f799cfecd9a9e8f352927a44ce",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00188_1757.wav",
+  "lang": "hi",
+  "reference": "केवल जर्म-लाइन कोशिकाओं में वृद्धि बच्चों तक पहुंच सकती है जबकि अन्य कहीं होने वाली वृद्धि से कोशिकाएं नष्ट हो सकती हैं या कैंसर हो सकता है",
+  "seconds": 7.68,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 188,
+   "id": "1757"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "e45a1b482b6cb39e556a368a14fd2c7c78ee68139b489ab14ed1f28d6ae9d427",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00190_1885.wav",
+  "lang": "hi",
+  "reference": "10 00-11 00 बजे एमडीटी के बीच यार्ड में कैदियों द्वारा आग लगा दी गई थी",
+  "seconds": 6.24,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 190,
+   "id": "1885"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "40603d906b55e63bf0564bce0c631be25fe799a2dad94a5e05d1b717fccbe427",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00192_1912.wav",
+  "lang": "hi",
+  "reference": "अधिकांश छोटे द्वीप स्वतंत्र राष्ट्र हैं या फ़्रांस से संबंधित हैं और लग्ज़री बीच रिसॉर्ट के रूप में जाने जाते हैं",
+  "seconds": 9.48,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 192,
+   "id": "1912"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "a0a0e4bf62e46ede37ef149cff5f6d63978fe02238dc8593ca17a8ce80092aa6",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00217_1745.wav",
+  "lang": "hi",
+  "reference": "प्राकृतिक वातावरण में पौधे सबसे अच्छे दिखते हैं इसलिए सिर्फ एक नमूने को भी हटाने के प्रलोभन को रोकें",
+  "seconds": 7.68,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 217,
+   "id": "1745"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "97f9ae9b829a6fab9e6ce8895b33ab0bd3e3ed31b065ae8846116950da3d2be6",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00226_1917.wav",
+  "lang": "hi",
+  "reference": "रोम में अलग-अलग जगहों पर कई बड़े टेलीविज़न स्क्रीन लगाए गए ताकि लोग समारोह देख सकें",
+  "seconds": 8.94,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 226,
+   "id": "1917"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8d5830429398cf025d38da3855640671b570b04024b27642abbd3623d00874d1",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00227_2002.wav",
+  "lang": "hi",
+  "reference": "यह डिवाइस को हवा में मूव करके खिलाड़ियों को एक्शन और मूवमेंट कंट्रोल करने की अनुमति देगा",
+  "seconds": 7.56,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 227,
+   "id": "2002"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "3de0653fa9bb4f20b8e04bf72b8dd1d5ce889a14afbe4799d16e566ceac9b1db",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00232_1679.wav",
+  "lang": "hi",
+  "reference": "एरोस्मिथ ने अपने दौरे के अपने शेष संगीत कार्यक्रमों को रद्द कर दिया है",
+  "seconds": 6.36,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 232,
+   "id": "1679"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "ce780245d04536992e52f8871777c4689b9aa222cbfe6768fc0317cef8247938",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00237_1891.wav",
+  "lang": "hi",
+  "reference": "लक्खा सिंह ने छप्पन भोग भजन भी प्रस्तुत किया गायक राजू खंडेलवाल उनके साथ थे",
+  "seconds": 6.12,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 237,
+   "id": "1891"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "0b05dc437224c0e702dc7b81325204748210b9ad382d242dc2e0147228b05e3d",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00240_1698.wav",
+  "lang": "hi",
+  "reference": "ब्रह्मांड की सभी वस्तुएं पदार्थ से बनी हैं सारे पदार्थ सूक्ष्तम कणों से बनें हैं जिन्हें अणु कहा जाता है",
+  "seconds": 9.12,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 240,
+   "id": "1698"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "942f4197ab553e9d2ad1007a6d9f9c46858617fdec4e4c61ce3b8705de5b4f7c",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00247_1770.wav",
+  "lang": "hi",
+  "reference": "यह तर्कसंगत लग रहा है क्योंकि ऐसा महसूस नहीं होता है कि पृथ्वी चल रही है है कि नहीं",
+  "seconds": 8.88,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 247,
+   "id": "1770"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "2f6c016ee8b9c92a92d5c5850193bfc8e2f9043cd42415e5b8c82a77ff32f11e",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00251_1687.wav",
+  "lang": "hi",
+  "reference": "अलगाव और पुनर्संयोजन भिन्नता प्रत्येक पीढ़ी के साथ दो पूलों के बीच आगे-पीछे होती रहती है",
+  "seconds": 8.76,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 251,
+   "id": "1687"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "328ab85ae1a81180350421c3c7ea130dfa9f848a39f5890304dd7f0aa7781c1c",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00253_1844.wav",
+  "lang": "hi",
+  "reference": "चांद की सतह चट्टानों और धूल से बनी है चांद की बाहरी परत को क्रस्ट कहते हैं",
+  "seconds": 7.32,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 253,
+   "id": "1844"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "9223aeaaa4b19bab9b3072262d2e95884981acbf414e94ec1ec2be66051e36d9",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00268_1846.wav",
+  "lang": "hi",
+  "reference": "इस प्रारूप सबसे सरल पूर्ण-संख्या अनुपात प्राप्त करने के लिए बारह से भाग देना के अभिमुखता अनुपात को इसलिए 3:2 कहा जाता है।",
+  "seconds": 9.24,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 268,
+   "id": "1846"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "e73abef548cee2357806d82ada47e98fb924e506905d3c7c2e94ee874bf1ed21",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00282_2006.wav",
+  "lang": "hi",
+  "reference": "कैल्शियम और पोटैशियम जैसे तत्वों को धातु माना जाता है बेशक चांदी और सोने जैसी धातुएं भी हैं",
+  "seconds": 6.36,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 282,
+   "id": "2006"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "61d6f0f449f177af83c77ab9dda08a50973088de189983d53ec0fcce149defea",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00286_1994.wav",
+  "lang": "hi",
+  "reference": "यह कहने की कोई ज़रूरत नहीं कि यदि आप रोमांस लैंग्वेज़ जानते हैं तो आपके लिए पुर्तगाली सीखना आसान होगा",
+  "seconds": 9.6,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 286,
+   "id": "1994"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "962655072da8a00188be54397374c348b0c91c99de06e515ab955b41c1fe5b8c",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00293_1851.wav",
+  "lang": "hi",
+  "reference": "चीर धाराएं समुद्र तट पर लगकर लौटने वाली लहरों का प्रवाह होता है अक्सर एक चट्टान या इसी तरह के पदार्थों पर",
+  "seconds": 9.3,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 293,
+   "id": "1851"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8046b85434e0d21e9ee8a6fe432e02855136e71cefad416787961363e0685ccb",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00294_1661.wav",
+  "lang": "hi",
+  "reference": "यह कहते हुए कि वे चीन के आर्थिक उत्पादन के आधार पर बनाए जाएंगे उन्होंने कटौती के लिए कोई आंकड़ा निर्धारित नहीं किया",
+  "seconds": 8.4,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 294,
+   "id": "1661"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "d71243cf492cbff612808aa1d196f6ca18c03804542b9de2f1b548672d2db75f",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00295_1691.wav",
+  "lang": "hi",
+  "reference": "चुनिंदा रूट पर बड़ी कंपनियों के खुद के विमान हैं लेकिन अन्य रूट पर और छोटी फ़र्म के लिए यह एक समस्या है",
+  "seconds": 8.04,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 295,
+   "id": "1691"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "95447a3ba5b7f8bff9cf3647c270c6117703a6eeeab29d9249941caa0d81f505",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00303_1821.wav",
+  "lang": "hi",
+  "reference": "मस्तिष्क विकृति और व्यवहार के बीच संबंध अनुसंधान में वैज्ञानिकों का समर्थन करते हैं",
+  "seconds": 8.1,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 303,
+   "id": "1821"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8c60183e53209872e24646bad481b756c2290bc97d78cbd96e3e4481aa5cbe3a",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00306_1871.wav",
+  "lang": "hi",
+  "reference": "मध्यपूर्व की गर्म जलवायु में घर उतना ज़रूरी नहीं था",
+  "seconds": 6.18,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 306,
+   "id": "1871"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "5bb6e1486d0834b125774a50c91cb46e45dd960e2341cd14ed493fe494b43dba",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00313_1728.wav",
+  "lang": "hi",
+  "reference": "गोभी का जूस अम्लीय या आधारभूत क्षारीय रसायन के आधार पर रंग बदलता है",
+  "seconds": 6.96,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 313,
+   "id": "1728"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "1263f69d83bb4030f66af3a97676c51265ab508d92ae9034eecc4e2f79135a7a",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00326_1976.wav",
+  "lang": "hi",
+  "reference": "मध्य क्रम के बल्लेबाज सचिन तेंदुलकर और राहुल द्रविड़ ने अच्छा प्रदर्शन किया और शतकीय साझेदारी बनाई",
+  "seconds": 7.08,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 326,
+   "id": "1976"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "9401e1b9be4a524e9bde0a22391575651a018b451312d2d1016dfb306bf47356",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00327_1910.wav",
+  "lang": "hi",
+  "reference": "ऐसा माना जाता है कि पेरिस के निवासी अहंकारी असभ्य और अभिमानी होते हैं",
+  "seconds": 5.94,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 327,
+   "id": "1910"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "07c4fea8d48fb7d486fda59304bc64c2e2b2cddafe7a4f2c12b20bcdd8d29c30",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00336_1791.wav",
+  "lang": "hi",
+  "reference": "चीज़ों पर कुछ बनाकर या खरोंच कर इस जगह को नुक़सान न पहुंचाएं",
+  "seconds": 4.14,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 336,
+   "id": "1791"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8491e4b7994a93af24f760aa9930567802da6f288122ca2c2895288e77083e6d",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00343_1860.wav",
+  "lang": "hi",
+  "reference": "राज्यपाल के कार्यालय ने बताया कि घायलों में से उन्नीस पुलिस अधिकारी थे",
+  "seconds": 7.02,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 343,
+   "id": "1860"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8f28477538706fcd3fe0f21225b79f983a0fea8ddddbd1835ef79b66011be226",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00349_1692.wav",
+  "lang": "hi",
+  "reference": "जापान की परमाणु एजेंसी के अनुसार प्लांट में रेडियोधर्मी सीज़ियम और आयोडीन की पहचान की गई है",
+  "seconds": 7.62,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 349,
+   "id": "1692"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "f0cc1c84fb616f5c56f1178f545975eddbda3001a89deeb5ecaa649f69c6e26c",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00352_1840.wav",
+  "lang": "hi",
+  "reference": "इटली के कई अन्य शहरों और दुनिया के बाकी हिस्सों में खासकर पोलैंड में इस तरह के सेटअप बनाए गए थे जिन्हें बड़ी संख्या में लोगों ने देखा था",
+  "seconds": 9.0,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 352,
+   "id": "1840"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "f695430a8bbd983fb0181635435c3bef2169629549f2b6713c8017b9da35f8ce",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00354_1947.wav",
+  "lang": "hi",
+  "reference": "टुकड़ियों के पहुंचने से पहले 1800 के दशक से हैती का कभी-भी बीमारियों से जुड़ी समस्याओं से सामना नहीं हुआ था",
+  "seconds": 9.9,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 354,
+   "id": "1947"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "4845a6139c86f7d7b41d5c23be056f39829c262ed72305e943b7bb37a7ce9d62",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00359_1839.wav",
+  "lang": "hi",
+  "reference": "स्कीइंग मार्ग को एक हाईकिंग लंबी पैदल यात्रा मार्ग जैसा ही सोचें।",
+  "seconds": 9.36,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 359,
+   "id": "1839"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "96bfc3c9c94da1d92d23cbcf199558a146d8bc844cf8756869ba71881747992a",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00360_1750.wav",
+  "lang": "hi",
+  "reference": "यह खोज पक्षियों में पंखों के विकास की पूरी जानकारी भी प्रदान करती है",
+  "seconds": 6.42,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 360,
+   "id": "1750"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "97728d3fafaec2d0aba235c9267ac67c496061b59bacf9bdd227e98fd30a8b76",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00362_1772.wav",
+  "lang": "hi",
+  "reference": "इसलिए यह माना जा रहा है कि नोटेशन को सिर्फ़ एक लेबल के रूप में जोड़ा गया था",
+  "seconds": 6.72,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 362,
+   "id": "1772"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "2dbe625d35bcd08e92b9b1075adfa9db4a9b2486dbc3fad6a95877f1369283d5",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00364_1817.wav",
+  "lang": "hi",
+  "reference": "हालांकि शेंगेन ज़ोन इस मामले में कुछ हद तक एक देश की तरह काम करता है",
+  "seconds": 7.62,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 364,
+   "id": "1817"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "549567b6de4b85d9e2f208b31248240df2624a4c9e823b34a8c14d22da2bd2dc",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00367_1876.wav",
+  "lang": "hi",
+  "reference": "उत्तरी मैरिएनस इमरजेंसी प्रबंधन कार्यलय की ओर से कहा गया कि राष्ट्र में नुकसान की कोई सूचना प्राप्त नहीं हुई थी",
+  "seconds": 9.48,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 367,
+   "id": "1876"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "d317a9c8f70e6567ae726695f00549540c74cd81235bbeb59e124c021e9e45d4",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00370_1698.wav",
+  "lang": "hi",
+  "reference": "ब्रह्मांड की सभी वस्तुएं पदार्थ से बनी हैं सारे पदार्थ सूक्ष्तम कणों से बनें हैं जिन्हें अणु कहा जाता है",
+  "seconds": 8.46,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 370,
+   "id": "1698"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "7fb15dbe8ab0d854000a11696a4c3d29c66edd662c9aaf89669dddd6909d8a4d",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00372_1945.wav",
+  "lang": "hi",
+  "reference": "कैसाब्लांका मोरक्को में खरीदारी करने के लिए सबसे कम दिलचस्प स्थानों में से एक है",
+  "seconds": 5.94,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 372,
+   "id": "1945"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8a3974c5dcaa21c68650237bdb6386280e4a114f36bb12600079bfcf9b6bb78c",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00374_1953.wav",
+  "lang": "hi",
+  "reference": "बाद में उन्हें कैम्ब्रिज में एडेनब्रुक के अस्पताल में स्थानांतरित कर दिया गया",
+  "seconds": 6.12,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 374,
+   "id": "1953"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "d72aba08a3b6c45fd057c34c50e2533767ea64c232592ec67b9935b158983b8e",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00375_1684.wav",
+  "lang": "hi",
+  "reference": "आपिया समोआ की राजधानी है यह शहर उपोलू द्वीप पर है और इसकी आबादी 40,000 से भी कम है",
+  "seconds": 9.42,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 375,
+   "id": "1684"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "20d2a7edc433037215b98fc881dd0afc24ca612eb02906f2bcd878a170bf13bd",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00376_1944.wav",
+  "lang": "hi",
+  "reference": "ये कभी-कभी पारिवारिक भीड़भाड़ वाले समुद्रतट हैं जहां किनारों पर कई दुकानों की एक अच्छी श्रृंखला है तैरना सुरक्षित है",
+  "seconds": 9.96,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 376,
+   "id": "1944"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "d0a6baf4830870f727fdce0d2c64476370bf7a2cdf574172d2f54ec59341269f",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00377_1799.wav",
+  "lang": "hi",
+  "reference": "बुधवार के आयोजन के बाद कारपानेडो ने चैंपियनशिप में दो इंडिविज़ुअल रेस में हिस्सा लिया",
+  "seconds": 8.16,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 377,
+   "id": "1799"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "25b718e595c56a5b3d5111c46a3f6289200281904458954fc8d0b49af5cdc3be",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00381_1854.wav",
+  "lang": "hi",
+  "reference": "वाहन को उसी दिन तकरीबन 1200 gmt के समय पर दुर्घटनास्थल से दूर ले जाया गया",
+  "seconds": 9.0,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 381,
+   "id": "1854"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "b575c482c4a02b944810c5333a7d12f7796cd022ac7b6bfced0bf3738fe822b2",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00389_1746.wav",
+  "lang": "hi",
+  "reference": "पौधे फ़ोटोसिंथेसिस द्वारा सूर्य से अपना भोजन बनाते हैं वह छाया भी देते हैं",
+  "seconds": 7.68,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 389,
+   "id": "1746"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "35753f9da78fc23949e467ba612b85d9e379ac1184456b1d00399bffcce11455",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00391_1897.wav",
+  "lang": "hi",
+  "reference": "उत्तर में यह क्षेत्र साहेल और दक्षिण और पश्चिम में अटलांटिक महासागर से घिरा है",
+  "seconds": 9.72,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 391,
+   "id": "1897"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "dc71872ccbef31ab4e51efa44bc2ce87c7d48e1db48328cb9b91a5dbc5e86800",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00394_1977.wav",
+  "lang": "hi",
+  "reference": "शेरों का समूह वयस्क नर के साथ-साथ तीस से ज़्यादा मादा और शावकों के साथ एक से तीन तक का बना होता है",
+  "seconds": 9.06,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 394,
+   "id": "1977"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "be3ee258511ccc876003693ed9f5e69f7b46854eede198caf3672beaa97a4fa1",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00401_1913.wav",
+  "lang": "hi",
+  "reference": "बाघ की दहाड़ किसी शेर की तेज़ आवाज़ वाली दहाड़ की तरह नहीं होती है लेकिन उसकी बंधी हुई चिल्लाने जैसी होती है",
+  "seconds": 9.06,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 401,
+   "id": "1913"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "c3c51c9dd850bd31303b142661932c27de3a24ea432d72a0a33865600d4c9440",
+  "gender": 1
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00410_1737.wav",
+  "lang": "hi",
+  "reference": "शेर प्राइड नामक बड़े समूहों में रहने वाली सबसे बड़ी सामाजिक बिल्लियां हैं",
+  "seconds": 8.34,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 410,
+   "id": "1737"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "8b1c77e7ca6fc1e2da33e8b1a1c5c81a120cd015a76a1f77f7f2fc8cab1fee3f",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00413_1975.wav",
+  "lang": "hi",
+  "reference": "वेटिकन सिटी की जनसंख्या लगभग 800 है यह विश्व का सबसे कम जनसंख्या वाला सबसे छोटा स्वतंत्र राष्ट्र है",
+  "seconds": 9.42,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 413,
+   "id": "1975"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "71531a7e05bd68d9b194b77a0ac95ecba798f2ebcde630deb49021a617153461",
+  "gender": 0
+ },
+ {
+  "file": "bench/clips/public/hi/fleurs-hi_00414_1943.wav",
+  "lang": "hi",
+  "reference": "जितनी कम चिंता उतनी ज़्यादा सकारात्मक जीवन ऊर्जा का संचार हर इंसान परम शांति और संतोष पा सकता है",
+  "seconds": 7.32,
+  "kind": "public dataset, adult speech",
+  "source": {
+   "dataset": "google/fleurs",
+   "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+   "file": "parquet-data/hi_in/test-00000-of-00001.parquet",
+   "split": "test",
+   "row": 414,
+   "id": "1943"
+  },
+  "license": "CC BY 4.0",
+  "url": "https://huggingface.co/datasets/google/fleurs",
+  "sha256": "02e456bbbbe13a6eb43cc02ed4f793ffb6474e030858caec0429416aa37b2b0d",
+  "gender": 1
+ }
+]
