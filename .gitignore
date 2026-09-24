@@ -54,4 +54,4 @@ _archive/frontend_drafts/test_card.html
 # Runtime outputs
 tts_out/
 verify_report.txt
-data/
+/data/

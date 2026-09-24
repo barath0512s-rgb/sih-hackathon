@@ -1,0 +1,1150 @@
+{
+ "description": "Reference vectors for Ol Chiki -> Devanagari/Latin transliteration (translit/olchiki.py). The Python and Android implementations must both pass every vector. Expected outputs are NFC. Phonetic rules are pending native review.",
+ "review_status": "pending_native_review",
+ "count": 125,
+ "vectors": [
+  {
+   "id": 1,
+   "input": "ᱛᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ता",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 2,
+   "input": "ᱜᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "गा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 3,
+   "input": "ᱝᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ङा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 4,
+   "input": "ᱞᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ला",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 5,
+   "input": "ᱠᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "का",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 6,
+   "input": "ᱡᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "जा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 7,
+   "input": "ᱢᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "मा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 8,
+   "input": "ᱣᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "वा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 9,
+   "input": "ᱥᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "सा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 10,
+   "input": "ᱦᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "हा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 11,
+   "input": "ᱧᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ञा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 12,
+   "input": "ᱨᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "रा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 13,
+   "input": "ᱪᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "चा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 14,
+   "input": "ᱫᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "दा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 15,
+   "input": "ᱬᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "णा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 16,
+   "input": "ᱭᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "या",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 17,
+   "input": "ᱯᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "पा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 18,
+   "input": "ᱰᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "डा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 19,
+   "input": "ᱱᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ना",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 20,
+   "input": "ᱲᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ड़ा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 21,
+   "input": "ᱴᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "टा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 22,
+   "input": "ᱵᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "बा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 23,
+   "input": "ᱶᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "वा",
+   "rule": "consonant + vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 24,
+   "input": "ᱚ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ऑ",
+   "rule": "independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 25,
+   "input": "ᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आ",
+   "rule": "independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 26,
+   "input": "ᱤ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "इ",
+   "rule": "independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 27,
+   "input": "ᱩ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "उ",
+   "rule": "independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 28,
+   "input": "ᱮ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ए",
+   "rule": "independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 29,
+   "input": "ᱳ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ओ",
+   "rule": "independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 30,
+   "input": "ᱠᱚ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "कॉ",
+   "rule": "vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 31,
+   "input": "ᱠᱤ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "कि",
+   "rule": "vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 32,
+   "input": "ᱠᱩ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "कु",
+   "rule": "vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 33,
+   "input": "ᱠᱮ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "के",
+   "rule": "vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 34,
+   "input": "ᱠᱳ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "को",
+   "rule": "vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 35,
+   "input": "ᱟᱹ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "अ",
+   "rule": "rule 1: ᱟᱹ is schwa (independent)",
+   "source": "hand-written"
+  },
+  {
+   "id": 36,
+   "input": "ᱠᱟᱹ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "क",
+   "rule": "rule 1: ᱟᱹ is schwa (inherent vowel)",
+   "source": "hand-written"
+  },
+  {
+   "id": 37,
+   "input": "ᱠᱷᱟᱹᱴᱤ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "खटि",
+   "rule": "rule 1: ᱟᱹ in a word",
+   "source": "hand-written"
+  },
+  {
+   "id": 38,
+   "input": "ᱚᱞ ᱪᱤᱠᱤ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ऑल् चिकि",
+   "rule": "rule 1: ᱚ is /ɔ/",
+   "source": "hand-written"
+  },
+  {
+   "id": 39,
+   "input": "ᱟᱸ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आँ",
+   "rule": "nasal ᱸ on independent vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 40,
+   "input": "ᱠᱮᱸ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "केँ",
+   "rule": "nasal ᱸ on vowel sign",
+   "source": "hand-written"
+  },
+  {
+   "id": 41,
+   "input": "ᱟᱺ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "अँ",
+   "rule": "ᱺ = schwa + nasal (independent)",
+   "source": "hand-written"
+  },
+  {
+   "id": 42,
+   "input": "ᱠᱟᱺ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "कँ",
+   "rule": "ᱺ = schwa + nasal (sign)",
+   "source": "hand-written"
+  },
+  {
+   "id": 43,
+   "input": "ᱜᱚᱴᱟᱝ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "गॉटां",
+   "rule": "ᱝ closing a syllable -> anusvara",
+   "source": "hand-written"
+  },
+  {
+   "id": 44,
+   "input": "ᱟᱲᱟᱝ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आड़ां",
+   "rule": "ᱝ closing a syllable -> anusvara",
+   "source": "hand-written"
+  },
+  {
+   "id": 45,
+   "input": "ᱤᱻ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ई",
+   "rule": "rule 3: ᱻ lengthens i",
+   "source": "hand-written"
+  },
+  {
+   "id": 46,
+   "input": "ᱠᱩᱻ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "कू",
+   "rule": "rule 3: ᱻ lengthens u",
+   "source": "hand-written"
+  },
+  {
+   "id": 47,
+   "input": "ᱟᱻ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आ",
+   "rule": "rule 3: ᱻ on a leaves it",
+   "source": "hand-written"
+  },
+  {
+   "id": 48,
+   "input": "ᱫᱟᱜ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "दाक्",
+   "rule": "rule 2: checked ᱜ",
+   "source": "hand-written"
+  },
+  {
+   "id": 49,
+   "input": "ᱢᱤᱫ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "मित्",
+   "rule": "rule 2: checked ᱫ",
+   "source": "hand-written"
+  },
+  {
+   "id": 50,
+   "input": "ᱛᱮᱦᱮᱸᱡ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "तेहेँच्",
+   "rule": "rule 2: checked ᱡ",
+   "source": "hand-written"
+  },
+  {
+   "id": 51,
+   "input": "ᱥᱟᱵ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "साप्",
+   "rule": "rule 2: checked ᱵ",
+   "source": "hand-written"
+  },
+  {
+   "id": 52,
+   "input": "ᱜᱤᱫᱽᱨᱟᱹ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "गिद्र",
+   "rule": "rule 2: ahad keeps ᱫ voiced",
+   "source": "hand-written"
+  },
+  {
+   "id": 53,
+   "input": "ᱩᱝᱜᱽᱞᱤ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "उंग्लि",
+   "rule": "rule 2: ahad keeps ᱜ voiced",
+   "source": "hand-written"
+  },
+  {
+   "id": 54,
+   "input": "ᱡᱷᱤᱡᱽ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "झिज्",
+   "rule": "rule 2: ahad keeps ᱡ voiced",
+   "source": "hand-written"
+  },
+  {
+   "id": 55,
+   "input": "ᱥᱟᱵᱽ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "साब्",
+   "rule": "rule 2: ahad keeps ᱵ voiced",
+   "source": "hand-written"
+  },
+  {
+   "id": 56,
+   "input": "ᱜᱟᱜᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "गागा",
+   "rule": "rule 2: released before a vowel",
+   "source": "hand-written"
+  },
+  {
+   "id": 57,
+   "input": "ᱠᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "खा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 58,
+   "input": "ᱜᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "घा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 59,
+   "input": "ᱪᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "छा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 60,
+   "input": "ᱡᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "झा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 61,
+   "input": "ᱛᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "था",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 62,
+   "input": "ᱫᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "धा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 63,
+   "input": "ᱯᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "फा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 64,
+   "input": "ᱵᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "भा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 65,
+   "input": "ᱴᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ठा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 66,
+   "input": "ᱰᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ढा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 67,
+   "input": "ᱲᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "ढ़ा",
+   "rule": "aspirate",
+   "source": "hand-written"
+  },
+  {
+   "id": 68,
+   "input": "ᱢᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "म्हा",
+   "rule": "aspirate on a non-stop -> C+्ह",
+   "source": "hand-written"
+  },
+  {
+   "id": 69,
+   "input": "ᱷᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "हा",
+   "rule": "ᱷ with no consonant is h",
+   "source": "hand-written"
+  },
+  {
+   "id": 70,
+   "input": "ᱢᱮᱱᱟᱜᱼᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "मेनाक्आ",
+   "rule": "rule 4: phaarkaa is a syllable break",
+   "source": "hand-written"
+  },
+  {
+   "id": 71,
+   "input": "ᱱᱟᱶᱟ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नावा",
+   "rule": "rule 5: ᱶ -> व",
+   "source": "hand-written"
+  },
+  {
+   "id": 72,
+   "input": "᱐",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "सुनुम्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 73,
+   "input": "᱑",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "मित्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 74,
+   "input": "᱒",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "बार्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 75,
+   "input": "᱓",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "पे",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 76,
+   "input": "᱔",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "पुन्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 77,
+   "input": "᱕",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "मॉणे",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 78,
+   "input": "᱖",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "तुरुय्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 79,
+   "input": "᱗",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "एयाय्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 80,
+   "input": "᱘",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "इरल्",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 81,
+   "input": "᱙",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आरे",
+   "rule": "rule 6: Ol Chiki digit spoken",
+   "source": "hand-written"
+  },
+  {
+   "id": 82,
+   "input": "᱑᱐",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "गेल्",
+   "rule": "rule 6: 10",
+   "source": "hand-written"
+  },
+  {
+   "id": 83,
+   "input": "᱑᱑",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "गेल् मित्",
+   "rule": "rule 6: 11 = ten one",
+   "source": "hand-written"
+  },
+  {
+   "id": 84,
+   "input": "᱒᱐",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "बार् गेल्",
+   "rule": "rule 6: 20 = two ten",
+   "source": "hand-written"
+  },
+  {
+   "id": 85,
+   "input": "᱒᱓",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "बार् गेल् पे",
+   "rule": "rule 6: 23",
+   "source": "hand-written"
+  },
+  {
+   "id": 86,
+   "input": "᱑᱐᱐",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "साय्",
+   "rule": "rule 6: 100",
+   "source": "hand-written"
+  },
+  {
+   "id": 87,
+   "input": "᱑᱒᱓",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "साय् बार् गेल् पे",
+   "rule": "rule 6: 123",
+   "source": "hand-written"
+  },
+  {
+   "id": 88,
+   "input": "᱙᱙᱙",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आरे साय् आरे गेल् आरे",
+   "rule": "rule 6: 999",
+   "source": "hand-written"
+  },
+  {
+   "id": 89,
+   "input": "᱑᱒᱓᱔",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "मित् बार् पे पुन्",
+   "rule": "rule 6: >999 read digit by digit",
+   "source": "hand-written"
+  },
+  {
+   "id": 90,
+   "input": "7 ᱜᱚᱴᱟᱝ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "एयाय् गॉटां",
+   "rule": "rule 6: ASCII digit inside Santali",
+   "source": "hand-written"
+  },
+  {
+   "id": 91,
+   "input": "७",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "एयाय्",
+   "rule": "rule 6: Devanagari digit inside Santali",
+   "source": "hand-written"
+  },
+  {
+   "id": 92,
+   "input": "᱑᱒᱓ ᱗",
+   "function": "to_devanagari",
+   "digits": "digits",
+   "expected": "१२३ ७",
+   "rule": "digits mode: Ol Chiki -> Devanagari digits",
+   "source": "hand-written"
+  },
+  {
+   "id": 93,
+   "input": "᱐",
+   "function": "to_devanagari",
+   "digits": "digits",
+   "expected": "०",
+   "rule": "digits mode: single digit",
+   "source": "hand-written"
+  },
+  {
+   "id": 94,
+   "input": "ᱫᱟᱜ ᱾",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "दाक्।",
+   "rule": "᱾ -> danda",
+   "source": "hand-written"
+  },
+  {
+   "id": 95,
+   "input": "ᱫᱟᱜ᱿",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "दाक्॥",
+   "rule": "᱿ -> double danda",
+   "source": "hand-written"
+  },
+  {
+   "id": 96,
+   "input": "ᱫᱟᱜ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "दाक्।",
+   "rule": "Devanagari danda kept",
+   "source": "hand-written"
+  },
+  {
+   "id": 97,
+   "input": "ᱫᱟᱜ ꯃꯄ",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "दाक् ꯃꯄ",
+   "rule": "other scripts pass through",
+   "source": "hand-written"
+  },
+  {
+   "id": 98,
+   "input": "ᱪᱮᱫ?",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "चेत्?",
+   "rule": "question mark kept",
+   "source": "hand-written"
+  },
+  {
+   "id": 99,
+   "input": "ᱛᱮᱦᱮᱸᱡ",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "tehench",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 100,
+   "input": "ᱫᱟᱜ",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "dak",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 101,
+   "input": "ᱜᱤᱫᱽᱨᱟᱹ",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "gidra",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 102,
+   "input": "ᱠᱷᱟᱹᱴᱤ",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "khati",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 103,
+   "input": "ᱤᱻ",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "ee",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 104,
+   "input": "᱗",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "eyay",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 105,
+   "input": "ᱥᱮᱛᱟᱜ ᱡᱚᱦᱟᱨ ᱾",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "setak johar.",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 106,
+   "input": "ᱟᱲᱟᱝ",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "arang",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 107,
+   "input": "ᱫᱟᱜ।",
+   "function": "to_latin",
+   "digits": "spoken",
+   "expected": "dak.",
+   "rule": "latin path",
+   "source": "hand-written"
+  },
+  {
+   "id": 108,
+   "input": "ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱢᱤᱫ ᱠᱷᱚᱱ ᱜᱮᱞ ᱛᱩᱨᱩᱭ ᱜᱤᱱᱛᱤ ᱥᱮᱪᱮᱫᱟ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "तेहेँच् आले मित् खॉन् गेल् तुरुय् गिन्ति सेचेदा।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "तेहेँज् आले मिद् खन् गेल् तुरुय् गिन्ति सेचेदा।"
+  },
+  {
+   "id": 109,
+   "input": "ᱟᱢᱟᱜ ᱩᱝᱜᱽᱞᱤ ᱫᱮᱠᱷᱟᱣ ᱢᱮ ᱟᱨ ᱟᱢᱟᱜ ᱥᱟᱝ ᱜᱤᱱᱛᱤ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आमाक् उंग्लि देखाव् मे आर् आमाक् सां गिन्ति मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "आमाग् उंग्’लि देखाव् मे आर् आमाग् सां गिन्ति मे।"
+  },
+  {
+   "id": 110,
+   "input": "ᱱᱤᱛᱚᱜ ᱟᱢᱟᱜ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ। ᱱᱤᱭᱟᱹ ᱜᱤᱱᱛᱤ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नितॉक् आमाक् खॉन् मॉणे धिरि मेनाक्आ। निय गिन्ति मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नितग् आमाग् खन् मणे धिरि मेनाग्ᱼआ। नियॉ गिन्ति मे।"
+  },
+  {
+   "id": 111,
+   "input": "ᱱᱮᱞᱮ ᱡᱚᱛᱚ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ? ᱞᱟᱹᱭ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नेले जॉतॉ धिरि मेनाक्आ? लय् मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नेले जत धिरि मेनाग्ᱼआ? लॉय् मे।"
+  },
+  {
+   "id": 112,
+   "input": "ᱱᱚᱶᱟ ᱜᱚᱞ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱢᱤᱫ ᱜᱚᱞ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नॉवा गॉल् काना। नॉवा मित् गॉल् चितर् काना।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नङा गल् काना। नङा मिद् गल् चितॉर् काना।"
+  },
+  {
+   "id": 113,
+   "input": "ᱱᱚᱶᱟ ᱪᱟᱩᱠᱟ ᱠᱟᱱᱟ। ᱱᱚᱶᱟ ᱨᱮᱭᱟᱜ ᱯᱩᱱ ᱠᱩᱱᱟᱹ ᱢᱮᱱᱟᱜᱼᱟ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नॉवा चाउका काना। नॉवा रेयाक् पुन् कुन मेनाक्आ।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नङा चाउका काना। नङा रेयाग् पुन् कुनॉ मेनाग्ᱼआ।"
+  },
+  {
+   "id": 114,
+   "input": "ᱟᱢᱟᱜ ᱥᱩᱨ ᱨᱮ ᱜᱚᱞ ᱡᱤᱱᱤᱥ ᱯᱟᱱᱛᱮ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "आमाक् सुर् रे गॉल् जिनिस् पान्ते मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "आमाग् सुर् रे गल् जिनिस् पान्ते मे।"
+  },
+  {
+   "id": 115,
+   "input": "ᱱᱚᱶᱟ ᱚᱠᱟ ᱪᱤᱛᱟᱹᱨ ᱠᱟᱱᱟ?",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नॉवा ऑका चितर् काना?",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नङा अका चितॉर् काना?"
+  },
+  {
+   "id": 116,
+   "input": "ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱡᱚᱲᱟᱣ ᱥᱮᱪᱮᱫᱟ। ᱢᱤᱫ ᱟᱨ ᱢᱤᱫ ᱢᱮᱥᱟᱣ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "तेहेँच् आले जॉड़ाव् सेचेदा। मित् आर् मित् मेसाव् मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "तेहेँज् आले जड़ाव् सेचेदा। मिद् आर् मिद् मेसाव् मे।"
+  },
+  {
+   "id": 117,
+   "input": "ᱵᱟᱨ ᱩᱞ ᱟᱨ ᱯᱮ ᱩᱞ ᱢᱮᱥᱟᱣ ᱢᱮ। ᱡᱚᱛᱚ ᱛᱤᱱᱟᱜ ᱦᱩᱭᱮᱱᱟ? ᱩᱝᱜᱽᱞᱤ ᱨᱮ ᱜᱤᱱᱛᱤ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "बार् उल् आर् पे उल् मेसाव् मे। जॉतॉ तिनाक् हुयेना? उंग्लि रे गिन्ति मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "बार् उल् आर् पे उल् मेसाव् मे। जत तिनाग् हुयेना? उंग्’लि रे गिन्ति मे।"
+  },
+  {
+   "id": 118,
+   "input": "ᱱᱤᱛᱚᱜ ᱟᱢ ᱢᱤᱫ ᱡᱚᱲᱟᱣ ᱠᱩᱠᱞᱤ ᱛᱮᱭᱟᱨ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नितॉक् आम् मित् जॉड़ाव् कुक्लि तेयार् मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नितग् आम् मिद् जड़ाव् कुक्लि तेयार् मे।"
+  },
+  {
+   "id": 119,
+   "input": "ᱯᱮ ᱟᱨ ᱯᱩᱱ ᱡᱚᱛᱚ ᱦᱩᱭᱩᱜᱼᱟ?",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "पे आर् पुन् जॉतॉ हुयुक्आ?",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "पे आर् पुन् जत हुयुग्ᱼआ?"
+  },
+  {
+   "id": 120,
+   "input": "ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱠᱟᱱᱟ — ᱟᱭᱳ। ᱱᱚᱶᱟ ᱯᱟᱲᱦᱟᱣ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नॉवा आड़ां काना — आयो। नॉवा पाड़्हाव् मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नङा आड़ां काना — आयो। नङा पाड़्हाव् मे।"
+  },
+  {
+   "id": 121,
+   "input": "ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱯᱮ ᱛᱷᱚᱠ ᱯᱟᱲᱦᱟᱣ ᱢᱮ — ᱫᱟᱜ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नॉवा आड़ां पे थॉक् पाड़्हाव् मे — दाक्।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नङा आड़ां पे थक् पाड़्हाव् मे — दाग्।"
+  },
+  {
+   "id": 122,
+   "input": "ᱱᱚᱶᱟ ᱟᱲᱟᱝ ᱪᱮᱫ ᱠᱟᱱᱟ? ᱯᱟᱲᱦᱟᱣ ᱠᱟᱛᱮ ᱞᱟᱹᱭ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "नॉवा आड़ां चेत् काना? पाड़्हाव् काते लय् मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "नङा आड़ां चेद् काना? पाड़्हाव् काते लॉय् मे।"
+  },
+  {
+   "id": 123,
+   "input": "ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ ᱠᱚᱢ ᱥᱮᱪᱮᱫᱟ। ᱜᱮᱞ ᱠᱷᱚᱱ ᱯᱮ ᱠᱚᱢ ᱢᱮ।",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "तेहेँच् आले कॉम् सेचेदा। गेल् खॉन् पे कॉम् मे।",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "तेहेँज् आले कम् सेचेदा। गेल् खन् पे कम् मे।"
+  },
+  {
+   "id": 124,
+   "input": "ᱮᱭᱟᱭ ᱫᱷᱤᱨᱤ ᱦᱟᱛᱟᱣ ᱢᱮ। ᱯᱮ ᱚᱪᱚᱜ ᱢᱮ। ᱱᱤᱛᱚᱜ ᱡᱚᱛᱚ ᱛᱟᱦᱮᱸᱱᱟ?",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "एयाय् धिरि हाताव् मे। पे ऑचॉक् मे। नितॉक् जॉतॉ ताहेँना?",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "एयाय् धिरि हाताव् मे। पे अचग् मे। नितग् जत ताहेँना?"
+  },
+  {
+   "id": 125,
+   "input": "ᱤᱨᱟᱹᱞ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱠᱚᱢ ᱢᱮ। ᱛᱮᱞᱟ ᱪᱮᱫ ᱠᱟᱱᱟ?",
+   "function": "to_devanagari",
+   "digits": "spoken",
+   "expected": "इरल् खॉन् मॉणे कॉम् मे। तेला चेत् काना?",
+   "rule": "real lesson sentence",
+   "source": "implementation; orthographic form verified against Aksharamukha",
+   "aksharamukha": "इरॉल् खन् मणे कम् मे। तेला चेद् काना?"
+  }
+ ]
+}
