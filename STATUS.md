@@ -15,6 +15,18 @@ since then are summarised in section 0.
 | **Bug found and fixed:** two overlapping model translations could hang a request for ever. `IndicProcessor` shares one placeholder queue and clears it after each batch. It could hit two classroom requests at once, or a request during the start-up pre-cache. Reproduced (6 overlapping: 5 stuck after 300 s), fixed with a lock (6 of 6 in 5.5 s), regression test added. The 3 lessons imported before the fix were re-checked: 22 of 22 lines match a fresh translation | done | `8cc1c41` |
 | Real recordings: `bench/clips/real/` does not exist yet, so the benchmark was **not** re-run and CTC/RNN-T is not yet chosen per language | waiting for clips | |
 
+### Pre-push polish (25 Sep)
+
+| Item | Result | Commit |
+|---|---|---|
+| Files showing as modified | Line endings only: 13 files stored LF, checked out CRLF. `.gitattributes` fixes LF (CRLF for `.bat`); renormalising changed nothing in the index | `d0293b2` |
+| Team lessons on first start | `app.seed_team_lessons()`; a fresh clone's first start added all 12 (17 in total) | `dfdb9cc` |
+| Two Grade 3 lessons | numbers to 9999 (G3-NUM-1); 83-word read-aloud passage (G3-LIT-2, G3-LIT-1) | `dfdb9cc` |
+| Worksheet headings | Hindi and Santali; only the Ministry's Lakshya text stays English | `8762dcb` |
+| Fresh-clone test | clone, `python -m venv`, `pip install -r requirements.txt`, models linked, `download_models.py --verify-only` (423 files OK), `verify_models.py` (all pass), `pytest -q` (247 passed), `python app.py` (17 lessons). **Two README-path bugs found and fixed:** `download_models.py` could not download on a fresh machine (offline mode inherited from config.py); `verify_models.py` skipped the end-to-end speech check without a local clip | `b0519bf`, `6c97ee9` |
+| CI | `.github/workflows/tests.yml` runs the model-free tests (simulated locally in a clean clone and venv: 222 passed, 25 skipped). The badge shows once pushed | `e0764ce`, `91b909a` |
+| Demo | `docs/demo_video_script.md`, `tools/demo_reset.py` (run against the live server: 17 lessons, no online dependencies, warm-up 21.0 s) | `7997919` |
+
 Notes:
 - Commit `42ec510` describes the एक/समझ suggestion-rule change as its own. That change actually went in with `4418c45`; `42ec510` holds the Hindi messages and the deck-picker fix.
 - The goal suggestions matched the team's own choice for 7 of 10 lessons, and 9 of 10 after tuning the rules on those same lessons, so this is not an independent accuracy figure. Line labels: the team changed none, but the lessons were written knowing the rules.
