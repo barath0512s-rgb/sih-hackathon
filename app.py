@@ -521,6 +521,10 @@ def session_summary():
 _import_lock = threading.Lock()
 
 
+def _curriculum_error(e):
+    return jsonify({"error": str(e), "code": e.code, "params": e.params}), 400
+
+
 @app.route("/curriculum/import", methods=["POST"])
 def curriculum_import():
     try:
@@ -534,7 +538,7 @@ def curriculum_import():
             items = curriculum.parse_upload(text=d.get("text"), grade=d.get("grade"),
                                             title=d.get("title"))
     except curriculum.CurriculumError as e:
-        return jsonify({"error": str(e)}), 400
+        return _curriculum_error(e)
     return jsonify({
         "lessons": [curriculum.draft(i) for i in items],
         "types": list(curriculum.TYPES),
@@ -552,7 +556,7 @@ def curriculum_save():
     try:
         grade, title, lines, ids = curriculum.validate(request.json or {})
     except curriculum.CurriculumError as e:
-        return jsonify({"error": str(e)}), 400
+        return _curriculum_error(e)
     lesson = curriculum.build_lesson(grade, title, lines, ids)
     topic = "imp_" + uuid.uuid4().hex[:10]
     (config.LESSON_AUDIO_DIR / topic).mkdir(parents=True, exist_ok=True)

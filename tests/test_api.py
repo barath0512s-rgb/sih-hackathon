@@ -321,6 +321,10 @@ def test_curriculum_rejects_bad_input(api):
     r = c.post("/curriculum/save", json={"grade": "1", "title": "x", "lakshya_ids": ["NIPUN-G1-NUM-1"],
                                          "lines": [{"hindi": "आम गिनो।"}]})
     assert r.status_code == 400 and "Confirm" in r.get_json()["error"]
+    assert r.get_json()["code"] == "confirm"          # the UI says it in Hindi
+    r = c.post("/curriculum/save", json={"grade": "1", "title": "x", "lakshya_ids": ["NIPUN-G1-NUM-1"],
+                                         "lakshya_confirmed": True, "lines": [{"hindi": "hello"}]})
+    assert r.get_json()["code"] == "line_not_hindi" and r.get_json()["params"] == {"n": 1}
     assert c.get("/lesson_audio/..%2Fapp.py/0").status_code == 404
     assert c.get("/curriculum/imp_0000000000/worksheet").status_code == 404
 

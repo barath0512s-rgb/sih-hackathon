@@ -30,7 +30,12 @@ _PUNCT = "।॥?.!,;:\"'“”‘’()[]—–-…"
 
 # ── Input ─────────────────────────────────────────────────────────────────────
 class CurriculumError(ValueError):
-    """The upload could not be read. The message is shown to the teacher."""
+    """The upload or the draft is not usable. `code` (and `params`) let the UI
+    say it in the teacher's language; the English message is for logs and tests."""
+
+    def __init__(self, message, code="invalid", params=None):
+        super().__init__(message)
+        self.code, self.params = code, params or {}
 
 
 def parse_upload(text=None, filename=None, data=None, grade=None, title=None):
@@ -46,7 +51,7 @@ def parse_upload(text=None, filename=None, data=None, grade=None, title=None):
         try:
             raw = data.decode("utf-8-sig")
         except UnicodeDecodeError:
-            raise CurriculumError("The file must be UTF-8 text.")
+            raise CurriculumError("The file must be UTF-8 text.", "file_encoding")
         if name.endswith(".csv"):
             rows = list(csv.DictReader(io.StringIO(raw)))
             return _group(rows, "CSV")
@@ -54,18 +59,18 @@ def parse_upload(text=None, filename=None, data=None, grade=None, title=None):
             try:
                 rows = json.loads(raw)
             except json.JSONDecodeError as e:
-                raise CurriculumError(f"The JSON file could not be read: {e.msg}.")
+                raise CurriculumError(f"The JSON file could not be read: {e.msg}.", "json_bad")
             if isinstance(rows, dict):
                 rows = rows.get("lines") or rows.get("rows") or []
             if not isinstance(rows, list):
-                raise CurriculumError("The JSON file must be a list of {grade, topic, line}.")
+                raise CurriculumError("The JSON file must be a list of {grade, topic, line}.", "json_shape")
             return _group(rows, "JSON")
         if name.endswith(".txt") or not name:
             text = raw
         else:
-            raise CurriculumError("Upload a .txt, .csv or .json file.")
+            raise CurriculumError("Upload a .txt, .csv or .json file.", "file_type")
     if not (text or "").strip():
-        raise CurriculumError("There is no lesson text.")
+        raise CurriculumError("There is no lesson text.", "no_text")
     return [{"grade": str(grade or "1"), "title": (title or "").strip(), "text": text}]
 
 
@@ -73,7 +78,7 @@ def _group(rows, kind):
     lessons, order = {}, []
     for i, r in enumerate(rows, 1):
         if not isinstance(r, dict):
-            raise CurriculumError(f"{kind} row {i} is not a record with grade, topic, line.")
+            raise CurriculumError(f"{kind} row {i} is not a record with grade, topic, line.", "row_bad", {'n': i})
         r = {str(k).strip().lower(): ("" if v is None else str(v)).strip() for k, v in r.items()}
         if not r.get("line"):
             continue
@@ -83,7 +88,7 @@ def _group(rows, kind):
             order.append(key)
         lessons[key].append(r["line"])
     if not order:
-        raise CurriculumError(f"The {kind} file has no rows with grade, topic and line.")
+        raise CurriculumError(f"The {kind} file has no rows with grade, topic and line.", "no_rows")
     return [{"grade": g, "title": t, "text": "\n".join(lessons[(g, t)])} for g, t in order]
 
 
@@ -164,7 +169,7 @@ def suggest(grade, lines):
     lit = sum(_has([w], LITERACY_STEMS) for w in words)
     grade = str(grade)
     if not num and not lit:
-        return {"domain": None, "lakshya_ids": [],
+        return {"domain": None, "lakshya_ids": [], "counts": {"numeracy": 0, "literacy": 0},
                 "why": "No number or reading words found; choose the goals yourself."}
     st = STAGE.get(grade, "G1")
     if num >= lit:
@@ -191,7 +196,9 @@ def suggest(grade, lines):
         else:
             ids = [f"NIPUN-{st}-LIT-1"]
         why = f"{lit} reading or writing words"
-    return {"domain": domain, "lakshya_ids": ids, "why": f"{why}; grade {grade}"}
+    # "why" is for logs and tests; the UI builds its own sentence from "counts".
+    return {"domain": domain, "lakshya_ids": ids, "counts": {"numeracy": num, "literacy": lit},
+            "why": f"{why}; grade {grade}"}
 
 
 def draft(item):
@@ -248,45 +255,45 @@ def validate(body):
     """Check a teacher-confirmed draft. Returns (grade, title, lines, ids) or raises."""
     grade = str(body.get("grade", ""))
     if grade not in GRADES:
-        raise CurriculumError("Grade must be Balvatika (0) or 1, 2, 3.")
+        raise CurriculumError("Grade must be Balvatika (0) or 1, 2, 3.", "grade")
     title = normalise(str(body.get("title") or ""))
     if not title:
-        raise CurriculumError("Give the lesson a title.")
+        raise CurriculumError("Give the lesson a title.", "title")
     if len(title) > MAX_TITLE:
-        raise CurriculumError(f"The title is longer than {MAX_TITLE} characters.")
+        raise CurriculumError(f"The title is longer than {MAX_TITLE} characters.", "title_long", {'n': MAX_TITLE})
     lines = body.get("lines") or []
     if not isinstance(lines, list) or not lines:
-        raise CurriculumError("The lesson has no lines.")
+        raise CurriculumError("The lesson has no lines.", "no_lines")
     if len(lines) > MAX_LINES:
-        raise CurriculumError(f"A lesson can have at most {MAX_LINES} lines.")
+        raise CurriculumError(f"A lesson can have at most {MAX_LINES} lines.", "too_many_lines", {'n': MAX_LINES})
     clean = []
     for i, l in enumerate(lines, 1):
         if not isinstance(l, dict):
-            raise CurriculumError(f"Line {i} is not valid.")
+            raise CurriculumError(f"Line {i} is not valid.", "line_bad", {'n': i})
         hindi = normalise(str(l.get("hindi") or ""))
         if not hindi:
             continue
         if not _DEVANAGARI.search(hindi):
-            raise CurriculumError(f"Line {i} is not in Hindi (Devanagari): {hindi[:40]}")
+            raise CurriculumError(f"Line {i} is not in Hindi (Devanagari): {hindi[:40]}", "line_not_hindi", {'n': i})
         if len(hindi) > MAX_LINE_CHARS:
-            raise CurriculumError(f"Line {i} is longer than {MAX_LINE_CHARS} characters.")
+            raise CurriculumError(f"Line {i} is longer than {MAX_LINE_CHARS} characters.", "line_long", {'n': i})
         t = l.get("type") or classify(hindi)
         if t not in TYPES:
-            raise CurriculumError(f"Line {i} has an unknown type: {t}")
+            raise CurriculumError(f"Line {i} has an unknown type: {t}", "line_type", {'n': i})
         clean.append({"hindi": hindi, "type": t, "answer": normalise(str(l.get("answer") or ""))})
     if not clean:
-        raise CurriculumError("The lesson has no lines.")
+        raise CurriculumError("The lesson has no lines.", "no_lines")
     if body.get("lakshya_confirmed") is not True:
-        raise CurriculumError("Confirm the NIPUN goals before creating the lesson.")
+        raise CurriculumError("Confirm the NIPUN goals before creating the lesson.", "confirm")
     ids = body.get("lakshya_ids") or []
     if not ids:
-        raise CurriculumError("Choose at least one NIPUN goal.")
+        raise CurriculumError("Choose at least one NIPUN goal.", "no_goals")
     for lid in ids:
         if not lakshya.get(lid):
-            raise CurriculumError(f"Unknown NIPUN goal: {lid}")
+            raise CurriculumError(f"Unknown NIPUN goal: {lid}", "goal_unknown")
     domains = {lakshya.get(lid)["domain"] for lid in ids}
     if len(domains) > 1:
-        raise CurriculumError("Choose goals from one domain: literacy or numeracy.")
+        raise CurriculumError("Choose goals from one domain: literacy or numeracy.", "goal_domains")
     return grade, title, clean, list(dict.fromkeys(ids))
 
 
