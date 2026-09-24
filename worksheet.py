@@ -37,13 +37,27 @@ try:
 except Exception as _e:
     print(f"  Worksheet: font load warning ({_e}), falling back to Helvetica")
 
+_OLCHIKI_FONT      = "Helvetica"      # fallback if font missing
+_OLCHIKI_FONT_BOLD = "Helvetica-Bold"
+if os.path.exists(_olchiki_path):
+    _OLCHIKI_FONT      = "NotoSansOlChiki"
+    _OLCHIKI_FONT_BOLD = "NotoSansOlChiki"
+
 def ps(name, size, bold=False, color="#111111", align=TA_LEFT):
-    # Use Ol Chiki font for labels that may contain Santali; Devanagari for rest
+    """Style for Hindi / general text (Devanagari)."""
     fname = (_UNICODE_FONT_BOLD if bold else _UNICODE_FONT)
     return ParagraphStyle(name, fontSize=size,
         fontName=fname,
         textColor=colors.HexColor(color),
         alignment=align, spaceAfter=4, leading=size*1.4)
+
+def ps_sat(name, size, bold=False, color="#111111", align=TA_LEFT):
+    """Style for Santali text (Ol Chiki script)."""
+    fname = (_OLCHIKI_FONT_BOLD if bold else _OLCHIKI_FONT)
+    return ParagraphStyle(name, fontSize=size,
+        fontName=fname,
+        textColor=colors.HexColor(color),
+        alignment=align, spaceAfter=4, leading=size*1.5)
 
 NIPUN = {
     "1": "Recognises letters, numbers 1-20, and simple words in mother tongue",
@@ -57,11 +71,12 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
                             leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=1.5*cm, bottomMargin=1.5*cm)
     s = []
-    H  = ps("H",  16, True,  "#0D2137", TA_CENTER)
-    S  = ps("S",  10, False, "#1A5276", TA_CENTER)
-    LB = ps("LB", 11, True,  "#0D2137")
-    BD = ps("BD", 10, False, "#111111")
-    FT = ps("FT",  7, False, "#888888", TA_CENTER)
+    H   = ps("H",  16, True,  "#0D2137", TA_CENTER)
+    S   = ps("S",  10, False, "#1A5276", TA_CENTER)
+    LB  = ps("LB", 11, True,  "#0D2137")
+    BD  = ps("BD", 10, False, "#111111")
+    SAT = ps_sat("SAT", 11, False, "#111111")   # Ol Chiki font for Santali
+    FT  = ps("FT",  7, False, "#888888", TA_CENTER)
 
     s += [
         Paragraph("VaaniSetu — Bilingual Classroom Worksheet", H),
@@ -81,8 +96,8 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     # Master Translation Pair
     s.append(Paragraph("<b>Key Concept Translation:</b>", LB))
     data = [
-        [Paragraph("Hindi (Teacher)", LB), Paragraph("Santali (Student)", LB)],
-        [Paragraph(hindi, BD), Paragraph(santali, BD)]
+        [Paragraph("Hindi (Teacher)", LB), Paragraph("Santali / ᱥᱟᱱᱛᱟᱲᱤ (Student)", LB)],
+        [Paragraph(hindi or "—", BD),      Paragraph(santali or "—", SAT)]
     ]
     t = Table(data, colWidths=[8.5*cm, 8.5*cm])
     t.setStyle(TableStyle([
@@ -97,13 +112,13 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     # Lesson Step History
     if lesson_steps:
         s.append(Paragraph("<b>Lesson Progression:</b>", LB))
-        h_data = [["Step", "Mode", "Hindi Instruction", "Santali Translation"]]
+        h_data = [["Step", "Mode", "Hindi Instruction", "Santali / ᱥᱟᱱᱛᱟᱲᱤ"]]
         for i, stp in enumerate(lesson_steps):
             m = stp['type'].replace('_', ' ').title()
             h_data.append([
                 str(i+1), m,
-                Paragraph(stp['hindi'], BD),
-                Paragraph(stp['santali'], BD)
+                Paragraph(stp.get('hindi', ''), BD),
+                Paragraph(stp.get('santali', ''), SAT)
             ])
         ht = Table(h_data, colWidths=[1.2*cm, 3*cm, 6.4*cm, 6.4*cm])
         ht.setStyle(TableStyle([

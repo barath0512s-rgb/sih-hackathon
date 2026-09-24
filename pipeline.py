@@ -7,6 +7,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from IndicTransToolkit.processor import IndicProcessor
 import database
 database.init_db()
+from education_glossary import lookup_hi_to_sat, lookup_sat_to_hi
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -26,7 +27,7 @@ except Exception as _e:
     import whisper as _whisper_module
     print(f"ASR backend: Whisper small (fallback — {_e})")
 
-NMT_BEAMS           = 1      # Greedy decoding for fast CPU inference (<10s latency)
+NMT_BEAMS           = 4      # Beam search for better quality (still <8s on CPU)
 NMT_MAX_TOKENS      = 128    # Shorter max tokens for faster processing
 NMT_NO_REPEAT_NGRAM = 3      
 NMT_LENGTH_PENALTY  = 1.0    
@@ -38,8 +39,8 @@ TRANSLATION_CACHE = {}
 #   python -m piper.download_voices <name> --data-dir models/piper
 PIPER_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "piper")
 PIPER_VOICES = {
-    "santali": "en_US-lessac-medium",   # reads the Latin transliteration
     "hindi":   "hi_IN-pratham-medium",  # reads Devanagari directly
+    # Santali intentionally omitted to force fallback to Indian English gTTS
 }
 
 def _populate_nipun_cache(pipeline):
@@ -216,12 +217,24 @@ class VaaniSetuPipeline:
         return text
 
     def hindi_to_santali(self, hindi_text, content_mode="lesson_script"):
-        # 1. Instant Learning: Check if a human has corrected this exact phrase
+        # 0. Instant Learning: a human correction always wins. This must be
+        # checked before the glossary — a teacher correcting one of the
+        # verified glossary sentences would otherwise be silently ignored
+        # forever, since the glossary would keep answering first.
         learned_santali = database.get_correction(hindi_text)
         if learned_santali:
             print(f"  [DB HIT] Instant Learning applied for: {hindi_text}")
             return (learned_santali, "Human Verified (DB)", 100.0)
-            
+
+        # 1. Education Glossary: verified sentence-level lookup (instant, 100% accurate)
+        glossary_hit = lookup_hi_to_sat(hindi_text)
+        if glossary_hit:
+            santali, conf = glossary_hit
+            print(f"  [GLOSSARY HIT] {hindi_text[:50]}")
+            result = (santali, "Education Glossary (Verified)", conf)
+            TRANSLATION_CACHE[f"{content_mode}::{hindi_text}"] = result
+            return result
+
         cache_key = f"{content_mode}::{hindi_text}"
         if cache_key in TRANSLATION_CACHE and \
                 TRANSLATION_CACHE[cache_key] is not None:
@@ -243,6 +256,12 @@ class VaaniSetuPipeline:
         return result
 
     def santali_to_hindi(self, santali_text):
+        # Glossary first for known education sentences
+        glossary_hit = lookup_sat_to_hi(santali_text)
+        if glossary_hit:
+            hindi, _ = glossary_hit
+            print(f"  [GLOSSARY HIT sat->hi] {santali_text[:30]}")
+            return hindi
         hindi, _ = self._nmt(
             santali_text, "sat_Olck", "hin_Deva",
             self.tok_nmt, self.mdl_nmt)
@@ -315,8 +334,12 @@ class VaaniSetuPipeline:
                     print(f"  [PIPER FAILED] {type(e).__name__}: {e}")
             try:
                 from gtts import gTTS
-                lang = "hi" if voice_key == "hindi" else "en"
-                gTTS(text, lang=lang, tld="co.in").save(out_path)
+                if voice_key == "hindi":
+                    gTTS(text, lang="hi").save(out_path)
+                else:
+                    # Santali: use Indian English accent (tld=co.in) for the
+                    # Latin transliteration — closer to how Santali actually sounds
+                    gTTS(text, lang="en", tld="co.in").save(out_path)
                 shutil.copy2(out_path, cached_file)
             except Exception as e:
                 print(f"  [TTS FAILED] {type(e).__name__}: {e} - writing silence")
@@ -359,3 +382,4 @@ class VaaniSetuPipeline:
                 "total": round(t3 - t0, 2)
             }
         }
+

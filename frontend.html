@@ -360,11 +360,11 @@ p{margin:0}
 /* ═════════ FLASHCARDS ═════════ */
 .deck-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
 .deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:20px}
-.fc{display:block;perspective:1200px;background:none;border:0;padding:0;height:250px;width:100%}
+.fc{display:block;perspective:1200px;background:none;border:0;padding:0;height:300px;width:100%}
 .fc-in{
   display:block;                       /* a span ignores width/height until it is a block */
   position:relative;width:100%;height:100%;transform-style:preserve-3d;
-  transition:transform .62s var(--pop);
+  transition:transform .5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 .fc.flip .fc-in{transform:rotateY(180deg)}
 .fc:hover .fc-in{transform:translateY(-5px) rotate(-1.4deg)}
@@ -372,19 +372,31 @@ p{margin:0}
 .fc-face{
   position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   border:2.5px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:16px;text-align:center;
   overflow:hidden;                     /* long emoji rows must never escape the card */
 }
 .fc-front{background:var(--paper)}
 .fc-back{transform:rotateY(180deg);background:var(--c3-soft)}
-.fc .emoji{font-size:var(--es,52px);line-height:1.18;letter-spacing:1px;
+.fc .emoji{flex:0 0 auto;font-size:var(--es,52px);line-height:1.18;letter-spacing:1px;
   max-width:100%;overflow-wrap:anywhere;word-break:break-word}
-.fc .word{font-size:27px;font-weight:800;font-family:var(--deva)}
-.fc-back .word{font-family:var(--olck);font-size:22px}
+/* The word is a translation of unknown length — it must never be able to push
+   .hint/.listen out of the card. It gets the flexible middle region and clamps
+   to 3 lines with an ellipsis rather than growing past its share of the box;
+   .hint/.listen get flex:0 0 auto + margin-top:auto so they always stay pinned
+   at the bottom, visible, regardless of how many lines the word wraps to. */
+.fc .word{
+  flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:800;font-family:var(--deva);width:100%;overflow-wrap:break-word;line-height:1.25;
+  overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+}
+.fc-back .word{font-family:var(--olck);font-size:20px}
+.fc .hint{flex:0 0 auto;margin-top:auto}
+.fc .listen{flex:0 0 auto;margin-top:auto}
 .fc .hint{font-size:12.5px;color:var(--muted);font-weight:700}
 .fc .listen{
   padding:8px 15px;border-radius:999px;border:2.5px solid var(--ink);background:var(--c1);
   font-weight:800;font-size:13.5px;box-shadow:0 3px 0 var(--ink);display:inline-flex;align-items:center;gap:7px;
+  max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
 }
 .fc .listen:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
 .fc .load{font-size:13px;color:var(--muted);font-weight:700}
@@ -506,9 +518,10 @@ p{margin:0}
   .btn.next{margin-left:0;width:100%}
   .sgrid{grid-template-columns:1fr}
   .deck{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-  .fc{height:210px}
+  .fc{height:280px}
   .fc .emoji{font-size:calc(var(--es,52px) * .78)}
-  .fc .word{font-size:22px}
+  .fc .word{font-size:19px; line-height:1.2}
+  .fc-back .word{font-size:17px}
   .srow{flex-wrap:wrap}
   .srow input[type=url],.srow select{width:100%;min-width:0}
   .sheet{padding:22px 18px}
@@ -716,6 +729,131 @@ html[lang="sat"] .trio .sub,html[lang="sat"] .beads-note{font-family:var(--olck)
 
 /* ╔═══════════════════════════════════════════════════════════════════════════╗
    ║   ▲ ▲ ▲   A R T I S A N   L A Y E R   —   E N D                           ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║                                                                           ║
+   ║   ▼ ▼ ▼   R E F I N E M E N T   P A S S   —   B E G I N                   ║
+   ║                                                                           ║
+   ║   The layer above already re-tuned the palette, added grain, paired the  ║
+   ║   type, broken the grid and wired up the micro-interactions. This block  ║
+   ║   only finishes what that pass didn't reach yet — a handful of controls  ║
+   ║   (filters, the type-in row, the fix-it box) that were still on the      ║
+   ║   stock rounded-pill/rectangle treatment — and adds three small,         ║
+   ║   purely decorative touches. Nothing here changes markup or behaviour;   ║
+   ║   delete this block and the page falls back to the artisan layer above.  ║
+   ║                                                                           ║
+   ║   What it does, in order:                                                 ║
+   ║     7. gives the filter pills, the type-in row and the fix-it box the     ║
+   ║        same off-true corners and lean as everything else already has     ║
+   ║     8. a torn-paper edge under the sticky header instead of a hard rule   ║
+   ║     9. a hand-cut scrollbar and an ink-blot focus ring on text inputs     ║
+   ║                                                                           ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ─── 7. the last stock controls ────────────────────────────────────────────
+   Filter pills keep their pill shape (that's the right form for a toggle
+   row) but no two are trimmed identically, and they lean into a pressed
+   state rather than just changing colour. The type-in row and the fix-it
+   box pick up the same broken-corner language as .text and .fixbox's kin.  */
+.filters button{border-radius:999px 998px 999px 997px}
+.filters button:nth-child(3n+2){border-radius:998px 999px 997px 999px}
+.filters button:nth-child(3n+3){border-radius:999px 997px 999px 998px}
+.filters button[aria-pressed="true"]{transform:rotate(-1.1deg);box-shadow:0 4px 0 var(--ink),0 6px 12px rgba(36,28,20,.08)}
+
+.entry input{border-radius:16px 12px 15px 13px;transition:box-shadow .2s var(--settle),transform .2s var(--settle)}
+.entry input:focus{transform:rotate(-.3deg)}
+.fixbox textarea{border-radius:15px 19px 14px 18px}
+.fixbox{transform:rotate(.3deg)}
+
+/* ─── 8. a torn edge, not a ruled line ──────────────────────────────────────
+   The header used to end on a crisp 2.5px rule. A strip of irregular
+   triangles reads like a page torn from a notebook instead of a UI seam.   */
+.top{border-bottom:0;box-shadow:none}
+.top::after{
+  content:"";position:absolute;left:0;right:0;bottom:-7px;height:7px;pointer-events:none;
+  background:
+    linear-gradient(115deg, transparent 50%, var(--cream) 50%) 0 0/9px 9px,
+    linear-gradient(245deg, transparent 50%, var(--cream) 50%) 0 0/9px 9px,
+    var(--ink);
+  background-repeat:repeat-x;
+}
+
+/* ─── 9. crafted cursors & fields ───────────────────────────────────────────
+   A scrollbar and a focus ring that match the ink-and-paper voice instead
+   of the browser defaults peeking through underneath everything else.      */
+::-webkit-scrollbar{width:14px;height:14px}
+::-webkit-scrollbar-track{background:var(--cream-2)}
+::-webkit-scrollbar-thumb{
+  background:var(--muted);border:3px solid var(--cream-2);border-radius:10px 6px 10px 6px;
+}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-2)}
+* {scrollbar-color:var(--muted) var(--cream-2)}
+
+input:focus,textarea:focus,select:focus{
+  box-shadow:0 0 0 4px var(--c4-soft),0 0 0 5px var(--ink) inset!important;
+}
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▼ ▼ ▼   PLAYFUL CLASSROOM POLISH — BEGIN                              ║
+   ║   Targeted overrides only: DOM, copy, data, handlers, and behavior stay  ║
+   ║   intact.                                                               ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+.page{position:relative}
+.page::before,.page::after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%}
+.page::before{width:180px;height:180px;right:-70px;top:150px;background:var(--c1-soft);opacity:.55;filter:blur(2px)}
+.page::after{width:130px;height:130px;left:-52px;bottom:220px;background:var(--c3-soft);opacity:.62;filter:blur(1px)}
+
+/* A quick glint makes classroom controls feel tactile, not template-made. */
+.btn,.filters button,.modes button,.deck-bar button,.fc .listen{position:relative;overflow:hidden}
+.btn::after,.filters button::after,.modes button::after,.deck-bar button::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.42) 48%,transparent 70%);
+  transform:translateX(-125%);transition:transform .55s var(--settle);pointer-events:none
+}
+.btn:hover::after,.filters button:hover::after,.modes button:hover::after,.deck-bar button:hover::after{transform:translateX(125%)}
+.btn:focus-visible,.filters button:focus-visible,.modes button:focus-visible,.deck-bar button:focus-visible{transform:translateY(-2px) rotate(-.6deg)}
+
+/* Topic-coloured shadows and a more theatrical, still-accessible flip. */
+.deck{align-items:start}
+.fc{position:relative;isolation:isolate;will-change:transform}
+.fc::before{
+  content:"";position:absolute;z-index:-1;inset:9px 4px -3px;border-radius:26px 14px 22px 16px;
+  background:var(--c1);opacity:.16;transform:rotate(2.5deg);transition:transform .42s var(--spring),opacity .25s var(--ease)
+}
+.fc:nth-child(3n+2)::before{background:var(--c3);transform:rotate(-2.2deg)}
+.fc:nth-child(3n+3)::before{background:var(--c5);transform:rotate(1.6deg)}
+.fc:hover::before{opacity:.34;transform:rotate(-3deg) translateY(3px) scale(1.03)}
+.fc-in{transition:transform .72s var(--spring)}
+.fc.flip .fc-in{transform:rotateY(180deg) rotateZ(-1deg)}
+.fc.flip:hover .fc-in{transform:rotateY(180deg) translateY(-5px) rotateZ(1deg)}
+.fc .emoji{transition:transform .35s var(--spring);filter:saturate(1.08)}
+.fc:hover .emoji{transform:translateY(-4px) rotate(-5deg) scale(1.08)}
+.fc.flip .fc-back .emoji{animation:cardEmojiLand .58s var(--spring) both}
+@keyframes cardEmojiLand{0%{opacity:0;transform:scale(.55) rotate(14deg)}70%{transform:scale(1.16) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+.fc .listen:hover{transform:translateY(-3px) rotate(2deg);box-shadow:0 5px 0 var(--ink)}
+.fc .listen:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+
+.deck-bar button{transition:transform .22s var(--spring),box-shadow .2s var(--settle),background .2s var(--settle)}
+.deck-bar button:hover{transform:translateY(-3px) rotate(-1.2deg);box-shadow:0 7px 0 var(--ink)}
+.deck-bar button[aria-pressed="true"]{transform:rotate(1deg)}
+
+@media (max-width:760px){
+  .page::before{right:-110px;top:210px;opacity:.35}
+  .page::after{left:-90px;bottom:280px;opacity:.38}
+  .fc.flip .fc-in{transform:rotateY(180deg)}
+  .fc.flip:hover .fc-in{transform:rotateY(180deg) translateY(-3px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn::after,.filters button::after,.modes button::after,.deck-bar button::after{display:none}
+  .fc.flip .fc-back .emoji{animation:none}
+}
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▲ ▲ ▲   PLAYFUL CLASSROOM POLISH — END                                ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║   ▲ ▲ ▲   R E F I N E M E N T   P A S S   —   E N D                       ║
    ╚═══════════════════════════════════════════════════════════════════════════╝ */
 
 </style>
@@ -1574,7 +1712,7 @@ async function translate(){
       S.dir === "hi-to-sat" ? text : r.translated_text,
       S.dir === "hi-to-sat" ? r.translated_text : text);
     setOnline(true);
-    if (S.autoplay && S.dir === "hi-to-sat") play(true);
+    if (S.autoplay) play(true, S.dir);
     if (S.confirm) say(num(r.latency.total) + " " + t("m_done_in"), "✨");
   } catch(e){ dst.classList.remove("pending"); fail(e); }
   finally { S.busy = false; btn.disabled = false; facing(); }
@@ -1613,9 +1751,15 @@ function keep(sec, hindi, santali){
 
 /* ───────────────── voice ───────────────── */
 const player = new Audio();
-function play(quiet){
-  if (!$("#sa").textContent.trim()){ say(t("m_first"), "🔇"); return; }
-  player.src = SERVER + "/audio/output?t=" + Date.now();
+function play(quiet, dir){
+  const direction = dir || S.dir;
+  if (direction === "hi-to-sat"){
+    if (!$("#sa").textContent.trim()){ say(t("m_first"), "🔇"); return; }
+    player.src = SERVER + "/audio/output?t=" + Date.now();
+  } else {
+    if (!$("#hi").textContent.trim()){ say(t("m_first"), "🔇"); return; }
+    player.src = SERVER + "/audio/hindi?t=" + Date.now();
+  }
   player.play().then(() => { if (!quiet) say(t("m_playing"), "🔊"); })
                .catch(() => say(t("m_blocked"), "🔈"));
 }
@@ -1677,7 +1821,7 @@ async function mic(dir){
         dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
         dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
       setOnline(true);
-      if (S.autoplay && dir === "hi-to-sat") play(true);
+      if (S.autoplay) play(true, dir);
       say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
     } catch(e){
       src.classList.remove("pending"); dst.classList.remove("pending"); fail(e);
@@ -1926,7 +2070,7 @@ function buildDeck(){
           <span class="hint">${t("fc_tap")}</span>
         </span>
         <span class="fc-face fc-back">
-          <span class="emoji">${c.n ? c.e : c.e}</span>
+          <span class="emoji" style="--es:${es}px">${emoji}</span>
           <span class="word olck">${cached || "…"}</span>
           <span class="listen">🔊 ${t("fc_listen")}</span>
         </span>
@@ -2090,3 +2234,4 @@ setInterval(ping, 20000);
 </script>
 </body>
 </html>
+
