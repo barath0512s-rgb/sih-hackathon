@@ -41,10 +41,12 @@ Versions and licences are read from each installed package's metadata.
 | reportlab | 5.0.1 | BSD |
 | cryptography | 50.0.1 | Apache-2.0 OR BSD-3-Clause |
 
-**Note on piper-tts:** the Python package is GPL-3.0-or-later. Our code
-imports it, so the application as distributed must meet GPL terms. Choose the
-project's own licence with this in mind. There is no `LICENSE` file for our
-own code yet; the team has to decide that.
+**Note on piper-tts:** the `piper-tts` package is **GPL-3.0-or-later**. It is
+**installed separately** by `pip install -r requirements.txt` and is **not
+redistributed** in this repository: no Piper code is copied into it. Our own
+code is MIT (`LICENSE`). Plan for the finale: move speech synthesis to
+sherpa-onnx (Apache-2.0) on both the laptop and Android, which removes the
+GPL dependency. This change has not been made yet.
 
 ## Fonts (`static/fonts/`, licence files alongside)
 

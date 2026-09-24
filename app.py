@@ -244,7 +244,8 @@ def _card_santali(hi):
         return {"sat": fixed, "source": "teacher", "review_status": "teacher_verified"}
     word = lookup_word_hi_to_sat(hi)
     if word:
-        return {"sat": word[0], "source": "glossary", "review_status": "pending_native_review"}
+        # Not "glossary": that badge reads "verified", and the word lists are not.
+        return {"sat": word[0], "source": "wordlist", "review_status": "pending_native_review"}
     r = pl.translate(hi, "hi-to-sat", "lesson_script")
     # The model ends even one word with a full stop (᱾); a card has none.
     return {"sat": r["text"].strip().rstrip("᱾।.").strip(), "source": r["source"],

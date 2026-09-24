@@ -367,6 +367,8 @@ p{margin:0}
 .deck-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
 .deck-tag{margin:-10px 0 18px;font-size:13px;font-weight:700;opacity:.75}
 .fc-back .src-badge{margin:4px 0 0;font-size:11px}
+.src-badge[data-src="wordlist"]{background:var(--c1-soft,#fff1c7)}
+.src-badge[data-src="pending"]{background:var(--warn-soft,#fff1c7);margin-left:6px}
 .deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:20px}
 .fc{display:block;perspective:1200px;background:none;border:0;padding:0;height:300px;width:100%}
 .fc-in{
@@ -1022,7 +1024,7 @@ input:focus,textarea:focus,select:focus{
           <button class="btn go" id="markBtn"><span data-t="t2_mark">जाँचें</span></button>
           <button class="btn" id="micAns" type="button" data-tt="tip_ans_mic" title="बोलकर जवाब">🎤</button>
         </div>
-        <p class="verdict" id="verdict" role="status" aria-live="polite"><span class="e" id="verdictEmoji">✅</span><span id="verdictText"></span></p>
+        <p class="verdict" id="verdict" role="status" aria-live="polite"><span class="e" id="verdictEmoji">✅</span><span id="verdictText"></span><span class="src-badge" id="verdictReview" data-src="pending" hidden></span></p>
       </div>
       <div class="tally">
         <span class="chip ok"><b id="cG">०</b> <span data-t="t2_got">सही</span></span>
@@ -1249,7 +1251,7 @@ hi: {
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
   m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"इस पंक्ति की आवाज़ नहीं बन पाई। अनुवाद ऊपर लिखा है।",
-  src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद", src_pending:"समीक्षा बाकी",
+  src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद", src_wordlist:"📝 शब्द सूची", src_pending:"समीक्षा बाकी", ans_pending:"⏳ उत्तरों की समीक्षा बाकी",
   m_fix_reused:"आपका सुधार इस वाक्य के लिए दोबारा इस्तेमाल होगा", tip_ans_mic:"बोलकर जवाब", m_ans_heard:"सुना",
   t1_note_typed:"लिखी पंक्ति, सुनना (ASR) नहीं हुआ", t1_note_cache:"पहले से तैयार (कैश से)",
   t1_note_noaudio:"आवाज़ नहीं चली: यह जवाब आने तक का समय है", t1_note_server:"नीचे: सर्वर के हिस्से", m_mic_no:"माइक की अनुमति नहीं मिली",
@@ -1380,7 +1382,7 @@ en: {
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
   m_blocked:"Press once to allow sound", m_no_voice:"The voice for this line could not be made. The translation is shown above.",
-  src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model", src_pending:"review pending",
+  src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model", src_wordlist:"📝 Word list", src_pending:"review pending", ans_pending:"⏳ answers: review pending",
   m_fix_reused:"Your correction will be reused for this sentence", tip_ans_mic:"Answer by voice", m_ans_heard:"Heard",
   t1_note_typed:"Typed line, no ASR", t1_note_cache:"From cache",
   t1_note_noaudio:"No audio played: this is the time until the reply arrived", t1_note_server:"Below: server stages", m_mic_no:"The microphone was not allowed",
@@ -1714,7 +1716,9 @@ function draw(){
   const mb = $(`.modes [data-mode="${s.type}"]`);
   if (mb){ $$(".modes button").forEach(x => x.setAttribute("aria-selected","false")); mb.setAttribute("aria-selected","true"); S.mode = s.type; }
 
-  $("#expecting").textContent = s.accept_answers ? t("t2_sub_ask") : t("t2_sub");
+  $("#expecting").textContent = s.accept_answers
+    ? t("t2_sub_ask") + (answersPending(s) ? "  ·  " + t("ans_pending") : "")
+    : t("t2_sub");
   $("#verdict").className = "verdict";
   $("#nextBtn").innerHTML = `<span>${last ? t("act_finish") : t("act_next")}</span> <span class="e">${last ? "🏁" : "➡️"}</span>`;
   markCurrentLesson();
@@ -1940,8 +1944,19 @@ $("#markBtn").onclick = async () => {
   } catch(e){ fail(e); }
 };
 
+// Anything a native speaker has not checked carries a visible badge.
+function reviewPending(status){
+  return !!status && status !== "native_reviewed" && status !== "teacher_verified";
+}
+function answersPending(step){
+  return !!(step && step.accept_answers && reviewPending(step.accept_answers.review_status));
+}
+
 function showVerdict(r){
     const key = SIGNAL[r.signal] || "amber";
+    const graded = S.lesson && S.lesson.plan ? S.lesson.plan[r.step ?? S.step] : null;
+    $("#verdictReview").textContent = t("ans_pending");
+    $("#verdictReview").hidden = !answersPending(graded);
     const box = $("#verdict");
     box.className = "verdict on " + key;
     $("#verdictEmoji").textContent = SIGNAL_EMOJI[key];
@@ -2208,7 +2223,7 @@ function buildDeck(){
         <span class="fc-face fc-back">
           <span class="emoji" style="--es:${es}px">${emoji}</span>
           <span class="word olck">${cached || "…"}</span>
-          ${c.source ? `<span class="src-badge" data-src="${c.source}">${t("src_" + c.source)}${c.review_status === "pending_native_review" ? " · " + t("src_pending") : ""}</span>` : ""}
+          ${c.source ? `<span class="src-badge" data-src="${c.source}">${t("src_" + c.source)}${reviewPending(c.review_status) ? " · ⏳ " + t("src_pending") : ""}</span>` : ""}
           <span class="listen">🔊 ${t("fc_listen")}</span>
         </span>
       </span></button>`;

@@ -197,12 +197,12 @@ def test_flashcards_are_built_from_the_lessons(api):
     assert deck["lakshya_ids"] == lesson["lakshya_ids"]
     for card in deck["cards"]:
         # Every card says which layer answered it and whether it was reviewed.
-        assert card["sat"] and card["source"] in ("teacher", "glossary", "cached", "model")
+        assert card["sat"] and card["source"] in ("teacher", "glossary", "wordlist", "cached", "model")
         assert card["review_status"]
         assert not card["sat"].endswith(("᱾", "।"))       # a card is a word, not a sentence
     # घर comes from the corrected word list, marked as not yet reviewed.
     ghar = next(x for x in deck["cards"] if x["hi"] == "घर")
-    assert ghar["sat"] == "ᱳᱲᱟᱜ" and ghar["source"] == "glossary"
+    assert ghar["sat"] == "ᱳᱲᱟᱜ" and ghar["source"] == "wordlist"
     assert ghar["review_status"] == "pending_native_review"
     # A card with no word-list entry falls through to the model, labelled so.
     phool = next(x for x in deck["cards"] if x["hi"] == "फूल")

@@ -3,6 +3,22 @@
 Nothing below has been checked by a native Santali speaker. Mark each item
 confirmed or corrected, and the team will update the code.
 
+## 0. Doubtful word-list entries (review these first)
+
+The word lists in `education_glossary.py` are used **only for flashcards**
+until they are reviewed; translation uses whole verified sentences. Every
+card or answer that uses an unreviewed entry shows a "review pending" badge.
+These six look wrong or are missing:
+
+| Hindi | Card shows now | Source | Why it is doubtful | Correct Santali (reviewer) |
+|---|---|---|---|---|
+| बच्चा (child) | ᱦᱚᱲ ᱠᱚ (हॉड़् कॉ) | word list | ᱦᱚᱲ ᱠᱚ seems to mean "people", not "child" | |
+| कक्षा (classroom) | ᱤᱥᱠᱩᱞ (इस्कुल्) | word list | ᱤᱥᱠᱩᱞ is "school", not "class" | |
+| कितना (how much) | ᱡᱚᱛᱚ (जॉतॉ) | word list | ᱡᱚᱛᱚ seems to mean "all"; कुल and कितने map to the same word | |
+| दो (two) | ᱵᱟᱨ (बार्) | word list | The model gives ᱱᱚᱶᱟ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ("this happens"); confirm ᱵᱟᱨ | |
+| आठ (eight) | ᱤᱨᱟᱹᱞ (इरल्) | word list | The model gives "8 ᱜᱚᱴᱟᱝ"; confirm ᱤᱨᱟᱹᱞ | |
+| तारा (star) | ᱥᱴᱟᱨ (स्टार्) | model | No word-list entry; the model borrowed English "star" | |
+
 ## 1. Glossary changes
 
 See `docs/glossary_changes.md`.

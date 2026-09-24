@@ -371,7 +371,7 @@ virtual environment. A fresh clone must download the models (§9).
 | Only 5 lessons, and teachers cannot add lessons | Planned (work package 14) |
 | The worksheet's headings are in English | The on-screen interface is not |
 | Flask development server | Fine for a classroom hub, not a public deployment |
-| Default voice licence is non-commercial (CC BY-NC-SA 4.0); `piper-tts` is GPL-3.0 | See `THIRD_PARTY_LICENSES.md` |
+| Default voice licence is non-commercial (CC BY-NC-SA 4.0); `piper-tts` is GPL-3.0-or-later, installed separately and not redistributed | Our code is MIT (`LICENSE`). Moving speech to sherpa-onnx (Apache-2.0) is planned for the finale. See `THIRD_PARTY_LICENSES.md` |
 
 ---
 
@@ -413,4 +413,4 @@ Use only numbers printed by `python tools/deck_numbers.py`. Label them
 Models from **AI4Bharat** (IIT Madras): IndicConformer and IndicTrans2.
 Offline speech by **Piper**. Fonts: Noto Sans Devanagari, Noto Sans Ol Chiki,
 Baloo 2, Kalam. Learning goals from **NIPUN Bharat**, Ministry of Education,
-Government of India. Licences: `THIRD_PARTY_LICENSES.md`.
+Government of India. Our code: MIT (`LICENSE`). Everything else: `THIRD_PARTY_LICENSES.md`.
