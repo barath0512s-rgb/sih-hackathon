@@ -78,7 +78,39 @@ def ps_sat(name, size, bold=False, color="#111111", align=TA_LEFT):
     return ps(name, size, bold, color, align, leading=1.5)
 
 
-def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
+# Headings in Hindi and Santali: the worksheet goes to the class, not to an
+# English reader. The Santali reuses the interface's words where it has them
+# (frontend.html) and is on the native-review list (docs/native_review.md).
+# The Lakshya text stays as the Ministry wrote it (English), with our ID.
+L = {
+    "title":     ("द्विभाषी कार्यपत्रक", "ᱠᱟᱹᱢᱤ ᱠᱟᱜᱚᱡ"),
+    "grade":     ("कक्षा", "ᱠᱞᱟᱥ"),
+    "balvatika": ("बालवाटिका", "ᱵᱟᱞᱣᱟᱴᱤᱠᱟ"),
+    "goal":      ("NIPUN लक्ष्य", "NIPUN ᱞᱚᱠᱷᱭᱚ"),
+    "no_goal":   ("यह कार्यपत्रक किसी पाठ से नहीं बना है।", ""),
+    "source":    ("लक्ष्य का पाठ शिक्षा मंत्रालय के NIPUN भारत दिशानिर्देश (2021), पृष्ठ 11 से ज्यों का त्यों लिया गया है।", ""),
+    "key":       ("मुख्य वाक्य", "ᱢᱩᱬᱩᱛ ᱟᱲᱟᱝ"),
+    "hindi_col": ("हिंदी (शिक्षक)", "ᱦᱤᱱᱫᱤ (ᱜᱩᱨᱩ)"),
+    "sat_col":   ("संताली (बच्चे)", "ᱥᱟᱱᱛᱟᱲᱤ (ᱜᱤᱫᱽᱨᱟᱹ)"),
+    "lines":     ("पाठ की पंक्तियाँ", "ᱥᱮᱪᱮᱫ ᱨᱮᱭᱟᱜ ᱟᱲᱟᱝ"),
+    "mode":      ("प्रकार", ""),
+    "hindi":     ("हिंदी", "ᱦᱤᱱᱫᱤ"),
+    "santali":   ("संताली", "ᱥᱟᱱᱛᱟᱲᱤ"),
+    "footer":    ("{app} से अपने आप बना। संताली पंक्तियों की मूल वक्ता से समीक्षा अभी बाकी है।", ""),
+    "lesson_script":        ("सिखाना", "ᱥᱮᱪᱮᱫ"),
+    "activity_instruction": ("करना", "ᱠᱟᱹᱢᱤ"),
+    "assessment_prompt":    ("पूछना", "ᱠᱩᱠᱞᱤ"),
+}
+
+
+def both(key, **kw):
+    """ "हिंदी / ᱥᱟᱱᱛᱟᱲᱤ", or the Hindi alone where there is no Santali yet."""
+    hi, sat = L[key]
+    hi = hi.format(**kw)
+    return f"{hi} / {sat}" if sat else hi
+
+
+def generate_worksheet(hindi, santali, grade="2", topic="",
                        lesson_steps=None, out=None, lakshya_ids=None):
     """lakshya_ids: the NIPUN goals the lesson works towards (nipun/lakshya.py).
     None for a sheet made outside a lesson: then no goal is printed."""
@@ -95,28 +127,31 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     SAT = ps_sat("SAT", 11, False, "#111111")
     FT  = ps("FT",  7, False, "#888888", TA_CENTER)
 
+    names = config.APP_NAME_LOCAL
+    grade_txt = (both("balvatika") if str(grade) in ("0", "Balvatika")
+                 else f"{L['grade'][0]} {grade} / {L['grade'][1]} {grade}")
     s += [
-        P(f"{config.APP_NAME} — Bilingual Classroom Worksheet", H),
-        P(f"Grade {grade}  |  {topic}  |  "
-          f"{datetime.date.today().strftime('%d %B %Y')}", S),
+        P(f"{names['hi']} / {names['sat']} — {both('title')}", H),
+        P("  |  ".join(x for x in (grade_txt, topic,
+                                   datetime.date.today().strftime("%d.%m.%Y")) if x), S),
         Spacer(1, 0.5*cm),
         HRFlowable(width="100%", thickness=1, color=colors.HexColor("#AED6F1"),
                    spaceBefore=0, spaceAfter=15),
     ]
 
-    s.append(P("NIPUN Bharat Lakshya (learning goal):", LB, bold=True))
+    s.append(P(both("goal") + ":", LB, bold=True))
     if lakshya_ids:
         for lid in lakshya_ids:
-            s.append(P(lakshya.label(lid), BD))
-        s.append(P(f"Goal text quoted from {lakshya.SOURCE}.", FT))
+            s.append(P(f"{lid}: {lakshya.get(lid)['text']}", BD))
+        s.append(P(both("source"), FT))
     else:
-        s.append(P("None: this sheet was not made from a lesson.", BD))
+        s.append(P(both("no_goal"), BD))
     s.append(Spacer(1, 0.8*cm))
 
     # Master Translation Pair
-    s.append(P("Key Concept Translation:", LB, bold=True))
+    s.append(P(both("key") + ":", LB, bold=True))
     data = [
-        [P("Hindi (Teacher)", LB, bold=True), P("Santali / ᱥᱟᱱᱛᱟᱲᱤ (Student)", LB, bold=True)],
+        [P(both("hindi_col"), LB, bold=True), P(both("sat_col"), LB, bold=True)],
         [P(hindi or "—", BD),                 P(santali or "—", SAT)]
     ]
     t = Table(data, colWidths=[8.5*cm, 8.5*cm])
@@ -131,11 +166,11 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
 
     # Lesson Step History
     if lesson_steps:
-        s.append(P("Lesson Progression:", LB, bold=True))
+        s.append(P(both("lines") + ":", LB, bold=True))
         h_data = [[P(h, LB, bold=True) for h in
-                   ("#", "Mode", "Hindi Instruction", "Santali / ᱥᱟᱱᱛᱟᱲᱤ")]]
+                   ("#", both("mode"), both("hindi"), both("santali"))]]
         for i, stp in enumerate(lesson_steps):
-            m = stp['type'].replace('_', ' ').title()
+            m = both(stp["type"]) if stp.get("type") in L else stp.get("type", "")
             h_data.append([
                 P(str(i+1), BD), P(m, BD),
                 P(stp.get('hindi', ''), BD),
@@ -154,7 +189,7 @@ def generate_worksheet(hindi, santali, grade="2", topic="Lesson",
     s += [
         Spacer(1, 2*cm),
         HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#BDC3C7")),
-        P(f"Generated automatically by {config.APP_NAME} AI Teaching Assistant", FT)
+        P(both("footer", app=names["hi"]), FT)
     ]
 
     doc.build(s)

@@ -75,4 +75,8 @@ def test_worksheet_prints_the_tag(tmp_path):
     with fitz.open(str(out)) as doc:
         text = " ".join(p.get_text() for p in doc).replace("\n", " ")
     assert "NIPUN-G1-NUM-2" in text
-    assert "Perform simple addition and subtraction" in text
+    assert "Perform simple addition and subtraction" in text      # the Ministry's words
+    # Headings are Hindi and Santali, not English.
+    assert "कार्यपत्रक" in text and "शिक्षक" in text
+    for english in ("Worksheet", "Grade", "Teacher", "Student", "Key Concept", "Generated"):
+        assert english not in text, english

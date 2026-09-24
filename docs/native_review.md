@@ -19,6 +19,24 @@ These six look wrong or are missing:
 | आठ (eight) | ᱤᱨᱟᱹᱞ (इरल्) | word list | The model gives "8 ᱜᱚᱴᱟᱝ"; confirm ᱤᱨᱟᱹᱞ | |
 | तारा (star) | ᱥᱴᱟᱨ (स्टार्) | model | No word-list entry; the model borrowed English "star" | |
 
+## 0a. Worksheet headings (Santali)
+
+The worksheet PDF prints its headings in Hindi and Santali (`worksheet.py`,
+table `L`). The Santali reuses the interface's words where it has them. Two
+are transliterations we made, because we have no Santali word for them.
+
+| Hindi | Santali used | Source |
+|---|---|---|
+| द्विभाषी कार्यपत्रक | ᱠᱟᱹᱢᱤ ᱠᱟᱜᱚᱡ | interface ("कार्यपत्रक") |
+| कक्षा | ᱠᱞᱟᱥ | interface |
+| बालवाटिका | ᱵᱟᱞᱣᱟᱴᱤᱠᱟ | **transliteration**, needs a real word or confirmation |
+| NIPUN लक्ष्य | NIPUN ᱞᱚᱠᱷᱭᱚ | **transliteration of लक्ष्य**, needs a real word |
+| मुख्य वाक्य | ᱢᱩᱬᱩᱛ ᱟᱲᱟᱝ | interface words ᱢᱩᱬᱩᱛ, ᱟᱲᱟᱝ |
+| हिंदी (शिक्षक) | ᱦᱤᱱᱫᱤ (ᱜᱩᱨᱩ) | interface; glossary (शिक्षक) |
+| संताली (बच्चे) | ᱥᱟᱱᱛᱟᱲᱤ (ᱜᱤᱫᱽᱨᱟᱹ) | interface |
+| पाठ की पंक्तियाँ | ᱥᱮᱪᱮᱫ ᱨᱮᱭᱟᱜ ᱟᱲᱟᱝ | interface words |
+| सिखाना / करना / पूछना | ᱥᱮᱪᱮᱫ / ᱠᱟᱹᱢᱤ / ᱠᱩᱠᱞᱤ | interface mode names |
+
 ## 1. Glossary changes
 
 See `docs/glossary_changes.md`.

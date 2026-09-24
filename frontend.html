@@ -2119,7 +2119,7 @@ async function worksheet(btn){
       hindi_text:  $("#hi").textContent.trim(),
       santali_text:$("#sa").textContent.trim(),
       grade:       S.lesson ? S.lesson.grade : "2",
-      topic:       S.lesson ? S.lesson.title : "Lesson"
+      topic:       S.lesson ? lessonName(S.lesson)[0] : ""
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

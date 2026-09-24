@@ -679,7 +679,7 @@ def worksheet():
     # Rendered in memory: a shared output file let concurrent requests collide.
     buf = io.BytesIO()
     generate_worksheet(d.get("hindi_text", ""), d.get("santali_text", ""),
-                       d.get("grade", "2"), d.get("topic", "Lesson"),
+                       d.get("grade", "2"), d.get("topic", ""),
                        lesson_steps=lesson_steps, out=buf, lakshya_ids=lakshya_ids)
     buf.seek(0)
     return send_file(buf, mimetype="application/pdf",
