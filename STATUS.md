@@ -1,4 +1,23 @@
-# STATUS at Checkpoint S (submission track), 24 Sep 2026
+# STATUS, 24 Sep 2026: Checkpoint S, then WP14
+
+Checkpoint S was approved. The sections below were updated after it. Changes
+since then are summarised in section 0.
+
+## 0. Since Checkpoint S
+
+| Item | State | Commit |
+|---|---|---|
+| Word lists are flashcard-only until native review. Word-list cards say "word list" (not "verified glossary"). Every unreviewed card and every answer check with unreviewed answers shows a "review pending" badge. The six doubtful entries head `docs/native_review.md` | done | `54711f0` |
+| `LICENSE` (MIT) for our code. `piper-tts` (GPL-3.0-or-later) is installed separately and not redistributed (`THIRD_PARTY_LICENSES.md`) | done | `54711f0` |
+| **Finale plan, not started:** move speech synthesis to **sherpa-onnx (Apache-2.0)** on both the laptop and Android, removing the GPL dependency | planned | |
+| WP14 curriculum import: paste or upload (.txt / .csv / .json); sentence split; script/activity/question labels the teacher can change; suggested Lakshya goals the teacher must confirm; Santali, audio, worksheet and flashcards; stored in SQLite; `pending_native_review` | done; the addendum's acceptance test passes (`tests/test_api.py::test_importing_a_ten_line_lesson`) | `4418c45`, `42ec510` |
+| 10 lessons the team wrote (`content/team_lessons.json`), imported through WP14 with `tools/import_lessons.py`: **15 lessons**, Balvatika to Grade 3, literacy and numeracy | done. The lessons are in the local database (not in git); run the script on each laptop | |
+| **Bug found and fixed:** two overlapping model translations could hang a request for ever. `IndicProcessor` shares one placeholder queue and clears it after each batch. It could hit two classroom requests at once, or a request during the start-up pre-cache. Reproduced (6 overlapping: 5 stuck after 300 s), fixed with a lock (6 of 6 in 5.5 s), regression test added. The 3 lessons imported before the fix were re-checked: 22 of 22 lines match a fresh translation | done | `8cc1c41` |
+| Real recordings: `bench/clips/real/` does not exist yet, so the benchmark was **not** re-run and CTC/RNN-T is not yet chosen per language | waiting for clips | |
+
+Notes:
+- Commit `42ec510` describes the एक/समझ suggestion-rule change as its own. That change actually went in with `4418c45`; `42ec510` holds the Hindi messages and the deck-picker fix.
+- The goal suggestions matched the team's own choice for 7 of 10 lessons, and 9 of 10 after tuning the rules on those same lessons, so this is not an independent accuracy figure. Line labels: the team changed none, but the lessons were written knowing the rules.
 
 Branch `sih-final`, not pushed. Numbers come from `python tools/deck_numbers.py`
 (laptop, offline). Anything with no script behind it is marked NOT MEASURED.
@@ -10,7 +29,7 @@ Branch `sih-final`, not pushed. Numbers come from `python tools/deck_numbers.py`
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **PARTIAL**: Santali only | `test_pipeline.py`, `tests/test_api.py`. IndicTrans2 and IndicConformer do not support Ho or Mundari |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | **PARTIAL**: text and offline audio for every line. Accuracy is **NOT MEASURED**, and no native review has been done. Content modes do not change the translation (documented in README §5) | `tests/test_api.py`, `tests/test_offline.py`, `docs/native_review.md` |
 | 3 | Real-time voice to voice, no more than 3 s | **PARTIAL**: laptop, synthetic clips: median 1.51 s (hi→sat) and 1.57 s (sat→hi), 0 of 59 over 3 s. Real speech, tablet over Wi-Fi and on-device: **NOT MEASURED** | `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv` |
-| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat outcomes | **PARTIAL**: both are generated from the lessons and carry verbatim Lakshya IDs. Only 5 lessons; the mapping is not teacher-reviewed; teachers cannot add lessons (WP14) | `tests/test_lakshya.py`, `tests/test_api.py::test_flashcards_are_built_from_the_lessons`, `docs/lakshya_mapping.md` |
+| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat outcomes | **PARTIAL**: both are generated from the lessons and carry verbatim Lakshya IDs. 15 lessons (Balvatika to Grade 3, both domains); teachers can add lessons (WP14). Not met: the mapping is not teacher-reviewed; the reading-speed goals and G3-NUM-1 have no lesson | `tests/test_lakshya.py`, `tests/test_api.py::test_flashcards_are_built_from_the_lessons`, `docs/lakshya_mapping.md` |
 | 5 | Whole application offline on low-cost tablets (2 GB RAM, Android 9+) after initial content synchronisation | **NOT MET**. Offline on the laptop only. A tablet browser can use the laptop hub (HTTPS for the mic, not yet tried on a tablet). No Android app, content pack or sync | `tests/test_offline.py`, `tests/test_https.py`; WP4 not started |
 | 6 | Working application, demo video, GitHub repository | **PARTIAL**: application and repository exist; no demo video. `sih-final` is not pushed | |
 
@@ -30,7 +49,7 @@ The verdicts are TRUE, FALSE and NOT MEASURED. "Fix" is a suggested rewording th
 | Claim | Verdict | Evidence / fix |
 |---|---|---|
 | "Frontend: single-file HTML/JS, zero build — opens in any browser, no install" | TRUE | `frontend.html`; it needs the laptop server running |
-| "Backend: Flask REST API, 16 endpoints" | FALSE | 23 routes now (`grep -c @app.route app.py`), including 2 deprecated aliases. Fix: "23 endpoints" or drop the number |
+| "Backend: Flask REST API, 16 endpoints" | FALSE | 28 routes now (`grep -c @app.route app.py`), including 2 deprecated aliases. Fix: drop the number |
 | "Full AI pipeline runs live … not a simulation" | TRUE | `test_pipeline.py`, `bench/bench_latency.py` |
 | "Live per-response latency breakdown (ASR / NMT / TTS) shown to the teacher" | TRUE | frontend timing card; the browser-measured total is shown too |
 | "ASR: IndicConformer 600M, ONNX/RNN-T" | FALSE | Decoding is **CTC** for both languages (`config.ASR_DECODING`), about 2× faster than RNN-T on synthetic clips (`bench/results/asr_decoding_synthetic.md`). Fix: "ONNX, CTC" |
@@ -103,9 +122,10 @@ flashcard deck built from lessons (WP7).
 | ASR / NMT model files | 2.56 GB / 1.30 GB | disk |
 | Voice in use | 64 MB | disk |
 | Real recordings, tablet, peak RAM, chrF++, child WER | NOT MEASURED | |
-| Lessons / Lakshya-tagged / natively reviewed | 5 / 5 / 0 | `lesson_engine.py` |
-| Flashcards | 31 | `lesson_engine.py` |
-| Tests | 206 pytest (7 files) + `test_pipeline.py` 7 | `pytest --collect-only` |
+| Lessons / Lakshya-tagged / natively reviewed | 15 (5 built-in + 10 imported) / 15 / 0 | `lesson_engine.py` + local database |
+| Lessons by stage and domain | Balvatika 2 lit + 2 num; G1 1 + 3; G2 2 + 2; G3 1 + 2 | same |
+| Flashcard words in lessons | 75 | same |
+| Tests | 246 pytest (8 files) + `test_pipeline.py` 7 | `pytest --collect-only` |
 
 The README previously said the Santali→Hindi median was 1.58 s. The raw median
 is 1574.55 ms, so the correct figure is 1.57 s (1.58 came from rounding twice).
@@ -124,7 +144,7 @@ is 1574.55 ms, so the correct figure is 1.57 s (1.58 came from rounding twice).
 | `tools/deck_numbers.py` | done | `63e57c1` |
 | Real-clip benchmark re-run | waiting for `bench/clips/real/` | |
 
-## 5. Found along the way (need a decision)
+## 5. Found at Checkpoint S (decided since: see section 0)
 
 1. **The glossary word lists are not used for translation.** `lookup_hi_to_sat` matches whole verified sentences only. The `घर → ᱳᱲᱟᱜ` fix therefore reaches the lesson's accepted answers and the flashcards, but not free translation. Several word-list entries look doubtful: `बच्चा → ᱦᱚᱲ ᱠᱚ` ("people"), `कक्षा → ᱤᱥᱠᱩᱞ` ("school"), `कितना → ᱡᱚᱛᱚ` ("all"). They need native review before any wider use.
 2. **The model is poor at single words.** Examples: `दो` → "this happens", `आठ` → "8 ᱜᱚᱴᱟᱝ", `तारा` → ᱥᱴᱟᱨ ("star" in English). The old flashcards showed these; the new ones use the word list first and label the source.

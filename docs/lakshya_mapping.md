@@ -41,12 +41,36 @@ come from an earlier stage when the lesson revises that goal.
 | grade2/reading_words | BV-LIT-2, G2-LIT-1 | full, partial | Reads short words. G2-LIT-1 means reading text with meaning, not single words. |
 | grade3/subtraction | G1-NUM-2, G2-NUM-2 | full, partial | Single-digit subtraction. G2-NUM-2 goes up to 99. |
 
-**What this shows:** no lesson yet reaches a Grade 3 goal (numbers up to 9999,
-multiplication, 60 words per minute). The lesson set covers foundational goals
-up to Grade 2.
+### Imported lessons (work package 14)
 
-**Review status:** every lesson is `pending_teacher_review`. A teacher has not
-yet checked these mappings.
+The team wrote ten lessons (`content/team_lessons.json`) and added them through
+the import screen. The keyword rules suggested the goals, and the team
+confirmed or corrected them.
+
+| Lesson (grade) | Lakshya ID | Suggested by the rules |
+|---|---|---|
+| पाँच तक गिनती (Balvatika) | BV-NUM-1 | same |
+| छोटे से बड़े तक (Balvatika) | BV-NUM-2 | same |
+| अक्षर म (Balvatika) | BV-LIT-1 | same |
+| दो अक्षर वाले शब्द (Balvatika) | BV-LIT-2 | BV-LIT-1: the lesson mentions अक्षर; corrected |
+| दस से बीस तक (1) | G1-NUM-1 | same |
+| छोटे वाक्य पढ़ना (1) | G1-LIT-1 | same |
+| सौ से बड़ी संख्याएँ (2) | G2-NUM-1 | same |
+| कहानी सुनो और समझो (2) | G2-LIT-1 | same |
+| गुणा: बराबर समूह (3) | G3-NUM-2 | same |
+| पढ़कर समझना (3) | G3-LIT-1 | same |
+
+The rules were adjusted after a first dry run on these same lessons, which
+matched 7 of 10: एक no longer counts as a number, and समझ counts for literacy.
+So 9 of 10 is not an independent measure of the rules.
+
+**What this shows:** every stage from Balvatika to Grade 3 has a literacy and a
+numeracy lesson. G3-NUM-1 (numbers up to 9999) and the reading-speed goals
+(G2-LIT-2, G3-LIT-2) have no lesson and are not assessed.
+
+**Review status:** built-in lessons are `pending_teacher_review`. Imported
+lessons are `pending_native_review`, and so is every one of their Santali lines.
+No teacher or native speaker has checked any of these yet.
 
 `tests/test_lakshya.py` checks that every lesson has at least one valid ID, that
 the lesson's domain matches its goals, and that the worksheet prints the tag.
