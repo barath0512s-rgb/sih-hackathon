@@ -1,5 +1,7 @@
 # VaaniSetu (वाणीसेतु), "Voice Bridge"
 
+[![tests](https://github.com/barath0512s-rgb/sih-hackathon/actions/workflows/tests.yml/badge.svg)](https://github.com/barath0512s-rgb/sih-hackathon/actions/workflows/tests.yml)
+
 **An offline Hindi ↔ Santali teaching assistant for Grade 1–3 classrooms in Jharkhand.**
 The teacher speaks or types Hindi. The child hears Santali and can answer in
 Santali. The teacher hears Hindi.
@@ -275,6 +277,7 @@ the microphone on a real tablet.**
 ```bash
 pip install -r requirements-dev.txt
 pytest -q                  # tests that need the models are skipped without them
+                           # (GitHub Actions runs this without models: .github/workflows/tests.yml)
 python test_pipeline.py    # 7 end-to-end component checks
 python verify_models.py    # the pre-flight check; writes verify_report.txt
 ```
