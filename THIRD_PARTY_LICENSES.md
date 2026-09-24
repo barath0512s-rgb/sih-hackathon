@@ -48,6 +48,33 @@ code is MIT (`LICENSE`). Plan for the finale: move speech synthesis to
 sherpa-onnx (Apache-2.0) on both the laptop and Android, which removes the
 GPL dependency. This change has not been made yet.
 
+## Development and test tools (`requirements-dev.txt`, `requirements-ci.txt`)
+
+These run tests and evaluations on developer machines and in CI. They are not
+part of the application and are never shipped.
+
+| Package | Version | Licence |
+|---|---|---|
+| aksharamukha | 2.3 | **GNU AGPL 3.0** (transliteration cross-check in tests) |
+| pymupdf | 1.28.2 | **AGPL 3.0** or commercial (reads PDFs in tests) |
+| sacrebleu | 2.5.1 | Apache-2.0 |
+| jiwer | 4.0.0 | Apache-2.0 |
+| pyarrow | 25.0.1 | Apache-2.0 |
+| pandas | 3.0.5 | BSD-3-Clause |
+| pytest | 8.4.2 | MIT |
+| PyYAML | 6.0.3 | MIT |
+
+## Evaluation data (downloaded by scripts, never committed)
+
+| Dataset | Licence | Used for |
+|---|---|---|
+| google/fleurs (hi_in test) | CC BY 4.0 | Hindi speech benchmark |
+| ai4bharat/IndicVoices (santali valid) | CC BY 4.0 | Santali speech benchmark (gated) |
+| ai4bharat/IN22-Gen, IN22-Conv | CC BY 4.0 | translation benchmark (gated) |
+| FLORES-200 devtest (facebook/flores) | CC BY-SA 4.0 | translation benchmark (gated) |
+
+Details and exact sources: `docs/sources.md`.
+
 ## Fonts (`static/fonts/`, licence files alongside)
 
 | Font | Licence |

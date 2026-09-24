@@ -51,7 +51,7 @@ laptop, offline, and checked by the named test or script.
 |---|---|---|---|---|
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality: **NOT MEASURED** (no held-out test set yet). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
-| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, **synthetic** clips (Piper reading the lines), in-process: median **1.51 s** Hindi→Santali and **1.57 s** Santali→Hindi; **0 of 59** over 3 s | Real teacher and child recordings: **NOT MEASURED**. Tablet over classroom Wi-Fi: **NOT MEASURED**. On a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py`, then `python tools/deck_numbers.py` |
+| 3 | Real-time voice-to-voice dialogue, no more than 3 s | **Short lesson lines** (synthetic clips, median 6 words): median **1.51 s** Hindi→Santali and **1.57 s** Santali→Hindi; **0 of 59** over 3 s. **Long general sentences** (public adult speech, FLEURS Hindi, median 17 words): median **2.95 s** Hindi→Santali, **38 of 79** over 3 s. Laptop, offline | Met for short lines, not for long ones. Santali speech input from public data, child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py`, then `python tools/deck_numbers.py` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
@@ -164,7 +164,7 @@ Source: `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv`.
 | Change | Measured effect | Decision | Source |
 |---|---|---|---|
 | CTC instead of RNN-T decoding | ASR about 2× faster (Hindi 693 vs 1521 ms), CER no worse | CTC for both languages | `asr_decoding_synthetic.md` |
-| Trim silence at both ends | 115–155 ms less ASR time; CER better for Hindi, slightly worse for Santali | On for Hindi only | `asr_decoding_synthetic.md` |
+| Trim silence at both ends | With CTC, 115 ms (Hindi) and 156 ms (Santali) less median ASR time; CER better for Hindi, slightly worse for Santali | On for Hindi only | `asr_decoding_synthetic.md` |
 | Warm the ASR up at start | The first request costs nothing extra (−105 ms, within noise) | Not added | `cold_start.md` |
 | Size the NMT output limit to the input | No time saved, no output changed | Kept as a safety cap | `nmt_limits.md` |
 | Play the first sentence early | At most 86 ms (median), on 22 of 60 replies | Not built | `tts_first_sentence.md` |
@@ -177,13 +177,33 @@ microphone (or pressing Translate) to the reply starting to play. The bars
 under it are the server's ASR, NMT and TTS times. Every request is logged, and
 `GET /metrics/latency` returns count, median, p90 and max per path.
 
+### Public speech (adult), Hindi → Santali
+
+80 clips from `google/fleurs` (Hindi test split, CC BY 4.0), 3-10 s each.
+**Public dataset, adult speech; child speech NOT MEASURED.** Laptop, offline.
+`bench/fetch_public_clips.py` fetches the same seeded clips for anyone.
+
+| Measure | Result | Source |
+|---|---|---|
+| Speech recognition, CTC (in use): WER / CER | 11.1% / 4.5% (n=80) | `asr_decoding_public.jsonl` |
+| Speech recognition, RNN-T: WER / CER | 11.3% / 4.5% (n=80) | same |
+| Speech recognition time, CTC vs RNN-T (median) | 907 vs 2081 ms, with silence trimming | `asr_decoding_public.md` |
+| Voice to voice: median / p90 / max | 2.95 / 3.69 / 5.68 s (n=79) | `…_2026-09-25_public.csv` |
+| Requests over 3 s | 38 of 79 | same |
+| By sentence length, median / over 3 s | 0-11 words: 2.67 s / 0 of 4; 12-17: 2.76 s / 10 of 36; 18-23: 3.22 s / 22 of 32; 24+: 3.48 s / 6 of 7 | same |
+
+Translation is the largest part (median 1744 ms here, against 685 ms on the
+short lesson lines). So the 3 s target holds for short classroom lines but not
+for long general sentences. Santali speech from public data and the translation
+benchmarks (IN22, FLORES) wait for access to gated datasets: **NOT MEASURED**.
+
 ### Not measured yet
 
 | What | Status |
 |---|---|
 | Real teacher and child recordings | **NOT MEASURED** (`bench/clips/real/` is empty) |
-| ASR error rate, adult vs child, quiet vs noisy | **NOT MEASURED** |
-| Translation quality (chrF++ on held-out sentences) | **NOT MEASURED** |
+| ASR error rate on Santali speech, on child speech, and with classroom noise | **NOT MEASURED** (Hindi adult speech: see above) |
+| Translation quality (chrF++ on IN22-Gen, IN22-Conv, FLORES-200) | **NOT MEASURED**: `eval/eval_benchmarks.py` is ready; the test sets are gated |
 | Voice to voice from a tablet over classroom Wi-Fi | **NOT MEASURED**. The browser logs it, so `/metrics/latency` will show it after classroom use |
 | Anything on a 2 GB RAM, Android 9+ tablet | **NOT MEASURED** (work package 4) |
 | Peak RAM of the laptop server | **NOT MEASURED** |

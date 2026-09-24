@@ -1,0 +1,139 @@
+# Sources
+
+Every external fact used in the code, the docs or the deck, with where it comes
+from. Quotes are exact. "Accessed" is the date we last read the source. When an
+entry here disagrees with an older claim anywhere else, this file wins, and the
+disagreement is noted.
+
+Anchors (`#name`) are what `docs/claims.yaml` points to.
+
+---
+
+## Problem statement
+
+### <a name="brief"></a>SIH26042 brief
+- **Source:** the official problem-statement text as given to the team (quoted in
+  the team's master prompt). The sih.gov.in page itself was not re-fetched for
+  this file: **not verified by fetch**.
+- Facts used: Ho, Mundari and Santhali; lesson scripts, activity instructions,
+  assessment prompts; voice-to-voice "≤ 3 s"; worksheets and flashcards aligned
+  to NIPUN Bharat learning outcomes; offline on "2 GB RAM, Android 9+" tablets
+  after initial content synchronisation; demo video and GitHub repository.
+- The symbol before "2 GB" is garbled in the official text; we write "2 GB RAM,
+  Android 9+" with no ≤ or ≥.
+
+## Education policy and statistics
+
+### <a name="nipun"></a>NIPUN Bharat guidelines (Lakshyas)
+- **URL:** https://static.pib.gov.in/WriteReadData/specificdocs/documents/2021/jul/doc20217531.pdf
+- **Accessed:** 2026-09-24. Ministry of Education, 2021.
+- **Page 11, "Lakshyas: Learning Goals of the Mission"**, quoted in full in
+  `nipun/lakshya.py` (15 goals). Examples: Grade 2 "45-60 words per minute";
+  Grade 3 "at least 60 words per minute"; Grade 3 "Read and write numbers up to
+  9999"; Balvatika "Recognizes and reads numerals up to 10."
+- Read by eye as well as extracted, because an earlier automatic extraction was
+  suspected of swapping the Grade 2 and 3 values. It had not.
+
+### <a name="jepc"></a>JEPC Language Mapping Survey, Phase 1 (Jharkhand)
+- **URL:** https://languageandlearningfoundation.org/wp-content/uploads/2025/04/LM-Report-Jharkhand-Phase-1.pdf
+- **Accessed:** 2026-09-24. Carried out by JEPC with JCERT support. Data "collected
+  on the portal in January and February 2024" (p. 15). Page numbers are the
+  report's printed ones (PDF page = printed + 3).
+- p. 13: "Number of participating schools: 8,244"; "Number of students represented: 1, 06, 930"; 7 districts, 72 blocks.
+- p. 5 (executive summary): "…covering 8,244 schools and representing 1,06,930 students."
+- p. 18: "In the surveyed districts, Hindi serves as the Medium of Instruction (MoI) in approximately 98% of schools."
+- p. 17, Table 1: "Ho 17.03%", "Santali 13.07%", "Mundari 7.32%" (of Grade 1 students' home languages).
+- p. 6: "Approximately 80% of schools in the surveyed districts of Jharkhand, falling under Type II, III, and IV categories, pose moderate to severe learning disadvantages for students"
+- p. 6: "The survey found that 36.1% of students have minimal proficiency, 41.2% have functional proficiency, and only 22.7% have good proficiency in Hindi."
+- p. 18: "…accounting for around 51.2% of students, indicating that a sizeable portion of the student population possesses a very less or no understanding of Hindi."
+- The report gives both 36.1% and 51.2%; we quote both.
+
+### <a name="google-translate-santali"></a>Is Santali in Google Translate? (correction)
+- The team's audit said Google Translate added Santali in June 2024. **We could
+  not confirm this.**
+- https://blog.google/products/translate/google-translate-new-languages-2024/
+  (27 June 2024, accessed 2026-09-25) does not mention Santali.
+- https://docs.cloud.google.com/translate/docs/languages ("Last updated
+  2026-09-18 UTC", accessed 2026-09-25) does not list Santali. The page lists
+  Maithili, Dogri, Bhojpuri and Sanskrit, so the search worked.
+- **Status: NOT VERIFIED** for the consumer Google Translate app; absent from the
+  Cloud Translation list. An earlier chat message and the pushed commit message
+  of `6a03f6a` said the opposite; that was wrong.
+
+## Models
+
+### <a name="indicconformer-600m"></a>AI4Bharat IndicConformer 600M multilingual (speech recognition, in use)
+- **Repo:** `ai4bharat/indic-conformer-600m-multilingual` @ `e9b71b369c048e2c6b634d4c131061c34e441179` (`config.ASR_REVISION`).
+- **Licence:** MIT. Model card: "IndicConformer is released under the MIT license."
+- **Languages:** "all 22 official Indian languages", including Santali (`sat`), per the card; the loaded model reports 22 language codes.
+- **Size on disk:** printed by `tools/deck_numbers.py` (`bench/results/deck_numbers.txt`).
+- **Decoding:** hybrid CTC + RNN-T ("Multilingual Conformer-based Hybrid CTC + RNNT ASR model", model card).
+
+### <a name="indictrans2-model"></a>AI4Bharat IndicTrans2 indic-indic-dist-320M (translation, in use)
+- **Repo:** `ai4bharat/indictrans2-indic-indic-dist-320M` @ `ffb7582b6d43791f1fb26b2153fc065f2e9ea575`.
+- **Licence:** MIT (`models/indictrans2-indic-indic/LICENSE`: "MIT License / Copyright (c) AI4Bharat.").
+- Supports `hin_Deva` and `sat_Olck` (model card language list).
+
+### <a name="indictrans2-paper"></a>IndicTrans2 paper: published Santali scores
+- Gala et al., "IndicTrans2: Towards High-Quality and Accessible Machine Translation Models for all 22 Scheduled Indian Languages", TMLR 12/2023. arXiv 2305.16307v3 (CC BY 4.0). Accessed 2026-09-25.
+- The paper gives no hin→sat or sat→hin score for a single direction. It reports
+  chrF++ **averaged** "to that language and from that language" over the common
+  Indic languages. For the distilled M2M model (IT2-Dist-M2M), row `sat_Olck`:
+  - Table 19, FLORES-200: xx-sat **26.1**, sat-xx **31.5**
+  - Table 20, IN22-Gen: xx-sat **30.0**, sat-xx **35.8**
+  - Table 21, IN22-Conv: xx-sat **30.4**, sat-xx **33.8**
+- We compare our hin↔sat scores with these as a plausibility range only.
+
+### <a name="indicconformer-120m"></a>AI4Bharat IndicConformer 120M, Hindi and Santali (for Android, not yet used)
+- `ai4bharat/indicconformer_stt_hi_hybrid_ctc_rnnt_large` @ `deada84ce8…`; `ai4bharat/indicconformer_stt_sat_hybrid_ctc_rnnt_large` @ `507c307549…`.
+- **Licence:** MIT (Hub card data). **Gated.** One `.nemo` file each, 523,192,320 bytes. Accessed 2026-09-24.
+- Our account does not have access yet (403), so the card text itself is unread.
+
+### <a name="piper-pratham"></a>Piper voice hi_IN-pratham-medium (in use)
+- MODEL_CARD: https://huggingface.co/rhasspy/piper-voices/blob/main/hi/hi_IN/pratham/medium/MODEL_CARD, accessed 2026-09-24.
+- Licence given as "http://creativecommons.org/licenses/by-nc-sa/4.0/" (**CC BY-NC-SA 4.0**). Dataset: AI4Bharat indicnlp_corpus.
+
+### <a name="piper-lessac"></a>Piper voice en_US-lessac-medium (A/B option, off)
+- MODEL_CARD: https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/medium/MODEL_CARD, accessed 2026-09-24.
+- Data: Blizzard 2013 Lessac dataset; licence page https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/license.html (terms not reviewed by us).
+
+## Datasets (evaluation only; never trained or tuned on)
+
+### <a name="fleurs"></a>google/fleurs (Hindi speech benchmark)
+- https://huggingface.co/datasets/google/fleurs @ `70bb2e84b976b7e960aa89f1c648e09c59f894dd`. **Licence: CC BY 4.0** (Hub card data). Not gated.
+- Used: `hi_in` test split (418 utterances); 80 of the 187 that last 3-10 s,
+  picked with seed 26042 (`bench/fetch_public_clips.py`,
+  `bench/clips/public/manifest.json`). Adult read speech.
+
+### <a name="indicvoices"></a>ai4bharat/IndicVoices (Santali speech benchmark)
+- https://huggingface.co/datasets/ai4bharat/IndicVoices @ `c96f9088f1…`. **Licence: CC BY 4.0** (Hub card data). **Gated.**
+- Santali: 45 train shards and one `valid` shard (217,769,865 bytes). We will use `valid` only.
+- **No access yet** (403 on the data files). Accessed 2026-09-25.
+
+### <a name="indicvoices-r"></a>ai4bharat/indicvoices_r
+- @ `5f4495c91d…`, **CC BY 4.0**, gated; has `Santali/test-*.parquet`. No access yet.
+
+### <a name="in22"></a>ai4bharat/IN22-Gen and IN22-Conv (translation benchmark)
+- IN22-Gen @ `e042ab3d30…`, 1024 sentences; IN22-Conv @ `18cd45870f…`, 1503 sentences. **CC BY 4.0** (card: `license: cc-by-4.0`), n-way parallel, includes `hin_Deva` and `sat_Olck`. **Gated; no access yet.**
+
+### <a name="flores"></a>FLORES-200 devtest (translation benchmark)
+- `facebook/flores` @ `71abf77d8b…` has `sat_Olck` and `hin_Deva` devtest; the maintained successor `openlanguagedata/flores_plus` also has both.
+- **Licence: CC BY-SA 4.0** (Hub card data for both). Gated; no access yet.
+- The master prompt gave no licence for FLORES. The official card says CC BY-SA 4.0.
+
+## Software licences (from each installed package's metadata)
+
+### <a name="packages"></a>Runtime and dev packages
+- Runtime: see `THIRD_PARTY_LICENSES.md`. `piper-tts` 1.8.0 is **GPL-3.0-or-later**.
+- **Dev and test only, never shipped:**
+  - `aksharamukha` 2.3 (GNU AGPL 3.0): transliteration cross-check in tests;
+  - `pymupdf` 1.28.2 (AGPL 3.0 or commercial): reads PDFs in tests;
+  - `sacrebleu` 2.5.1 (Apache-2.0);
+  - `jiwer` 4.0.0 (Apache-2.0);
+  - `pyarrow` 25.0.1 (Apache-2.0);
+  - `pandas` 3.0.5 (BSD-3-Clause);
+  - `pytest` 8.4.2 (MIT);
+  - `PyYAML` 6.0.3 (MIT).
+
+### <a name="fonts"></a>Fonts
+- Noto Sans Devanagari, Noto Sans Ol Chiki, Baloo 2, Kalam: SIL Open Font License 1.1 (licence files in `static/fonts/`, e.g. "This Font Software is licensed under the SIL Open Font License, Version 1.1.").

@@ -1,0 +1,248 @@
+# Every claim in README.md and in the deck, with its status and evidence.
+# status: TRUE | FALSE | NOT MEASURED | NOT BUILT
+# evidence: a file in this repository, optionally with #anchor (docs/sources.md anchors).
+# tests/test_claims.py checks that every evidence file exists and that every
+# number in README.md appears in at least one evidence file listed here.
+# Deck line-by-line verdicts, with suggested rewording: STATUS.md section 2.
+
+# ── Problem and policy ───────────────────────────────────────────────────────
+- id: brief_clauses
+  text: "SIH26042 asks for Ho, Mundari and Santali; ≤ 3 s voice to voice; worksheets and flashcards aligned to NIPUN; offline on 2 GB RAM, Android 9+ tablets"
+  status: "TRUE"
+  evidence: docs/sources.md#brief
+- id: jepc_coverage
+  text: "JEPC survey: 7 districts, 72 blocks, 8,244 schools, 1,06,930 Grade 1 students"
+  status: "TRUE"
+  evidence: docs/sources.md#jepc
+- id: jepc_hindi_moi
+  text: "Hindi is the medium of instruction in approximately 98% of schools"
+  status: "TRUE"
+  evidence: docs/sources.md#jepc
+- id: jepc_home_languages
+  text: "Ho 17.03%, Santali 13.07%, Mundari 7.32% of Grade 1 home languages"
+  status: "TRUE"
+  evidence: docs/sources.md#jepc
+- id: jepc_disadvantage
+  text: "About 80% of schools are in Type II-IV disadvantage categories"
+  status: "TRUE"
+  evidence: docs/sources.md#jepc
+- id: jepc_hindi_proficiency
+  text: "36.1% minimal / 41.2% functional / 22.7% good Hindi proficiency (p. 6); 51.2% minimal (p. 18)"
+  status: "TRUE"
+  evidence: docs/sources.md#jepc
+- id: nipun_lakshyas
+  text: "NIPUN Lakshya goals quoted verbatim from the 2021 guidelines, p. 11 (e.g. 45-60 and 60 words per minute, numbers up to 9999)"
+  status: "TRUE"
+  evidence: docs/sources.md#nipun
+- id: google_translate_santali
+  text: "Google Translate supports Santali"
+  status: "NOT MEASURED"
+  evidence: docs/sources.md#google-translate-santali
+
+# ── Speed (laptop, offline) ─────────────────────────────────────────────────
+- id: latency_synthetic
+  text: "Voice to voice, synthetic clips: median 1.51 s hi→sat and 1.57 s sat→hi; p90 1.68 / 1.85 s; max 2.08 / 2.25 s; 0 of 59 over 3 s; server boot 20.4 s"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: latency_baseline
+  text: "Before the latency work: median 2.19 s and 2.20 s, 1 request over 3 s"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: latency_public_clips
+  text: "Voice to voice, public adult speech (FLEURS Hindi, median 17 words): median 2.95 s, p90 3.69 s, max 5.68 s, 38 of 79 over 3 s; by length 2.67 / 2.76 / 3.22 / 3.48 s"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: latency_public_detail
+  text: "Public-speech run: 80 clips, NMT median 1744 ms; ASR CTC vs RNN-T 907 vs 2081 ms with trimming; short lesson lines median 6 words, synthetic NMT median 685 ms"
+  status: "TRUE"
+  evidence: bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.md
+- id: asr_public_times
+  text: "CTC 907 ms vs RNN-T 2081 ms median ASR on public Hindi clips, with trimming"
+  status: "TRUE"
+  evidence: bench/results/asr_decoding_public.md
+- id: synthetic_nmt_median
+  text: "Synthetic lesson lines: NMT median 685 ms"
+  status: "TRUE"
+  evidence: bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.md
+- id: fleurs_clip_selection
+  text: "80 FLEURS Hindi test clips of 3-10 s, seed 26042"
+  status: "TRUE"
+  evidence: docs/sources.md#fleurs
+- id: latency_tablet
+  text: "Voice to voice on a 2 GB RAM, Android 9+ tablet"
+  status: "NOT BUILT"
+  evidence: STATUS.md
+- id: latency_wifi
+  text: "Voice to voice from a tablet browser over classroom Wi-Fi"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: asr_ctc_faster
+  text: "CTC about 2× faster than RNN-T (Hindi 693 vs 1521 ms median ASR, synthetic clips)"
+  status: "TRUE"
+  evidence: bench/results/asr_decoding_synthetic.md
+- id: asr_trim
+  text: "Trimming silence saved 115 ms (Hindi) and 156 ms (Santali) of median ASR time with CTC"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: cold_start
+  text: "The first request after start costs nothing extra (−105 ms, within noise)"
+  status: "TRUE"
+  evidence: bench/results/cold_start.md
+- id: early_playback
+  text: "Playing the first sentence early would save at most 86 ms (median), on 22 of 60 replies"
+  status: "TRUE"
+  evidence: bench/results/tts_first_sentence.md
+- id: nmt_limit
+  text: "Sizing the NMT output limit saved no time and changed no output"
+  status: "TRUE"
+  evidence: bench/results/nmt_limits.md
+- id: glossary_hits
+  text: "Spoken lesson lines answered by the glossary: 0 → 11 of 59"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: laptop_spec
+  text: "Laptop: Dell G15 5520, Intel Core i7-12700H, 15.7 GB RAM, Windows, CPU only"
+  status: "TRUE"
+  evidence: bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.md
+- id: laptop_ram_peak
+  text: "Peak RAM of the laptop server"
+  status: "NOT MEASURED"
+  evidence: bench/results/deck_numbers.txt
+
+# ── Accuracy ───────────────────────────────────────────────────────────────
+- id: asr_wer_public_hi
+  text: "Hindi speech recognition on FLEURS (public dataset, adult speech): CTC WER 11.1%, CER 4.5%; RNN-T WER 11.3%, CER 4.5% (n=80)"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: asr_wer_public_sat
+  text: "Santali speech-recognition WER/CER on IndicVoices (public dataset, adult speech)"
+  status: "NOT MEASURED"
+  evidence: docs/sources.md#indicvoices
+- id: asr_child_speech
+  text: "Speech recognition on children's speech"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: mt_chrf
+  text: "chrF++ hin↔sat on IN22-Gen, IN22-Conv, FLORES-200"
+  status: "NOT MEASURED"
+  evidence: docs/sources.md#in22
+- id: mt_paper_reference
+  text: "IndicTrans2 paper, IT2-Dist-M2M, chrF++ averaged into/from Santali: FLORES 26.1/31.5, IN22-Gen 30.0/35.8, IN22-Conv 30.4/33.8"
+  status: "TRUE"
+  evidence: docs/sources.md#indictrans2-paper
+- id: native_review
+  text: "Santali output reviewed by a native speaker"
+  status: "NOT MEASURED"
+  evidence: docs/native_review.md
+
+# ── What runs ──────────────────────────────────────────────────────────────
+- id: offline_laptop
+  text: "The whole app runs offline on the laptop; online_dependencies is empty"
+  status: "TRUE"
+  evidence: tests/test_offline.py
+- id: offline_tablet
+  text: "The app runs on a tablet with no laptop"
+  status: "NOT BUILT"
+  evidence: STATUS.md
+- id: https_hub
+  text: "Laptop hub over HTTPS; a client that trusts only the hub CA connects over the Wi-Fi address"
+  status: "TRUE"
+  evidence: tests/test_https.py
+- id: tablet_mic
+  text: "The microphone works from a real tablet over the HTTPS hub"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: santali_only
+  text: "Santali only; the models used do not support Ho or Mundari"
+  status: "TRUE"
+  evidence: docs/sources.md#indictrans2-model
+- id: lessons
+  text: "17 lessons (5 built in + 12 team-written), Balvatika to Grade 3, literacy and numeracy; every Lakshya except G2-LIT-2 has a lesson"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: fluency_passage
+  text: "The read-aloud lesson has an 83-word passage; words per minute is counted by the teacher"
+  status: "TRUE"
+  evidence: content/team_lessons.json
+- id: lakshya_tags
+  text: "Every lesson is tagged with verbatim NIPUN Lakshya IDs"
+  status: "TRUE"
+  evidence: tests/test_lakshya.py
+- id: curriculum_import
+  text: "A teacher can import Hindi text (.txt/.csv/.json) into a typed, tagged, voiced lesson with worksheet and flashcards"
+  status: "TRUE"
+  evidence: tests/test_api.py
+- id: worksheet_flashcards
+  text: "Bilingual worksheet PDF and flashcards generated from the lessons"
+  status: "TRUE"
+  evidence: tests/test_lakshya.py
+- id: corrections_reused
+  text: "Teacher corrections are reused before the model, in both directions"
+  status: "TRUE"
+  evidence: tests/test_api.py
+- id: transliteration_vectors
+  text: "Ol Chiki transliteration tested on 125 reference cases"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: models_pinned
+  text: "model_manifest.json pins 423 files, 3.98 GB"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: model_licences
+  text: "IndicConformer and IndicTrans2 are MIT; the default voice is CC BY-NC-SA 4.0; piper-tts is GPL-3.0-or-later"
+  status: "TRUE"
+  evidence: docs/sources.md#piper-pratham
+- id: all_mit
+  text: "All models are open-source/MIT-licensed (deck, slide 5)"
+  status: "FALSE"
+  evidence: docs/sources.md#piper-pratham
+- id: python_version
+  text: "Needs Python 3.10 or 3.11"
+  status: "TRUE"
+  evidence: requirements.txt
+- id: ports
+  text: "Plain server on port 5000; HTTPS hub on port 5443"
+  status: "TRUE"
+  evidence: config.py
+- id: languages_asr
+  text: "The speech model covers 22 Indian languages"
+  status: "TRUE"
+  evidence: docs/sources.md#indicconformer-600m
+- id: public_licences
+  text: "Public test data licences: FLEURS CC BY 4.0, IndicVoices CC BY 4.0, IN22 CC BY 4.0, FLORES CC BY-SA 4.0"
+  status: "TRUE"
+  evidence: docs/sources.md#flores
+
+# ── Deck-only claims (slide verdicts and rewording in STATUS.md §2) ────────
+- id: deck_16_endpoints
+  text: "Backend: Flask REST API, 16 endpoints"
+  status: "FALSE"
+  evidence: app.py
+- id: deck_rnnt
+  text: "ASR: IndicConformer 600M, ONNX/RNN-T"
+  status: "FALSE"
+  evidence: config.py
+- id: deck_tts_015
+  text: "TTS: 0.15 s per line (was 30 s)"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: deck_on_device
+  text: "AI ENGINE — ON-DEVICE"
+  status: "NOT BUILT"
+  evidence: STATUS.md
+- id: deck_sub_second
+  text: "sub-second latency already measured"
+  status: "FALSE"
+  evidence: bench/results/deck_numbers.txt
+- id: deck_int8_asr
+  text: "INT8 ONNX already used for ASR"
+  status: "FALSE"
+  evidence: docs/sources.md#indicconformer-600m
+- id: deck_bpcc
+  text: "Real data already in use: curated NIPUN corpus, AI4Bharat BPCC"
+  status: "FALSE"
+  evidence: STATUS.md
+- id: deck_dpdp
+  text: "DPDP Act 2023 aligned"
+  status: "NOT MEASURED"
+  evidence: STATUS.md

@@ -1,0 +1,76 @@
+VaaniSetu: deck numbers. Values come from files in this repo; measurements are 'laptop, offline'.
+
+Voice to voice, public dataset, adult speech (run 'public', laptop, offline; excludes Wi-Fi)
+  hi-to-sat median / p90 / max                 2.95 / 3.69 / 5.68 s (n=79)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  requests over 3 s                            38 of 79                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  answered by the verified sentence glossary   0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  speech (TTS) failures                        0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  server boot, all models loaded               22.3 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.md]
+  sentence length, median words                17                           [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    0-11 words: median / over 3 s              2.67 s / 0 of 4              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    12-17 words: median / over 3 s             2.76 s / 10 of 36            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    18-23 words: median / over 3 s             3.22 s / 22 of 32            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    24+ words: median / over 3 s               3.48 s / 6 of 7              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+
+Voice to voice, synthetic clips (run 'synthetic-after', laptop, offline; excludes Wi-Fi)
+  hi-to-sat median / p90 / max                 1.51 / 1.68 / 2.08 s (n=29)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  sat-to-hi median / p90 / max                 1.57 / 1.85 / 2.25 s (n=30)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  requests over 3 s                            0 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  answered by the verified sentence glossary   11 of 59                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  speech (TTS) failures                        0 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  server boot, all models loaded               20.4 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.md]
+  (Synthetic clips are Piper reading the lines. Their CER is NOT an ASR accuracy figure.)
+  sentence length, median words                6                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+
+Voice to voice, synthetic clips, BEFORE the latency work (baseline) (run 'synthetic-baseline', laptop, offline; excludes Wi-Fi)
+  hi-to-sat median / p90 / max                 2.19 / 2.69 / 3.06 s (n=29)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  sat-to-hi median / p90 / max                 2.20 / 2.53 / 2.92 s (n=30)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  requests over 3 s                            1 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  answered by the verified sentence glossary   0 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  speech (TTS) failures                        0 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  server boot, all models loaded               21.8 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.md]
+  (Synthetic clips are Piper reading the lines. Their CER is NOT an ASR accuracy figure.)
+  sentence length, median words                6                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+
+Voice to voice, real teacher/child recordings: NOT MEASURED (bench/clips/real/ has no run yet)
+
+On a 2 GB RAM, Android 9+ tablet
+  voice to voice                               NOT MEASURED                 [no tablet; work package 4]
+  peak RAM                                     NOT MEASURED                 [no tablet; work package 4]
+  tablet model and Android version             NOT MEASURED                 [no tablet yet]
+
+Laptop resources
+  peak RAM of the server                       NOT MEASURED                 [no script measures it yet]
+
+Model files on disk
+  ASR (IndicConformer 600M, ONNX)              2.56 GB                      [models\indicconformer]
+  NMT (IndicTrans2 320M)                       1.30 GB                      [models\indictrans2-indic-indic]
+  TTS voices in use                            64 MB                        [hi_IN-pratham-medium.onnx]
+  files pinned in model_manifest.json          423 files, 3.98 GB           [model_manifest.json]
+
+Content
+  lessons (built-in + imported)                17 (5 + 12)                  [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  lessons by grade and domain                  Balvatika lit 2, Balvatika num 2, G1 lit 1, G1 num 3, G2 lit 2, G2 num 2, G3 lit 2, G3 num 3 [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  lessons with a NIPUN Lakshya tag             17                           [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  lessons reviewed by a native speaker         0                            [lesson_engine.py + vaanisetu_feedback.db (imported) review_status]
+  flashcard words in lessons                   89                           [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  sentence glossary entries                    18                           [education_glossary.py]
+  transliteration test vectors                 125                          [tests/data/olchiki_vectors.json]
+
+Speech recognition time, synthetic clips (median ms; laptop, offline)
+  hi: CTC vs RNN-T, no trimming                693 vs 1521 ms               [bench/results/asr_decoding_synthetic.md]
+  hi: time saved by trimming silence (CTC)     115 ms                       [bench/results/asr_decoding_synthetic.md]
+  sat: CTC vs RNN-T, no trimming               733 vs 1562 ms               [bench/results/asr_decoding_synthetic.md]
+  sat: time saved by trimming silence (CTC)    156 ms                       [bench/results/asr_decoding_synthetic.md]
+
+Speech recognition accuracy (public dataset, adult speech; laptop, offline)
+  hi: ctc (in use) WER / CER                   11.1% / 4.5% (n=80)          [bench/results/asr_decoding_public.jsonl]
+  hi: rnnt WER / CER                           11.3% / 4.5% (n=80)          [bench/results/asr_decoding_public.jsonl]
+  sat: WER / CER                               NOT MEASURED                 [no clips for this language yet]
+  Child speech: NOT MEASURED.
+
+Translation quality (the model alone; laptop, offline)
+  chrF++ hin<->sat on IN22-Gen, IN22-Conv, FLORES NOT MEASURED                 [test sets are gated; run eval/eval_benchmarks.py after access]
+
+  ASR WER on child speech / classroom noise    NOT MEASURED                 [no child or noisy test set]
+  chrF++ on the 33-row training CSV            not used                     [it is training data, never a test set]

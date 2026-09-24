@@ -1,7 +1,35 @@
-# STATUS, 24 Sep 2026: Checkpoint S, then WP14
+# STATUS, 25 Sep 2026: Checkpoint P (master prompt v2)
 
-Checkpoint S was approved. The sections below were updated after it. Changes
-since then are summarised in section 0.
+## P. Phase P: publish and measure on public data (branch `phase-p`)
+
+| Item | Result | Evidence |
+|---|---|---|
+| Push | `main` fast-forwarded `1115712` → `51545c7` and pushed; tag `v0.9-submission` pushed. CI ("tests") passed on `main` and on the tag; the badge reads "passing" | https://github.com/barath0512s-rgb/sih-hackathon/actions |
+| Repo description and topics | **NOT DONE**: needs a GitHub login (`gh` is not installed). The current description claims "<4s", which was never measured | — |
+| Hindi speech, public adult | 80 FLEURS test clips (CC BY 4.0, seeded). CTC (in use): WER 11.1%, CER 4.5%. RNN-T: WER 11.3%, CER 4.5%. CTC is 2.3× faster (907 vs 2081 ms median). **Decision: CTC stays for Hindi** | `bench/results/asr_decoding_public.md`, `.jsonl` |
+| Voice to voice, public adult speech | hi→sat median 2.95 s, p90 3.69 s, max 5.68 s; **38 of 79 over 3 s**. It grows with length: 0-11 words 2.67 s (0 of 4 over), 24+ words 3.48 s (6 of 7 over). Translation is the largest part (NMT median 1744 ms) | `bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.{md,csv}` |
+| Santali speech, public adult | **NOT MEASURED**: `ai4bharat/IndicVoices` is gated and the account has no access (403). CTC vs RNN-T for Santali is therefore still undecided | `docs/sources.md#indicvoices` |
+| Translation, chrF++ / BLEU | **NOT MEASURED**: IN22-Gen, IN22-Conv and FLORES are all gated (403). `eval/eval_benchmarks.py` is written and skips cleanly; its scoring path has not run yet | `eval/eval_benchmarks.py` |
+| Test-set leakage guard | `eval/leakage.py`; `train_nmt.py` refuses to train if any sentence is a test sentence or if the test sets have not been hashed | `tests/test_leakage.py` |
+| Fact-check protocol | `docs/sources.md` (every external fact, quoted, with access dates) and `docs/claims.yaml` (every README and deck claim). `tests/test_claims.py` fails if a README number has no evidence file | `tests/test_claims.py` |
+| Corrections found while checking | (1) "Google Translate added Santali in 2024" (from the audit, repeated by me) is **not supported**: the June 2024 blog does not mention it, and the Cloud Translation language list (updated 2026-09-18) does not include it. (2) The README's "115-155 ms" trimming saving was wrong: it is 115 ms (Hindi) and 156 ms (Santali). (3) FLORES is CC BY-SA 4.0, not stated in the prompt | `docs/sources.md#google-translate-santali` |
+| Published reference scores | The IndicTrans2 paper gives no hin↔sat pair score, only averages into and out of Santali (IT2-Dist-M2M chrF++: FLORES 26.1/31.5, IN22-Gen 30.0/35.8, IN22-Conv 30.4/33.8). These are a plausibility range, not a like-for-like comparison | `docs/sources.md#indictrans2-paper` |
+
+**Needed from you:** accept the terms (logged in as the Hugging Face account on
+this laptop) on:
+- `ai4bharat/IndicVoices`;
+- `ai4bharat/indicvoices_r`;
+- `ai4bharat/IN22-Gen` and `ai4bharat/IN22-Conv`;
+- `facebook/flores`;
+- `ai4bharat/indicconformer_stt_hi_hybrid_ctc_rnnt_large` and `…_sat_…` (for Phase F1).
+
+Then either set the repo description and topics on GitHub, or install `gh` and
+run `gh auth login`.
+
+---
+
+(Earlier: Checkpoint S, then WP14. Section 0 summarises the changes after
+Checkpoint S.)
 
 ## 0. Since Checkpoint S
 
@@ -40,7 +68,7 @@ Branch `sih-final`, not pushed. Numbers come from `python tools/deck_numbers.py`
 |---|---|---|---|
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **PARTIAL**: Santali only | `test_pipeline.py`, `tests/test_api.py`. IndicTrans2 and IndicConformer do not support Ho or Mundari |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | **PARTIAL**: text and offline audio for every line. Accuracy is **NOT MEASURED**, and no native review has been done. Content modes do not change the translation (documented in README §5) | `tests/test_api.py`, `tests/test_offline.py`, `docs/native_review.md` |
-| 3 | Real-time voice to voice, no more than 3 s | **PARTIAL**: laptop, synthetic clips: median 1.51 s (hi→sat) and 1.57 s (sat→hi), 0 of 59 over 3 s. Real speech, tablet over Wi-Fi and on-device: **NOT MEASURED** | `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv` |
+| 3 | Real-time voice to voice, no more than 3 s | **PARTIAL**. Laptop, offline. Short lesson lines (synthetic, median 6 words): median 1.51 s (hi→sat) and 1.57 s (sat→hi), 0 of 59 over 3 s. Long general sentences (public adult speech, FLEURS Hindi, median 17 words): median 2.95 s hi→sat, **38 of 79 over 3 s**. Santali public speech, child speech, tablet over Wi-Fi and on-device: **NOT MEASURED** | `bench/results/deck_numbers.txt` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat outcomes | **PARTIAL**: both are generated from the lessons and carry verbatim Lakshya IDs. 17 lessons (Balvatika to Grade 3, both domains); every Lakshya except G2-LIT-2 has a lesson; teachers can add lessons (WP14). Not met: the mapping is not teacher-reviewed; words per minute is counted by the teacher, not measured by the app | `tests/test_lakshya.py`, `tests/test_api.py::test_flashcards_are_built_from_the_lessons`, `docs/lakshya_mapping.md` |
 | 5 | Whole application offline on low-cost tablets (2 GB RAM, Android 9+) after initial content synchronisation | **NOT MET**. Offline on the laptop only. A tablet browser can use the laptop hub (HTTPS for the mic, not yet tried on a tablet). No Android app, content pack or sync | `tests/test_offline.py`, `tests/test_https.py`; WP4 not started |
 | 6 | Working application, demo video, GitHub repository | **PARTIAL**: application and repository exist; no demo video. `sih-final` is not pushed | |

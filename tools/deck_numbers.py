@@ -1,6 +1,7 @@
 """Print the numbers the deck and README may use, each with its source.
 
     python tools/deck_numbers.py
+    python tools/deck_numbers.py --write     # also save to bench/results/deck_numbers.txt
 
 Nothing here is typed in by hand. Every value is read from a results file in
 bench/, from the repository, or from the model files on disk. Anything that has
@@ -11,7 +12,9 @@ measured on a tablet.
 """
 
 import csv
+import io
 import re
+import statistics
 import sys
 from pathlib import Path
 
@@ -54,7 +57,10 @@ def latency(label, csv_path, md_path):
     rows = list(csv.DictReader(csv_path.open(encoding="utf-8")))
     warm = [r for r in rows if r["cold"] == "False"]
     src = f"bench/results/{csv_path.name}"
-    kind = "synthetic clips" if "synthetic" in label else "real clips" if "real" in label else label
+    kind = ("synthetic clips, BEFORE the latency work (baseline)" if "baseline" in label else
+            "synthetic clips" if "synthetic" in label else
+            "public dataset, adult speech" if "public" in label else
+            "real clips" if "real" in label else label)
     print(f"\nVoice to voice, {kind} (run '{label}', {LAPTOP}; excludes Wi-Fi)")
     for d in ("hi-to-sat", "sat-to-hi"):
         s = stats([float(r["pipeline_ms"]) / 1000 for r in warm if r["direction"] == d])
@@ -72,6 +78,77 @@ def latency(label, csv_path, md_path):
         out("server boot, all models loaded", f"{m.group(1)} s" if m else NM, f"bench/results/{md_path.name}")
     if "synthetic" in label:
         print("  (Synthetic clips are Piper reading the lines. Their CER is NOT an ASR accuracy figure.)")
+    # Time grows with sentence length, so say how long the sentences were.
+    words = [len(r["reference"].split()) for r in warm]
+    if words:
+        out("sentence length, median words", f"{statistics.median(words):g}", src)
+    if "public" in label:
+        for lo, hi in ((0, 12), (12, 18), (18, 24), (24, 999)):
+            b = [r for r in warm if lo <= len(r["reference"].split()) < hi]
+            if b:
+                ms = [float(r["pipeline_ms"]) for r in b]
+                span = f"{lo}-{hi - 1}" if hi < 999 else f"{lo}+"
+                out(f"  {span} words: median / over 3 s",
+                    f"{sec(statistics.median(ms) / 1000)} s / {sum(m > 3000 for m in ms)} of {len(b)}", src)
+
+
+def asr_decoding_synthetic():
+    """CTC vs RNN-T and silence trimming, from bench/results/asr_decoding_synthetic.md."""
+    f = RESULTS / "asr_decoding_synthetic.md"
+    if not f.exists():
+        return
+    med = {}
+    for m in re.finditer(r"^\| (hi|sat) \| (ctc|rnnt) \| (yes|no) \| (\d+) \|", f.read_text(encoding="utf-8"), re.M):
+        med[(m.group(1), m.group(2), m.group(3))] = int(m.group(4))
+    print(f"\nSpeech recognition time, synthetic clips (median ms; {LAPTOP})")
+    for lang in ("hi", "sat"):
+        if (lang, "ctc", "no") in med and (lang, "rnnt", "no") in med:
+            out(f"{lang}: CTC vs RNN-T, no trimming", f"{med[(lang, 'ctc', 'no')]} vs {med[(lang, 'rnnt', 'no')]} ms",
+                f"bench/results/{f.name}")
+        if (lang, "ctc", "no") in med and (lang, "ctc", "yes") in med:
+            out(f"{lang}: time saved by trimming silence (CTC)",
+                f"{med[(lang, 'ctc', 'no')] - med[(lang, 'ctc', 'yes')]} ms", f"bench/results/{f.name}")
+
+
+def asr_accuracy():
+    """Corpus WER/CER on the public clips, from bench/asr_decoding.py's raw file."""
+    import json
+    raw = RESULTS / "asr_decoding_public.jsonl"
+    print(f"\nSpeech recognition accuracy (public dataset, adult speech; {LAPTOP})")
+    if not raw.exists():
+        out("WER / CER", NM, "run bench/fetch_public_clips.py, then bench/asr_decoding.py --label public")
+        return
+    import jiwer
+    rows = [json.loads(l) for l in raw.read_text(encoding="utf-8").splitlines() if l.strip()]
+    src = f"bench/results/{raw.name}"
+    for lang in ("hi", "sat"):
+        mine = [r for r in rows if r["lang"] == lang]
+        if not mine:
+            out(f"{lang}: WER / CER", NM, "no clips for this language yet")
+            continue
+        for dec in ("ctc", "rnnt"):
+            v = [r for r in mine if r["decoding"] == dec and r["trim"] == config.ASR_TRIM_SILENCE[lang]]
+            if v:
+                wer = jiwer.wer([r["reference_norm"] for r in v], [r["hypothesis_norm"] for r in v])
+                cer = jiwer.cer([r["reference_norm"] for r in v], [r["hypothesis_norm"] for r in v])
+                used = " (in use)" if dec == config.ASR_DECODING[lang] else ""
+                out(f"{lang}: {dec}{used} WER / CER",
+                    f"{wer * 100:.1f}% / {cer * 100:.1f}% (n={len(v)})", src)
+    print("  Child speech: NOT MEASURED.")
+
+
+def translation():
+    import json
+    res = ROOT / "eval" / "results" / "benchmarks.json"
+    print(f"\nTranslation quality (the model alone; {LAPTOP})")
+    if not res.exists():
+        out("chrF++ hin<->sat on IN22-Gen, IN22-Conv, FLORES", NM,
+            "test sets are gated; run eval/eval_benchmarks.py after access")
+        return
+    d = json.loads(res.read_text(encoding="utf-8"))
+    for r in d["results"]:
+        out(f"{r['set']} {r['direction']} chrF++ / BLEU", f"{r['chrf++']} / {r['bleu']} (n={r['n']})",
+            f"eval/results/{res.name}")
 
 
 def size(path):
@@ -88,8 +165,6 @@ def main():
     if not runs:
         print(f"\nVoice to voice: {NM} (no bench/results/*.csv)")
     for label in sorted(runs):
-        if label.endswith("baseline"):
-            continue
         latency(label, *runs[label])
     if not any("real" in k for k in runs):
         print(f"\nVoice to voice, real teacher/child recordings: {NM} (bench/clips/real/ has no run yet)")
@@ -139,10 +214,23 @@ def main():
     vec = _j.loads((ROOT / "tests" / "data" / "olchiki_vectors.json").read_text(encoding="utf-8"))
     out("transliteration test vectors", str(len(vec["vectors"])), "tests/data/olchiki_vectors.json")
 
-    print("\nTranslation quality")
-    out("chrF++ on held-out sentences", NM, "no held-out set yet; the 33-row CSV is not used")
-    out("ASR WER, adult / child, quiet / noisy", NM, "needs real recordings")
+    asr_decoding_synthetic()
+    asr_accuracy()
+    translation()
+    print()
+    out("ASR WER on child speech / classroom noise", NM, "no child or noisy test set")
+    out("chrF++ on the 33-row training CSV", "not used", "it is training data, never a test set")
 
 
 if __name__ == "__main__":
-    main()
+    import contextlib
+    if "--write" in sys.argv:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            main()
+        text = buf.getvalue()
+        print(text, end="")
+        (RESULTS / "deck_numbers.txt").write_text(text, encoding="utf-8")
+        print(f"\nSaved to bench/results/deck_numbers.txt")
+    else:
+        main()

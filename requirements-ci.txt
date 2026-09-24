@@ -7,3 +7,4 @@ cryptography==50.0.1
 numpy==1.26.4
 soundfile==0.14.0
 aksharamukha==2.3
+PyYAML==6.0.3
