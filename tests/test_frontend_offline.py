@@ -35,3 +35,9 @@ def test_olchiki_font_is_in_every_text_stack():
     for var in ("--deva", "--olck"):
         m = re.search(var + r":([^;]+)", HTML)
         assert m and "Noto Sans Ol Chiki" in m.group(1), var
+
+
+def test_english_is_hidden_unless_evaluator_mode():
+    # The teacher's screen has no English; ?evaluator=1 shows the EN button.
+    assert re.search(r'<button id="langEn"[^>]*\bhidden\b', HTML)
+    assert 'get("evaluator")' in HTML

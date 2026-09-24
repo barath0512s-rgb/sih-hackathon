@@ -1,356 +1,310 @@
-# VaaniSetu (वाणीसेतु) — "Voice Bridge"
+# VaaniSetu (वाणीसेतु), "Voice Bridge"
 
-**An offline, real-time, bidirectional Hindi ↔ Santali teaching assistant for tribal classrooms.**
+**An offline Hindi ↔ Santali teaching assistant for Grade 1–3 classrooms in Jharkhand.**
+The teacher speaks or types Hindi. The child hears Santali and can answer in
+Santali. The teacher hears Hindi.
 
 | | |
 |---|---|
-| **Event** | Smart India Hackathon 2026 |
-| **Problem Statement** | SIH26042 |
-| **Theme** | Smart Education |
-| **Category** | Software |
-| **Languages** | Hindi (Devanagari) ↔ Santali (Ol Chiki) |
-| **Runs on** | A standard laptop, CPU only, no internet required |
+| Event | Smart India Hackathon 2026 |
+| Problem statement | SIH26042, *AI-Powered Vernacular Pedagogy and Real-Time Translation Tool for Mother Tongue-Based Primary Education* (Government of Jharkhand) |
+| Theme / category | Smart Education / Software |
+| Languages | Hindi (Devanagari) ↔ Santali (Ol Chiki) |
+| Runs today on | A laptop (the "laptop hub"), CPU only, no internet. A tablet or phone on the same Wi-Fi can use it through its browser |
+| In progress | The Android app that runs everything on a 2 GB RAM, Android 9+ tablet with no laptop (work package 4). **Not built yet** |
+
+The product name is on hold. It is set in one place, `APP_NAME` in `config.py`.
+
+**Every number in this README comes from a script in this repository.** Run
+`python tools/deck_numbers.py` to print them with their source files. Anything
+without a script behind it is marked **NOT MEASURED**.
 
 ---
 
-## 1. The Problem
+## 1. The problem
 
-India has roughly **7.5 million Santali speakers**, concentrated in Jharkhand, West Bengal, Odisha and Bihar. Santali is one of the 22 scheduled languages of India and has its own script, **Ol Chiki (ᱚᱞ ᱪᱤᱠᱤ)**.
+The JEPC Language Mapping Survey, Phase 1, was carried out by the Jharkhand
+Education Project Council with JCERT. Its data was collected in January and
+February 2024
+([report](https://languageandlearningfoundation.org/wp-content/uploads/2025/04/LM-Report-Jharkhand-Phase-1.pdf);
+page numbers below are the report's printed page numbers).
 
-The classroom reality:
+- Coverage: 7 districts, 72 blocks, **8,244 schools**, **1,06,930 Grade 1 students** (p. 13).
+- *"In the surveyed districts, Hindi serves as the Medium of Instruction (MoI) in approximately 98% of schools."* (p. 18)
+- Home languages of Grade 1 students include **Ho 17.03%, Santali 13.07%, Mundari 7.32%** (Table 1, p. 17).
+- *"Approximately 80% of schools in the surveyed districts of Jharkhand, falling under Type II, III, and IV categories, pose moderate to severe learning disadvantages for students"* (p. 6).
+- On children's Hindi, the report gives two figures. The executive summary says: *"The survey found that 36.1% of students have minimal proficiency, 41.2% have functional proficiency, and only 22.7% have good proficiency in Hindi."* (p. 6). The findings section says the minimal-proficiency segment is *"around 51.2% of students, indicating that a sizeable portion of the student population possesses a very less or no understanding of Hindi."* (p. 18). We quote both, because the report does.
 
-- Government schools in these districts teach in **Hindi**.
-- Grade 1–3 children arrive speaking only **Santali** at home.
-- Teachers are frequently posted from outside the region and **do not speak Santali**.
-- The child therefore has to learn *mathematics* and *literacy* through a language they do not yet understand.
-
-The result is a **foundational learning gap**. A child who cannot understand "दो और तीन कितने होते हैं?" is not failing at addition — they are failing at Hindi, and the system records it as failing at mathematics.
-
-### Why existing tools do not solve it
-
-| Tool | Why it fails here |
-|---|---|
-| Google Translate | Does not support Santali at all |
-| Generic translation apps | One-way, text-only, no teaching structure |
-| Cloud AI services | Rural schools have unreliable or no internet |
-| Human translators | Not affordable or available at classroom scale |
+So a child who cannot answer "दो और तीन कितने होते हैं?" may not be failing at
+addition. They may not understand the Hindi question.
 
 ---
 
-## 2. The Solution
+## 2. What the ministry asks for, and what runs today
 
-VaaniSetu is a **teaching assistant**, not a translation box. The teacher speaks or types Hindi; the child hears Santali in their own script and voice. The child can answer back in Santali and the teacher hears Hindi.
+The problem statement's clauses, one row each. "Runs today" means on the
+laptop, offline, and checked by the named test or script.
 
-Around that core sits the part that makes it a *lesson* rather than a phrasebook:
-
-1. **Bidirectional classroom dialogue** — not one-way translation.
-2. **Three FLN content modes** — teaching script, activity instruction, assessment prompt.
-3. **Pre-loaded NIPUN Bharat lesson templates** — structured teaching, not a blank text box.
-4. **Per-response comprehension signal** — green / yellow / red after each student answer.
-5. **Teacher session summary** — analytics when the lesson finishes.
-6. **Bilingual PDF worksheet** — generated from the actual lesson that was just taught.
-7. **Instant learning** — a teacher can correct a translation and the correction is used forever after.
-8. **Fully offline** — every model runs locally on the laptop.
-
-> **NIPUN Bharat** (National Initiative for Proficiency in Reading with Understanding and Numeracy) is the Government of India's mission for foundational literacy and numeracy by Grade 3. VaaniSetu's lessons are written against its competency goals.
+| # | Requirement | Runs today (laptop, offline) | Not done yet | How to check |
+|---|---|---|---|---|
+| 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
+| 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality: **NOT MEASURED** (no held-out test set yet). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
+| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, **synthetic** clips (Piper reading the lines), in-process: median **1.51 s** Hindi→Santali and **1.57 s** Santali→Hindi; **0 of 59** over 3 s | Real teacher and child recordings: **NOT MEASURED**. Tablet over classroom Wi-Fi: **NOT MEASURED**. On a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py`, then `python tools/deck_numbers.py` |
+| 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines | Only 5 lessons. The lesson-to-goal mapping has not been checked by a teacher. Teachers cannot yet add their own lessons | `pytest tests/test_lakshya.py` |
+| 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
+| 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
 
 ---
 
-## 3. System Architecture
+## 3. What it does
+
+1. **Two-way classroom dialogue.** Hindi → Santali and Santali → Hindi, typed or spoken, with speech in both directions.
+2. **NIPUN Bharat lessons.** Five lessons (counting, shapes, addition, reading words, subtraction). Each is a sequence of steps: the line to say, a teaching note, and for questions, the accepted answers.
+3. **NIPUN Lakshya tags.** Every lesson names the NIPUN goals it works towards, e.g. `NIPUN-G1-NUM-2`: *"Perform simple addition and subtraction"*. See `docs/lakshya_mapping.md`.
+4. **Answer checking.** After a question, the child's answer (Hindi or Santali, typed or spoken, any digit script: 7, ७, ᱗) is marked green, yellow or red.
+5. **Session summary.** Steps done, lines translated, green/yellow/red counts.
+6. **Bilingual worksheet (PDF)** of the lesson just taught, with its Lakshya tags.
+7. **Flashcards** made from the lessons. Each card says where its Santali came from: the glossary word list, a teacher's correction, or the model. Words no native speaker has checked are labelled "review pending".
+8. **Teacher corrections are reused.** A 👎 opens a correction box. The correction is stored and used, before the model, every time that line comes up again, in either direction.
+9. **Where each translation came from.** A badge on each translation shows its source: verified glossary, teacher correction, cached, or model. No confidence number is shown, because the model's score does not tell good output from bad (`eval/model_score_sanity.py`).
+10. **Voice-to-voice timer.** The browser measures from the end of the teacher's input to the reply starting to play, and shows it.
+11. **Offline.** No internet at any point after setup.
+
+---
+
+## 4. How it works
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  BROWSER  (frontend.html — single file, no build step)       │
-│  Classroom · Lessons · Flashcards · Progress · Settings      │
-└───────────────────────────┬──────────────────────────────────┘
-                            │  HTTP / JSON  (same origin, or LAN)
-┌───────────────────────────▼──────────────────────────────────┐
-│  FLASK API  (app.py) — 18 endpoints                          │
-└───────────────────────────┬──────────────────────────────────┘
-                            │
-┌───────────────────────────▼──────────────────────────────────┐
-│  PIPELINE  (pipeline.py)                                     │
-│                                                              │
-│   Microphone (.webm)                                         │
-│        │  ffmpeg → 16 kHz mono float32                       │
-│        ▼                                                     │
-│   ① ASR    IndicConformer 600M (ONNX, CTC decoding)          │
-│        │   native Hindi + Santali, 22 Indian languages        │
-│        ▼                                                     │
-│   ② NMT    IndicTrans2 indic-indic-dist-320M                 │
-│        │   DIRECT hi↔sat — no English pivot                   │
-│        ▼                                                     │
-│   ③ TTS    Piper (offline neural)                            │
-│            sat → Ol Chiki → Devanagari → hi_IN voice          │
-│            hi → Devanagari read directly by hi_IN            │
-└───────────────────────────┬──────────────────────────────────┘
-                            │
-      ┌─────────────────────┼─────────────────────┐
-      ▼                     ▼                     ▼
-  SQLite               NIPUN Lessons         ReportLab
-  feedback DB          lesson_engine.py      worksheet.py
-  (instant learning)   (5 lessons)           (bilingual PDF)
+ Browser (frontend.html, one file, no build step)        Tablet browser on the same Wi-Fi
+ Classroom · Lessons · Flashcards · Progress · Settings   (optional; https, see §9)
+                 │   HTTP / JSON                                  │
+                 ▼                                                ▼
+ ┌─────────────────────────── laptop hub: app.py (Flask) ──────────────────────────┐
+ │ pipeline.py                                                                     │
+ │   voice ─ ffmpeg 16 kHz ─► ASR  IndicConformer 600M (ONNX, CTC)                  │
+ │                             │                                                   │
+ │   text ────────────────────►├─► 1. teacher correction   (SQLite)                │
+ │                             ├─► 2. sentence glossary    (education_glossary.py) │
+ │                             ├─► 3. earlier translation  (memory cache)          │
+ │                             └─► 4. NMT  IndicTrans2 indic-indic 320M, greedy    │
+ │                                          │  direct Hindi ↔ Santali, no English  │
+ │                                          ▼                                      │
+ │                             TTS  Piper, offline                                 │
+ │                               Santali: Ol Chiki → Devanagari → Hindi voice      │
+ │                               Hindi:   read directly                            │
+ └─────────────────────────────────────────────────────────────────────────────────┘
+   SQLite: corrections, sessions, latency log   ·   lesson_engine.py   ·   worksheet.py (PDF)
 ```
 
-### Three short-circuits before any model runs
+A translation is answered by the first layer that can answer it, in the order
+shown. The model runs only when the other three cannot answer.
 
-Requests are answered from the cheapest layer that can answer them:
+### Speech recognition: IndicConformer 600M
+- `ai4bharat/indic-conformer-600m-multilingual`, ONNX Runtime on the CPU. It reads Santali (`sat`) in Ol Chiki natively.
+- **CTC decoding** for both languages. On the synthetic clips, CTC was about twice as fast as RNN-T with no worse character error rate (`bench/results/asr_decoding_synthetic.md`). This is re-checked per language once real recordings exist.
+- Leading and trailing silence is trimmed for Hindi. It is not trimmed for Santali, because trimming made Santali slightly worse on the same clips.
+- There is no fallback. If the model files are missing, the server stops and says how to get them.
 
-1. **Human correction (SQLite)** — if a teacher has corrected this exact Hindi line, return their wording. 100% accurate, instant.
-2. **Translation cache (memory)** — `TRANSLATION_CACHE`, keyed `mode::text`. If this line was translated before, reuse it. ~0.02 s.
-3. **TTS cache (disk, MD5)** — `tts_cache/<md5(voice:text)>.wav`. If this audio was synthesised before, copy the file. ~0.01 s.
+### Translation: IndicTrans2 indic-indic 320M
+- `ai4bharat/indictrans2-indic-indic-dist-320M`, **direct** Hindi ↔ Santali. Going through English would lose distinctions English does not make, such as respectful आप versus familiar तुम.
+- Greedy decoding (`NMT_NUM_BEAMS = 1`), `no_repeat_ngram_size = 3`, and an output-length cap sized to the input.
+- The model sometimes starts its output with a label such as `ᱥᱮᱪᱮᱫ:` ("Teaching:"); that prefix is removed.
+- At start-up, a background thread translates every lesson line and flashcard word once, so the lesson answers from the cache.
 
-Only on a miss do the neural models run.
-
----
-
-## 4. The AI Pipeline in Detail
-
-### ① Speech Recognition — AI4Bharat IndicConformer 600M
-
-| | |
-|---|---|
-| **Model** | `ai4bharat/indic-conformer-600m-multilingual` |
-| **Runtime** | ONNX Runtime, CPU |
-| **Decoding** | CTC, per language in `config.ASR_DECODING` |
-| **Languages** | 22 — `as bn brx doi kok gu hi kn ks mai ml mr mni ne or pa sa sat sd ta te ur` |
-
-**Why not Whisper?** Whisper had roughly a 2-in-10 success rate on Hindi in a noisy classroom and has no Santali support at all. IndicConformer supports both **natively**, including Santali (`sat`) in Ol Chiki.
-
-**Why CTC, not RNN-T?** The model offers both. Measured on the same clips (`bench/asr_decoding.py`), CTC was about twice as fast with no worse character error rate, so it is the default for both languages. The clips were synthetic, and RNN-T's joint network may cope better with real classroom noise, so this is re-checked once real recordings exist. Leading and trailing silence is trimmed for Hindi, not for Santali, whose quiet word-final stops were being clipped.
-
-There is no fallback: IndicConformer is the only local ASR that reads Santali, so if its files are missing the server stops with instructions (`python download_models.py`) rather than silently degrading.
-
-### ② Translation — AI4Bharat IndicTrans2 (Direct Indic→Indic)
-
-| | |
-|---|---|
-| **Model** | `ai4bharat/indictrans2-indic-indic-dist-320M` |
-| **Direction** | Hindi ↔ Santali, **direct** |
-| **Decoding** | Greedy (`num_beams=1`) |
-
-**Why no English pivot?** The original design was Hindi → English → Santali using two 200M models. That doubled latency and, worse, **destroyed meaning**: English has no grammatical gender or respect markers, so `आप` (respectful "you") and `तुम` (familiar "you") both collapse to "you" and cannot be recovered on the way out. A direct Indic→Indic model preserves gender, respect level and numeric context.
-
-**Why greedy decoding?** Beam search is several times slower on CPU for a marginal quality gain on short classroom sentences. Greedy keeps translation at roughly 0.35–0.65 s.
-
-**Generation settings** (`pipeline.py`):
-
-| Parameter | Value | Reason |
-|---|---|---|
-| `NMT_BEAMS` | 1 | Greedy — fast CPU inference |
-| `NMT_MAX_TOKENS` | 128 | Classroom lines are short |
-| `NMT_NO_REPEAT_NGRAM` | 3 | Blocks the degenerate looping this model can fall into |
-| `NMT_LENGTH_PENALTY` | 1.0 | Neutral |
-
-**Domain glossary post-processing.** The model sometimes leaks its own mode label into the output — emitting `ᱥᱮᱪᱮᱫ:` ("Teaching:") or `ᱠᱩᱠᱞᱤ:` ("Question:") as a prefix. `_apply_domain_glossary()` strips these so the child hears the sentence, not the instruction label.
-
-**Background pre-caching.** On startup a daemon thread translates all **18 NIPUN lesson sentences** and stores them in memory, so every scripted line in a demo answers from cache instead of running the model.
-
-### ③ Speech Synthesis — Piper (offline neural TTS)
-
-| Voice | Model | Reads |
-|---|---|---|
-| Santali | `hi_IN-pratham-medium` | Ol Chiki transliterated to Devanagari (default) |
-| Santali, A/B option | `en_US-lessac-medium` | Ol Chiki transliterated to Latin (`SANTALI_TTS_SCRIPT = "latin"`) |
-| Hindi | `hi_IN-pratham-medium` | Devanagari directly |
-
-**The Ol Chiki problem.** No offline TTS voice reads Ol Chiki. `translit/olchiki.py` rewrites Santali in Devanagari so the offline Hindi voice can pronounce it with Indian phonetics: `ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ` becomes `तेहेँच् आले`. It is a parser, not a lookup table, because Ol Chiki consonants carry no vowel while Devanagari consonants do. It covers the whole Ol Chiki block, including digits (spoken as Santali number words, whatever script they arrive in), the sentence marks and every diacritic. Its core is cross-checked against the independent Aksharamukha transliterator on every Santali string in the project; the phonetic rules where it departs from Aksharamukha are documented in the module and await native review. 125 reference vectors live in `tests/data/olchiki_vectors.json`.
-
-**Why Piper, and the road to it:**
-
-| Attempt | Outcome |
-|---|---|
-| Indic Parler-TTS | ~30 s per sentence on CPU. Unusable. |
-| INT8 quantised Parler | PyTorch CPU dispatch regressions. Abandoned. |
-| gTTS (Google) | Fast (~0.8 s) but **requires internet** — fatal for rural schools. |
-| **Piper** | **~0.15 s, fully offline, neural quality.** ✅ |
-
-Piper is the only engine in the default configuration. gTTS is used only if `config.ALLOW_ONLINE_TTS = True` (off by default). If a clip cannot be produced offline, the translation is still returned, with `audio_url: null` and a `tts_error` the UI shows. Silence is never written.
+### Speech synthesis: Piper
+- No offline voice reads Ol Chiki. `translit/olchiki.py` rewrites Santali in Devanagari, so the offline Hindi voice `hi_IN-pratham-medium` can speak it. For example, `ᱛᱮᱦᱮᱸᱡ ᱟᱞᱮ` becomes `तेहेँच् आले`.
+- The transliterator is a parser, not a lookup table. It covers the whole Ol Chiki block, including digits (spoken as Santali number words), punctuation and every diacritic. Its core is cross-checked against the independent Aksharamukha transliterator, and 125 reference cases are tested. Its phonetic choices still need native review.
+- If a clip cannot be made offline, the translation is still shown. The reply carries `audio_url: null` and a `tts_error`. The screen says so in Hindi, and the failure is logged. Silence is never played.
+- gTTS (online) is off: it is used only if `config.ALLOW_ONLINE_TTS = True`.
 
 ---
 
-## 5. Engineering Evolution
+## 5. Content modes
 
-The project was rebuilt in six phases. Each solved a measured problem.
-
-| Phase | Problem | Solution | Result |
-|---|---|---|---|
-| **1** | Whisper: 2/10 on Hindi, no Santali | IndicConformer 600M ONNX + RNN-T | Reliable native Hindi & Santali ASR |
-| **2** | Two-hop translation, lost gender/respect | Direct `indic-indic-320M`, greedy | ~0.4 s, meaning preserved |
-| **3** | Parler-TTS 30 s on CPU | Ol Chiki→Latin transliteration + fast TTS | Speech in under a second |
-| **4** | Model repeats the same mistake | SQLite feedback loop + `train_nmt.py` LoRA | Corrections apply instantly |
-| **5** | Repeated phrases re-synthesised | MD5 TTS cache + NIPUN pre-cache | Cache hits ~0.01–0.02 s |
-| **6** | gTTS needs internet | **Piper offline neural TTS** | **Zero network at runtime** |
-| **7** | Latency was reported from the server only | Browser-measured voice-to-voice timer, latency log, benchmarks; CTC decoding, trimmed silence | Median 1.5–1.6 s on the laptop (synthetic clips, §6) |
+Every lesson step is typed as **lesson script**, **activity instruction** or
+**assessment prompt**, as the problem statement names them. The modes organise
+the lesson: they set the step's label, its teaching note, and whether an answer
+is expected. **They do not change the translation.** The same Hindi line gets
+the same Santali in every mode. Only the cache key includes the mode.
 
 ---
 
-## 6. Measured Performance
+## 6. Measured performance (laptop, offline)
 
-Every figure here comes from a script in `bench/` and can be re-run (see
-`bench/README.md`). Laptop: Dell G15 5520, Intel Core i7-12700H, 16 GB RAM,
-Windows, CPU only.
+Laptop: Dell G15 5520, Intel Core i7-12700H, 15.7 GB RAM, Windows, CPU only.
+Every figure is from `bench/`. See `bench/README.md` to re-run.
 
-### Voice to voice on the laptop (synthetic clips)
+### Voice to voice, synthetic clips
 
-60 clips of Piper reading classroom lines (**synthetic, not real speech**),
-each sent to `/translate/audio` exactly as the browser sends it, from upload to
-the reply audio being received. In-process, so Wi-Fi is not included. Warm
-requests, empty caches. Source: `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.md`.
+60 clips of Piper reading classroom lines. **This is not real speech.** Each
+clip is sent to `/translate/audio` exactly as the browser sends it. The time
+runs from upload start to the reply audio being received. The app runs
+in-process, so Wi-Fi is not included. Warm requests, empty caches.
+Source: `bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv`.
 
-| Direction | Median | p90 | Max |
-|---|---|---|---|
-| Hindi → Santali | 1.51 s | 1.68 s | 2.08 s |
-| Santali → Hindi | 1.58 s | 1.85 s | 2.25 s |
+| Direction | n | Median | p90 | Max |
+|---|---|---|---|---|
+| Hindi → Santali | 29 | 1.51 s | 1.68 s | 2.08 s |
+| Santali → Hindi | 30 | 1.57 s | 1.85 s | 2.25 s |
 
-0 of 59 warm requests took over 3 s. Server boot with all models loaded: 20.4 s.
-
-Before the work-package-3 changes, the same benchmark gave 2.19 / 2.69 / 3.06 s
-and 2.20 / 2.53 / 2.92 s, with 1 request over 3 s (`…_synthetic-baseline.md`).
-Single runs on a laptop vary: the NMT stage alone moved about 30% between the
-two runs although nothing about NMT changed. Read the before/after gap as
-indicative; the measurements below isolate each change.
+- Requests over 3 s: **0 of 59**.
+- Server start with all models loaded: **20.4 s**.
+- The same benchmark before the latency work: median 2.19 s and 2.20 s, 1 request over 3 s (`…_synthetic-baseline.md`). Single runs vary; the next table isolates each change.
 
 ### What each change did
 
 | Change | Measured effect | Decision | Source |
 |---|---|---|---|
-| CTC instead of RNN-T decoding | ASR about 2x faster (Hindi 693 vs 1521 ms), no worse CER | CTC for both languages | `asr_decoding_synthetic.md` |
-| Trim leading/trailing silence | 115–155 ms less ASR time; CER better for Hindi, slightly worse for Santali | On for Hindi, off for Santali | `asr_decoding_synthetic.md` |
-| Warm the ASR up at start | The first request after start costs nothing extra (−105 ms, noise) | Not added | `cold_start.md` |
-| Size the NMT decode limit to the input | No time saved, no output changed: no line ran on | Kept only as a worst-case cap | `nmt_limits.md` |
+| CTC instead of RNN-T decoding | ASR about 2× faster (Hindi 693 vs 1521 ms), CER no worse | CTC for both languages | `asr_decoding_synthetic.md` |
+| Trim silence at both ends | 115–155 ms less ASR time; CER better for Hindi, slightly worse for Santali | On for Hindi only | `asr_decoding_synthetic.md` |
+| Warm the ASR up at start | The first request costs nothing extra (−105 ms, within noise) | Not added | `cold_start.md` |
+| Size the NMT output limit to the input | No time saved, no output changed | Kept as a safety cap | `nmt_limits.md` |
 | Play the first sentence early | At most 86 ms (median), on 22 of 60 replies | Not built | `tts_first_sentence.md` |
-| Match glossary sentences ignoring punctuation | Spoken lesson lines answered by the verified glossary: 0 → 11 of 59 | Done | the two benchmark files |
+| Match glossary sentences ignoring punctuation | Spoken lesson lines answered by the glossary: 0 → 11 of 59 | Done | the two benchmark files |
 
 ### What the teacher sees
 
-The latency card's big number is measured **in the browser**: from releasing
-the microphone (or pressing Translate) to the reply audio starting to play. The
-bars under it are the server's own ASR / NMT / TTS stages. On one measured typed
-line the server took 0.80 s and the teacher waited 1.05 s: the rest was
-fetching, decoding and starting the audio. The old card showed only the server
-time. Typed and cached lines are labelled. Every request's numbers are stored,
-and `GET /metrics/latency` returns count, median, p90 and max per path.
+The timer's big number is measured **in the browser**: from releasing the
+microphone (or pressing Translate) to the reply starting to play. The bars
+under it are the server's ASR, NMT and TTS times. Every request is logged, and
+`GET /metrics/latency` returns count, median, p90 and max per path.
 
 ### Not measured yet
 
-- Real teacher and child recordings: **NOT MEASURED** (`bench/clips/real/` is empty).
-- Voice to voice over classroom Wi-Fi on a tablet: **NOT MEASURED**. The browser
-  records it on every request, so `/metrics/latency` will show it once used in class.
-- Anything on a 2 GB Android tablet: **NOT MEASURED** (work package 4).
+| What | Status |
+|---|---|
+| Real teacher and child recordings | **NOT MEASURED** (`bench/clips/real/` is empty) |
+| ASR error rate, adult vs child, quiet vs noisy | **NOT MEASURED** |
+| Translation quality (chrF++ on held-out sentences) | **NOT MEASURED** |
+| Voice to voice from a tablet over classroom Wi-Fi | **NOT MEASURED**. The browser logs it, so `/metrics/latency` will show it after classroom use |
+| Anything on a 2 GB RAM, Android 9+ tablet | **NOT MEASURED** (work package 4) |
+| Peak RAM of the laptop server | **NOT MEASURED** |
 
 ---
 
-## 7. Feature Reference
+## 7. NIPUN Bharat alignment
 
-### Classroom
-- Hindi ⇄ Santali, typed or spoken
-- Three FLN modes: **Lesson Script**, **Activity**, **Assessment**
-- Lesson step navigation with "what to say" and "coming next" cues
-- Live latency breakdown (ASR / NMT / TTS / total). No confidence number is shown: the model's score does not separate good input from gibberish (`eval/model_score_sanity.py`)
-- Playback of synthesised speech
+Lakshya text is quoted from *NIPUN Bharat — Guidelines for Implementation*,
+Ministry of Education, 2021, p. 11. The IDs are ours.
 
-### Lessons — NIPUN Bharat aligned
-| Grade | Lesson | Competency |
-|---|---|---|
-| 1 | Counting 1 to 10 | Counts objects up to 10, says numbers in order |
-| 1 | Basic Shapes | Identifies circle, square, triangle |
-| 2 | Simple Addition | Adds two single-digit numbers using objects |
-| 2 | Reading Simple Words | Reads common two-syllable words aloud |
-| 3 | Simple Subtraction | Subtracts single-digit numbers using objects |
+| Grade | Lesson | Lakshya IDs | Fit |
+|---|---|---|---|
+| 1 | Counting 1 to 10 | NIPUN-BV-NUM-1, NIPUN-G1-NUM-1 | full, partial |
+| 1 | Basic Shapes | NIPUN-BV-NUM-2 | partial |
+| 2 | Simple Addition | NIPUN-G1-NUM-2 | full |
+| 2 | Reading Simple Words | NIPUN-BV-LIT-2, NIPUN-G2-LIT-1 | full, partial |
+| 3 | Simple Subtraction | NIPUN-G1-NUM-2, NIPUN-G2-NUM-2 | full, partial |
 
-Each lesson is a sequence of typed steps (`lesson_script`, `activity_instruction`, `assessment_prompt`), each carrying a `hindi` line, a teacher `note`, and — for assessment steps — `accept_answers` per language: `{"digits": ["7"], "hi": ["सात", "saat"], "sat": ["ᱮᱭᱟᱭ", …]}`. A child can answer in Hindi or Santali, typed or spoken, and a number in any digit script (7, ७, ᱗) is the same answer. Every Santali answer records its source (the glossary or the NMT model) and is marked `pending_native_review`.
-
-### Comprehension signals
-After a student answers, the response is graded:
-
-| Signal | Meaning |
-|---|---|
-| 🟢 **Green** | Answer matches an accepted answer — student understood |
-| 🟡 **Yellow** | Something was said, but not the expected answer — partial |
-| 🔴 **Red** | No response — concept needs repeating |
-
-### Session summary
-Duration, steps completed, sentences translated, average latency, green/yellow/red counts, a percentage score, and a plain-language verdict:
-- ≥70% → "Good — students grasped the concept"
-- ≥40% → "Partial — repeat key terms next session"
-- <40% → "Needs reinforcement — revisit this lesson"
-
-### Bilingual worksheet (PDF)
-Generated from the **actual session just taught**: the NIPUN competency goal, the key Hindi/Santali concept pair, and a full lesson-progression table of every line translated. Rendered with real Unicode fonts (Noto Sans Devanagari + Noto Sans Ol Chiki) so both scripts print correctly.
-
-### Instant learning (feedback loop)
-👍 / 👎 on any translation. A 👎 opens a correction box. Corrections are stored in SQLite and **checked before the model on every future request** — so a teacher's fix is applied immediately and permanently, with no retraining. The accumulated corrections also export to CSV for LoRA fine-tuning (`train_nmt.py`).
-
-### The interface itself is in Hindi and Santali — not English
-
-This is a design decision, not a detail. The user is a teacher in a tribal school, so **there is no English in the UI at all**. Every visible string exists twice, in a single translation table:
-
-| UI language | Nav labels |
-|---|---|
-| **हिन्दी** (default) | कक्षा · पाठ · चित्र पत्ते · प्रगति · सेटिंग |
-| **ᱥᱟᱱᱛᱟᱲᱤ** (Ol Chiki) | full Santali translation of the entire interface |
-
-> **Honest caveat, from the source file itself:** *"The Santali column was written without a native speaker to check it, so treat it as a first draft."* Correcting it requires editing one table and nothing else in the file.
-
-### Five views
-| View | Hindi | Purpose |
-|---|---|---|
-| Classroom | कक्षा | The live teaching screen |
-| Lessons | पाठ | Browse and pick a lesson |
-| Flashcards | चित्र पत्ते | Vocabulary deck with flip-all |
-| Progress | प्रगति | Cumulative lines, steps, accuracy, time |
-| Settings | सेटिंग | Preferences |
-
-### Settings (persisted in `localStorage`)
-| Setting | Key | Effect |
-|---|---|---|
-| UI language | `vs_lang` | Hindi or Santali |
-| Autoplay | `vs_autoplay` | Speak the translation automatically |
-| Large type | `vs_big` | Scales the whole UI for classroom projection |
-| Spoken confirmations | `vs_confirm` | Announce actions aloud |
-| **Server address** | `vs_server` | **Point the UI at a laptop over Wi-Fi** |
-
-That last one is what makes the tablet/phone story work today: the HTML can be opened on any device on the same network and pointed at the teacher's laptop, with no app install.
-
-### Accessibility
-- Skip-to-content link (`मुख्य भाग पर जाएँ`)
-- Keyboard operable: **Ctrl/Cmd + Enter** translates, **Enter** submits a student answer, **Escape** closes dialogs, lesson steps are Enter/Space activatable
-- Large-type mode for projection
+No lesson reaches a Grade 3 goal yet. Every mapping awaits teacher review.
+Details: `docs/lakshya_mapping.md`.
 
 ---
 
-## 8. API Reference
+## 8. The interface
 
-All 18 endpoints served by `app.py`.
+- **Hindi by default, Santali as an option.** The teacher's screen has no English. The `EN` button appears only in evaluator mode: open the page with `?evaluator=1` (and `?evaluator=0` to turn it off again).
+- The Santali interface text was written without a native speaker, so treat it as a first draft.
+- Five views: Classroom (कक्षा), Lessons (पाठ), Flashcards (चित्र पत्ते), Progress (प्रगति), Settings (सेटिंग).
+- Settings are kept in the browser: interface language, autoplay, large type, spoken confirmations, and the **server address**, which points a tablet's browser at the laptop hub.
+- Keyboard: Ctrl/Cmd + Enter translates, Enter submits an answer, Escape closes dialogs.
+
+---
+
+## 9. Setup
+
+You need Python 3.10 or 3.11, `ffmpeg` on PATH, and room for the model files
+(`model_manifest.json` pins 423 files, 3.98 GB).
+
+```bash
+python -m venv vaanisetu_env
+vaanisetu_env\Scripts\activate            # Windows
+source vaanisetu_env/bin/activate         # Mac/Linux
+pip install -r requirements.txt
+python download_models.py                  # pinned revisions, checked against model_manifest.json
+python -m piper.download_voices hi_IN-pratham-medium --data-dir models/piper
+python verify_models.py                    # loads everything, checks speech is audible
+python app.py
+```
+
+Open **http://127.0.0.1:5000**. On Windows, double-click `run_vaanisetu.bat`,
+or use `run_vaanisetu.bat verify` to check everything first.
+
+### Laptop hub for tablets on the same Wi-Fi
+
+A browser allows the microphone only on `https://` pages or on localhost. To
+let a tablet's browser use the laptop:
+
+```bash
+run_vaanisetu.bat https          # or: python app.py --https
+```
+
+This makes a certificate for the laptop's current Wi-Fi addresses
+(`tools/make_cert.py`, files in `certs/`, never committed). It then serves on
+port 5443 and prints the address to open on the tablet, e.g.
+`https://172.18.222.252:5443`. The tablet either accepts the browser's
+warning once, or installs the laptop's CA certificate (`/hub-ca.crt`, served by
+the plain server on port 5000). That CA can vouch only for this laptop and for
+private-network addresses.
+
+Everything still runs on the laptop; the tablet is only a screen and a
+microphone. Checked on the laptop: a client that trusts only the hub's CA
+connects over the Wi-Fi address (`tests/test_https.py`). **Not checked yet:
+the microphone on a real tablet.**
+
+---
+
+## 10. Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q                  # tests that need the models are skipped without them
+python test_pipeline.py    # 7 end-to-end component checks
+python verify_models.py    # the pre-flight check; writes verify_report.txt
+```
+
+The pytest suite covers:
+- transliteration (125 cases);
+- text normalisation and correction reuse;
+- separate audio for concurrent requests;
+- offline operation (network sockets blocked before the models load);
+- the frontend loading nothing from the internet;
+- the API's routes and responses;
+- sessions surviving a restart;
+- latency logging;
+- speech-failure handling;
+- Lakshya tags;
+- worksheets and flashcards;
+- the HTTPS certificate.
+
+---
+
+## 11. API
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/` | Serves `frontend.html` |
-| GET | `/health` | Liveness + CPU/GPU device |
-| GET | `/health/models` | What actually loaded: ASR backend, NMT status, cache sizes, active sessions |
-| GET | `/lessons` | All lessons, each with its full step plan inlined |
-| POST | `/session/start` | Begin a lesson session → `session_id` |
-| POST | `/session/next` | Advance one step |
-| POST | `/session/goto` | Jump to a specific step index |
-| POST | `/session/response` | Grade an answer to an explicit `step` → green/yellow/red. JSON, or multipart with `audio` for a spoken answer |
-| POST | `/session/summary` | Session analytics |
-| POST | `/translate/text` | Translate typed text (either direction) |
-| POST | `/translate/audio` | Translate a recorded clip (multipart) |
-| POST | `/translate/reverse` | Santali → Hindi convenience route |
-| GET | `/audio/<id>` | The clip for one reply (each reply has its own file) |
-| GET | `/audio/output`, `/audio/hindi` | Deprecated: newest Santali / Hindi clip |
+| GET | `/` | The UI (`frontend.html`) |
 | GET | `/config` | Product name, for the UI |
-| POST | `/worksheet` | Generate and download the bilingual PDF |
-| POST | `/feedback` | Store a 👍/👎 or a correction, with `direction` |
+| GET | `/health` | Liveness and device |
+| GET | `/health/models` | Per language: which ASR, NMT and TTS engine loaded, its files and size, and `online_dependencies` |
+| GET | `/lessons` | All lessons with their steps and Lakshya tags |
+| GET | `/flashcards?grade=&topic=` | Flashcard decks from the lessons, each card with its source and review status |
+| POST | `/translate/text` | Translate typed text (`direction`: `hi-to-sat` or `sat-to-hi`) |
+| POST | `/translate/audio` | Translate a recorded clip (multipart) |
+| POST | `/translate/reverse` | Santali → Hindi shortcut |
+| POST | `/speak` | Speak a given line as it is (`text`, `lang`: `sat` or `hi`) |
+| GET | `/audio/<id>` | The clip for one reply |
+| GET | `/audio/output`, `/audio/hindi` | Deprecated: the newest Santali / Hindi clip |
+| POST | `/session/start`, `/session/next`, `/session/goto` | Run a lesson |
+| POST | `/session/response` | Mark an answer to a given `step` (JSON, or multipart with `audio`) |
+| POST | `/session/summary` | Session summary |
+| POST | `/worksheet` | The bilingual PDF |
+| POST | `/feedback` | 👍 / 👎 or a correction, with `direction` |
+| POST | `/metrics/client` | The browser's own timing for a request |
+| GET | `/metrics/latency` | Count, median, p90 and max per path |
+| GET | `/hub-ca.crt` | The laptop hub's CA certificate, for tablets |
 
-**Example — translate typed Hindi:**
-```bash
-curl -X POST http://127.0.0.1:5000/translate/text \
-  -H "Content-Type: application/json" \
-  -d '{"text":"आज हम जोड़ना सीखेंगे।","direction":"hi-to-sat","mode":"lesson_script"}'
-```
-A real response for "बच्चे स्कूल जा रहे हैं।" (your timings will differ):
+A reply from `/translate/text`:
+
 ```json
 {
   "translated_text": "ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮ ᱪᱟᱞᱟᱣᱚᱜ ᱠᱟᱱᱟ ᱾",
@@ -358,274 +312,105 @@ A real response for "बच्चे स्कूल जा रहे हैं�
   "model_score": 0.7,
   "audio_url": "/audio/110bfe8dd4fa448a95e12c280dfffeaa",
   "tts_error": null,
+  "tts_engine": "piper",
+  "request_id": "…",
   "latency": { "asr": 0.0, "nmt": 0.41, "tts": 0.12, "total": 0.53 },
   "english_pivot": "",
   "confidence": null
 }
 ```
-- `source` says which layer answered: `teacher` (a correction), `glossary`, `cached` or `model`.
-- `model_score` is the raw mean token probability, set only for `model`. It is **not** a quality estimate and the UI does not show it.
-- `english_pivot` and `confidence` are deprecated and always empty; they remain only so older clients do not break.
-- If speech fails offline, `audio_url` is `null` and `tts_error` says why.
+
+- `source` is `teacher`, `glossary`, `cached` or `model`.
+- `model_score` is set only for `model` output. It is not a quality estimate, and the UI does not show it.
+- `english_pivot` and `confidence` are always empty. They are kept so older clients do not break.
+- The latency values are one example; yours will differ.
 
 ---
 
-## 9. Project Structure
+## 12. Project layout
 
-| File | Role |
+| Path | What it is |
 |---|---|
-| `app.py` | Flask server, 18 REST endpoints; sessions and corrections persist in SQLite |
-| `pipeline.py` | **Core ML** — ASR, NMT, transliteration, Piper TTS, caches |
-| `indicconformer_asr.py` | ONNX wrapper for IndicConformer, 22 languages |
-| `lesson_engine.py` | NIPUN lesson templates, `LessonSession`, grading, summary |
-| `worksheet.py` | Bilingual PDF generator (ReportLab + Unicode fonts) |
-| `database.py` | SQLite feedback store, correction lookup, CSV export |
-| `frontend.html` | Entire UI — single file, no build step |
-| `verify_models.py` | End-to-end pre-flight check → `verify_report.txt` |
-| `test_pipeline.py` | 7 component tests |
-| `train_nmt.py` | LoRA fine-tuning on collected corrections (GPU) |
-| `generate_dataset.py` | Builds the 33-pair NIPUN parallel corpus |
-| `run_vaanisetu.bat` | Double-click launcher (`run_vaanisetu.bat verify` to self-check) |
-| `training_data/` | `nipun_hindi_santali.csv` — 33 curated Hindi↔Santali pairs |
-| `models/` | All model weights (git-ignored) |
-| `tts_cache/` | MD5-keyed synthesised audio |
+| `app.py` | Flask server |
+| `pipeline.py` | ASR, translation layers, transliteration, Piper TTS, caches |
+| `indicconformer_asr.py` | ONNX wrapper for IndicConformer |
+| `translit/olchiki.py` | Ol Chiki → Devanagari / Latin transliteration |
+| `textnorm.py` | Text normalisation for matching corrections and glossary lines |
+| `education_glossary.py` | Verified sentences, word lists, and the log of glossary changes |
+| `lesson_engine.py` | Lessons, flashcard words, answer checking, sessions |
+| `nipun/lakshya.py` | NIPUN Lakshya goals, verbatim, with our IDs |
+| `worksheet.py` | Bilingual PDF |
+| `database.py` | SQLite: `feedback`, `sessions`, `session_events`, `latency_log` |
+| `config.py` | Product name, paths, model revisions, settings |
+| `frontend.html` | The whole UI |
+| `download_models.py`, `model_manifest.json` | Fetch and verify the pinned model files |
+| `verify_models.py`, `test_pipeline.py`, `tests/` | Checks and tests |
+| `bench/`, `eval/` | Benchmarks and evaluations, with results |
+| `tools/deck_numbers.py` | Prints every number the deck may use, with its source |
+| `tools/make_cert.py` | Certificate for the HTTPS laptop hub |
+| `docs/` | Lakshya mapping, glossary changes, the native-review list |
+| `THIRD_PARTY_LICENSES.md` | Model, voice, package and font licences |
+| `training_data/`, `train_nmt.py`, `generate_dataset.py` | A 33-pair corpus and a LoRA script. Not used for any accuracy figure |
+| `_archive/` | Old scripts and drafts, not used by the app. Do not run `patch.py` or `extract.py` |
 
-### Documentation
-| File | Contents |
-|---|---|
-| `README.md` | This file |
-| `WORKFLOW.md` | The phase-by-phase architectural decision log |
-| `_archive/README.md` | What was archived and why |
-
-### Setup and configuration
-| File | Role |
-|---|---|
-| `config.py` | Product name (`APP_NAME`), absolute paths, feature flags. A rename is one edit here |
-| `download_models.py` | Fetches only the three model sets in use, at pinned revisions, and checks every file against `model_manifest.json` (size + SHA-256) |
-| `model_manifest.json` | 423 files, 3.98 GB: the exact model files the app was tested with |
-| `requirements.txt` | 14 runtime packages (was 161, UTF-16). UTF-8 now |
-| `requirements-dev.txt` | Tests and evaluation: pytest, sacrebleu, jiwer, pandas, pymupdf |
-| `generate_dataset.py` | Regenerates the 33-pair training CSV |
-
-### Moved to `_archive/` (branch `sih-final`)
-None of these are used by the running application.
-
-| From | To | Why |
-|---|---|---|
-| `extract.py`, `patch.py` | `_archive/legacy_scripts/` | One-shot scaffolding. `patch.py` once stubbed Santali TTS to silence. **Do not run either** |
-| `optimize_models.py`, `run_setup.ps1` | `_archive/legacy_scripts/` | Targeted the retired pivot-model architecture |
-| `VaaniSetu_WINNER_Build_Guide.md` | `_archive/` | Original build guide; predates the current design |
-| `frontend_updated.html` | `_archive/frontend_drafts/` | Merged into `frontend.html` already; stale |
-| `frontend_v2…v6.html`, `frontend_old_backup.html`, `test_card.html` | `_archive/frontend_drafts/` (local only, git-ignored) | Design drafts |
-| `*.bak`, `test_*.wav`, `_net_probe.mp3`, sample PDFs | `_archive/scratch/` (local only, git-ignored) | Scratch |
-
-Kept on disk but git-ignored: `OfficeSetup.exe`, the saved SIH portal page and its `_files/` folder, the submission deck (`Team_*.pptx`, `Team_*.pdf`).
-
-### What git ignores
-`models/` · `tts_cache/` · `vaanisetu_env/` · `*.wav *.mp3 *.webm` · `*.onnx *.pt *.bin *.safetensors` · `vaanisetu_feedback.db` · `__pycache__/`
-
-Consequence: a fresh clone has **no models, no voices and no audio cache**. Section 10's download steps are mandatory, not optional.
-
-### Dependencies
-`requirements.txt` pins **14 packages**: `torch` (CPU build), `transformers`, `tokenizers`, `huggingface_hub`, `safetensors`, `sentencepiece`, `IndicTransToolkit`, `onnxruntime`, `soundfile`, `numpy`, `piper-tts`, `Flask`, `flask-cors`, `reportlab`. gTTS is not required.
-
-### Data model
-```sql
-CREATE TABLE feedback (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    hindi_text     TEXT,
-    santali_text   TEXT,
-    is_correct     BOOLEAN,
-    corrected_text TEXT,
-    timestamp      REAL
-);
-```
-
-### Disk footprint
-| Component | Size |
-|---|---|
-| IndicConformer (ASR) | 2.4 GB |
-| IndicTrans2 indic-indic (NMT) | 2.5 GB |
-| Piper voices | 121 MB |
-| Fonts | 232 KB |
-| *(legacy, unused)* whisper / indic_en / en_indic / parler tts | ~5.7 GB |
+Git ignores `models/`, audio files, caches, the database, `certs/` and the
+virtual environment. A fresh clone must download the models (§9).
 
 ---
 
-## 10. Setup
+## 13. Known limitations
 
-**Requirements:** Python 3.10 or 3.11, `ffmpeg` on PATH, ~8 GB RAM, ~6 GB disk.
-
-```bash
-# 1. Environment
-python -m venv vaanisetu_env
-vaanisetu_env\Scripts\activate        # Windows
-source vaanisetu_env/bin/activate     # Mac/Linux
-
-# 2. Dependencies
-pip install -r requirements.txt
-
-# 3. Offline voices (~121 MB, not in git)
-python -m piper.download_voices en_US-lessac-medium  --data-dir models/piper
-python -m piper.download_voices hi_IN-pratham-medium --data-dir models/piper
-
-# 4. Verify everything loads and speaks
-python verify_models.py
-
-# 5. Run
-python app.py
-```
-
-Then open **http://127.0.0.1:5000**. The server also binds `0.0.0.0`, so any device on the same Wi-Fi can reach it at `http://<laptop-ip>:5000`.
-
-On Windows you can simply double-click **`run_vaanisetu.bat`** (or `run_vaanisetu.bat verify` to self-check first).
-
----
-
-## 11. Testing & Verification
-
-Two scripts, with different jobs.
-
-### `verify_models.py` — the pre-flight check (run this before a demo)
-Loads the **real** models and exercises the whole system, writing `verify_report.txt`:
-
-| Group | Checks |
+| Item | Impact |
 |---|---|
-| **[1] Dependencies** | Every import, plus `ffmpeg` on PATH |
-| **[2] Model files** | ASR / NMT / font directories exist, with file counts and sizes |
-| **[3] Pipeline load** | `VaaniSetuPipeline()` constructs; warns if ASR silently fell back to Whisper |
-| **[4] Translation** | Both directions, all three lesson modes, and that the cache actually hits |
-| **[5] Speech** | Transliteration, synthesis, **and that the audio is audible rather than silent** |
-| **[6] Lessons, grading, storage** | Lesson engine, green/yellow/red, correction DB overrides the model, PDF renders |
-| **[7] Speech in, speech out** | Full `full_forward()` on a sample WAV if one is present |
-
-The audio-silence check exists for a specific reason: a stubbed-out TTS once shipped undetected because the file size looked plausible. This test measures RMS and fails on silence.
-
-### `test_pipeline.py` — 7 component tests
-1. Hindi → Santali translation
-2. Santali → Hindi (bidirectional)
-3. Santali TTS audio output
-4. All 3 FLN content modes
-5. Lesson engine loads correctly
-6. Comprehension signals green/red
-7. Bilingual worksheet PDF
-
----
-
-## 12. Offline Guarantee
-
-Every **AI stage** runs locally:
-
-| Stage | Runtime | Network? |
-|---|---|---|
-| ASR | ONNX Runtime, local weights | ❌ None |
-| NMT | PyTorch, local weights | ❌ None |
-| TTS | Piper, local ONNX voices | ❌ None |
-| Lessons / grading / worksheet | Pure Python | ❌ None |
-| UI fonts | Served from `static/fonts/` (SIL OFL, licences alongside) | ❌ None |
-
-**How this is verified** (all re-runnable):
-
-- `tests/test_offline.py` blocks network sockets *before the pipeline is imported*, then loads every model, translates both ways, and synthesises Hindi and Santali speech (including Santali numbers) into an empty cache. It asserts the audio is audible, that gTTS was never called, and that a real network call would have failed.
-- `verify_models.py` (`run_vaanisetu.bat verify`) does the same from pipeline load onward.
-- `tests/test_frontend_offline.py` checks the page loads no external URL and that every font it references exists locally.
-- `GET /health/models` reports the engine, file and size per language, and `online_dependencies: []`.
-
-This matters because the target deployment is a school with no reliable connectivity.
-
----
-
-## 13. Honest Status & Known Limitations
-
-Things a reviewer should know rather than discover:
-
-| # | Item | Impact |
-|---|---|---|
-| 1 | A HuggingFace token was hard-coded in an early *local* version of `run_setup.ps1` (commit `6406ab0`). That commit was replaced before anything was pushed: no branch, local or on GitHub, reaches it, and the pushed history is clean | Revoke the token anyway: it sat in plaintext on disk |
-| 2 | ~~UI fonts load from Google Fonts~~ | **Fixed**: fonts are served from `static/fonts/` |
-| 3 | ~~Reverse direction silent in the UI~~ | **Fixed**: each reply's `audio_url` is played, in both directions |
-| 4 | Direction must be switched with the swap button; typing Santali does not auto-switch | UX friction |
-| 5 | ~~Ol Chiki transliteration drops digits, `᱾` and diacritics~~ | **Fixed**: `translit/olchiki.py` covers the whole block. Its phonetic choices still need native review |
-| 6 | ~~Confidence hard-coded to 95%~~ | **Fixed**: a real score is computed, found not to be meaningful, and hidden from the UI |
-| 7 | ~~Sessions lost on restart~~ | **Fixed**: sessions and their events are stored in SQLite |
-| 8 | ~~Single shared audio file per direction~~ | **Fixed**: one file per reply under `tts_out/`, kept 30 minutes |
-| 9 | Santali is voiced by a US-English voice | Loses Indian phonetic colour; mapping Ol Chiki→Devanagari and using the Hindi voice would likely sound better |
-| 10 | The Santali UI strings were written without a native speaker | Author's own caveat — treat as a first draft |
-| 11 | ASR falls back to Whisper silently if IndicConformer files are missing | Santali speech input degrades badly with no visible warning; `verify_models.py` catches it |
-| 12 | `download_models.py` still fetches the abandoned Whisper/pivot/Parler models | A fresh clone downloads ~5 GB it will not use |
-| 13 | `patch.py` is one-shot scaffolding that rewrites `pipeline.py` | **Do not run it** — it previously stubbed TTS to silence |
-| 14 | Training corpus is 33 curated pairs | Enough to demonstrate LoRA, not to move general quality |
-| 15 | Flask dev server, `debug=False`, bound to `0.0.0.0` | Fine for a demo; not a production deployment |
+| Nothing runs on a tablet without the laptop | The ministry's on-device requirement is not met yet (work package 4) |
+| Santali only; no Ho or Mundari | The models we use do not support them |
+| No native speaker has reviewed the Santali | This covers translations, the glossary, the transliteration, the Santali interface text and the voice. See `docs/native_review.md` |
+| Santali is spoken by a Hindi voice reading a transliteration | How well children understand it: **NOT MEASURED** |
+| All speed figures use synthetic clips | Real classroom speech may be slower or less accurate |
+| Word lists in `education_glossary.py` are used only for flashcards | Translation uses whole verified sentences only |
+| Only 5 lessons, and teachers cannot add lessons | Planned (work package 14) |
+| The worksheet's headings are in English | The on-screen interface is not |
+| Flask development server | Fine for a classroom hub, not a public deployment |
+| Default voice licence is non-commercial (CC BY-NC-SA 4.0); `piper-tts` is GPL-3.0 | See `THIRD_PARTY_LICENSES.md` |
 
 ---
 
 ## 14. Roadmap
 
-- **Phase 2 — On-device:** full ONNX INT8 export so the pipeline runs on a mid-range Android phone with no laptop.
-- **More languages:** the ASR already covers 22 Indian languages; the NMT is Indic→Indic. Mundari, Ho and Bhili are natural next targets.
-- **Grow the corpus:** collected teacher corrections feed LoRA fine-tuning via `train_nmt.py`.
-- **Teacher dashboard:** aggregate comprehension analytics across sessions and classes.
-- **Offline Hindi voice quality:** evaluate additional `hi_IN` Piper voices.
+1. **Android app (work package 4):** on-device ASR, translation and speech on a 2 GB RAM, Android 9+ tablet, a content pack, and syncing teacher corrections.
+2. **Real recordings:** re-run every benchmark on teacher and child speech. Report adult and child, quiet and noisy, separately.
+3. **Native review** of the glossary, the number words, the transliteration and the voice.
+4. **Curriculum import (work package 14):** a teacher pastes Hindi lesson text and gets a typed, tagged, bilingual lesson.
+5. More lessons across Balvatika to Grade 3.
 
 ---
 
-## 15. Slide Deck Outline (for PPT generation)
+## 15. Deck outline (for the slides)
 
-A 17-slide deck. Each row names the section to pull content from.
+Use only numbers printed by `python tools/deck_numbers.py`. Label them
+"laptop, offline", and say "synthetic clips" wherever that applies.
 
-**Do not put §13 (Known Limitations) in the deck** — it is for your own tracking. But read it before you present, so nothing surprises you in Q&A.
-
-| # | Slide Title | Content | Source |
+| # | Slide | Content | Source |
 |---|---|---|---|
-| 1 | **VaaniSetu — वाणीसेतु** | Title, "Voice Bridge", SIH 2026 · PS SIH26042 · Smart Education. Tagline: *Offline, real-time Hindi ↔ Santali teaching assistant* | §Header |
-| 2 | **The Problem** | 7.5M Santali speakers · teachers speak Hindi · children speak Santali · foundational learning gap. One line: *the child isn't failing at maths, they're failing at Hindi* | §1 |
-| 3 | **Why Nothing Existing Works** | 4-row table: Google Translate / generic apps / cloud AI / human translators | §1 |
-| 4 | **Our Solution** | 8 bullets: bidirectional · 3 FLN modes · NIPUN lessons · comprehension signals · summary · worksheet · instant learning · offline | §2 |
-| 5 | **System Architecture** | The ASCII block diagram, redrawn as boxes: Browser → Flask → Pipeline (ASR/NMT/TTS) → SQLite / Lessons / PDF | §3 |
-| 6 | **Three Short-Circuits** | Correction DB → memory cache → TTS cache → models. Emphasise: *models only run on a miss* | §3 |
-| 7 | **① Speech Recognition** | IndicConformer 600M, ONNX, CTC decoding (measured 2x faster than RNN-T), 22 languages. *Why not Whisper:* 2/10 on Hindi, no Santali | §4① |
-| 8 | **② Translation** | IndicTrans2 320M direct Indic→Indic. *Why no English pivot:* आप vs तुम collapse to "you" | §4② |
-| 9 | **③ Speech Synthesis** | Ol Chiki has no TTS → transliterate to Latin. Table of 4 attempts ending at Piper | §4③ |
-| 10 | **Engineering Evolution** | The 6-phase table — problem → solution → result | §5 |
-| 11 | **Performance** | Latency table. Headline: *TTS 0.80s → 0.15s, and now offline* | §6 |
-| 12 | **NIPUN Bharat Alignment** | 5-lesson table with competencies + the green/yellow/red signal | §7 |
-| 13 | **Instant Learning** | 👍/👎 → correction stored → checked *before* the model on every later request. *Right forever after, no retraining* | §7 |
-| 14 | **Built for the Actual User** | The UI itself is in Hindi and Santali — no English anywhere. Five views, large-type mode, works on a tablet over Wi-Fi | §7 |
-| 15 | **Offline Guarantee** | Runtime table + the socket-disabled verification result | §12 |
-| 16 | **Demo** | Live: speak Hindi → hear Santali → child answers → green signal → download worksheet | §7 |
-| 17 | **Roadmap** | On-device ONNX INT8 · more tribal languages · corpus growth · teacher dashboard | §14 |
-
-### Talking points that land with judges
-
-- *"We removed the English pivot because English cannot carry Indian grammatical respect. आप and तुम both become 'you' and you can never get it back."*
-- *"We replaced a 30-second TTS with a 0.15-second one that needs no internet — because the schools we are building for do not have internet."*
-- *"When a teacher corrects us, we are right forever after. No retraining, no waiting."*
-- *"This is not a translation app. It is a lesson that happens to cross a language barrier."*
-- *"There is no English anywhere in our interface. The teacher we built this for does not need it."*
+| 1 | Title | Name, SIH26042, Smart Education | header |
+| 2 | The problem | JEPC survey: 98% of schools teach in Hindi; Santali is 13.07% of Grade 1 home languages. Quote the report's exact sentences | §1 |
+| 3 | What the ministry asks | The six clauses, with runs today / not done yet | §2 |
+| 4 | What it does | The features in §3 | §3 |
+| 5 | How it works | Laptop-hub diagram; the four translation layers | §4 |
+| 6 | Speech in | IndicConformer, CTC measured about 2× faster than RNN-T (synthetic) | §4, §6 |
+| 7 | Translation | Direct Hindi ↔ Santali, no English in between | §4 |
+| 8 | Speech out | Ol Chiki → Devanagari → offline voice | §4 |
+| 9 | Speed | 1.51 s / 1.57 s median, 0 of 59 over 3 s: laptop, offline, synthetic clips | §6 |
+| 10 | NIPUN alignment | Lakshya table | §7 |
+| 11 | Teacher corrections | Stored and reused before the model | §3 |
+| 12 | Offline | Offline tests, `/health/models` | §2, §10 |
+| 13 | What is next | Android on-device, real recordings, native review | §14 |
 
 ---
 
-## 16. Current Repository State
+## 16. Credits
 
-| | |
-|---|---|
-| **Branch** | `fix/pipeline-import-tests-session-logging` |
-| **Latest commit** | `35f3de8` — Implement frontend_v3.html logic into frontend.html |
-| **Uncommitted** | 21 paths (9 modified, 12 untracked) |
-
-### Commit history
-| Commit | What it did |
-|---|---|
-| `35f3de8` | Implemented the frontend_v3 logic into `frontend.html`, fixed a print-encoding error |
-| `637545e` | Integrated the frontend with a working sidebar and dynamic backend fetching |
-| `8692ac9` | Editorial redesign of the frontend, connected to the ML backend |
-| `212b45c` | Removed the dead Parler import, fixed the broken test suite, wired up lesson-translation logging |
-| `08752ab` | Initial: optimised pipeline, IndicConformer ASR, direct NMT, gTTS transliteration |
-
-**The Piper offline-TTS work, the Hindi TTS route and this README are not yet committed.** Commit before the demo so the working state is recoverable.
-
----
-
-## 17. Credits
-
-Built on open models from **AI4Bharat** (IIT Madras) — IndicConformer and IndicTrans2 — and **Piper** (Rhasspy) for offline neural speech. Fonts: Noto Sans Devanagari and Noto Sans Ol Chiki. Lesson competencies follow the **NIPUN Bharat** framework, Ministry of Education, Government of India.
+Models from **AI4Bharat** (IIT Madras): IndicConformer and IndicTrans2.
+Offline speech by **Piper**. Fonts: Noto Sans Devanagari, Noto Sans Ol Chiki,
+Baloo 2, Kalam. Learning goals from **NIPUN Bharat**, Ministry of Education,
+Government of India. Licences: `THIRD_PARTY_LICENSES.md`.

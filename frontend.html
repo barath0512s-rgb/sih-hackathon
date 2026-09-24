@@ -891,7 +891,7 @@ input:focus,textarea:focus,select:focus{
       <div class="lang" role="group" aria-label="भाषा">
         <button id="langHi"  aria-pressed="true">हिंदी</button>
         <button id="langSat" aria-pressed="false">ᱥᱟᱱᱛᱟᱲᱤ</button>
-        <button id="langEn"  aria-pressed="false">EN</button>
+        <button id="langEn"  aria-pressed="false" hidden>EN</button>
       </div>
       <button class="round" id="bigBtn" aria-pressed="false" data-tt="tip_big" title="बड़े अक्षर">🔍</button>
     </div>
@@ -1531,6 +1531,7 @@ const Api = {
 /* ───────────────── state ───────────────── */
 const S = {
   lang: localStorage.getItem("vs_lang") || "hi",
+  evaluator: false,
   lessons:[], index:0, lesson:null, step:0,
   mode:"lesson_script", dir:"hi-to-sat", sid:"",
   rec:null, mr:null, chunks:[], recTimer:null, secs:0, lastFocus:null,
@@ -1606,6 +1607,16 @@ function applyLang(){
 $("#langHi").onclick  = () => { S.lang = "hi";  applyLang(); };
 $("#langSat").onclick = () => { S.lang = "sat"; applyLang(); };
 $("#langEn").onclick  = () => { S.lang = "en";  applyLang(); };
+
+/* Evaluator mode: the teacher UI has no English. ?evaluator=1 shows the EN
+   button for judges and reviewers on this device; ?evaluator=0 hides it again. */
+(function evaluatorMode(){
+  const q = new URLSearchParams(location.search).get("evaluator");
+  try { if (q !== null) localStorage.setItem("vs_eval", q === "1" ? "1" : "0"); } catch(e){}
+  try { S.evaluator = localStorage.getItem("vs_eval") === "1"; } catch(e){ S.evaluator = q === "1"; }
+  $("#langEn").hidden = !S.evaluator;
+  if (!S.evaluator && S.lang === "en") S.lang = "hi";
+})();
 
 /* ───────────────── connection badge ───────────────── */
 function setOnline(up, extra){
