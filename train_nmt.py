@@ -38,6 +38,14 @@ print(f"Trainable parameters: {model.get_nb_trainable_parameters()}")
 print("Loading classroom dataset...")
 dataset = load_dataset("csv", data_files="training_data/nipun_hindi_santali.csv")
 
+# The evaluation test sets (IN22-Gen, IN22-Conv, FLORES-200) must never be
+# trained on. Stops here if any training sentence is a test sentence, or if the
+# test sets have not been hashed yet (python eval/eval_benchmarks.py).
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from eval.leakage import assert_no_test_leakage
+assert_no_test_leakage(list(zip(dataset["train"]["hindi"], dataset["train"]["santali"])))
+
 def preprocess_function(examples):
     # Setup inputs (Hindi)
     inputs = examples["hindi"]
