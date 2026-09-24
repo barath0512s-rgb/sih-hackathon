@@ -93,6 +93,12 @@ class VaaniSetuPipeline:
 
         self.ip = IndicProcessor(inference=True)
         self._tts_lock = threading.Lock()
+        # IndicProcessor keeps one placeholder queue per instance and clears it
+        # in postprocess_batch, so two overlapping translations (two requests,
+        # or a request during the start-up pre-cache) could take each other's
+        # placeholders or leave one thread waiting on the queue for ever. One
+        # translation at a time: preprocess, generate and postprocess together.
+        self._nmt_lock = threading.Lock()
         self._voices    = {}
 
         self._warmup()
@@ -126,6 +132,10 @@ class VaaniSetuPipeline:
         higher than a real classroom sentence. It is returned for evaluation
         and never shown to teachers. None when beam search is on.
         """
+        with self._nmt_lock:
+            return self._nmt_locked(text, src_lang, tgt_lang, tokenizer, model)
+
+    def _nmt_locked(self, text, src_lang, tgt_lang, tokenizer, model):
         batch = self.ip.preprocess_batch(
             [text], src_lang=src_lang, tgt_lang=tgt_lang)
         enc = tokenizer(

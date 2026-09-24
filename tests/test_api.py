@@ -70,6 +70,24 @@ def test_concurrent_requests_get_their_own_audio(api):
     assert client.get(a["audio_url"]).data != client.get(b["audio_url"]).data
 
 
+def test_overlapping_model_translations_all_finish(api):
+    # IndicProcessor shares one placeholder queue per instance; without the
+    # lock in pipeline._nmt, overlapping translations hung for ever.
+    lines = [f"गांव के {w} आज बाज़ार में नए कपड़े खरीदने गए।" for w in
+             ("किसान", "बच्चे", "लोग", "शिक्षक", "व्यापारी", "मजदूर")]
+    out = {}
+    threads = [threading.Thread(target=lambda l=l: out.__setitem__(
+        l, api.pl._nmt(l, "hin_Deva", "sat_Olck", api.pl.tok_nmt, api.pl.mdl_nmt)[0]))
+        for l in lines]
+    for t in threads: t.start()
+    for t in threads: t.join(timeout=180)
+    assert not any(t.is_alive() for t in threads), "a translation is stuck"
+    assert len(out) == len(lines) and all(out.values())
+    # The same answer as when run alone: no placeholder crossed over.
+    alone = api.pl._nmt(lines[0], "hin_Deva", "sat_Olck", api.pl.tok_nmt, api.pl.mdl_nmt)[0]
+    assert out[lines[0]] == alone
+
+
 def test_audio_urls_cannot_escape_the_folder(api):
     c = api.app.test_client()
     assert c.get("/audio/..%2Fapp.py").status_code == 404
