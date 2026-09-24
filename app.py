@@ -12,10 +12,12 @@ from flask import Flask, abort, jsonify, request, send_file
 from flask_cors import CORS
 
 import config
+import curriculum
 import database
 from education_glossary import lookup_word_hi_to_sat
 from lesson_engine import LessonSession, get_all_lessons, get_lesson
 from pipeline import TRANSLATION_CACHE, TTSError, VaaniSetuPipeline
+from nipun import lakshya
 from worksheet import generate_worksheet
 
 # Only static/ is public. The project root used to be the static folder, which
@@ -507,6 +509,124 @@ def session_summary():
     if sess is None:
         return jsonify({"error": "Session not found"}), 404
     return jsonify(sess.summary())
+
+
+# ── Curriculum import (work package 14) ───────────────────────────────────────
+# Two steps, so the teacher stays in charge:
+#   POST /curriculum/import  text or a file -> drafts: lines with suggested
+#                            labels and suggested NIPUN goals. Nothing is stored.
+#   POST /curriculum/save    the draft as the teacher corrected it, with the goals
+#                            confirmed -> Santali for every line, audio for every
+#                            line, a flashcard deck and a worksheet; stored in SQLite.
+_import_lock = threading.Lock()
+
+
+@app.route("/curriculum/import", methods=["POST"])
+def curriculum_import():
+    try:
+        if "file" in request.files:
+            f = request.files["file"]
+            items = curriculum.parse_upload(filename=f.filename, data=f.read(),
+                                            grade=request.form.get("grade"),
+                                            title=request.form.get("title"))
+        else:
+            d = request.json or request.form
+            items = curriculum.parse_upload(text=d.get("text"), grade=d.get("grade"),
+                                            title=d.get("title"))
+    except curriculum.CurriculumError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify({
+        "lessons": [curriculum.draft(i) for i in items],
+        "types": list(curriculum.TYPES),
+        "lakshyas": [{"id": k, **v} for k, v in lakshya.LAKSHYAS.items()],
+        "lakshya_source": lakshya.SOURCE,
+    })
+
+
+def _lesson_audio(topic, i):
+    return config.LESSON_AUDIO_DIR / topic / f"{i}.wav"
+
+
+@app.route("/curriculum/save", methods=["POST"])
+def curriculum_save():
+    try:
+        grade, title, lines, ids = curriculum.validate(request.json or {})
+    except curriculum.CurriculumError as e:
+        return jsonify({"error": str(e)}), 400
+    lesson = curriculum.build_lesson(grade, title, lines, ids)
+    topic = "imp_" + uuid.uuid4().hex[:10]
+    (config.LESSON_AUDIO_DIR / topic).mkdir(parents=True, exist_ok=True)
+    audio_errors = 0
+    with _import_lock:
+        for i, step in enumerate(lesson["steps"]):
+            r = pl.translate(step["hindi"], "hi-to-sat", step["type"])
+            step["santali"] = r["text"]
+            step["source"] = r["source"]
+            # Every Santali line waits for a native speaker, whatever produced it.
+            step["review_status"] = ("teacher_verified" if r["source"] == "teacher"
+                                     else "pending_native_review")
+            try:
+                pl.santali_tts(r["text"], str(_lesson_audio(topic, i)))
+                step["audio_url"] = f"/lesson_audio/{topic}/{i}"
+            except TTSError as e:
+                app.logger.error("Lesson audio failed (%s step %d): %s", topic, i, e)
+                step["audio_url"], step["audio_error"] = None, str(e)
+                audio_errors += 1
+            key = step.get("accept_answers")
+            if key:
+                for answer in key["hi"]:
+                    card = _card_santali(answer)
+                    if card["sat"] and card["sat"] not in key["sat"]:
+                        key["sat"].append(card["sat"])
+                        key["sat_sources"][card["sat"]] = card["source"]
+        database.save_imported_lesson(topic, grade, lesson)
+    return jsonify({
+        "grade": grade, "topic": topic, "title": title,
+        "lakshya_ids": lesson["lakshya_ids"], "domain": lesson["domain"],
+        "review_status": lesson["review_status"],
+        "steps": lesson["steps"], "audio_errors": audio_errors,
+        "flashcards_url": f"/flashcards?grade={grade}&topic={topic}",
+        "worksheet_url": f"/curriculum/{topic}/worksheet",
+    })
+
+
+@app.route("/curriculum")
+def curriculum_list():
+    return jsonify({"lessons": [m for m in get_all_lessons() if m["imported"]]})
+
+
+@app.route("/lesson_audio/<topic>/<int:i>")
+def lesson_audio(topic, i):
+    if not re.fullmatch(r"imp_[0-9a-f]{10}", topic):
+        abort(404)
+    path = _lesson_audio(topic, i)
+    if not path.exists():
+        abort(404)
+    return send_file(path, mimetype="audio/wav")
+
+
+def _find_imported(topic):
+    for m in get_all_lessons():
+        if m["topic"] == topic and m["imported"]:
+            return m["grade"], get_lesson(m["grade"], topic)
+    return None, None
+
+
+@app.route("/curriculum/<topic>/worksheet")
+def curriculum_worksheet(topic):
+    grade, lesson = _find_imported(topic)
+    if not lesson:
+        abort(404)
+    steps = [{"type": s["type"], "hindi": s["hindi"], "santali": s.get("santali", ""),
+              "note": s.get("note", "")} for s in lesson["steps"]]
+    first = steps[0]
+    buf = io.BytesIO()
+    generate_worksheet(first["hindi"], first["santali"],
+                       "Balvatika" if grade == "0" else grade, lesson["title"],
+                       lesson_steps=steps, out=buf, lakshya_ids=lesson["lakshya_ids"])
+    buf.seek(0)
+    return send_file(buf, mimetype="application/pdf",
+                     download_name=f"{config.APP_NAME}_{topic}_Worksheet.pdf")
 
 
 # ── Worksheet and feedback ────────────────────────────────────────────────────

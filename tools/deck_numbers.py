@@ -116,14 +116,23 @@ def main():
     out("files pinned in model_manifest.json", f"{len(files)} files, {total / 1e9:.2f} GB", "model_manifest.json")
 
     print("\nContent")
-    from lesson_engine import NIPUN_LESSONS
-    lessons = [l for g in NIPUN_LESSONS.values() for l in g.values()]
-    out("lessons", str(len(lessons)), "lesson_engine.py")
-    out("lessons with a NIPUN Lakshya tag", str(sum(bool(l.get("lakshya_ids")) for l in lessons)), "lesson_engine.py")
+    import database
+    from lesson_engine import get_all_lessons, get_lesson
+    metas = get_all_lessons()
+    lessons = [get_lesson(m["grade"], m["topic"]) for m in metas]
+    src = f"lesson_engine.py + {Path(database.DB_FILE).name} (imported)"
+    n_imp = sum(m["imported"] for m in metas)
+    out("lessons (built-in + imported)", f"{len(lessons)} ({len(lessons) - n_imp} + {n_imp})", src)
+    by = {}
+    for m in metas:
+        by.setdefault(("Balvatika" if m["grade"] == "0" else "G" + m["grade"], m["domain"]), 0)
+        by[("Balvatika" if m["grade"] == "0" else "G" + m["grade"], m["domain"])] += 1
+    out("lessons by grade and domain",
+        ", ".join(f"{g} {d[:3]} {n}" for (g, d), n in sorted(by.items())), src)
+    out("lessons with a NIPUN Lakshya tag", str(sum(bool(l.get("lakshya_ids")) for l in lessons)), src)
     out("lessons reviewed by a native speaker",
-        str(sum(l.get("review_status") == "native_reviewed" for l in lessons)),
-        "lesson_engine.py review_status")
-    out("flashcards", str(sum(len(l.get("flashcards", [])) for l in lessons)), "lesson_engine.py")
+        str(sum(l.get("review_status") == "native_reviewed" for l in lessons)), src + " review_status")
+    out("flashcard words in lessons", str(sum(len(l.get("flashcards", [])) for l in lessons)), src)
     from education_glossary import VERIFIED_SENTENCES_HI_SAT
     out("sentence glossary entries", str(len(VERIFIED_SENTENCES_HI_SAT)), "education_glossary.py")
     import json as _j

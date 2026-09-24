@@ -182,11 +182,18 @@ NIPUN_LESSONS = {
 }
 
 
+def _every_lesson():
+    """(grade, topic, lesson): the built-in lessons, then the ones teachers
+    imported (curriculum.py, stored in SQLite). Grade "0" is Balvatika."""
+    for gk, topics in NIPUN_LESSONS.items():
+        for tk, lesson in topics.items():
+            yield gk.replace("grade", ""), tk, lesson
+    yield from database.load_imported_lessons()
+
+
 def get_all_lessons():
     out = []
-    for gk, topics in NIPUN_LESSONS.items():
-        g = gk.replace("grade", "")
-        for tk, lesson in topics.items():
+    for g, tk, lesson in _every_lesson():
             out.append({
                 "grade": g, "topic": tk,
                 "title": lesson["title"],
@@ -196,13 +203,20 @@ def get_all_lessons():
                 "domain": lesson["domain"],
                 "review_status": lesson["review_status"],
                 "flashcards": len(lesson.get("flashcards", [])),
+                "imported": bool(lesson.get("imported")),
                 "steps": len(lesson["steps"])
             })
     return out
 
 
 def get_lesson(grade, topic):
-    return NIPUN_LESSONS.get(f"grade{grade}", {}).get(topic)
+    built_in = NIPUN_LESSONS.get(f"grade{grade}", {}).get(topic)
+    if built_in or not str(topic).startswith("imp_"):
+        return built_in
+    for g, tk, lesson in database.load_imported_lessons():
+        if tk == topic and g == str(grade):
+            return lesson
+    return None
 
 
 def grade(step, answer):

@@ -89,6 +89,10 @@ PORT = 5000
 HTTPS_PORT = 5443
 CERT_DIR   = BASE_DIR / "certs"
 
+# Audio for every line of a lesson a teacher imported (curriculum.py). Kept, not
+# pruned like tts_out/, because the lesson is reused. Regenerable, so git-ignored.
+LESSON_AUDIO_DIR = DATA_DIR / "lesson_audio"
+
 DATA_DIR.mkdir(exist_ok=True)
 
 # Must run before transformers is imported, so modules import config first.

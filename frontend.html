@@ -365,6 +365,25 @@ p{margin:0}
 
 /* ═════════ FLASHCARDS ═════════ */
 .deck-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.importer{margin:0 0 22px;padding:18px 20px}
+.importer h2{margin:0 0 6px}.importer h3{margin:16px 0 8px;font-size:15px}
+.imp-row{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:10px 0}
+.imp-row label,.imp-block{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:14px}
+.imp-row .grow{flex:1;min-width:200px}
+.importer input[type=text],.importer select,.importer textarea{font:inherit;padding:8px 10px;border:2px solid var(--ink);border-radius:10px;background:var(--paper)}
+.importer textarea{width:100%;box-sizing:border-box}
+.imp-lines{margin:0;padding-left:22px;display:grid;gap:8px}
+.imp-lines li{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.imp-lines .hl{flex:1;min-width:220px}
+.imp-lines .ty{font:inherit;font-size:13px;font-weight:700;padding:4px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);cursor:pointer}
+.imp-lines .ans{font:inherit;padding:4px 8px;border:2px solid var(--ink);border-radius:8px;width:170px}
+.imp-goals{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.imp-goals label{display:flex;gap:8px;align-items:flex-start;font-size:13px}
+.imp-why{font-size:13px;opacity:.8;margin:0 0 8px}
+.imp-confirm{display:flex;gap:8px;align-items:center;margin:14px 0;font-weight:700}
+.imp-msg{font-weight:700}
+.imp-open{margin:-8px 0 18px}
+.imp-msg a,.imp-msg button{margin-left:8px}
 .deck-tag{margin:-10px 0 18px;font-size:13px;font-weight:700;opacity:.75}
 .fc-back .src-badge{margin:4px 0 0;font-size:11px}
 .src-badge[data-src="wordlist"]{background:var(--c1-soft,#fff1c7)}
@@ -1066,7 +1085,36 @@ input:focus,textarea:focus,select:focus{
     <button aria-pressed="false" data-g="1"><span data-t="les_grade">कक्षा</span> १</button>
     <button aria-pressed="false" data-g="2"><span data-t="les_grade">कक्षा</span> २</button>
     <button aria-pressed="false" data-g="3"><span data-t="les_grade">कक्षा</span> ३</button>
+    <button aria-pressed="false" data-g="0" data-t="balvatika">बालवाटिका</button>
   </div>
+  <p class="imp-open"><button class="btn go" id="impOpen" type="button" data-t="imp_add">➕ नया पाठ जोड़िए</button></p>
+  <section class="slab importer" id="importer" hidden aria-labelledby="impH">
+    <h2 id="impH" data-t="imp_title">नया पाठ जोड़िए</h2>
+    <p data-t="imp_sub"></p>
+    <div class="imp-row">
+      <label><span data-t="imp_grade">कक्षा</span>
+        <select id="impGrade">
+          <option value="0" data-t="balvatika">बालवाटिका</option>
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        </select></label>
+      <label class="grow"><span data-t="imp_name">पाठ का नाम</span><input id="impTitle" type="text" maxlength="80"></label>
+    </div>
+    <label class="imp-block"><span data-t="imp_text">पाठ (हिंदी)</span><textarea id="impText" rows="6"></textarea></label>
+    <div class="imp-row">
+      <label><span data-t="imp_file">या फ़ाइल चुनिए</span> <input id="impFile" type="file" accept=".txt,.csv,.json"></label>
+      <button class="btn paper" id="impSplit" type="button" data-t="imp_split">✂️ पंक्तियाँ बनाइए</button>
+    </div>
+    <div id="impDraft" hidden>
+      <h3 data-t="imp_lines"></h3>
+      <ol id="impLines" class="imp-lines"></ol>
+      <h3 data-t="imp_goals"></h3>
+      <p id="impWhy" class="imp-why"></p>
+      <div id="impGoals" class="imp-goals"></div>
+      <label class="imp-confirm"><input id="impConfirm" type="checkbox"> <span data-t="imp_confirm"></span></label>
+      <button class="btn go" id="impSave" type="button" disabled data-t="imp_save">📘 पाठ बनाइए</button>
+    </div>
+    <p id="impMsg" class="imp-msg" role="status" aria-live="polite"></p>
+  </section>
   <div class="grid" id="grid"></div>
 </section>
 
@@ -1228,6 +1276,7 @@ hi: {
   t3_yes:"ठीक", t3_fix:"सुधारें", t3_save:"सहेजें", t3_cancel:"रहने दें",
   t3_none:"अभी कोई सुधार नहीं", t3_saved:"सुधार सहेजे गए",
   les_title:"पाठ", les_sub:"कोई भी पाठ चुनिए, वह कक्षा में खुल जाएगा",
+  imp_add:"➕ नया पाठ जोड़िए", imp_title:"नया पाठ जोड़िए", imp_sub:"हिंदी पाठ चिपकाइए या फ़ाइल (.txt, .csv, .json) चुनिए। हर पंक्ति का प्रकार और NIPUN लक्ष्य आप जाँचेंगे।", imp_grade:"कक्षा", imp_name:"पाठ का नाम", imp_text:"पाठ (हिंदी)", imp_file:"या फ़ाइल चुनिए", imp_split:"✂️ पंक्तियाँ बनाइए", imp_lines:"पंक्तियाँ: प्रकार बदलने के लिए दबाइए", imp_answer:"सही उत्तर, जैसे तीन (कई हों तो / से अलग)", imp_goals:"NIPUN लक्ष्य: सुझाए गए लक्ष्य चुने हुए हैं, जाँच लीजिए", imp_confirm:"मैंने NIPUN लक्ष्य जाँच लिए हैं", imp_save:"📘 पाठ बनाइए", imp_saving:"पाठ बन रहा है: अनुवाद और आवाज़…", imp_done:"पाठ बन गया। हर संताली पंक्ति की समीक्षा बाकी है।", imp_open:"कक्षा में खोलिए", imp_sheet:"📄 कार्यपत्रक", imp_fail:"पाठ नहीं बन सका:", imp_next:"फ़ाइल में अगला पाठ", imp_why:"सुझाव का कारण:", imp_none:"कोई सुझाव नहीं, लक्ष्य खुद चुनिए", ty_lesson_script:"📖 पाठ", ty_activity_instruction:"🙌 गतिविधि", ty_assessment_prompt:"❓ प्रश्न", balvatika:"बालवाटिका",
   les_all:"सब", les_grade:"कक्षा", les_lines:"पंक्तियाँ", les_open:"खोलिए", les_none:"इस कक्षा का कोई पाठ नहीं",
   fc_title:"चित्र पत्ते", fc_sub:"पत्ता दबाइए, वह पलटेगा और ᱥᱟᱱᱛᱟᱲᱤ दिखाएगा",
   fc_shuffle:"बदलिए", fc_flipall:"सब पलटिए", fc_tap:"दबाकर पलटिए", fc_listen:"सुनिए",
@@ -1359,6 +1408,7 @@ en: {
   t3_yes:"Right", t3_fix:"Fix it", t3_save:"Save", t3_cancel:"Never mind",
   t3_none:"No corrections yet", t3_saved:"corrections saved",
   les_title:"Lessons", les_sub:"Pick any lesson and it opens in the classroom",
+  imp_add:"➕ Add a lesson", imp_title:"Add a lesson", imp_sub:"Paste Hindi lesson text or choose a file (.txt, .csv, .json). You check each line's type and the NIPUN goals.", imp_grade:"Grade", imp_name:"Lesson name", imp_text:"Lesson (Hindi)", imp_file:"or choose a file", imp_split:"✂️ Make lines", imp_lines:"Lines: press a label to change it", imp_answer:"Expected answer, e.g. तीन (separate several with /)", imp_goals:"NIPUN goals: the suggested ones are ticked, please check", imp_confirm:"I have checked the NIPUN goals", imp_save:"📘 Create lesson", imp_saving:"Creating: translation and audio…", imp_done:"Lesson created. Every Santali line awaits review.", imp_open:"Open in classroom", imp_sheet:"📄 Worksheet", imp_fail:"Could not create the lesson:", imp_next:"Next lesson in the file", imp_why:"Why suggested:", imp_none:"No suggestion; choose the goals yourself", ty_lesson_script:"📖 Script", ty_activity_instruction:"🙌 Activity", ty_assessment_prompt:"❓ Question", balvatika:"Balvatika",
   les_all:"All", les_grade:"Grade", les_lines:"lines", les_open:"Open", les_none:"No lesson for that grade",
   fc_title:"Flashcards", fc_sub:"Press a card, it flips over and shows the Santali",
   fc_shuffle:"Shuffle", fc_flipall:"Flip all", fc_tap:"press to flip", fc_listen:"Listen",
@@ -1500,6 +1550,9 @@ const Api = {
   lessons:      ()             => getJSON("/lessons").then(d => d.lessons || []),
   flashcards:   ()             => getJSON("/flashcards").then(d => d.decks || []),
   speak:        (text, lang)   => postJSON("/speak", {text, lang}),
+  importText:   (body)         => postJSON("/curriculum/import", body),
+  importFile:   (form)         => api("/curriculum/import", {method:"POST", body:form}).then(r => r.json()),
+  saveLesson:   (body)         => postJSON("/curriculum/save", body),
   startSession: (grade, topic) => postJSON("/session/start", {grade, topic}),
   next:         (sid)          => postJSON("/session/next", {session_id:sid}),
   goto:         (sid, step)    => postJSON("/session/goto", {session_id:sid, step}),
@@ -1674,9 +1727,13 @@ $$(".modes button").forEach(b => b.onclick = () => {
 });
 
 /* ───────────────── the current line ───────────────── */
+function gradeName(g){
+  return String(g) === "0" ? t("balvatika") : t("grade") + " " + num(g);
+}
 function lessonName(l){
   const m = LESSON[l.topic];
-  if (!m) return [l.title, l.competency];
+  // An imported lesson's competency is the Lakshya's English text; show its IDs.
+  if (!m) return [l.title, l.imported ? (l.lakshya_ids || []).join(", ") : l.competency];
   return m[S.lang] || m.hi;
 }
 function draw(){
@@ -1685,10 +1742,11 @@ function draw(){
   const s = l.plan[S.step], last = S.step === l.plan.length - 1;
   const [name, goal] = lessonName(l);
 
-  $("#gradeTag").textContent = t("grade") + " " + num(l.grade);
+  $("#gradeTag").textContent = gradeName(l.grade);
   $("#title").textContent = name;
   // The NIPUN Lakshya IDs this lesson works towards; the goal text is the tooltip.
-  $("#goal").textContent  = goal + ((l.lakshya_ids || []).length ? "  ·  " + l.lakshya_ids.join(", ") : "");
+  $("#goal").textContent  = l.imported ? goal
+    : goal + ((l.lakshya_ids || []).length ? "  ·  " + l.lakshya_ids.join(", ") : "");
   $("#goal").title        = (l.lakshya || []).join("\n");
   $("#lead").dataset.emoji = (LESSON[l.topic] || {e:"📘"}).e;
   $("#line").textContent = s.hindi;
@@ -2084,7 +2142,7 @@ async function note(){
   const pct  = c ? c.score_percent : localPct;
   const [name] = S.lesson ? lessonName(S.lesson) : [""];
 
-  $("#sheetWho").textContent = name + " · " + t("grade") + " " + num(S.lesson ? S.lesson.grade : "2");
+  $("#sheetWho").textContent = name + " · " + gradeName(S.lesson ? S.lesson.grade : "2");
   $("#pc").textContent = num(pct) + "%";
   $("#nSteps").textContent = (sum ? num(sum.steps_completed) + " / " + num(sum.total_steps)
                                   : p2(S.step+1) + " / " + p2(S.lesson.plan.length));
@@ -2123,11 +2181,132 @@ function fillPicker(){
     const [nm] = lessonName(l);
     const o = document.createElement("option");
     o.value = String(i);
-    o.textContent = t("grade") + " " + num(l.grade) + " · " + nm;
+    o.textContent = gradeName(l.grade) + " · " + nm;
     pick.appendChild(o);
   });
   pick.value = keep || String(S.index);
 }
+
+/* ───────────────── add a lesson (curriculum import) ───────────────── */
+// Paste or upload Hindi text -> lines with a suggested type the teacher can
+// change -> suggested NIPUN goals the teacher confirms -> the server translates,
+// voices and stores the lesson (POST /curriculum/save).
+const TYPES = ["lesson_script", "activity_instruction", "assessment_prompt"];
+const Imp = { drafts:[], draft:null, lakshyas:[] };
+
+$("#impOpen").onclick = () => {
+  const box = $("#importer");
+  box.hidden = !box.hidden;
+  if (!box.hidden){ $("#impGrade").value = S.filter !== "all" ? S.filter : "1"; $("#impText").focus(); }
+};
+
+$("#impSplit").onclick = async () => {
+  const msg = $("#impMsg");
+  msg.textContent = "";
+  try {
+    const f = $("#impFile").files[0];
+    let r;
+    if (f){
+      const form = new FormData();
+      form.append("file", f);
+      form.append("grade", $("#impGrade").value);
+      form.append("title", $("#impTitle").value);
+      r = await Api.importFile(form);
+    } else {
+      r = await Api.importText({text:$("#impText").value, grade:$("#impGrade").value, title:$("#impTitle").value});
+    }
+    if (r.error) throw new Error(r.error);
+    Imp.lakshyas = r.lakshyas || [];
+    Imp.drafts = r.lessons || [];
+    nextDraft();
+  } catch(e){ msg.textContent = t("imp_fail") + " " + e.message; }
+};
+
+function nextDraft(){
+  Imp.draft = Imp.drafts.shift() || null;
+  $("#impDraft").hidden = !Imp.draft;
+  if (!Imp.draft) return;
+  const d = Imp.draft;
+  $("#impGrade").value = d.grade;
+  if (d.title) $("#impTitle").value = d.title;
+  drawDraft();
+}
+
+function drawDraft(){
+  const d = Imp.draft;
+  const ol = $("#impLines");
+  ol.innerHTML = "";
+  d.lines.forEach((l, i) => {
+    const li = document.createElement("li");
+    const ty = document.createElement("button");
+    ty.type = "button"; ty.className = "ty"; ty.textContent = t("ty_" + l.type);
+    ty.onclick = () => { l.type = TYPES[(TYPES.indexOf(l.type) + 1) % TYPES.length]; drawDraft(); };
+    const hl = document.createElement("span");
+    hl.className = "hl"; hl.textContent = l.hindi;
+    li.append(ty, hl);
+    if (l.type === "assessment_prompt"){
+      const a = document.createElement("input");
+      a.className = "ans"; a.type = "text"; a.placeholder = t("imp_answer"); a.value = l.answer || "";
+      a.oninput = () => { l.answer = a.value; };
+      li.append(a);
+    }
+    ol.append(li);
+  });
+  const sug = (d.suggested && d.suggested.lakshya_ids) || [];
+  if (!d.picked) d.picked = new Set(sug);
+  $("#impWhy").textContent = sug.length ? t("imp_why") + " " + d.suggested.why : t("imp_none");
+  const goals = $("#impGoals");
+  goals.innerHTML = "";
+  for (const g of Imp.lakshyas){
+    const lab = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = d.picked.has(g.id);
+    cb.onchange = () => { cb.checked ? d.picked.add(g.id) : d.picked.delete(g.id); unconfirm(); };
+    const tx = document.createElement("span");
+    tx.textContent = g.id + " (" + g.stage + "): " + g.text;
+    lab.append(cb, tx);
+    goals.append(lab);
+  }
+  unconfirm();
+}
+function unconfirm(){ $("#impConfirm").checked = false; $("#impSave").disabled = true; }
+$("#impConfirm").onchange = e => { $("#impSave").disabled = !e.target.checked; };
+
+$("#impSave").onclick = async () => {
+  const d = Imp.draft, msg = $("#impMsg"), btn = $("#impSave");
+  if (!d) return;
+  btn.disabled = true;
+  msg.textContent = t("imp_saving");
+  try {
+    const r = await Api.saveLesson({
+      grade: $("#impGrade").value, title: $("#impTitle").value, lines: d.lines,
+      lakshya_ids: [...d.picked], lakshya_confirmed: $("#impConfirm").checked
+    });
+    if (r.error) throw new Error(r.error);
+    S.lessons = await Api.lessons();
+    fillPicker(); cards();
+    await loadDecks(); buildDeckPicker(); buildDeck();
+    msg.textContent = t("imp_done") + " ";
+    const open = document.createElement("button");
+    open.type = "button"; open.className = "btn paper"; open.textContent = t("imp_open");
+    open.onclick = () => { load(S.lessons.findIndex(x => x.topic === r.topic)); location.hash = "lesson"; };
+    const sheet = document.createElement("a");
+    sheet.className = "btn paper"; sheet.href = SERVER + r.worksheet_url; sheet.target = "_blank";
+    sheet.textContent = t("imp_sheet");
+    msg.append(open, sheet);
+    if (Imp.drafts.length){
+      const nx = document.createElement("button");
+      nx.type = "button"; nx.className = "btn paper"; nx.textContent = t("imp_next");
+      nx.onclick = () => { $("#impTitle").value = ""; msg.textContent = ""; nextDraft(); };
+      msg.append(nx);
+    } else {
+      $("#impDraft").hidden = true; $("#impText").value = ""; $("#impTitle").value = ""; $("#impFile").value = "";
+    }
+  } catch(e){
+    msg.textContent = t("imp_fail") + " " + e.message;
+    btn.disabled = false;
+  }
+};
 
 /* ───────────────── lesson cards ───────────────── */
 function cards(){
@@ -2141,7 +2320,7 @@ function cards(){
   g.innerHTML = list.map(l => {
     const m = LESSON[l.topic] || {e:"📘"};
     return `<button class="slab press lcard" data-topic="${l.topic}" data-grade="${l.grade}" data-emoji="${m.e}">
-      <span class="chip c1">${t("grade")} ${num(l.grade)}</span>
+      <span class="chip c1">${gradeName(l.grade)}</span>
       <h2></h2><p></p>
       <span class="end"><span class="chip c4">${num((l.plan||[]).length)} ${t("les_lines")}</span>
       <span class="chip c6">${t("les_open")} →</span></span></button>`;

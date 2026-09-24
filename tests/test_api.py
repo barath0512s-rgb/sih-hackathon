@@ -32,6 +32,7 @@ def api(tmp_path_factory):
     mp.setattr(database, "DB_FILE", tmp / "api.db")
     mp.setattr(config, "TTS_OUT_DIR", tmp / "tts_out")
     mp.setattr(config, "TTS_CACHE_DIR", tmp / "tts_cache")
+    mp.setattr(config, "LESSON_AUDIO_DIR", tmp / "lesson_audio")
     app_module = importlib.import_module("app")
     app_module.app.testing = True
     yield app_module
@@ -223,6 +224,98 @@ def test_speak_says_the_given_text(api):
         (config.TTS_CACHE_DIR / f"{digest}.wav").read_bytes()
     assert post(api, "/speak", text="", lang="sat")[0] == 400
     assert post(api, "/speak", text="x", lang="en")[0] == 400
+
+
+# ── WP14: a teacher imports a lesson ─────────────────────────────────────────
+TEN_LINES = """आज हम पाँच तक गिनती सीखेंगे।
+यह एक आम है।
+यहाँ दो केले हैं।
+मेज़ पर तीन पत्थर हैं।
+चार फूल देखो।
+अपनी पाँच उंगलियाँ दिखाओ।
+मेरे साथ एक से पाँच तक गिनो।
+कितने आम हैं?
+मेज़ पर कितने पत्थर हैं?
+शाबाश, तुमने अच्छा गिना।"""
+
+
+def test_importing_a_ten_line_lesson(api):
+    c = api.app.test_client()
+    # 1. The teacher pastes the text: a draft comes back, nothing is stored.
+    r = c.post("/curriculum/import", json={"text": TEN_LINES, "grade": "1", "title": "पाँच तक गिनती"})
+    assert r.status_code == 200
+    (d,) = r.get_json()["lessons"]
+    assert len(d["lines"]) == 10
+    assert [l["type"] for l in d["lines"]] == [
+        "lesson_script", "lesson_script", "lesson_script", "lesson_script",
+        "activity_instruction", "activity_instruction", "activity_instruction",
+        "assessment_prompt", "assessment_prompt", "lesson_script"]
+    assert d["suggested"]["domain"] == "numeracy" and d["suggested"]["lakshya_ids"]
+    assert len(r.get_json()["lakshyas"]) == 15
+    before = len(c.get("/lessons").get_json()["lessons"])
+
+    # 2. The teacher changes one label, gives an expected answer, confirms the goals.
+    d["lines"][9]["type"] = "activity_instruction"
+    d["lines"][7]["answer"] = "एक"
+    r = c.post("/curriculum/save", json={**d, "lakshya_ids": d["suggested"]["lakshya_ids"],
+                                          "lakshya_confirmed": True})
+    assert r.status_code == 200, r.get_json()
+    les = r.get_json()
+    topic = les["topic"]
+
+    # Typed steps, the teacher's label kept, Lakshya IDs, Santali on every line.
+    assert len(les["steps"]) == 10 and les["steps"][9]["type"] == "activity_instruction"
+    assert les["lakshya_ids"] == d["suggested"]["lakshya_ids"]
+    for st in les["steps"]:
+        assert st["santali"] and st["review_status"] in ("pending_native_review", "teacher_verified")
+    assert les["steps"][7]["accept_answers"]["digits"] == ["1"]
+
+    # Audio for every line.
+    assert les["audio_errors"] == 0
+    for st in les["steps"]:
+        wav = c.get(st["audio_url"])
+        assert wav.status_code == 200 and wav.data[:4] == b"RIFF" and len(wav.data) > 4000
+
+    # A worksheet PDF with the tags.
+    pdf = c.get(les["worksheet_url"])
+    assert pdf.status_code == 200 and pdf.data[:4] == b"%PDF"
+
+    # A deck of at least 5 cards.
+    (deck,) = c.get(les["flashcards_url"]).get_json()["decks"]
+    assert len(deck["cards"]) >= 5 and deck["lakshya_ids"] == les["lakshya_ids"]
+
+    # Stored: it is a lesson like the others, and it survives a restart.
+    lessons = c.get("/lessons").get_json()["lessons"]
+    assert len(lessons) == before + 1
+    mine = next(l for l in lessons if l["topic"] == topic)
+    assert mine["imported"] and mine["grade"] == "1" and len(mine["plan"]) == 10
+    api.sessions.clear()
+    code, s = post(api, "/session/start", grade="1", topic=topic)
+    assert code == 200
+    code, g = post(api, "/session/response", session_id=s["session_id"], response="1", step=7)
+    assert code == 200 and g["signal"] == "green"
+    assert topic in {l["topic"] for l in c.get("/curriculum").get_json()["lessons"]}
+
+
+def test_curriculum_rejects_bad_input(api):
+    c = api.app.test_client()
+    assert c.post("/curriculum/import", json={"text": ""}).status_code == 400
+    r = c.post("/curriculum/save", json={"grade": "1", "title": "x", "lakshya_ids": ["NIPUN-G1-NUM-1"],
+                                         "lines": [{"hindi": "आम गिनो।"}]})
+    assert r.status_code == 400 and "Confirm" in r.get_json()["error"]
+    assert c.get("/lesson_audio/..%2Fapp.py/0").status_code == 404
+    assert c.get("/curriculum/imp_0000000000/worksheet").status_code == 404
+
+
+def test_curriculum_accepts_a_csv_file(api):
+    import io as _io
+    csv = "grade,topic,line\n0,अक्षर,यह अक्षर क है।\n0,अक्षर,क की ध्वनि सुनो।\n".encode("utf-8")
+    r = api.app.test_client().post("/curriculum/import",
+                                   data={"file": (_io.BytesIO(csv), "lesson.csv")},
+                                   content_type="multipart/form-data")
+    assert r.status_code == 200
+    (d,) = r.get_json()["lessons"]
+    assert d["grade"] == "0" and d["suggested"]["lakshya_ids"] == ["NIPUN-BV-LIT-1"]
 
 
 def test_worksheet_is_a_pdf(api):

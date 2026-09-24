@@ -100,6 +100,16 @@ def init_db():
             )""")
         if "tts_error" not in {r["name"] for r in c.execute("PRAGMA table_info(latency_log)")}:
             c.execute("ALTER TABLE latency_log ADD COLUMN tts_error TEXT")
+        # Lessons a teacher imported (curriculum.py). The whole lesson, in the
+        # same shape as lesson_engine.NIPUN_LESSONS, is kept as JSON.
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS imported_lessons (
+                topic TEXT PRIMARY KEY,              -- imp_<id>, unique across grades
+                grade TEXT NOT NULL,                 -- "0" is Balvatika
+                title TEXT NOT NULL,
+                lesson TEXT NOT NULL,                -- JSON
+                created_at REAL NOT NULL
+            )""")
 
 
 # ── Corrections ───────────────────────────────────────────────────────────────
@@ -251,3 +261,23 @@ def latency_summary():
 if __name__ == "__main__":
     init_db()
     print(f"Database ready: {DB_FILE}")
+
+
+# ── Imported lessons ──────────────────────────────────────────────────────────
+def save_imported_lesson(topic, grade, lesson):
+    with _db() as c:
+        c.execute("INSERT INTO imported_lessons (topic, grade, title, lesson, created_at) "
+                  "VALUES (?, ?, ?, ?, ?)",
+                  (topic, str(grade), lesson["title"], json.dumps(lesson, ensure_ascii=False),
+                   time.time()))
+
+
+def load_imported_lessons():
+    """[(grade, topic, lesson)] in the order they were imported."""
+    try:
+        with _db() as c:
+            rows = c.execute("SELECT grade, topic, lesson FROM imported_lessons "
+                             "ORDER BY created_at").fetchall()
+    except sqlite3.OperationalError:          # table not created yet (init_db not run)
+        return []
+    return [(r["grade"], r["topic"], json.loads(r["lesson"])) for r in rows]
