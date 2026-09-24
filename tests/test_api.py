@@ -329,6 +329,25 @@ def test_curriculum_rejects_bad_input(api):
     assert c.get("/curriculum/imp_0000000000/worksheet").status_code == 404
 
 
+def test_team_lessons_are_added_once_on_start(api, tmp_path):
+    import json
+    seed = tmp_path / "seed.json"
+    seed.write_text(json.dumps({"lessons": [{
+        "grade": "1", "title": "बीज पाठ", "lakshya_ids": ["NIPUN-G1-NUM-1"],
+        "lines": [{"hindi": "यह एक आम है।"}, {"hindi": "कितने आम हैं?", "answer": "एक"}]}]},
+        ensure_ascii=False), encoding="utf-8")
+    logged = []
+    assert api.seed_team_lessons(seed, log=logged.append) == 1
+    assert api.seed_team_lessons(seed, log=logged.append) == 0      # idempotent
+    mine = [l for l in api.get_all_lessons() if l["title"] == "बीज पाठ"]
+    assert len(mine) == 1 and mine[0]["imported"] and mine[0]["lakshya_ids"] == ["NIPUN-G1-NUM-1"]
+    # The team's real file parses and splits exactly as recorded.
+    import curriculum
+    for L in json.loads(config.TEAM_LESSONS_FILE.read_text(encoding="utf-8"))["lessons"]:
+        body, _ = curriculum.team_body(L)
+        curriculum.validate(body)
+
+
 def test_curriculum_accepts_a_csv_file(api):
     import io as _io
     csv = "grade,topic,line\n0,अक्षर,यह अक्षर क है।\n0,अक्षर,क की ध्वनि सुनो।\n".encode("utf-8")

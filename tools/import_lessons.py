@@ -12,9 +12,10 @@ For each lesson it:
   3. posts that to /curriculum/save with the goals confirmed.
 It reports where the teacher had to change the automatic label or goal.
 
-Imported lessons live in the SQLite database, which is not in git, so run this
-once on each laptop. A lesson whose grade and title are already imported is
-skipped, so running it twice adds nothing.
+The server adds content/team_lessons.json by itself on start (app.py,
+seed_team_lessons), so this script is for other files, or to see the report.
+A lesson whose grade and title are already imported is skipped, so running it
+twice adds nothing.
 
 Without --server the app is loaded in this process (it loads the models).
 """
@@ -26,6 +27,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+
+import curriculum  # noqa: E402
 
 
 class InProcess:
@@ -81,27 +84,24 @@ def main():
             print(f"skip   grade {L['grade']}  {L['title']}  (already imported)")
             skipped += 1
             continue
+        # The draft comes from the server, as it would for a teacher; the
+        # decisions recorded in the file are applied to it (curriculum.team_body).
         code, r = api.post("/curriculum/import", {"text": "\n".join(x["hindi"] for x in L["lines"]),
                                                   "grade": L["grade"], "title": L["title"]})
         if code != 200:
             sys.exit(f"import failed for {L['title']}: {r}")
-        (d,) = r["lessons"]
-        if len(d["lines"]) != len(L["lines"]):
-            sys.exit(f"{L['title']}: the text split into {len(d['lines'])} lines, "
-                     f"the file has {len(L['lines'])}. Put one sentence per line.")
-        changed = []
-        for i, (mine, got) in enumerate(zip(L["lines"], d["lines"])):
-            want = mine.get("type") or ("assessment_prompt" if mine.get("answer") else got["type"])
-            if want != got["type"]:
-                changed.append(f"line {i + 1}: {got['type']} -> {want}")
-                got["type"] = want
-            got["answer"] = mine.get("answer", "")
-        label_changes += len(changed)
-        if d["suggested"]["lakshya_ids"] != L["lakshya_ids"]:
-            goal_changes += 1
-            changed.append(f"goals: suggested {d['suggested']['lakshya_ids']} -> {L['lakshya_ids']}")
-        code, r = api.post("/curriculum/save", {**d, "lakshya_ids": L["lakshya_ids"],
-                                                "lakshya_confirmed": True})
+        try:
+            body, changed = curriculum.team_body(L)
+        except curriculum.CurriculumError as e:
+            sys.exit(str(e))
+        server_types = [x["type"] for x in r["lessons"][0]["lines"]]
+        local = curriculum.draft({"grade": L["grade"], "title": L["title"],
+                                  "text": "\n".join(x["hindi"] for x in L["lines"])})
+        if server_types != [x["type"] for x in local["lines"]]:
+            sys.exit(f"{L['title']}: the server's draft differs from the local one")
+        label_changes += sum(c.startswith("line") for c in changed)
+        goal_changes += sum(c.startswith("goals") for c in changed)
+        code, r = api.post("/curriculum/save", body)
         if code != 200:
             sys.exit(f"save failed for {L['title']}: {r}")
         _, deck = api.get(r["flashcards_url"])

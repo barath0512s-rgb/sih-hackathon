@@ -43,9 +43,10 @@ come from an earlier stage when the lesson revises that goal.
 
 ### Imported lessons (work package 14)
 
-The team wrote ten lessons (`content/team_lessons.json`) and added them through
-the import screen. The keyword rules suggested the goals, and the team
-confirmed or corrected them.
+The team wrote twelve lessons (`content/team_lessons.json`). They are added
+through the same import path a teacher uses: the server does it on first
+start. The keyword rules suggested the goals, and the team confirmed or
+corrected them.
 
 | Lesson (grade) | Lakshya ID | Suggested by the rules |
 |---|---|---|
@@ -59,14 +60,21 @@ confirmed or corrected them.
 | कहानी सुनो और समझो (2) | G2-LIT-1 | same |
 | गुणा: बराबर समूह (3) | G3-NUM-2 | same |
 | पढ़कर समझना (3) | G3-LIT-1 | same |
+| हज़ार तक की संख्याएँ (3) | G3-NUM-1 | same |
+| ज़ोर से पढ़ना: रीना और तालाब (3) | G3-LIT-2, G3-LIT-1 | G3-LIT-1 only; the team added G3-LIT-2. The team also corrected two line labels |
 
 The rules were adjusted after a first dry run on these same lessons, which
 matched 7 of 10: एक no longer counts as a number, and समझ counts for literacy.
-So 9 of 10 is not an independent measure of the rules.
+So 9 of 10 is not an independent measure of the rules. On the two lessons
+added later, without further tuning, the rules matched one goal choice of two.
 
 **What this shows:** every stage from Balvatika to Grade 3 has a literacy and a
-numeracy lesson. G3-NUM-1 (numbers up to 9999) and the reading-speed goals
-(G2-LIT-2, G3-LIT-2) have no lesson and are not assessed.
+numeracy lesson, and every Lakshya except G2-LIT-2 (45-60 words per minute)
+has at least one lesson.
+
+**Reading fluency (G3-LIT-2):** the lesson's passage (lines 2-9) has 83 words.
+The teacher times one minute of reading aloud and counts the words read. The
+app does not measure words per minute itself: that count is the teacher's.
 
 **Review status:** built-in lessons are `pending_teacher_review`. Imported
 lessons are `pending_native_review`, and so is every one of their Santali lines.

@@ -319,6 +319,29 @@ def answer_key(answer):
     return key
 
 
+def team_body(item):
+    """What a teacher would send to /curriculum/save for one lesson in
+    content/team_lessons.json: the automatic draft of its text, with the
+    labels, answers and goals the file records as the teacher's decisions.
+    Returns (body, changes): changes lists where the teacher overrode a rule."""
+    d = draft({"grade": item["grade"], "title": item["title"],
+               "text": "\n".join(x["hindi"] for x in item["lines"])})
+    if len(d["lines"]) != len(item["lines"]):
+        raise CurriculumError(f"{item['title']}: the text split into {len(d['lines'])} lines, "
+                              f"the file has {len(item['lines'])}. Put one sentence per line.",
+                              "team_file")
+    changes = []
+    for i, (mine, got) in enumerate(zip(item["lines"], d["lines"])):
+        want = mine.get("type") or ("assessment_prompt" if mine.get("answer") else got["type"])
+        if want != got["type"]:
+            changes.append(f"line {i + 1}: {got['type']} -> {want}")
+            got["type"] = want
+        got["answer"] = mine.get("answer", "")
+    if d["suggested"]["lakshya_ids"] != item["lakshya_ids"]:
+        changes.append(f"goals: suggested {d['suggested']['lakshya_ids']} -> {item['lakshya_ids']}")
+    return {**d, "lakshya_ids": item["lakshya_ids"], "lakshya_confirmed": True}, changes
+
+
 def build_lesson(grade, title, lines, ids):
     """The lesson without its Santali; app.py fills in santali, source and audio."""
     return {

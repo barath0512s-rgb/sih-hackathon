@@ -554,9 +554,15 @@ def _lesson_audio(topic, i):
 @app.route("/curriculum/save", methods=["POST"])
 def curriculum_save():
     try:
-        grade, title, lines, ids = curriculum.validate(request.json or {})
+        return jsonify(save_lesson(request.json or {}))
     except curriculum.CurriculumError as e:
         return _curriculum_error(e)
+
+
+def save_lesson(body):
+    """Validate a teacher-confirmed draft, add Santali and audio to every line,
+    store it. Raises curriculum.CurriculumError if the draft is not usable."""
+    grade, title, lines, ids = curriculum.validate(body)
     lesson = curriculum.build_lesson(grade, title, lines, ids)
     topic = "imp_" + uuid.uuid4().hex[:10]
     (config.LESSON_AUDIO_DIR / topic).mkdir(parents=True, exist_ok=True)
@@ -584,14 +590,34 @@ def curriculum_save():
                         key["sat"].append(card["sat"])
                         key["sat_sources"][card["sat"]] = card["source"]
         database.save_imported_lesson(topic, grade, lesson)
-    return jsonify({
+    return {
         "grade": grade, "topic": topic, "title": title,
         "lakshya_ids": lesson["lakshya_ids"], "domain": lesson["domain"],
         "review_status": lesson["review_status"],
         "steps": lesson["steps"], "audio_errors": audio_errors,
         "flashcards_url": f"/flashcards?grade={grade}&topic={topic}",
         "worksheet_url": f"/curriculum/{topic}/worksheet",
-    })
+    }
+
+
+def seed_team_lessons(path=None, log=print):
+    """Add every lesson in content/team_lessons.json that the database does not
+    have yet (matched on grade and title), through the same path as a teacher's
+    import. Safe to call on every start: when all are there it does nothing."""
+    import json
+    path = path or config.TEAM_LESSONS_FILE
+    if not path.exists():
+        return 0
+    have = {(m["grade"], m["title"]) for m in get_all_lessons() if m["imported"]}
+    todo = [L for L in json.loads(path.read_text(encoding="utf-8"))["lessons"]
+            if (L["grade"], L["title"]) not in have]
+    if todo:
+        log(f"  Adding {len(todo)} lessons from {path.name} (first start only)…")
+    for L in todo:
+        body, _ = curriculum.team_body(L)
+        r = save_lesson(body)
+        log(f"    {r['title']}: {len(r['steps'])} lines, {r['audio_errors']} audio errors")
+    return len(todo)
 
 
 @app.route("/curriculum")
@@ -697,6 +723,7 @@ def hub_ca():
 
 if __name__ == "__main__":
     import sys
+    seed_team_lessons()
     if "--https" in sys.argv:
         # Laptop hub for tablets on the same Wi-Fi: the microphone needs https.
         from tools.make_cert import make_server_cert

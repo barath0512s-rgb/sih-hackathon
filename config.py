@@ -92,6 +92,9 @@ CERT_DIR   = BASE_DIR / "certs"
 # Audio for every line of a lesson a teacher imported (curriculum.py). Kept, not
 # pruned like tts_out/, because the lesson is reused. Regenerable, so git-ignored.
 LESSON_AUDIO_DIR = DATA_DIR / "lesson_audio"
+# Lessons the team wrote. Added through the curriculum import on the first
+# start (python app.py), so a fresh clone shows every lesson.
+TEAM_LESSONS_FILE = BASE_DIR / "content" / "team_lessons.json"
 
 DATA_DIR.mkdir(exist_ok=True)
 
