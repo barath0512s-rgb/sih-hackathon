@@ -26,10 +26,7 @@ from translit import olchiki
 class TTSError(RuntimeError):
     """Speech could not be produced offline. Never replaced by silence."""
 
-NMT_BEAMS           = 4      # Beam search for better quality (still <8s on CPU)
-NMT_MAX_TOKENS      = 128    # Shorter max tokens for faster processing
-NMT_NO_REPEAT_NGRAM = 3      
-NMT_LENGTH_PENALTY  = 1.0    
+# Decoding settings live in config.py (NMT_NUM_BEAMS, NMT_MAX_TOKENS, ...).
 
 TRANSLATION_CACHE = {}
 
@@ -48,8 +45,7 @@ def _populate_nipun_cache(pipeline):
                 if not h:
                     continue
                 mode = step.get("type", "lesson_script")
-                if f"{mode}::{h}" not in TRANSLATION_CACHE:
-                    sentences.append((h, mode))
+                sentences.append((h, mode))
         seen = set()
         unique = [(h, m) for h, m in sentences if not (h, m) in seen and not seen.add((h, m))]
         print(f"  Pre-caching {len(unique)} NIPUN sentences in background…")
@@ -119,6 +115,14 @@ class VaaniSetuPipeline:
             self._piper(self._voice_model(lang))
 
     def _nmt(self, text, src_lang, tgt_lang, tokenizer, model):
+        """Translate one sentence. Returns (text, model_score).
+
+        model_score is the geometric mean of the per-token probabilities of the
+        greedy output, computed from real log-probs. It is NOT a quality
+        estimate: eval/model_score_sanity.py shows gibberish input scoring
+        higher than a real classroom sentence. It is returned for evaluation
+        and never shown to teachers. None when beam search is on.
+        """
         batch = self.ip.preprocess_batch(
             [text], src_lang=src_lang, tgt_lang=tgt_lang)
         enc = tokenizer(
@@ -127,28 +131,24 @@ class VaaniSetuPipeline:
         with torch.no_grad():
             out = model.generate(
                 **enc,
-                num_beams=NMT_BEAMS,
-                max_new_tokens=NMT_MAX_TOKENS,
-                no_repeat_ngram_size=NMT_NO_REPEAT_NGRAM,
-                length_penalty=NMT_LENGTH_PENALTY,
-                early_stopping=True,
+                num_beams=config.NMT_NUM_BEAMS,
+                max_new_tokens=config.NMT_MAX_TOKENS,
+                no_repeat_ngram_size=config.NMT_NO_REPEAT_NGRAM,
                 return_dict_in_generate=True,
                 output_scores=True)
-        
-        if hasattr(out, 'sequences_scores') and out.sequences_scores is not None:
-            seq_score = out.sequences_scores[0].item()
-            import math
-            confidence = math.exp(seq_score) * 100 if seq_score < 0 else 99.0
-        else:
-            # Greedy decoding doesn't return sequence scores easily
-            confidence = 95.0
+
+        score = None
+        if config.NMT_NUM_BEAMS == 1:
+            logp = model.compute_transition_scores(
+                out.sequences, out.scores, normalize_logits=True)[0]
+            logp = logp[torch.isfinite(logp)]
+            if len(logp):
+                score = round(float(logp.mean().exp()), 3)
 
         decoded = tokenizer.batch_decode(
             out.sequences, skip_special_tokens=True,
             clean_up_tokenization_spaces=True)
-        
-        translated = self.ip.postprocess_batch(decoded, lang=tgt_lang)[0]
-        return translated, round(confidence, 1)
+        return self.ip.postprocess_batch(decoded, lang=tgt_lang)[0], score
 
     @staticmethod
     def _to_wav(audio_path, target_sr=16000):
@@ -189,56 +189,52 @@ class VaaniSetuPipeline:
             text = text.replace(bad, good).strip()
         return text
 
-    def hindi_to_santali(self, hindi_text, content_mode="lesson_script"):
-        # 0. Instant Learning: a human correction always wins. This must be
-        # checked before the glossary — a teacher correcting one of the
-        # verified glossary sentences would otherwise be silently ignored
-        # forever, since the glossary would keep answering first.
-        learned_santali = database.get_correction(hindi_text)
-        if learned_santali:
-            print(f"  [DB HIT] Instant Learning applied for: {hindi_text}")
-            return (learned_santali, "Human Verified (DB)", 100.0)
+    def translate(self, text, direction="hi-to-sat", content_mode="lesson_script"):
+        """Translate one line. Returns {"text", "source", "model_score"}.
 
-        # 1. Education Glossary: verified sentence-level lookup (instant, 100% accurate)
-        glossary_hit = lookup_hi_to_sat(hindi_text)
-        if glossary_hit:
-            santali, conf = glossary_hit
-            print(f"  [GLOSSARY HIT] {hindi_text[:50]}")
-            result = (santali, "Education Glossary (Verified)", conf)
-            TRANSLATION_CACHE[f"{content_mode}::{hindi_text}"] = result
-            return result
+        Answered by the cheapest layer that can answer it, in this order:
+          teacher   a teacher's correction (always wins, both directions)
+          glossary  a verified sentence in education_glossary.py
+          cached    an earlier model translation of the same line
+          model     IndicTrans2
+        model_score is set only for "model" (see _nmt: not a quality estimate).
+        """
+        if direction not in ("hi-to-sat", "sat-to-hi"):
+            raise ValueError(f"unknown direction {direction!r}")
+        fwd = direction == "hi-to-sat"
 
-        cache_key = f"{content_mode}::{hindi_text}"
-        if cache_key in TRANSLATION_CACHE and \
-                TRANSLATION_CACHE[cache_key] is not None:
-            return TRANSLATION_CACHE[cache_key]
+        # A correction must be checked before the glossary: a teacher fixing a
+        # glossary sentence would otherwise be ignored for ever.
+        fixed = database.get_correction(text, direction)
+        if fixed:
+            return {"text": fixed, "source": "teacher", "model_score": None}
 
-        # 2. Direct Translation (No English pivot!)
-        santali, conf_sat = self._nmt(
-            hindi_text, "hin_Deva", "sat_Olck",
-            self.tok_nmt, self.mdl_nmt)
-        
-        santali = self._apply_domain_glossary(santali, "sat_Olck")
+        hit = (lookup_hi_to_sat if fwd else lookup_sat_to_hi)(text)
+        if hit:
+            return {"text": hit[0], "source": "glossary", "model_score": None}
 
-        # Mock English for the UI since the pivot was removed
-        english_mock = "[Direct Translation used — No English intermediate]"
-        total_conf = conf_sat
+        key = f"{direction}::{content_mode}::{text}"
+        if key in TRANSLATION_CACHE:
+            cached = dict(TRANSLATION_CACHE[key])
+            cached["source"] = "cached"
+            return cached
 
-        result = (santali, english_mock, total_conf)
-        TRANSLATION_CACHE[cache_key] = result
+        src, tgt = ("hin_Deva", "sat_Olck") if fwd else ("sat_Olck", "hin_Deva")
+        out, score = self._nmt(text, src, tgt, self.tok_nmt, self.mdl_nmt)
+        if fwd:
+            out = self._apply_domain_glossary(out, "sat_Olck")
+        result = {"text": out, "source": "model", "model_score": score}
+        TRANSLATION_CACHE[key] = result
         return result
 
+    def hindi_to_santali(self, hindi_text, content_mode="lesson_script"):
+        """(santali, source, model_score). Kept for older callers; see translate()."""
+        r = self.translate(hindi_text, "hi-to-sat", content_mode)
+        return r["text"], r["source"], r["model_score"]
+
     def santali_to_hindi(self, santali_text):
-        # Glossary first for known education sentences
-        glossary_hit = lookup_sat_to_hi(santali_text)
-        if glossary_hit:
-            hindi, _ = glossary_hit
-            print(f"  [GLOSSARY HIT sat->hi] {santali_text[:30]}")
-            return hindi
-        hindi, _ = self._nmt(
-            santali_text, "sat_Olck", "hin_Deva",
-            self.tok_nmt, self.mdl_nmt)
-        return hindi
+        """Hindi text. Kept for older callers; see translate()."""
+        return self.translate(santali_text, "sat-to-hi")["text"]
 
     # ── Speech ────────────────────────────────────────────────────────────────
     @staticmethod

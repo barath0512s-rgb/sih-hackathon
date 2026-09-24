@@ -1009,6 +1009,7 @@ input:focus,textarea:focus,select:focus{
           <label class="sr" for="answer" data-t="t2_title">बच्चे ने क्या कहा</label>
           <input id="answer" name="student-answer" type="text" autocomplete="off" spellcheck="false" data-tt="ph_ans" placeholder="जैसे सात">
           <button class="btn go" id="markBtn"><span data-t="t2_mark">जाँचें</span></button>
+          <button class="btn" id="micAns" type="button" data-tt="tip_ans_mic" title="बोलकर जवाब">🎤</button>
         </div>
         <p class="verdict" id="verdict" role="status" aria-live="polite"><span class="e" id="verdictEmoji">✅</span><span id="verdictText"></span></p>
       </div>
@@ -1171,7 +1172,7 @@ input:focus,textarea:focus,select:focus{
 /* ═══════════════════════════════════════════════════════════════════════════
    वाणीसेतु — कक्षा का पर्दा
    Wired to the Flask backend in app.py. Endpoints used:
-     GET  /lessons /health /health/models /audio/output
+     GET  /lessons /health /health/models /config /audio/<id>
      POST /session/start /session/next /session/goto /session/response
           /session/summary /translate/text /translate/audio /feedback /worksheet
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -1235,7 +1236,8 @@ hi: {
   wr_half:"आधी कक्षा समझी", wr_half_b:"कल शुरू में इसी पाठ के शब्द दोहराइए",
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
-  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"आवाज़ नहीं बन पाई", m_mic_no:"माइक की अनुमति नहीं मिली",
+  m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"आवाज़ नहीं बन पाई",
+  m_fix_reused:"आपका सुधार इस वाक्य के लिए दोबारा इस्तेमाल होगा", tip_ans_mic:"बोलकर जवाब", m_ans_heard:"सुना", m_mic_no:"माइक की अनुमति नहीं मिली",
   m_mic_short:"बहुत छोटा था, थोड़ा देर तक बोलिए", m_mic_none:"इस ब्राउज़र में रिकॉर्डिंग नहीं होती",
   m_listening:"सुन रहे हैं", m_heard:"सुन लिया", m_done_in:"सेकंड में हुआ",
   m_ans_first:"पहले उत्तर लिखिए", m_fix_first:"पहले सही पंक्ति लिखिए",
@@ -1362,7 +1364,8 @@ en: {
   wr_half:"About half the class", wr_half_b:"Open tomorrow by repeating these words",
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
-  m_blocked:"Press once to allow sound", m_no_voice:"The voice could not be produced", m_mic_no:"The microphone was not allowed",
+  m_blocked:"Press once to allow sound", m_no_voice:"The voice could not be produced",
+  m_fix_reused:"Your correction will be reused for this sentence", tip_ans_mic:"Answer by voice", m_ans_heard:"Heard", m_mic_no:"The microphone was not allowed",
   m_mic_short:"That was too short, speak a little longer", m_mic_none:"This browser cannot record",
   m_listening:"Listening", m_heard:"Heard it", m_done_in:"seconds",
   m_ans_first:"Type the answer first", m_fix_first:"Write the correct line first",
@@ -1507,9 +1510,15 @@ const Api = {
     fd.append("direction", direction); fd.append("mode", mode); fd.append("session_id", sid);
     return api("/translate/audio", {method:"POST", body:fd}).then(r => r.json());
   },
-  feedback:(hindi, santali, isCorrect, corrected) =>
-      postJSON("/feedback", {hindi_text:hindi, santali_text:santali,
+  feedback:(hindi, santali, isCorrect, corrected, direction) =>
+      postJSON("/feedback", {hindi_text:hindi, santali_text:santali, direction:direction || "hi-to-sat",
                              is_correct:isCorrect, corrected_text:corrected || ""}),
+  markVoice:(sid, blob, step, lang) => {
+    const fd = new FormData();
+    fd.append("audio", blob, "answer.webm");
+    fd.append("session_id", sid); fd.append("step", step); fd.append("lang", lang || "sat");
+    return api("/session/response", {method:"POST", body:fd}).then(r => r.json());
+  },
   worksheet:(payload) => api("/worksheet", {
       method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
     }).then(r => r.blob())
@@ -1544,9 +1553,10 @@ function say(msg, emoji){
 }
 // Play the answer, or say why there is no audio. The server never sends
 // silence: when speech fails, audio_url is null and tts_error says why.
-function voice(r, dir){
+function voice(r){
+  S.audioUrl = r.audio_url || null;
   if (r.tts_error){ console.warn(r.tts_error); say(t("m_no_voice"), "🔇"); return; }
-  if (S.autoplay && r.audio_url) play(true, dir);
+  if (S.autoplay && r.audio_url) play(true);
 }
 function fail(err){
   console.error(err);
@@ -1724,7 +1734,7 @@ async function translate(){
       S.dir === "hi-to-sat" ? text : r.translated_text,
       S.dir === "hi-to-sat" ? r.translated_text : text);
     setOnline(true);
-    voice(r, S.dir);
+    voice(r);
     if (S.confirm) say(num(r.latency.total) + " " + t("m_done_in"), "✨");
   } catch(e){ dst.classList.remove("pending"); fail(e); }
   finally { S.busy = false; btn.disabled = false; facing(); }
@@ -1763,15 +1773,11 @@ function keep(sec, hindi, santali){
 
 /* ───────────────── voice ───────────────── */
 const player = new Audio();
-function play(quiet, dir){
-  const direction = dir || S.dir;
-  if (direction === "hi-to-sat"){
-    if (!$("#sa").textContent.trim()){ say(t("m_first"), "🔇"); return; }
-    player.src = SERVER + "/audio/output?t=" + Date.now();
-  } else {
-    if (!$("#hi").textContent.trim()){ say(t("m_first"), "🔇"); return; }
-    player.src = SERVER + "/audio/hindi?t=" + Date.now();
-  }
+// Every reply has its own clip (audio_url), so this can never play the
+// previous sentence, and two tablets never share a file.
+function play(quiet){
+  if (!S.audioUrl){ say(t("m_first"), "🔇"); return; }
+  player.src = SERVER + S.audioUrl;
   player.play().then(() => { if (!quiet) say(t("m_playing"), "🔊"); })
                .catch(() => say(t("m_blocked"), "🔈"));
 }
@@ -1833,7 +1839,7 @@ async function mic(dir){
         dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
         dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
       setOnline(true);
-      voice(r, dir);
+      voice(r);
       say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
     } catch(e){
       src.classList.remove("pending"); dst.classList.remove("pending"); fail(e);
@@ -1862,7 +1868,11 @@ $("#markBtn").onclick = async () => {
   const v = $("#answer").value;
   if (!v.trim()){ say(t("m_ans_first"), "✍️"); $("#answer").focus(); return; }
   try {
-    const r = await Api.mark(S.sid, v, S.step);
+    showVerdict(await Api.mark(S.sid, v, S.step));
+  } catch(e){ fail(e); }
+};
+
+function showVerdict(r){
     const key = SIGNAL[r.signal] || "amber";
     const box = $("#verdict");
     box.className = "verdict on " + key;
@@ -1875,7 +1885,33 @@ $("#markBtn").onclick = async () => {
     $("#answer").value = "";
     if (key === "green") burst($("#markBtn"));
     figures();
-  } catch(e){ fail(e); }
+}
+
+// The child answers aloud in Santali: transcribed on the server, then graded.
+let ansRec = null;
+$("#micAns").onclick = async () => {
+  if (ansRec){ ansRec.stop(); return; }
+  if (!navigator.mediaDevices || !window.MediaRecorder){ say(t("m_mic_none"), "🚫"); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e){ say(t("m_mic_no"), "🚫"); return; }
+  const type = pickMime(), chunks = [];
+  ansRec = new MediaRecorder(stream, type ? {mimeType:type} : undefined);
+  $("#micAns").classList.add("live");
+  ansRec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  ansRec.onstop = async () => {
+    stream.getTracks().forEach(x => x.stop());
+    $("#micAns").classList.remove("live");
+    ansRec = null;
+    const blob = new Blob(chunks, {type: type || "audio/webm"});
+    if (blob.size < 1200){ say(t("m_mic_short"), "⏱️"); return; }
+    try {
+      const r = await Api.markVoice(S.sid, blob, S.step, "sat");
+      if (r.transcript) say(t("m_ans_heard") + ": " + r.transcript, "👂");
+      showVerdict(r);
+    } catch(e){ fail(e); }
+  };
+  ansRec.start();
 };
 $("#answer").addEventListener("keydown", e => { if (e.key === "Enter") $("#markBtn").click(); });
 
@@ -1899,15 +1935,17 @@ function burst(from){
 }
 
 /* ───────────────── corrections ───────────────── */
+// The translation is in #sa going Hindi to Santali, and in #hi the other way.
+const target = () => $(S.dir === "hi-to-sat" ? "#sa" : "#hi");
 $("#yesBtn").onclick = async () => {
   const hi = $("#hi").textContent.trim(), sa = $("#sa").textContent.trim();
-  if (!sa){ say(t("m_first"), "🤷"); return; }
-  try { await Api.feedback(hi, sa, true, ""); say(t("m_thanks"), "👍"); } catch(e){ fail(e); }
+  if (!target().textContent.trim()){ say(t("m_first"), "🤷"); return; }
+  try { await Api.feedback(hi, sa, true, "", S.dir); say(t("m_thanks"), "👍"); } catch(e){ fail(e); }
 };
 $("#noBtn").onclick = () => {
-  if (!$("#sa").textContent.trim()){ say(t("m_first"), "🤷"); return; }
+  if (!target().textContent.trim()){ say(t("m_first"), "🤷"); return; }
   $("#fixBox").classList.add("on");
-  $("#fixIn").value = $("#sa").textContent.trim();
+  $("#fixIn").value = target().textContent.trim();
   $("#fixIn").focus();
 };
 $("#fixCancel").onclick = () => { $("#fixBox").classList.remove("on"); $("#fixIn").value = ""; };
@@ -1915,13 +1953,13 @@ $("#fixSave").onclick = async () => {
   const v = $("#fixIn").value.trim();
   if (!v){ say(t("m_fix_first"), "✍️"); $("#fixIn").focus(); return; }
   try {
-    await Api.feedback($("#hi").textContent.trim(), v, false, v);
-    $("#sa").textContent = v;
+    await Api.feedback($("#hi").textContent.trim(), $("#sa").textContent.trim(), false, v, S.dir);
+    target().textContent = v;
     $("#fixIn").value = "";
     $("#fixBox").classList.remove("on");
     S.fixes++;
     $("#fixCount").textContent = num(S.fixes) + " " + t("t3_saved");
-    say(t("m_saved"), "💾");
+    say(t("m_fix_reused"), "💾");
   } catch(e){ fail(e); }
 };
 
@@ -2121,13 +2159,10 @@ async function fillCard(card){
 
 async function speakCard(hi){
   try {
-    if (!S.cardSat.has(hi)){
-      const r = await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
-      S.cardSat.set(hi, (r.translated_text || "").trim());
-    } else {
-      await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
-    }
-    player.src = SERVER + "/audio/output?t=" + Date.now();
+    const r = await Api.translateText(hi, "hi-to-sat", "lesson_script", "");
+    S.cardSat.set(hi, (r.translated_text || "").trim());
+    if (!r.audio_url){ say(t("m_no_voice"), "🔇"); return; }
+    player.src = SERVER + r.audio_url;
     player.play().catch(() => say(t("m_blocked"), "🔈"));
   } catch(e){ say(t("fc_off"), "🔌"); }
 }

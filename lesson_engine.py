@@ -1,7 +1,9 @@
-# lesson_engine.py — NIPUN Bharat FLN lesson templates
-# This is VaaniSetu's biggest differentiator vs all other teams
+# lesson_engine.py — NIPUN Bharat FLN lesson templates, grading, sessions
 
 import time as _time
+
+import database
+from textnorm import normalize_key
 
 NIPUN_LESSONS = {
     "grade1": {
@@ -21,7 +23,10 @@ NIPUN_LESSONS = {
                 {"type": "assessment_prompt",
                  "hindi": "यहाँ कितने पत्थर हैं? बताओ।",
                  "note": "Hold up 3 objects",
-                 "accept_answers": ["3", "तीन", "teen"]},
+                 "accept_answers": {"digits": ["3"], "hi": ["तीन", "teen"],
+                                    "sat": ["ᱯᱮ", "ᱯᱮᱭᱟ"],
+                                    "sat_sources": {"ᱯᱮ": "education_glossary", "ᱯᱮᱭᱟ": "IndicTrans2 output"},
+                                    "review_status": "pending_native_review"}},
             ]
         },
         "shapes": {
@@ -39,7 +44,13 @@ NIPUN_LESSONS = {
                  "note": "Find circular objects around classroom"},
                 {"type": "assessment_prompt",
                  "hindi": "यह कौन सा आकार है?",
-                 "note": "Point to a triangle on the board"},
+                 "note": "Point to a triangle on the board",
+                 "accept_answers": {"hi": ["त्रिकोण", "तिकोन", "त्रिभुज", "trikon", "tikon"],
+                                    "sat": ["ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ", "ᱴᱨᱤᱝᱜᱚᱞ", "ᱴᱤᱠᱚᱱ"],
+                                    "sat_sources": {"ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+                                                    "ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+                                                    "ᱴᱤᱠᱚᱱ": "IndicTrans2 output"},
+                                    "review_status": "pending_native_review"}},
             ]
         }
     },
@@ -60,7 +71,11 @@ NIPUN_LESSONS = {
                 {"type": "assessment_prompt",
                  "hindi": "तीन और चार कितने होते हैं?",
                  "note": "Oral number answer expected",
-                 "accept_answers": ["7", "सात", "saat"]},
+                 "accept_answers": {"digits": ["7"], "hi": ["सात", "saat"],
+                                    "sat": ["ᱮᱭᱟᱭ", "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"],
+                                    "sat_sources": {"ᱮᱭᱟᱭ": "education_glossary",
+                                                    "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"},
+                                    "review_status": "pending_native_review"}},
             ]
         },
         "reading_words": {
@@ -75,7 +90,13 @@ NIPUN_LESSONS = {
                  "note": "Choral reading practice"},
                 {"type": "assessment_prompt",
                  "hindi": "यह शब्द क्या है? पढ़कर बताओ।",
-                 "note": "Hold up word card: घर"},
+                 "note": "Hold up word card: घर",
+                 # The glossary gives ᱦᱚᱨᱚ for घर, which may mean "person";
+                 # it is left out until a native speaker confirms it.
+                 "accept_answers": {"hi": ["घर", "ghar"],
+                                    "sat": ["ᱚᱲᱟᱜ"],
+                                    "sat_sources": {"ᱚᱲᱟᱜ": "IndicTrans2 output"},
+                                    "review_status": "pending_native_review"}},
             ]
         }
     },
@@ -93,7 +114,10 @@ NIPUN_LESSONS = {
                 {"type": "assessment_prompt",
                  "hindi": "आठ में से पांच घटाओ। उत्तर क्या है?",
                  "note": "Oral answer expected",
-                 "accept_answers": ["3", "तीन", "teen"]},
+                 "accept_answers": {"digits": ["3"], "hi": ["तीन", "teen"],
+                                    "sat": ["ᱯᱮ", "ᱯᱮᱭᱟ"],
+                                    "sat_sources": {"ᱯᱮ": "education_glossary", "ᱯᱮᱭᱟ": "IndicTrans2 output"},
+                                    "review_status": "pending_native_review"}},
             ]
         }
     }
@@ -118,16 +142,65 @@ def get_lesson(grade, topic):
     return NIPUN_LESSONS.get(f"grade{grade}", {}).get(topic)
 
 
-class LessonSession:
-    """Tracks one complete lesson session with comprehension analytics."""
+def grade(step, answer):
+    """Grade a child's answer to one lesson step: "green" | "yellow" | "red".
 
-    def __init__(self, lesson):
+    green   the answer matches an accepted Hindi or Santali answer, or the same
+            number in any digit script (7, ७, ᱗)
+    yellow  something was said, but not an accepted answer, or the step asks
+            no question
+    red     nothing was said
+    Matching uses textnorm.normalize_key, so spacing, punctuation, nukta and
+    chandrabindu differences do not matter.
+    """
+    key = normalize_key(answer or "")
+    if not key:
+        return "red"
+    acc = step.get("accept_answers")
+    if not acc:
+        return "yellow"
+    if key.isdigit() and key in acc.get("digits", []):
+        return "green"
+    words = acc.get("hi", []) + acc.get("sat", [])
+    if key in {normalize_key(w) for w in words}:
+        return "green"
+    return "yellow"
+
+
+class LessonSession:
+    """One lesson being taught, with comprehension analytics.
+
+    Every change is written to SQLite as it happens (database.py), so a server
+    restart does not lose the lesson: LessonSession.load(sid) rebuilds it.
+    """
+
+    def __init__(self, lesson, sid=None, grade_=None, topic=None, _new=True):
         self.lesson       = lesson
+        self.sid          = sid
         self.step_idx     = 0
         self.total_steps  = len(lesson["steps"])
         self.translations = []
         self.responses    = []
         self.t_start      = _time.time()
+        if sid and _new:
+            database.create_session(sid, grade_, topic)
+
+    @classmethod
+    def load(cls, sid):
+        """Rebuild a session from the database, or None if it does not exist."""
+        found = database.load_session(sid)
+        if not found:
+            return None
+        row, events = found
+        lesson = get_lesson(row["grade"], row["topic"])
+        if not lesson:
+            return None
+        s = cls(lesson, sid=sid, _new=False)
+        s.step_idx = min(row["step_idx"], s.total_steps)
+        s.t_start  = row["started_at"]
+        for e in events:
+            (s.translations if e["kind"] == "translation" else s.responses).append(e["payload"])
+        return s
 
     @property
     def current_step(self):
@@ -135,46 +208,42 @@ class LessonSession:
             return None
         return self.lesson["steps"][self.step_idx]
 
+    def _save_step(self):
+        if self.sid:
+            database.set_session_step(self.sid, self.step_idx)
+
     def advance(self):
         self.step_idx = min(self.step_idx + 1, self.total_steps)
+        self._save_step()
+
+    def goto(self, step):
+        """Jump to a step. Clamped to the lesson."""
+        self.step_idx = max(0, min(int(step), self.total_steps - 1))
+        self._save_step()
 
     def record_translation(self, hindi, santali, latency_sec):
-        self.translations.append({
-            "step":    self.step_idx,
-            "hindi":   hindi,
-            "santali": santali,
-            "latency": latency_sec
-        })
+        ev = {"step": self.step_idx, "hindi": hindi, "santali": santali,
+              "latency": latency_sec}
+        self.translations.append(ev)
+        if self.sid:
+            database.add_session_event(self.sid, "translation", self.step_idx, ev)
 
-    def check_response(self, student_text):
-        """
-        Evaluates student response. Returns "green" | "yellow" | "red".
-        Uses the previous step's expected answers (after advance() is called).
-        """
-        # Use the step that was just completed (step_idx - 1, clamped to 0)
-        step_idx = max(self.step_idx - 1, 0)
-        if step_idx >= self.total_steps:
-            signal = "yellow"
-        else:
-            step = self.lesson["steps"][step_idx]
-            if "accept_answers" not in step:
-                # Non-assessment step — any response is yellow (acknowledged)
-                signal = "yellow"
-            else:
-                cleaned  = student_text.strip().lower()
-                accepted = [a.lower() for a in step["accept_answers"]]
-                if cleaned in accepted:
-                    signal = "green"
-                elif len(cleaned) > 0:
-                    signal = "yellow"
-                else:
-                    signal = "red"
+    def check_response(self, student_text, step=None):
+        """Grade an answer to `step` (default: the current step).
 
-        self.responses.append({
-            "step":     step_idx,
-            "response": student_text,
-            "signal":   signal
-        })
+        The step is explicit. It used to be inferred as step_idx - 1, which
+        graded the wrong question whenever the UI had not just advanced.
+        """
+        if step is None:
+            step = self.step_idx
+        step = int(step)
+        if not 0 <= step < self.total_steps:
+            raise ValueError(f"step {step} is outside this lesson (0-{self.total_steps - 1})")
+        signal = grade(self.lesson["steps"][step], student_text)
+        ev = {"step": step, "response": student_text, "signal": signal}
+        self.responses.append(ev)
+        if self.sid:
+            database.add_session_event(self.sid, "response", step, ev)
         return signal
 
     def summary(self):

@@ -65,7 +65,7 @@ Around that core sits the part that makes it a *lesson* rather than a phrasebook
 └───────────────────────────┬──────────────────────────────────┘
                             │  HTTP / JSON  (same origin, or LAN)
 ┌───────────────────────────▼──────────────────────────────────┐
-│  FLASK API  (app.py) — 16 endpoints                          │
+│  FLASK API  (app.py) — 18 endpoints                          │
 └───────────────────────────┬──────────────────────────────────┘
                             │
 ┌───────────────────────────▼──────────────────────────────────┐
@@ -210,7 +210,7 @@ TTS improved from **~0.80 s (gTTS) to ~0.15 s (Piper)** — roughly 5× faster *
 - Hindi ⇄ Santali, typed or spoken
 - Three FLN modes: **Lesson Script**, **Activity**, **Assessment**
 - Lesson step navigation with "what to say" and "coming next" cues
-- Live latency breakdown (ASR / NMT / TTS / total) and confidence
+- Live latency breakdown (ASR / NMT / TTS / total). No confidence number is shown: the model's score does not separate good input from gibberish (`eval/model_score_sanity.py`)
 - Playback of synthesised speech
 
 ### Lessons — NIPUN Bharat aligned
@@ -222,7 +222,7 @@ TTS improved from **~0.80 s (gTTS) to ~0.15 s (Piper)** — roughly 5× faster *
 | 2 | Reading Simple Words | Reads common two-syllable words aloud |
 | 3 | Simple Subtraction | Subtracts single-digit numbers using objects |
 
-Each lesson is a sequence of typed steps (`lesson_script`, `activity_instruction`, `assessment_prompt`), each carrying a `hindi` line, a teacher `note`, and — for assessment steps — an `accept_answers` list. Answers are accepted in digits, Hindi words or romanised form, e.g. `["7", "सात", "saat"]`.
+Each lesson is a sequence of typed steps (`lesson_script`, `activity_instruction`, `assessment_prompt`), each carrying a `hindi` line, a teacher `note`, and — for assessment steps — `accept_answers` per language: `{"digits": ["7"], "hi": ["सात", "saat"], "sat": ["ᱮᱭᱟᱭ", …]}`. A child can answer in Hindi or Santali, typed or spoken, and a number in any digit script (7, ७, ᱗) is the same answer. Every Santali answer records its source (the glossary or the NMT model) and is marked `pending_native_review`.
 
 ### Comprehension signals
 After a student answers, the response is graded:
@@ -285,7 +285,7 @@ That last one is what makes the tablet/phone story work today: the HTML can be o
 
 ## 8. API Reference
 
-All 16 endpoints served by `app.py`.
+All 18 endpoints served by `app.py`.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
@@ -296,15 +296,16 @@ All 16 endpoints served by `app.py`.
 | POST | `/session/start` | Begin a lesson session → `session_id` |
 | POST | `/session/next` | Advance one step |
 | POST | `/session/goto` | Jump to a specific step index |
-| POST | `/session/response` | Grade a student answer → green/yellow/red |
+| POST | `/session/response` | Grade an answer to an explicit `step` → green/yellow/red. JSON, or multipart with `audio` for a spoken answer |
 | POST | `/session/summary` | Session analytics |
 | POST | `/translate/text` | Translate typed text (either direction) |
 | POST | `/translate/audio` | Translate a recorded clip (multipart) |
 | POST | `/translate/reverse` | Santali → Hindi convenience route |
-| GET | `/audio/output` | Latest **Santali** audio |
-| GET | `/audio/hindi` | Latest **Hindi** audio |
+| GET | `/audio/<id>` | The clip for one reply (each reply has its own file) |
+| GET | `/audio/output`, `/audio/hindi` | Deprecated: newest Santali / Hindi clip |
+| GET | `/config` | Product name, for the UI |
 | POST | `/worksheet` | Generate and download the bilingual PDF |
-| POST | `/feedback` | Store a 👍/👎 or a correction |
+| POST | `/feedback` | Store a 👍/👎 or a correction, with `direction` |
 
 **Example — translate typed Hindi:**
 ```bash
@@ -312,14 +313,23 @@ curl -X POST http://127.0.0.1:5000/translate/text \
   -H "Content-Type: application/json" \
   -d '{"text":"आज हम जोड़ना सीखेंगे।","direction":"hi-to-sat","mode":"lesson_script"}'
 ```
+A real response for "बच्चे स्कूल जा रहे हैं।" (your timings will differ):
 ```json
 {
-  "translated_text": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱥᱮᱞᱮᱫ ᱥᱮᱪ ᱢᱮ ᱾",
-  "confidence": 95.0,
-  "audio_url": "/audio/output",
-  "latency": { "asr": 0.0, "nmt": 0.35, "tts": 0.15, "total": 0.5 }
+  "translated_text": "ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮ ᱪᱟᱞᱟᱣᱚᱜ ᱠᱟᱱᱟ ᱾",
+  "source": "model",
+  "model_score": 0.7,
+  "audio_url": "/audio/110bfe8dd4fa448a95e12c280dfffeaa",
+  "tts_error": null,
+  "latency": { "asr": 0.0, "nmt": 0.41, "tts": 0.12, "total": 0.53 },
+  "english_pivot": "",
+  "confidence": null
 }
 ```
+- `source` says which layer answered: `teacher` (a correction), `glossary`, `cached` or `model`.
+- `model_score` is the raw mean token probability, set only for `model`. It is **not** a quality estimate and the UI does not show it.
+- `english_pivot` and `confidence` are deprecated and always empty; they remain only so older clients do not break.
+- If speech fails offline, `audio_url` is `null` and `tts_error` says why.
 
 ---
 
@@ -327,7 +337,7 @@ curl -X POST http://127.0.0.1:5000/translate/text \
 
 | File | Role |
 |---|---|
-| `app.py` | Flask server, 16 REST endpoints, session registry |
+| `app.py` | Flask server, 18 REST endpoints; sessions and corrections persist in SQLite |
 | `pipeline.py` | **Core ML** — ASR, NMT, transliteration, Piper TTS, caches |
 | `indicconformer_asr.py` | ONNX wrapper for IndicConformer, 22 languages |
 | `lesson_engine.py` | NIPUN lesson templates, `LessonSession`, grading, summary |
@@ -496,12 +506,12 @@ Things a reviewer should know rather than discover:
 |---|---|---|
 | 1 | A HuggingFace token was hard-coded in an early *local* version of `run_setup.ps1` (commit `6406ab0`). That commit was replaced before anything was pushed: no branch, local or on GitHub, reaches it, and the pushed history is clean | Revoke the token anyway: it sat in plaintext on disk |
 | 2 | ~~UI fonts load from Google Fonts~~ | **Fixed**: fonts are served from `static/fonts/` |
-| 3 | `/audio/hindi` exists on the backend but the current UI never calls it; autoplay is gated to Hindi→Santali | Reverse direction is **silent in the UI** even though the backend speaks it |
+| 3 | ~~Reverse direction silent in the UI~~ | **Fixed**: each reply's `audio_url` is played, in both directions |
 | 4 | Direction must be switched with the swap button; typing Santali does not auto-switch | UX friction |
 | 5 | ~~Ol Chiki transliteration drops digits, `᱾` and diacritics~~ | **Fixed**: `translit/olchiki.py` covers the whole block. Its phonetic choices still need native review |
-| 6 | Confidence is hard-coded to 95% (greedy decoding returns no sequence scores) | Displayed number is not a real measure |
-| 7 | Sessions live in an in-memory dict | **Restarting the server loses every active lesson**; no multi-worker deployment |
-| 8 | Single shared `output_*.wav` per direction | Concurrent users could collide |
+| 6 | ~~Confidence hard-coded to 95%~~ | **Fixed**: a real score is computed, found not to be meaningful, and hidden from the UI |
+| 7 | ~~Sessions lost on restart~~ | **Fixed**: sessions and their events are stored in SQLite |
+| 8 | ~~Single shared audio file per direction~~ | **Fixed**: one file per reply under `tts_out/`, kept 30 minutes |
 | 9 | Santali is voiced by a US-English voice | Loses Indian phonetic colour; mapping Ol Chiki→Devanagari and using the Hindi voice would likely sound better |
 | 10 | The Santali UI strings were written without a native speaker | Author's own caveat — treat as a first draft |
 | 11 | ASR falls back to Whisper silently if IndicConformer files are missing | Santali speech input degrades badly with no visible warning; `verify_models.py` catches it |

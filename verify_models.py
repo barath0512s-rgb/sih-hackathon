@@ -160,14 +160,14 @@ state = {}
 HINDI = "आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।"
 
 def _fwd():
-    sat, pivot, conf = pl.hindi_to_santali(HINDI, "lesson_script")
+    sat, source, _ = pl.hindi_to_santali(HINDI, "lesson_script")
     if not sat.strip():
         raise AssertionError("empty Santali output")
     ol = sum(1 for c in sat if "᱐" <= c <= "᱿")
     if ol == 0:
         raise AssertionError(f"no Ol Chiki characters in output: {sat!r}")
     state["sat"] = sat
-    return f"conf {conf}  ->  {sat}"
+    return f"from {source}  ->  {sat}"
 check("Hindi to Santali", _fwd)
 
 def _back():
@@ -271,15 +271,25 @@ check("Lesson engine", _lessons)
 def _grading():
     from lesson_engine import get_lesson, LessonSession
     s = LessonSession(get_lesson("2", "addition"))
-    s.step_idx = 4                      # the asking step, graded as step_idx-1
-    got = [s.check_response("7"), s.check_response("१२३"), s.check_response("")]
-    if got != ["green", "yellow", "red"]:
-        raise AssertionError(f"expected green/yellow/red, got {got}")
-    return "green, yellow and red all fire"
+    ask = 3                             # "तीन और चार कितने होते हैं?"
+    got = [s.check_response(a, ask) for a in ("7", "᱗", "ᱮᱭᱟᱭ", "१२३", "")]
+    if got != ["green", "green", "green", "yellow", "red"]:
+        raise AssertionError(f"expected green x3, yellow, red; got {got}")
+    return "7, ᱗ and ᱮᱭᱟᱭ are right; wrong is yellow; silence is red"
 check("Comprehension grading", _grading)
 
 def _db():
     import database
+    # A throwaway database, so this check never writes into the real one.
+    import tempfile as _tf
+    real_db = database.DB_FILE
+    database.DB_FILE = _Path(_tf.mkdtemp(prefix="verify_db_")) / "check.db"
+    try:
+        return _db_check(database)
+    finally:
+        database.DB_FILE = real_db
+
+def _db_check(database):
     database.init_db()
     key = "__verify__ " + str(int(time.time()))
     database.save_feedback(key, "ᱢᱚᱰᱮᱞ", False, "ᱴᱤᱪᱚᱨ")

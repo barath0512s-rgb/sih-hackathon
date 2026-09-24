@@ -24,13 +24,11 @@ print("\n=== VaaniSetu Pipeline Tests ===\n")
 state = {}
 
 def t1():
-    sat, en, conf = p.hindi_to_santali("आज हम जोड़ना सीखेंगे।", "lesson_script")
+    sat, source, score = p.hindi_to_santali("आज हम जोड़ना सीखेंगे।", "lesson_script")
     assert len(sat) > 0, "Empty Santali output"
-    assert len(en)  > 0, "Empty English pivot"
+    assert source in ("teacher", "glossary", "cached", "model"), f"Unknown source {source!r}"
     state["sat"] = sat
-    state["en"]  = en
-    print(f"       Hindi   → English: {en}")
-    print(f"       English → Santali: {sat}")
+    print(f"       Hindi → Santali ({source}): {sat}")
 
 def t2():
     hi = p.santali_to_hindi(state.get("sat","test"))
@@ -62,11 +60,14 @@ def t6():
     sess   = LessonSession(lesson)
     sess.record_translation("test hi","test sat", 2.1)
     sess.advance()
-    # Test green signal
-    sig = sess.check_response("7")
+    # The step is explicit: step 3 asks "तीन और चार कितने होते हैं?".
+    # (This test used to rely on grading step_idx-1, which graded step 0.)
+    sig = sess.check_response("7", step=3)
     assert sig == "green", f"Expected green for '7', got {sig}"
+    sig_sat = sess.check_response("᱗", step=3)
+    assert sig_sat == "green", f"Expected green for Ol Chiki '᱗', got {sig_sat}"
     # Test red signal
-    sig2 = sess.check_response("")
+    sig2 = sess.check_response("", step=3)
     assert sig2 == "red", f"Expected red for empty, got {sig2}"
     summ = sess.summary()
     assert "comprehension" in summ, "Summary missing comprehension"

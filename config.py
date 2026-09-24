@@ -40,6 +40,11 @@ ALLOW_ONLINE_TTS = False
 OFFLINE_ENV = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
                "HF_HUB_DISABLE_TELEMETRY": "1"}
 
+# ── Translation ───────────────────────────────────────────────────────────────
+NMT_NUM_BEAMS       = 1      # greedy; beam search is slower on CPU for short lines
+NMT_MAX_TOKENS      = 128
+NMT_NO_REPEAT_NGRAM = 3      # blocks the repeating-phrase loops this model can fall into
+
 # ── Speech ────────────────────────────────────────────────────────────────────
 # No offline voice reads Ol Chiki, so Santali is transliterated first
 # (translit/olchiki.py) and read by an existing Piper voice:
@@ -51,6 +56,11 @@ PIPER_VOICES = {
     "santali_devanagari": "hi_IN-pratham-medium",   # same file: loaded once
     "santali_latin":      "en_US-lessac-medium",
 }
+
+# Each spoken reply is its own file in TTS_OUT_DIR. Old ones are deleted after
+# this long, and never more than this many are kept.
+AUDIO_KEEP_SECONDS = 30 * 60
+AUDIO_KEEP_MAX     = 200
 
 # ── Server ────────────────────────────────────────────────────────────────────
 HOST = "0.0.0.0"
