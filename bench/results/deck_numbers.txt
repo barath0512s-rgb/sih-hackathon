@@ -180,5 +180,15 @@ Translation quality (the model alone; laptop, offline)
   in22-gen hin_Deva-sat_Olck chrF++ / BLEU     31.3 / 4.2 (n=1024)          [eval/results/benchmarks.json]
   in22-gen sat_Olck-hin_Deva chrF++ / BLEU     37.6 / 15.8 (n=1024)         [eval/results/benchmarks.json]
 
+F1 Phase A: engines for the tablet, measured on the LAPTOP (not on a tablet; 2 threads)
+  ASR 120M hi sherpa-onnx model.int8.onnx      WER 11.8% (NeMo 11.0%); same as NeMo 35/80; 601 ms; 138 MB [bench/results/sherpa_vs_nemo.md]
+  ASR 120M hi sherpa-onnx model.onnx           WER 11.6% (NeMo 11.0%); same as NeMo 56/80; 528 ms; 482 MB [bench/results/sherpa_vs_nemo.md]
+  ASR 120M sat sherpa-onnx model.int8.onnx     WER 39.2% (NeMo 37.3%); same as NeMo 11/80; 451 ms; 138 MB [bench/results/sherpa_vs_nemo.md]
+  ASR 120M sat sherpa-onnx model.onnx          WER 37.4% (NeMo 37.3%); same as NeMo 39/80; 406 ms; 482 MB [bench/results/sherpa_vs_nemo.md]
+  NMT ONNX fp32 hin->sat vs PyTorch            300 of 300 identical; PyTorch 639 ms, ONNX fp32 344 ms [bench/results/golden_nmt_fp32_t2_hi300.md]
+  NMT ONNX fp32 sat->hin vs PyTorch            300 of 300 identical; PyTorch 599 ms, ONNX fp32 321 ms [bench/results/golden_nmt_fp32_t2_sat300.md]
+  NMT ONNX int8 hin->sat vs PyTorch            154 of 300 identical; PyTorch 612 ms, ONNX int8 125 ms [bench/results/golden_nmt_int8_t2_hi300.md]
+  NMT ONNX int8 sat->hin vs PyTorch            109 of 300 identical; PyTorch 587 ms, ONNX int8 115 ms [bench/results/golden_nmt_int8_t2_sat300.md]
+
   ASR WER on child speech / classroom noise    NOT MEASURED                 [no child or noisy test set]
   chrF++ on the 33-row training CSV            not used                     [it is training data, never a test set]

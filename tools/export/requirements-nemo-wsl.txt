@@ -1,0 +1,16 @@
+# F1 Phase A export environment (WSL2 Ubuntu or Colab), Python 3.10 (uv python install 3.10).
+# NeMo itself: git clone https://github.com/AI4Bharat/NeMo.git && cd NeMo && git checkout nemo-v2
+#   (commit 8dce88cf8), then: pip install -e ".[asr]"  (not ".[all]": NLP/TTS stacks are not needed)
+# Install torch first from the CPU index, then these pins; each fixed an import error with NeMo 1.23:
+torch==2.3.1                 # --index-url https://download.pytorch.org/whl/cpu
+torchaudio==2.3.1
+numpy<2                      # torch 2.3 is built against numpy 1.x
+pytorch-lightning==2.2.5     # newer versions dropped NeptuneLogger, which NeMo 1.23 imports
+setuptools<81                # lightning_fabric 2.2 needs pkg_resources
+pyarrow==16.1.0              # the pinned `datasets` needs pa.PyExtensionType
+ml-dtypes==0.4.1             # onnxruntime.quantization with numpy 1.x
+onnx==1.17.0
+onnxruntime==1.19.2
+sherpa-onnx==1.13.8
+soundfile
+jiwer

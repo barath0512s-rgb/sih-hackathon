@@ -1,6 +1,6 @@
 """F1 Phase A: does the sherpa-onnx export transcribe like NeMo?
 
-    pip install sherpa-onnx soundfile jiwer
+    pip install sherpa-onnx soundfile jiwer      (the WSL export environment has them)
     python tools/export/compare_nemo_sherpa.py --model-dir models/indicconformer-120m-sherpa --threads 2
 
 `--model-dir` holds what `indicconformer_sherpa_export.py` wrote (out/<lang>/:
@@ -29,21 +29,23 @@ def main():
     a = ap.parse_args()
 
     import jiwer
+    sys.path.insert(0, str(ROOT))
+    from textnorm import normalize_for_wer as nw
     import sherpa_onnx
     import soundfile as sf
 
     clips = json.loads(a.manifest.read_text(encoding="utf-8"))
     lines = ["# sherpa-onnx export vs NeMo (IndicConformer 120M, CTC)", "",
-             f"Laptop, {a.threads} threads, greedy CTC. Clips: `{a.manifest.relative_to(ROOT).as_posix()}`. "
+             f"Laptop (WSL2, Ubuntu), {a.threads} threads, greedy CTC; WER/CER normalised (bench/README.md). Clips: `{a.manifest.relative_to(ROOT).as_posix()}`. "
              "NeMo transcripts from the export notebook (same clips, NeMo CTC).", "",
-             "| Lang | Model | n | Same as NeMo | WER vs NeMo | WER vs ref | CER vs ref | NeMo WER vs ref | "
+             "| Lang | Model | n | Same as NeMo | WER vs NeMo | WER vs ref | CER vs ref | NeMo WER vs ref | "  # normalised
              "Median ms | Size MB |", "|---|---|---|---|---|---|---|---|---|---|"]
     for lang in ("hi", "sat"):
         d = a.model_dir / lang
         if not d.exists():
             print(f"{lang}: {d} missing, skipped")
             continue
-        nemo = json.loads((d / "nemo_transcripts.json").read_text(encoding="utf-8"))
+        nemo = json.loads((d / "nemo_transcripts.json").read_text(encoding="utf-8"))["nemo_ctc"]
         cl = [c for c in clips if c["lang"] == lang and c["file"] in nemo]
         refs = [c["reference"] for c in cl]
         for mf in ("model.int8.onnx", "model.onnx"):
@@ -63,11 +65,13 @@ def main():
                 rec.decode_stream(s)
                 hyps.append(s.result.text.strip())
                 ms.append((time.perf_counter() - t0) * 1000)
-            ne = [nemo[c["file"]] for c in cl]
+            ne = [nemo[c["file"]].strip() for c in cl]   # NeMo starts its text with a space
             same = sum(h == n for h, n in zip(hyps, ne))
             lines.append(f"| {lang} | {mf} | {len(cl)} | {same}/{len(cl)} | "
-                         f"{100 * jiwer.wer(ne, hyps):.1f}% | {100 * jiwer.wer(refs, hyps):.1f}% | "
-                         f"{100 * jiwer.cer(refs, hyps):.1f}% | {100 * jiwer.wer(refs, ne):.1f}% | "
+                         f"{100 * jiwer.wer([nw(x) for x in ne], [nw(x) for x in hyps]):.1f}% | "
+                         f"{100 * jiwer.wer([nw(x) for x in refs], [nw(x) for x in hyps]):.1f}% | "
+                         f"{100 * jiwer.cer([nw(x) for x in refs], [nw(x) for x in hyps]):.1f}% | "
+                         f"{100 * jiwer.wer([nw(x) for x in refs], [nw(x) for x in ne]):.1f}% | "
                          f"{statistics.median(ms):.0f} | {(d / mf).stat().st_size / 1e6:.0f} |")
             print(lines[-1], flush=True)
     out = ROOT / "bench/results/sherpa_vs_nemo.md"

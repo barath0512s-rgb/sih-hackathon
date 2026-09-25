@@ -229,6 +229,29 @@ def size(path):
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
 
+def f1_phase_a():
+    """F1 Phase A (tablet feasibility), measured on the laptop, NOT on a tablet."""
+    sv = RESULTS / "sherpa_vs_nemo.md"
+    gold = sorted(RESULTS.glob("golden_nmt_*_t2_*.md"))
+    if not sv.exists() and not gold:
+        return
+    print("\nF1 Phase A: engines for the tablet, measured on the LAPTOP (not on a tablet; 2 threads)")
+    if sv.exists():
+        for m in re.finditer(r"^\| (hi|sat) \| (model[\w.]*onnx) \| (\d+) \| (\d+/\d+) \| ([\d.]+%) \| ([\d.]+%) \| "
+                             r"([\d.]+%) \| ([\d.]+%) \| (\d+) \| (\d+) \|", sv.read_text(encoding="utf-8"), re.M):
+            out(f"ASR 120M {m.group(1)} sherpa-onnx {m.group(2)}",
+                f"WER {m.group(6)} (NeMo {m.group(8)}); same as NeMo {m.group(4)}; {m.group(9)} ms; {m.group(10)} MB",
+                f"bench/results/{sv.name}")
+    for g in gold:
+        t = g.read_text(encoding="utf-8")
+        same = re.search(r"Identical token IDs \| (\d+ of \d+)", t)
+        ms = re.findall(r"Median time per sentence, (PyTorch|ONNX \w+) \| (\d+) ms", t)
+        d = "hin->sat" if "_hi" in g.stem else "sat->hin"
+        kind = "int8" if "int8" in g.stem else "fp32"
+        out(f"NMT ONNX {kind} {d} vs PyTorch",
+            f"{same.group(1) if same else NM} identical; " + ", ".join(f"{k} {v} ms" for k, v in ms), f"bench/results/{g.name}")
+
+
 def main():
     print(f"{config.APP_NAME}: deck numbers. Values come from files in this repo; "
           f"measurements are '{LAPTOP}'.")
@@ -290,6 +313,7 @@ def main():
     asr_decoding_synthetic()
     asr_accuracy()
     translation()
+    f1_phase_a()
     print()
     out("ASR WER on child speech / classroom noise", NM, "no child or noisy test set")
     out("chrF++ on the 33-row training CSV", "not used", "it is training data, never a test set")

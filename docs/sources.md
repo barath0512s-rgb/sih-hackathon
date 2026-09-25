@@ -94,6 +94,7 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 ### <a name="indicconformer-120m"></a>AI4Bharat IndicConformer 120M, Hindi and Santali (for Android, not yet used)
 - `ai4bharat/indicconformer_stt_hi_hybrid_ctc_rnnt_large` @ `deada84ce8…`; `ai4bharat/indicconformer_stt_sat_hybrid_ctc_rnnt_large` @ `507c307549…`.
 - **Licence:** MIT (Hub card data). **Gated.** One `.nemo` file each, 523,192,320 bytes. Accessed 2026-09-24.
+- **Structure, read from the `.nemo` files (2026-09-25):** each "per-language" model is multilingual inside: 22 language tokenizers (256 BPE pieces each), `multisoftmax: true`, a 5632-token vocabulary plus blank, and `language_keys` for the joint network; NeMo masks the output to the requested `language_id`. SHA-256: hi `7cad1308…`, sat `98435e5a…` (`bench/results/export_120m_check.md`).
 - Card read 2026-09-25 (access granted): "a conformer-Large model, consisting of 120M parameters, as the encoder, with a hybrid CTC-RNNT decoder"; 17 conformer blocks, model dimension 512. Needs the AI4Bharat NeMo fork (`nemo-v2`). **The card does not say which data it was trained or validated on.**
 
 ### <a name="sherpa-hotwords"></a>sherpa-onnx hotwords (contextual biasing)

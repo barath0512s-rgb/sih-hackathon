@@ -1,4 +1,28 @@
-# STATUS, 25 Sep 2026: Checkpoint P-finish, review round 2 (master prompt v2)
+# STATUS, 25 Sep 2026: Checkpoint F1-A (master prompt v2)
+
+## F1-A. Phase A: can the engines run on a tablet? (branch `android-wp4`)
+
+Everything here is measured on the **laptop** (WSL2 or Windows), 2 threads.
+Nothing ran on a tablet: on-device figures are **NOT MEASURED**.
+
+| Item | Result | Evidence |
+|---|---|---|
+| Export environment | WSL2 Ubuntu 26.04 with Python 3.10.21 (uv), AI4Bharat NeMo `nemo-v2` @ 8dce88cf8 installed with `.[asr]` on CPU torch 2.3.1. Five pins were needed before NeMo imported (numpy<2, Lightning 2.2.5, setuptools<81, pyarrow 16.1.0, ml-dtypes 0.4.1). The Colab notebook is regenerated from the same script | `tools/export/requirements-nemo-wsl.txt`, `indicconformer_sherpa_export.{py,ipynb}` |
+| The 120M models are multisoftmax | The "Hindi" and "Santali" 120M models each hold all 22 language tokenizers and a 5633-output CTC head (22 x 256 + blank), masked per language. Exported by keeping the language's 256 rows plus blank (Hindi 1536-1791, Santali 4352-4607) | `bench/results/export_120m_check.md` |
+| Export is exact | Exported graph (fp32, NeMo features) = NeMo CTC transcript on **80 of 80** clips, Hindi and Santali | `export_120m_check.md` |
+| sherpa-onnx, fp32 (482 MB) | Normalised WER: Hindi 11.6% (NeMo 11.0%), Santali 37.4% (NeMo 37.3%). Identical to NeMo on 56 / 39 of 80: sherpa computes its own features. 528 / 406 ms median | `bench/results/sherpa_vs_nemo.md` |
+| sherpa-onnx, int8 (138 MB) | Hindi 11.8%, Santali **39.2%** (+1.9 points over NeMo). 601 / 451 ms: on this x86 laptop int8 is slower than fp32; on ARM NOT MEASURED | same |
+| 120M vs the app's 600M | Hindi 120M NeMo CTC 11.0% vs 600M CTC 12.5% (no trim); Santali 120M 37.3% vs 600M CTC 34.4%. Different models, same clips, same normalisation | `sherpa_vs_nemo.md`, `asr_decoding_public.md` |
+| IndicTrans2 ONNX fp32, 300 sentences each way, 2 threads | **300 of 300** identical to PyTorch in both directions (first test of sat→hin); 344 / 321 ms vs PyTorch 639 / 599 ms | `golden_nmt_fp32_t2_{hi,sat}300.md` |
+| IndicTrans2 ONNX int8, same | **Fails the ≥ 98% identical target**: 154 / 109 of 300 identical; chrF++ vs PyTorch output 90.0 / 81.7; 125 / 115 ms. Quality on IN22-Conv: 32.0 / 35.0 vs fp32 32.2 / 35.1 (`eval/results/benchmarks_onnx-int8.md`). So: different outputs of similar measured quality | `golden_nmt_int8_t2_{hi,sat}300.md` |
+| Size on disk (int8 set) | ASR 138 MB x 2 + NMT int8 517 MB (the two decoder graphs duplicate the decoder weights) + Piper voice 64 MB = about 0.86 GB. RAM on a 2 GB device: **NOT MEASURED** | files above |
+
+**Decisions for you:**
+1. Which ASR for the tablet? (a) 120M per language: 138 MB each, int8 costs Santali 1.9 WER points; (b) 120M fp32: 482 MB each. I recommend (a) for Hindi, and measuring (a) vs (b) for Santali on the Samsung before choosing.
+2. Translation on the tablet: int8 (517 MB, about 5x faster than PyTorch, not token-identical, IN22-Conv within 0.2 chrF++) or fp32 (2.05 GB, too large for 2 GB RAM)? I recommend int8, with the golden-test target changed from "identical" to "IN22-Conv chrF++ within 0.5", since that is your L1 rule.
+3. For F4 hotwords, also export the RNN-T branch (encoder, decoder, joiner). The export needs the same multisoftmax slice on the joint network; not done yet.
+
+---
 
 ## PF2. Checkpoint review answers (branch `phase-p-finish`)
 

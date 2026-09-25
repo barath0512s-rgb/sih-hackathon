@@ -308,3 +308,25 @@
   text: "CTranslate2 does not support IndicTrans2 indic-indic-dist-320M"
   status: "TRUE"
   evidence: docs/sources.md#ctranslate2
+
+# ── F1 Phase A: engines for the tablet, measured on the laptop ─────────────
+- id: f1_export_exact
+  text: "IndicConformer 120M exported for sherpa-onnx (CTC, output layer sliced to one language): same transcript as NeMo CTC on 80 of 80 clips, Hindi and Santali"
+  status: "TRUE"
+  evidence: bench/results/export_120m_check.md
+- id: f1_sherpa_wer
+  text: "120M through sherpa-onnx on the laptop, normalised WER: Hindi fp32 11.6%, int8 11.8%; Santali fp32 37.4%, int8 39.2%; int8 model 138 MB"
+  status: "TRUE"
+  evidence: bench/results/sherpa_vs_nemo.md
+- id: f1_nmt_fp32_golden
+  text: "IndicTrans2 ONNX fp32 identical to PyTorch on 300 of 300 sentences, Hindi to Santali, 2 threads"
+  status: "TRUE"
+  evidence: bench/results/golden_nmt_fp32_t2_hi300.md
+- id: f1_nmt_int8_golden
+  text: "IndicTrans2 ONNX int8 identical to PyTorch on 154 of 300 sentences (Hindi to Santali), 125 ms median at 2 threads"
+  status: "TRUE"
+  evidence: bench/results/golden_nmt_int8_t2_hi300.md
+- id: f1_on_tablet
+  text: "Speech recognition or translation measured on a tablet"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
