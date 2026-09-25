@@ -71,16 +71,24 @@ def main():
                     help="short_ms:long_ms:after_s, the rule frontend.html uses")
     a = ap.parse_args()
     man = [c for c in json.loads(Path(a.clips).read_text(encoding="utf-8")) if c["lang"] == "hi"]
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from textnorm import normalize_key
+    n_distinct = len({normalize_key(c["reference"]) for c in man})
     lines = [f"# Endpointing replayed on {len(man)} clips ({Path(a.clips).name})", "",
+             f"n = {len(man)} clips, n_distinct = {n_distinct} sentences. Endpointing depends on each recording's "
+             "pauses, so every clip counts (different readers of one sentence pause differently). A clip whose "
+             "speech starts inside the 300 ms calibration cannot be evaluated; each row gives the clips evaluated.", "",
              "Rule as in frontend.html: 20 ms frames, 300 ms calibration, speech = RMS > max(3 x floor, 0.01).",
              "Public dataset, adult read speech (FLEURS) unless the manifest says otherwise. Laptop, offline.", "",
-             "| Endpoint silence | Clips cut early (a pause ended the recording) | Speech lost when cut, median | Wait after speech ends |",
-             "|---|---|---|---|"]
+             "| Endpoint silence | Clips cut early (a pause ended the recording) | n evaluated / n_distinct | "
+             "Speech lost when cut, median | Wait after speech ends |",
+             "|---|---|---|---|---|"]
     sh, lg, af = a.adaptive.split(":")
     rules = [(f"{ep} ms", ep, None, 0) for ep in a.endpoint_ms] + \
             [(f"adaptive: {sh} ms, {lg} ms after {af} s of speech", int(sh), int(lg), float(af))]
     for name, ep, long_ms, after in rules:
-        res = []
+        res, keys = [], set()
         for c in man:
             f = ROOT / c["file"]
             if f.suffix != ".wav":
@@ -90,11 +98,12 @@ def main():
                 x = x.mean(1)
             r = simulate(x, sr, ep, long_ms, after)
             if r:
-                res.append(r)
+                res.append(r); keys.add(normalize_key(c["reference"]))
         cut = [r for r in res if r["cut_early"]]
         lost = statistics.median([r["lost_s"] for r in cut]) if cut else 0
         waits = sorted(r["wait_ms"] for r in res)
-        lines.append(f"| {name} | {len(cut)} of {len(res)} | {lost:.1f} s | median {statistics.median(waits):.0f} ms |")
+        lines.append(f"| {name} | {len(cut)} of {len(res)} | {len(res)} / {len(keys)} | {lost:.1f} s | "
+                     f"median {statistics.median(waits):.0f} ms |")
     out = ROOT / "bench" / "results" / f"endpoint_sim_{Path(a.clips).parent.name}.md"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))

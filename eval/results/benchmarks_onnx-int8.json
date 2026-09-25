@@ -14,7 +14,10 @@
    "chrf++": 32.0,
    "bleu": 5.3,
    "seconds": 219.5,
-   "paper_avg_chrf++": 30.4
+   "paper_avg_chrf++": 30.4,
+   "n_distinct": 1497,
+   "chrf++_distinct": 32.0,
+   "bleu_distinct": 5.3
   },
   {
    "set": "in22-conv",
@@ -24,7 +27,10 @@
    "chrf++": 35.0,
    "bleu": 15.6,
    "seconds": 172.2,
-   "paper_avg_chrf++": 33.8
+   "paper_avg_chrf++": 33.8,
+   "n_distinct": 1500,
+   "chrf++_distinct": 35.0,
+   "bleu_distinct": 15.6
   }
  ]
 }

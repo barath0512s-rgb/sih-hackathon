@@ -11,8 +11,16 @@ def test_digits_become_ascii_in_both_scripts():
     assert normalize_for_wer("७ बच्चे 12") == "7 बच्चे 12"
 
 
-def test_whitespace_and_tags():
-    assert normalize_for_wer("  <unintelligible> ᱟᱫᱚ   ᱚᱱᱟ \n") == "ᱟᱫᱚ ᱚᱱᱟ"
+def test_whitespace():
+    assert normalize_for_wer("  ᱟᱫᱚ   ᱚᱱᱟ \n") == "ᱟᱫᱚ ᱚᱱᱟ"
+
+
+def test_tags_leave_references_only():
+    from textnorm import strip_reference_tags
+    text, n = strip_reference_tags("<unintelligible> ᱟᱫᱚ ᱚᱱᱟ <unintelligible>")
+    assert n == 2 and normalize_for_wer(text) == "ᱟᱫᱚ ᱚᱱᱟ"
+    # In a hypothesis the tag is not removed (it would count as an error).
+    assert "unintelligible" in normalize_for_wer("<unintelligible> ᱟᱫᱚ")
 
 
 def test_spelling_is_not_folded():

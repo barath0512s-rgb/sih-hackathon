@@ -55,7 +55,14 @@ def latest_runs():
 
 def latency(label, csv_path, md_path):
     rows = list(csv.DictReader(csv_path.open(encoding="utf-8")))
-    warm = [r for r in rows if r["cold"] == "False"]
+    warm_all = [r for r in rows if r["cold"] == "False"]
+    # Distinct sentences per direction (FLEURS has several readers per sentence).
+    from textnorm import normalize_key
+    seen, warm = set(), []
+    for r in warm_all:
+        k = (r["direction"], normalize_key(r["reference"]))
+        if k not in seen:
+            seen.add(k); warm.append(r)
     src = f"bench/results/{csv_path.name}"
     kind = ("public dataset, adult speech, BEFORE Phase L" if "before_phase_l" in label else
             ("public dataset, adult speech, Santali speech recognition "
@@ -69,10 +76,13 @@ def latency(label, csv_path, md_path):
     for d in ("hi-to-sat", "sat-to-hi"):
         s = stats([float(r["pipeline_ms"]) / 1000 for r in warm if r["direction"] == d])
         if s:
+            n_all = sum(r["direction"] == d for r in warm_all)
             out(f"{d} median / p90 / max",
-                f"{sec(s['median'])} / {sec(s['p90'])} / {sec(s['max'])} s (n={s['n']})", src)
+                f"{sec(s['median'])} / {sec(s['p90'])} / {sec(s['max'])} s (n={n_all}, n_distinct={s['n']})", src)
     over = sum(float(r["pipeline_ms"]) > 3000 for r in warm)
-    out("requests over 3 s", f"{over} of {len(warm)}", src)
+    out("requests over 3 s", f"{over} of {len(warm)} (n={len(warm_all)}, n_distinct={len(warm)})", src)
+    if any(r["direction"] == "sat-to-hi" for r in warm) and "public" in label:
+        print("  (Santali: IndicVoices validation split, no public Santali test split; may overlap model-development data)")
     gl = sum(r["source"] == "glossary" for r in warm)
     out("answered by the verified sentence glossary", f"{gl} of {len(warm)}", src)
     errs = sum(bool(r["tts_error"]) for r in warm)
@@ -100,12 +110,13 @@ def latency(label, csv_path, md_path):
             bins = ((0, 11),) + bins
         for lo, hi in bins:
             b = [r for r in dw if lo <= len(r["reference"].split()) < hi]
+            n_b = sum(r["direction"] == d and lo <= len(r["reference"].split()) < hi for r in warm_all)
             if b:
                 ms = [float(r["pipeline_ms"]) for r in b]
                 span = f"≤ {hi - 1}" if lo == 0 else f"{lo}-{hi - 1}" if hi < 999 else f"{lo}+"
                 out(f"  {d} {span} words: median / p90 / over 3 s",
                     f"{sec(statistics.median(ms) / 1000)} / {sec(pct(ms, 90) / 1000)} s / "
-                    f"{sum(m > 3000 for m in ms)} of {len(b)}", src)
+                    f"{sum(m > 3000 for m in ms)} of {len(b)} (n={n_b}, n_distinct={len(b)})", src)
 
 
 def latency_steps():
@@ -117,27 +128,44 @@ def latency_steps():
           f"decoding excluded)")
     print("  full = whole utterance translated and voiced; first / last = clause streaming, "
           "first / last chunk's audio ready")
+    print("  public figures use distinct sentences (first clip of each): n = clips, n_distinct = sentences used")
+    from bench.latency_steps import distinct_first, read_rows
     for f in files:
         name = f.stem.replace("latency_steps_", "")
-        rows = list(csv.DictReader(f.open(encoding="utf-8")))
+        all_rows = read_rows(name)
+        rows = distinct_first(all_rows)
         src = f"bench/results/{f.name}"
-        tag = " (the app now)" if name == "app" else " (before Phase L)" if name == "torch-t14" else ""
+        tag = (" (the app, run 2)" if name == "app" else " (the app, run 1)" if name == "app_run1"
+               else " (before Phase L)" if name == "torch-t14" else "")
+        n_all = sum(r["set"] == "public" for r in all_rows)
         pub = [r for r in rows if r["set"] == "public"]
         les = [r for r in rows if r["set"] == "lesson"]
         g = lambda rs, k: [float(r[k]) / 1000 for r in rs]
         up17 = [r for r in pub if int(r["words"]) <= 17]
+        n_up17 = sum(r["set"] == "public" and r["words"] <= 17 for r in all_rows)
+        nn = f"n={n_all}, n_distinct={len(pub)}"
         if pub:
             full = g(pub, "full_ms")
             out(f"{name}{tag}: public full median / p90",
-                f"{sec(statistics.median(full))} / {sec(pct(full, 90))} s (n={len(pub)})", src)
-            out(f"{name}: public full over 3 s", f"{sum(x > 3 for x in full)} of {len(pub)}", src)
+                f"{sec(statistics.median(full))} / {sec(pct(full, 90))} s ({nn})", src)
+            out(f"{name}: public full over 3 s", f"{sum(x > 3 for x in full)} of {len(pub)} ({nn})", src)
             if up17:
-                out(f"{name}: public ≤17 words, full p90", f"{sec(pct(g(up17, 'full_ms'), 90))} s (n={len(up17)})", src)
-            out(f"{name}: public first audio p90", f"{sec(pct(g(pub, 'first_audio_ms'), 90))} s", src)
+                out(f"{name}: public ≤17 words, full p90",
+                    f"{sec(pct(g(up17, 'full_ms'), 90))} s (n={n_up17}, n_distinct={len(up17)})", src)
+            out(f"{name}: public first audio median / p90",
+                f"{sec(statistics.median(g(pub, 'first_audio_ms')))} / {sec(pct(g(pub, 'first_audio_ms'), 90))} s ({nn})", src)
             out(f"{name}: public last audio median / p90",
-                f"{sec(statistics.median(g(pub, 'last_audio_ms')))} / {sec(pct(g(pub, 'last_audio_ms'), 90))} s", src)
+                f"{sec(statistics.median(g(pub, 'last_audio_ms')))} / {sec(pct(g(pub, 'last_audio_ms'), 90))} s ({nn})", src)
             out(f"{name}: chunked vs whole agreement (chrF++, median)",
-                f"{statistics.median(float(r['chunk_vs_whole_chrf']) for r in pub):.1f}", src)
+                f"{statistics.median(float(r['chunk_vs_whole_chrf']) for r in pub):.1f} ({nn})", src)
+            for lo, hi in ((0, 11), (12, 17), (18, 23), (24, 999)):
+                b = [r for r in pub if lo <= int(r["words"]) <= hi]
+                nb = sum(r["set"] == "public" and lo <= r["words"] <= hi for r in all_rows)
+                if b:
+                    span = f"{lo}-{hi}" if hi < 999 else f"{lo}+"
+                    out(f"  {name}: {span} words, full median / p90, first p90",
+                        f"{sec(statistics.median(g(b, 'full_ms')))} / {sec(pct(g(b, 'full_ms'), 90))} s, "
+                        f"{sec(pct(g(b, 'first_audio_ms'), 90))} s (n={nb}, n_distinct={len(b)})", src)
         if les:
             out(f"{name}: lesson lines full median / p90",
                 f"{sec(statistics.median(g(les, 'full_ms')))} / {sec(pct(g(les, 'full_ms'), 90))} s (n={len(les)})", src)
@@ -174,14 +202,14 @@ def asr_decoding_synthetic():
 
 
 def asr_accuracy():
-    """Corpus WER/CER on the public clips, from bench/asr_decoding.py's raw file."""
+    """Corpus WER/CER on the public clips, scored by bench/asr_decoding.score (one definition)."""
     import json
     raw = RESULTS / "asr_decoding_public.jsonl"
     print(f"\nSpeech recognition accuracy (public dataset, adult speech; {LAPTOP})")
     if not raw.exists():
         out("WER / CER", NM, "run bench/fetch_public_clips.py, then bench/asr_decoding.py --label public")
         return
-    import jiwer
+    from bench.asr_decoding import SAT_CAVEAT, VARIANTS, score
     rows = [json.loads(l) for l in raw.read_text(encoding="utf-8").splitlines() if l.strip()]
     src = f"bench/results/{raw.name}"
     for lang in ("hi", "sat"):
@@ -189,23 +217,19 @@ def asr_accuracy():
         if not mine:
             out(f"{lang}: WER / CER", NM, "no clips for this language yet")
             continue
-        if "reference_raw" not in mine[0]:
-            out(f"{lang}: WER raw / normalised", NM, "re-run bench/asr_decoding.py (old file format)")
-            continue
-        for dec in ("ctc", "rnnt"):
-            for trim in (False, True):
-                v = [r for r in mine if r["decoding"] == dec and r["trim"] == trim]
-                if not v:
-                    continue
-                raw_w = jiwer.wer([r["reference_raw"] for r in v], [r["hypothesis_raw"] for r in v])
-                wer = jiwer.wer([r["reference_norm"] for r in v], [r["hypothesis_norm"] for r in v])
-                cer = jiwer.cer([r["reference_norm"] for r in v], [r["hypothesis_norm"] for r in v])
-                ms = statistics.median(r["asr_ms"] for r in v)
-                used = " (in use)" if (dec == config.ASR_DECODING[lang]
-                                       and trim == config.ASR_TRIM_SILENCE[lang]) else ""
-                out(f"{lang}: {dec}, trim {'on' if trim else 'off'}{used}",
-                    f"WER raw {raw_w * 100:.1f}%, normalised {wer * 100:.1f}%, CER {cer * 100:.1f}%; "
-                    f"{ms:.0f} ms (n={len(v)})", src)
+        for dec, trim in VARIANTS:
+            v = [r for r in mine if r["decoding"] == dec and r["trim"] == trim]
+            if not v:
+                continue
+            sc = score(v)
+            used = " (in use)" if (dec == config.ASR_DECODING[lang] and trim == config.ASR_TRIM_SILENCE[lang]) else ""
+            out(f"{lang}: {dec}, trim {'on' if trim else 'off'}{used}",
+                f"WER raw {sc['wer_raw'] * 100:.1f}%, normalised {sc['wer_norm'] * 100:.1f}%, "
+                f"CER {sc['cer_norm'] * 100:.1f}%; {sc['median_ms']:.0f} ms "
+                f"(n={sc['n']}, n_distinct={sc['n_distinct']})", src)
+        if lang == "sat":
+            one = [r for r in mine if (r["decoding"], r["trim"]) == VARIANTS[0]]
+            print(f"  {SAT_CAVEAT} Dataset tags removed from the references: {score(one)['tags_removed']}.")
     print("  Child speech: NOT MEASURED.")
 
 
@@ -219,7 +243,8 @@ def translation():
         return
     d = json.loads(res.read_text(encoding="utf-8"))
     for r in d["results"]:
-        out(f"{r['set']} {r['direction']} chrF++ / BLEU", f"{r['chrf++']} / {r['bleu']} (n={r['n']})",
+        out(f"{r['set']} {r['direction']} chrF++ / BLEU",
+            f"{r['chrf++']} / {r['bleu']} (n={r['n']}, n_distinct={r.get('n_distinct', '?')})",
             f"eval/results/{res.name}")
 
 

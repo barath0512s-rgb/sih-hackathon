@@ -55,6 +55,28 @@ Nothing ran on a tablet: on-device figures are **NOT MEASURED**.
 
 ---
 
+## PF3. Decisions applied (branch `phase-p-finish`)
+
+| # | Decision | Done | Evidence |
+|---|---|---|---|
+| 1 | Santali set = IndicVoices validation split, labelled | Label "IndicVoices validation split (no public Santali test split); may overlap model-development data" wherever a Santali ASR number appears (README, deck_numbers, claims, the ASR report). Checked: the IndicVoices paper trains its own 130M IndicASR "using only the IndicVoices train set" and does not say how the validation split was used; the IndicConformer cards we use name no training data. So **unknown**. IndicVoices-R is not used for ASR evaluation | `docs/sources.md#indicvoices` |
+| 2 | `<unintelligible>` out of references only | `textnorm.strip_reference_tags` (references) + `normalize_for_wer` (both sides, no tag removal); **2 tokens removed**, in 2 of 80 Santali references. Every WER is unchanged (no hypothesis contained a tag). ASR report rebuilt from the saved raw transcripts (`bench/asr_decoding.py --rescore`) | `bench/results/asr_decoding_public.md`, `tests/test_wer_norm.py` |
+| 3 | Hindi duplicates | WER keeps all 80 clips; translation and latency use the first clip of each of the **69 distinct** sentences; n and n_distinct in every table (ASR, voice to voice, Phase L, engines, endpointing, translation benchmarks, chunking). Rebuilt from saved CSVs/translations (`--rescore`); the engine comparison was re-run on 99 distinct sentences | README §6, `bench/results/*.md`, `eval/results/benchmarks.md` |
+| 4 | Santali decoding | Already in place: RNN-T with trimming; answers of ≤ 10 words p90 **2.34 s** (41 answers, 1 over 3 s). Hindi stays on CTC | `…_public_sat_rnnt_trim.md` |
+
+What changed in the numbers (distinct sentences instead of all clips):
+- Phase L, ≤ 17 words full p90 (n = 38, n_distinct = 32): before 3.46 s (was 3.74), run 1 2.48 s, run 2 3.02 s (unchanged). Time to first audio p90 (n_distinct = 69): before 2.43 s, run 1 **2.46 s** (was 2.32), run 2 **2.68 s** (was 2.30); int8 **3.07 s**, over the 3 s target (was 2.13).
+- Voice to voice hi→sat (n = 79, n_distinct = 68): median 1.96 s, p90 2.25 s. Before Phase L: 2.99 / 3.72 s, 34 of 68 over 3 s.
+- Engines (99 distinct): ONNX fp32 504 ms vs PyTorch 1455 ms, 99 of 99 identical; int8 244 ms, 42 of 99 identical.
+- Translation benchmarks: IN22-Conv n = 1503, n_distinct 1497 (hi) / 1500 (sat); scores on distinct sources equal the published-style scores to one decimal.
+
+**Plan recorded for F4 (decision 6), expected-answer biasing:**
+- Biasing may change only the **displayed** transcript. The grade comes from an **unbiased** decoding pass, or from the biased pass only when its score beats the unbiased one by a fixed confidence margin.
+- The test set must include clips of **wrong** answers for every assessment step.
+- Report: true-accept rate (right answers graded green) and **false-accept rate** (wrong answers turned green), with and without biasing. Biasing ships only if false accepts do not rise.
+
+---
+
 ## PF2. Checkpoint review answers (branch `phase-p-finish`)
 
 Laptop, offline; public datasets, adult speech; child speech NOT MEASURED.

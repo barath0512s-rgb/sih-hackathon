@@ -50,7 +50,7 @@ def main():
     lines = ["# Clause streaming vs whole-sentence translation (Hindi → Santali)", "",
              f"- FLORES-200 devtest (`{SETS['flores']['repo']}` @ {rev[:10]}, {SETS['flores']['license']}): "
              f"the {len(long_)} of {len(pairs)} Hindi sentences with {config.STREAM_MIN_WORDS}+ words "
-             "(the ones the app streams).",
+             f"(the ones the app streams); n = {len(long_)}, n_distinct = {len({h for h, _ in long_})}.",
              f"- Engine: {pl.nmt_backend}; chunks from `streaming.chunks()`, median "
              f"{sorted(n_chunks)[len(n_chunks) // 2]} per sentence; chunk translations joined with spaces.",
              "- Text input (no speech recognition). Laptop, offline.", "",

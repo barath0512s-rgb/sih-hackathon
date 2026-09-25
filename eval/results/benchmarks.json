@@ -14,7 +14,10 @@
    "chrf++": 27.4,
    "bleu": 3.3,
    "seconds": 694.8,
-   "paper_avg_chrf++": 26.1
+   "paper_avg_chrf++": 26.1,
+   "n_distinct": 1012,
+   "chrf++_distinct": 27.4,
+   "bleu_distinct": 3.3
   },
   {
    "set": "flores",
@@ -24,7 +27,10 @@
    "chrf++": 34.1,
    "bleu": 12.6,
    "seconds": 575.0,
-   "paper_avg_chrf++": 31.5
+   "paper_avg_chrf++": 31.5,
+   "n_distinct": 1012,
+   "chrf++_distinct": 34.1,
+   "bleu_distinct": 12.6
   },
   {
    "set": "in22-conv",
@@ -34,7 +40,10 @@
    "chrf++": 32.2,
    "bleu": 5.5,
    "seconds": 474.6,
-   "paper_avg_chrf++": 30.4
+   "paper_avg_chrf++": 30.4,
+   "n_distinct": 1497,
+   "chrf++_distinct": 32.2,
+   "bleu_distinct": 5.5
   },
   {
    "set": "in22-conv",
@@ -44,7 +53,10 @@
    "chrf++": 35.1,
    "bleu": 15.3,
    "seconds": 382.5,
-   "paper_avg_chrf++": 33.8
+   "paper_avg_chrf++": 33.8,
+   "n_distinct": 1500,
+   "chrf++_distinct": 35.1,
+   "bleu_distinct": 15.3
   },
   {
    "set": "in22-gen",
@@ -54,7 +66,10 @@
    "chrf++": 31.3,
    "bleu": 4.2,
    "seconds": 811.5,
-   "paper_avg_chrf++": 30.0
+   "paper_avg_chrf++": 30.0,
+   "n_distinct": 1024,
+   "chrf++_distinct": 31.3,
+   "bleu_distinct": 4.2
   },
   {
    "set": "in22-gen",
@@ -64,7 +79,10 @@
    "chrf++": 37.6,
    "bleu": 15.8,
    "seconds": 648.6,
-   "paper_avg_chrf++": 35.8
+   "paper_avg_chrf++": 35.8,
+   "n_distinct": 1024,
+   "chrf++_distinct": 37.6,
+   "bleu_distinct": 15.8
   }
  ]
 }
