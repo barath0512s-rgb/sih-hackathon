@@ -41,3 +41,20 @@ def test_english_is_hidden_unless_evaluator_mode():
     # The teacher's screen has no English; ?evaluator=1 shows the EN button.
     assert re.search(r'<button id="langEn"[^>]*\bhidden\b', HTML)
     assert 'get("evaluator")' in HTML
+
+
+def test_the_page_runs_on_android_9_webview():
+    """Android 9's stock WebView is Chrome 69 (the 2 GB emulator had 69.0.3497):
+    no nullish/optional chaining, logical assignment, numeric separators or newer
+    built-ins. One of them is a syntax error there and the whole page stops."""
+    import re
+    from pathlib import Path
+    html = (Path(__file__).resolve().parent.parent / "frontend.html").read_text(encoding="utf-8")
+    js = "\n".join(re.findall(r"<script>(.*?)</script>", html, re.S))
+    js = re.sub(r"//[^\n]*", "", js)                         # comments may mention them
+    banned = {r"\?\?": "??", r"\?\.(?!\d)": "?.", r"(\|\||&&)=": "logical assignment", r"(?<![\w$])\d+_\d": "numeric separator",
+              r"\.replaceAll\(": "replaceAll", r"Object\.fromEntries": "Object.fromEntries",
+              r"\.matchAll\(": "matchAll", r"allSettled": "Promise.allSettled", r"\.at\(": ".at()",
+              r"globalThis": "globalThis", r"structuredClone": "structuredClone", r"Promise\.any": "Promise.any"}
+    found = [name for pat, name in banned.items() if re.search(pat, js)]
+    assert not found, f"not in Chrome 69: {found}"

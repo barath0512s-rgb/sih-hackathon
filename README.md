@@ -53,7 +53,7 @@ laptop, offline, and checked by the named test or script.
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality on public test sets (the model alone): chrF++ Hindi → Santali 31.3 (IN22-Gen), 32.2 (IN22-Conv), 27.4 (FLORES-200); see §6. Lesson lines themselves: **NOT MEASURED** (no reference translations). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
 | 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, upload to reply audio (§6): **Hindi → Santali** median **1.96 s**, p90 **2.25 s**, 0 over 3 s (FLEURS, 68 distinct sentences); **Santali → Hindi** median **2.22 s**, p90 **2.57 s**, 2 of 79 over 3 s, answers of ≤ 10 words p90 **2.34 s** (IndicVoices validation split; may overlap model-development data). From the end of speech, by step: time to first audio p90 **2.46 s** (run 1) / **2.68 s** (run 2) over 69 distinct FLEURS sentences (clause streaming); lesson lines p90 **1.21-1.24 s** | Full-sentence p90 for FLEURS sentences of up to 17 words (32 distinct) was **2.48 s** in one run and **3.02 s** in a second (the slow clips were slow in every step at once: machine noise, not a pipeline step). Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public`, `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
-| 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
+| 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop hub** (tablets use its browser page over local Wi-Fi). **Android app, work in progress (F1 M1):** on an Android 9 emulator with 2 GB RAM, in airplane mode, the app shows the lessons, flashcards and typed translations of lesson lines from a verified content pack, through the same page and REST contract as the hub (24 of 24 contract cases); peak PSS 185 MB (app + WebView) | On the tablet: speech recognition, translation of new sentences and voice synthesis are **not built yet** (M2-M4); the Samsung tablet itself: **NOT MEASURED** yet | `bench/results/android_m1_emulator-2gb-android9.md`; `pytest tests/test_offline.py` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
 
 ---
@@ -107,10 +107,23 @@ laptop, offline, and checked by the named test or script.
 A translation is answered by the first layer that can answer it, in the order
 shown. The model runs only when the other three cannot answer.
 
+### Laptop hub and tablet: two set-ups
+
+- **Laptop hub = higher accuracy.** The laptop runs the larger models: IndicConformer
+  600M for speech and IndicTrans2 in full precision (fp32), identical to the
+  published model.
+- **Tablet = portable.** The Android app (work in progress) will run smaller
+  engines that fit a 2 GB RAM, Android 9+ tablet: IndicConformer **120M** per
+  language (Hindi and Santali) and IndicTrans2 **int8** with a length cap and a
+  repetition guard (`nmt_guard.py`). Measured on the laptop: 120M Hindi WER
+  10.9% (600M: 12.5%), 120M Santali 34.5% (600M: 31.0%); int8 IN22-Conv chrF++
+  32.0 / 35.0 vs fp32 32.2 / 35.1. Santali on the tablet uses fp32 if the app's
+  peak PSS stays under 900 MB with speech, translation and voice loaded,
+  otherwise int8 (decided when those engines run on the device, M3-M4).
+
 ### Speech recognition: IndicConformer 600M
 - `ai4bharat/indic-conformer-600m-multilingual`, ONNX Runtime on the CPU. It reads Santali (`sat`) in Ol Chiki natively.
-- **CTC decoding** for both languages. On the synthetic clips, CTC was about twice as fast as RNN-T with no worse character error rate (`bench/results/asr_decoding_synthetic.md`). This is re-checked per language once real recordings exist.
-- Leading and trailing silence is trimmed for Hindi. It is not trimmed for Santali, because trimming made Santali slightly worse on the same clips.
+- Decoding per language, from public speech (§6): Hindi **CTC**, Santali **RNN-T**. Silence trimming: Hindi off, Santali on.
 - There is no fallback. If the model files are missing, the server stops and says how to get them.
 
 ### Translation: IndicTrans2 indic-indic 320M
@@ -202,8 +215,8 @@ the Santali references) from the **references only** (rules: `bench/README.md`).
 
 | Language | Decoding | Silence trimmed | n | n_distinct | WER raw | WER normalised | CER normalised | Median time |
 |---|---|---|---|---|---|---|---|---|
-| Hindi | **CTC (in use)** | **yes (in use)** | 80 | 69 | 14.3% | 13.1% | 4.9% | 485 ms |
-| Hindi | CTC | no | 80 | 69 | 13.6% | 12.5% | 4.8% | 516 ms |
+| Hindi | **CTC (in use)** | **no (in use)** | 80 | 69 | 13.6% | 12.5% | 4.8% | 516 ms |
+| Hindi | CTC | yes | 80 | 69 | 14.3% | 13.1% | 4.9% | 485 ms |
 | Hindi | RNN-T | yes | 80 | 69 | 14.3% | 13.1% | 4.9% | 1314 ms |
 | Santali | **RNN-T (in use)** | **yes (in use)** | 80 | 80 | 31.1% | 31.0% | 10.3% | 1144 ms |
 | Santali | RNN-T | no | 80 | 80 | 31.3% | 31.2% | 10.4% | 1281 ms |
@@ -233,8 +246,8 @@ Santali uses RNN-T because the rule was: RNN-T if its p90 for answers of up to
 10 words stays within 3 s (2.34 s). The trade-off: about 0.4-0.6 s more per
 reply for 3.7 fewer word errors per 100 words. Silence trimming is on for
 Santali too: normalised WER 31.0% vs 31.2% without, 137 ms faster.
-Hindi stays on CTC. Hindi trimming stays on for now (it was chosen on synthetic
-clips); on this data it is 0.6 WER points worse and 31 ms faster. See STATUS.md.
+Hindi stays on CTC, and Hindi silence trimming is **off**: on this data it was
+0.6 WER points worse (13.1% vs 12.5%) for 31 ms.
 
 ### Translation quality (public test sets)
 

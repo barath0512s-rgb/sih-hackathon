@@ -344,7 +344,10 @@ class VaaniSetuPipeline:
         cached_file = cache_dir / f"{digest}.wav"
 
         if cached_file.exists() and cached_file.stat().st_size > 1024:
-            shutil.copy2(cached_file, out_path)
+            # copyfile, not copy2: the reply clip must be new. copy2 kept the cache
+            # file's old modification time, and app._prune_audio deleted any reply
+            # made from a clip cached over AUDIO_KEEP_SECONDS ago at once (404).
+            shutil.copyfile(cached_file, out_path)
             self.tts_engine_counts["cache"] += 1
             info["tts_engine"] = "cache"
             return out_path

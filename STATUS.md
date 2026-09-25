@@ -1,4 +1,20 @@
-# STATUS, 25 Sep 2026: Checkpoint F1-A2 (master prompt v2)
+# STATUS, 25 Sep 2026: submission freeze (master prompt v2)
+
+## FREEZE. Decisions applied; M1 on a 2 GB Android 9 emulator (branch `android-wp4`)
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 3 | Hindi silence trimming | **Off** (`config.ASR_TRIM_SILENCE`): normalised WER 12.5% untrimmed vs 13.1% trimmed | `asr_decoding_public.md` |
+| 2 | Tablet NMT: int8 + guards | `nmt_guard.py`: length cap 2 x input + 10 tokens, and a stop on loops of word variants (same 3-letter stem, 3+ different words in the last 4); on for int8 only. On the saved outputs the guard fires on 2 of 7078 fp32 outputs, both genuine loops. The int8 run-ons seen: the ᱥᱟᱯᱷ… loop is stopped (one word kept), a 76-word counting run-on is capped to 50 words. IN22-Conv int8 with the guards: chrF++ **32.0 / 35.0** (unchanged; fp32 32.2 / 35.1). Tests: `tests/test_nmt_guard.py` | `eval/results/benchmarks_onnx-int8.md` |
+| 1 | Tablet ASR | 120M for Hindi and Santali. Santali fp32 vs int8: rule recorded (fp32 if peak PSS stays under 900 MB with ASR + NMT + TTS loaded). **Not decided yet**: those engines are not on the device before M3-M4, so that PSS is NOT MEASURED. README/STATUS: "laptop hub = higher accuracy, tablet = portable" | README §4 |
+| 4 | **M1 on a 2 GB RAM, Android 9 emulator** (API 28, x86_64, 4 cores, MemTotal 2.0 GB, WebView 69) | Pack import (SHA-256 checks) 7.6 s; REST contract **24 of 24** with network and **24 of 24 in airplane mode**; native mic 3.00 s captured at 16 kHz; typed lesson line 31 ms (median, over adb); **peak PSS 185 MB** (app 89 + WebView renderer 96) | `bench/results/android_m1_emulator-2gb-android9.md` |
+| 4 | Bug found on Android 9, fixed | The page did not run at all: Android 9's WebView (Chrome 69) has no `??`, a syntax error that stopped the whole script (no lessons shown). Replaced by a helper; `tests/test_frontend_offline.py` now fails on post-Chrome-69 syntax and APIs. After the fix: lessons, session and typed translation checked through the real WebView (screenshots). CSS flex `gap` is not supported there: some spacing is lost (cosmetic) | `frontend.html` |
+| 4 | Samsung tablet over USB | **NOT MEASURED**: no device connected yet (`adb devices`) | — |
+| d | Demo path (`tools/demo_reset.py`) | **Bug found and fixed:** a reply made from a voice clip cached over 30 min earlier got a dead audio link (404): `shutil.copy2` kept the cache file's old time and the pruner deleted the reply at once. Now `copyfile`; regression test in `tests/test_api.py` (fails with the old code). After the fix `demo_reset.py` ends with **Ready**; the page's demo path checked in the browser: teacher line → Santali with the glossary badge and audio (served), Santali → Hindi, child's answer ᱗ green, a correction reused (placeholder, then removed with `--forget-demo-correction`), worksheet PDF, flashcards, lesson-import draft (3 lines, labels, NIPUN-G1-NUM-1) | `tools/demo_reset.py` |
+| c | Demo script | `docs/demo_video_script.md` v1.1: laptop hub flow, plus a 20 s "Android app (work in progress)" segment showing only M1 on the Samsung in airplane mode, with its exact caption; to be filmed only after `device_check.py` passes on the Samsung | `docs/demo_video_script.md` |
+| — | Latency, 3 runs | **Waiting for you**: high-performance power plan (a system setting I may not change) and other apps closed | — |
+
+---
 
 ## F1-A2. Transducer (RNN-T) export for hotwords (branch `android-wp4`)
 

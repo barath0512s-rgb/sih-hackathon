@@ -73,14 +73,39 @@ class MainActivity : Activity() {
      * verified import as the file picker.
      */
     private fun debugImport(intent: Intent?) {
-        val name = intent?.getStringExtra("import_pack") ?: return
         if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0) return
+        intent?.getIntExtra("mic_test_ms", 0)?.takeIf { it > 0 }?.let { micTest(it) }
+        val name = intent?.getStringExtra("import_pack") ?: return
         val f = File(filesDir, name).canonicalFile
         if (f.parentFile != filesDir.canonicalFile || !f.isFile) return
         thread(name = "pack-import") {
             runCatching { f.inputStream().use { install(it) } }.onFailure { report(false, it.message ?: "import failed") }
             f.delete()
         }
+    }
+
+    /**
+     * Debug builds only: record `ms` milliseconds through the same MicBridge the page
+     * uses, and write what came out (bytes, RMS, peak) to files/mic_test.json for
+     * tools/android/device_check.py.
+     */
+    private fun micTest(ms: Int) = thread(name = "mic-test") {
+        val mic = MicBridge({ checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED }, {})
+        val result = JSONObject()
+        if (!mic.start()) {
+            result.put("ok", false).put("error", "microphone not available or no permission")
+        } else {
+            Thread.sleep(ms.toLong())
+            val wav = android.util.Base64.decode(mic.stop(), android.util.Base64.NO_WRAP)
+            val pcm = java.nio.ByteBuffer.wrap(wav, 44, maxOf(0, wav.size - 44)).order(java.nio.ByteOrder.LITTLE_ENDIAN).asShortBuffer()
+            var sum = 0.0; var peak = 0
+            for (i in 0 until pcm.remaining()) { val v = pcm.get(i).toInt(); sum += v * v.toDouble(); peak = maxOf(peak, Math.abs(v)) }
+            val n = pcm.remaining()
+            result.put("ok", n > 0).put("wav_bytes", wav.size).put("samples", n).put("seconds", n / 16000.0)
+                .put("rms", if (n > 0) Math.sqrt(sum / n) / 32768.0 else 0.0).put("peak", peak / 32768.0)
+        }
+        File(filesDir, "mic_test.json").writeText(result.toString())
+        Log.i(TAG, "mic_test $result")
     }
 
     private fun packStatus(): JSONObject = pack?.manifest?.let {

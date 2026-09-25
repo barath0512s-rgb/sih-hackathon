@@ -54,9 +54,11 @@ OFFLINE_ENV = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
 # voice-to-voice p90 stays within 3 s for answers of up to 10 words: 2.34 s
 # (CTC 1.77 s). Santali trimming: WER 31.0% trimmed vs 31.2% not, 137 ms
 # faster, so on. (Synthetic clips had suggested it clipped word-final stops;
-# on real speech 3 clips got better and 2 worse.) Child speech: NOT MEASURED.
+# on real speech 3 clips got better and 2 worse.) Hindi trimming: off (decision
+# 2026-09-25): normalised WER 12.5% untrimmed vs 13.1% trimmed, for 31 ms.
+# Child speech: NOT MEASURED.
 ASR_DECODING = {"hi": "ctc", "sat": "rnnt"}
-ASR_TRIM_SILENCE = {"hi": True, "sat": True}
+ASR_TRIM_SILENCE = {"hi": False, "sat": True}
 
 # ── Translation ───────────────────────────────────────────────────────────────
 NMT_NUM_BEAMS       = 1      # greedy; beam search is slower on CPU for short lines
@@ -66,6 +68,9 @@ NMT_MAX_TOKENS      = 128
 # bench/results/nmt_limits.md); it caps the worst case if the model loops.
 NMT_LIMIT_FACTOR, NMT_LIMIT_MARGIN = 3, 10
 NMT_NO_REPEAT_NGRAM = 3      # blocks the repeating-phrase loops this model can fall into
+# The int8 engine (the tablet's) also gets a tighter length cap (2 x input + 10
+# tokens) and a stop on loops of word variants (nmt_guard.py). fp32 is not guarded.
+NMT_INT8_GUARD = True
 
 # Phase L. Translation runs on ONNX Runtime when the exported model is on disk
 # (tools/export/export_indictrans2_onnx.py): fp32, token-for-token identical to

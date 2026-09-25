@@ -111,7 +111,7 @@
 
 # ── Accuracy ───────────────────────────────────────────────────────────────
 - id: asr_wer_public_hi
-  text: "Hindi speech recognition on FLEURS test (public dataset, adult speech, n=80, n_distinct=69), CTC with trimming (in use): WER raw 14.3%, normalised 13.1%, CER normalised 4.9%"
+  text: "Hindi speech recognition on FLEURS test (public dataset, adult speech, n=80, n_distinct=69), CTC without trimming (in use): WER raw 13.6%, normalised 12.5%, CER normalised 4.8%"
   status: "TRUE"
   evidence: bench/results/deck_numbers.txt
 - id: asr_wer_public_sat

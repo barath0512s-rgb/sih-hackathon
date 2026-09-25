@@ -4,7 +4,8 @@ The same pre- and post-processing as pipeline._nmt (IndicProcessor and the
 model's own tokenizer), then a greedy loop over the graphs written by
 tools/export/export_indictrans2_onnx.py:
   - no-repeat 3-gram, as the app sets it (config.NMT_NO_REPEAT_NGRAM);
-  - the same output-length cap as the app.
+  - the same output-length cap as the app; with int8 (the tablet's engine), the
+    tighter cap and the stem-loop guard of nmt_guard.py (config.NMT_INT8_GUARD).
 The encoder runs once, decoder_init once (it also computes the cross-attention
 cache), then decoder_step once per new token with the self-attention cache.
 """
@@ -20,7 +21,7 @@ ONNX_DIR = config.MODELS_DIR / "indictrans2-onnx"
 
 
 class OnnxNMT:
-    def __init__(self, tokenizer, processor, int8=True, threads=4, onnx_dir=ONNX_DIR, variant=None):
+    def __init__(self, tokenizer, processor, int8=True, threads=4, onnx_dir=ONNX_DIR, variant=None, guard=None):
         import onnxruntime as ort
         so = ort.SessionOptions()
         so.intra_op_num_threads = threads
@@ -36,6 +37,10 @@ class OnnxNMT:
         self.step_inputs = {i.name for i in self.step.get_inputs()}
         self.start, self.eos = 2, 2
         self.lock = threading.Lock()        # the IndicProcessor queue is per instance
+        # int8 falls into loops of word variants: guard it (nmt_guard.py). fp32 is left
+        # exactly as PyTorch decodes it (golden test: identical token ids).
+        self.guard = (bool(int8) and config.NMT_INT8_GUARD) if guard is None else guard
+        self.guard_fired = 0
 
     @staticmethod
     def _banned(tokens, n):
@@ -45,7 +50,7 @@ class OnnxNMT:
         prefix = tuple(tokens[-(n - 1):])
         return {tokens[i + n - 1] for i in range(len(tokens) - n + 1) if tuple(tokens[i:i + n - 1]) == prefix}
 
-    def generate_ids(self, input_ids, attention_mask, max_new_tokens, logps=None):
+    def generate_ids(self, input_ids, attention_mask, max_new_tokens, logps=None, stop=None):
         hid = self.enc.run(None, {"input_ids": input_ids, "attention_mask": attention_mask})[0]
         out = self.init.run(None, {"decoder_input_ids": np.array([[self.start]], dtype=np.int64),
                                    "encoder_hidden_states": hid, "encoder_attention_mask": attention_mask})
@@ -66,6 +71,8 @@ class OnnxNMT:
                 logps.append(float(scores[nxt] - m - np.log(np.exp(finite - m).sum())))
             seq.append(nxt)
             if nxt == self.eos:
+                break
+            if stop is not None and len(seq) % 4 == 0 and stop(seq):
                 break
             feed = {"decoder_input_ids": np.array([[nxt]], dtype=np.int64),
                     "encoder_hidden_states": hid, "encoder_attention_mask": attention_mask}
@@ -88,9 +95,22 @@ class OnnxNMT:
             enc = self.tok(batch, truncation=True, padding="longest", return_tensors="np")
             ids = enc["input_ids"].astype(np.int64)
             mask = enc["attention_mask"].astype(np.int64)
-            limit = min(config.NMT_MAX_TOKENS, config.NMT_LIMIT_FACTOR * ids.shape[1] + config.NMT_LIMIT_MARGIN)
-            logps = []
-            seq = self.generate_ids(ids, mask, limit, logps)
+            logps, stop = [], None
+            if self.guard:
+                import nmt_guard
+                limit = nmt_guard.length_cap(ids.shape[1], hard_max=config.NMT_MAX_TOKENS)
+
+                def stop(s):         # the words decoded so far, the last one maybe unfinished
+                    words = self.tok.batch_decode([s], skip_special_tokens=True)[0].split()[:-1]
+                    return nmt_guard.first_loop(words) is not None
+            else:
+                limit = min(config.NMT_MAX_TOKENS, config.NMT_LIMIT_FACTOR * ids.shape[1] + config.NMT_LIMIT_MARGIN)
+            seq = self.generate_ids(ids, mask, limit, logps, stop)
             dec = self.tok.batch_decode([seq], skip_special_tokens=True, clean_up_tokenization_spaces=True)
             score = round(float(np.exp(np.mean(logps))), 3) if logps else None
-            return self.ip.postprocess_batch(dec, lang=tgt_lang)[0], seq, score
+            out = self.ip.postprocess_batch(dec, lang=tgt_lang)[0]
+            if self.guard:
+                import nmt_guard
+                out, cut = nmt_guard.cut_stem_loop(out)
+                self.guard_fired += cut
+            return out, seq, score

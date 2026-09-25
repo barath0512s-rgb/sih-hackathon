@@ -13,5 +13,5 @@
 
 | Test set | Direction | n | n_distinct | chrF++ | BLEU | chrF++ (distinct) | BLEU (distinct) | Paper chrF++ (all-source avg) | Time |
 |---|---|---|---|---|---|---|---|---|---|
-| in22-conv (CC BY 4.0) | hin_Deva-sat_Olck | 1503 | 1497 | 32.0 | 5.3 | 32.0 | 5.3 | 30.4 | 220 s |
-| in22-conv (CC BY 4.0) | sat_Olck-hin_Deva | 1503 | 1500 | 35.0 | 15.6 | 35.0 | 15.6 | 33.8 | 172 s |
+| in22-conv (CC BY 4.0) | hin_Deva-sat_Olck | 1503 | 1497 | 32.0 | 5.4 | 32.0 | 5.4 | 30.4 | 253 s |
+| in22-conv (CC BY 4.0) | sat_Olck-hin_Deva | 1503 | 1500 | 35.0 | 15.6 | 35.0 | 15.6 | 33.8 | 192 s |

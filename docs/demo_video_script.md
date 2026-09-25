@@ -1,13 +1,19 @@
-# Demo video script (3–4 minutes)
+# Demo video script v1.1 (about 4 minutes)
 
-Every shot shows something that works today. The whole demo runs in
+v1.1 (25 Sep 2026): adds a short **Android app (work in progress)** segment
+that shows only what the app's first milestone (M1) really does. The rest is
+unchanged: the laptop hub flow.
+
+Every shot shows something that works today. Everything up to 3:35 runs in
 **laptop hub mode**: speech recognition, translation and speech all run on
 the laptop, offline. Put the caption **"Laptop hub mode: everything runs on
 this laptop, offline"** on screen at the start, and again on any shot of a
 tablet or phone.
 
 **Do not say or show:**
-- the app running *on* a tablet;
+- the app running *on* a tablet, except in the 3:35 segment, and there only what its caption says;
+- speaking into the tablet app, a worksheet on the tablet, or a new sentence typed on the tablet
+  (M1 has no speech recognition, translation model or voice on the device);
 - any accuracy number;
 - any speed number other than the one the timer shows during the take;
 - "0.15 s", "<4 s", or "all MIT-licensed".
@@ -23,7 +29,11 @@ tablet or phone.
 5. Open `http://127.0.0.1:5000` in Chrome and reload once. Zoom 125%, or
    switch on large type in सेटिंग.
 6. Test the microphone once: speak any Hindi line, then refresh the page.
-7. Have the correction for the 1:55 shot ready on paper. **A Santali speaker on the
+7. For the 3:35 Android segment (skip it if any of this fails): the Samsung tablet has the
+   M1 app and a content pack installed, and `python tools/android/device_check.py
+   --label samsung-4gb ...` passed on it (`bench/results/android_m1_samsung-4gb.md`).
+   Switch the tablet to **airplane mode** before filming it.
+8. Have the correction for the 1:55 shot ready on paper. **A Santali speaker on the
    team must write it. Do not invent one.**
 
 ## Shots
@@ -39,8 +49,8 @@ tablet or phone.
 | 2:25–2:45 | Worksheet | Press कार्यपत्रक. Show the PDF: Hindi and Santali headings, the lesson's lines, and the NIPUN Lakshya tag with the Ministry's wording. |
 | 2:45–3:00 | Flashcards | चित्र पत्ते → deck **जोड़ना**. Flip two cards and press 🔊 on one. Point at the badges: word list, review pending. |
 | 3:00–3:35 | Teacher adds a lesson | पाठ → ➕ नया पाठ जोड़िए. Choose कक्षा 1. Paste three prepared lines, e.g. *"आज हम पाँच तक गिनेंगे। चार आम गिनो। यहाँ कितने आम हैं?"* Press ✂️ पंक्तियाँ बनाइए. Tap one label to show it changes. Show the suggested NIPUN goal, tick the confirm box, and press 📘 पाठ बनाइए. Open it in the classroom (कक्षा में खोलिए). |
-| 3:35–3:50 | Optional: a tablet as a screen | **Only if the tablet's microphone was tested over `run_vaanisetu.bat https` before recording.** Show the tablet's browser using the laptop. Caption: **Laptop hub mode: the tablet is a screen and microphone; everything runs on the laptop.** Otherwise skip this shot. |
-| 3:50–4:00 | Close | *"Built so far: offline on the laptop hub, 17 NIPUN-tagged lessons that teachers can extend. Next: the Android app that runs on a 2 GB RAM, Android 9+ tablet."* |
+| 3:35–3:55 | **Android app (work in progress)** | On the Samsung tablet in **airplane mode** (show the airplane icon). Open the app: the lesson list appears. Tap lesson **जोड़ना**, tap line 2 of the lesson, press **अनुवाद**: the Santali for that lesson line appears, with its source badge; press 🔊 to play its recorded audio. Open चित्र पत्ते and flip one card. Then open सेटिंग → सामग्री पैक to show the installed pack. Caption, exactly: **"Android app, work in progress (milestone M1): on this tablet, in airplane mode, lessons, flashcards and the translations and audio of lesson lines come from a content pack prepared on the laptop. Speech recognition, translating new sentences and speaking new text on the tablet are not built yet."** |
+| 3:55–4:05 | Close | *"Built so far: offline on the laptop hub, 17 NIPUN-tagged lessons that teachers can extend, and the first milestone of the Android app. Next: speech, translation and voice on a 2 GB RAM, Android 9+ tablet."* |
 
 The step 3:00 lesson is added to the database. After the recording, you can
 remove it by restoring the backup `demo_reset.py` made (in `data/backups/`),
@@ -53,4 +63,5 @@ or keep it.
 | No sound | Click once on the page (the browser blocks autoplay), then press 🔊. |
 | The mic does nothing | Chrome allows the microphone only on `http://127.0.0.1` or `https://`. Use the laptop's own browser for the take. |
 | A slow first translation | Run `tools/demo_reset.py` again with the server already running. |
-| Green does not appear for a spoken Santali answer | Type ᱗ instead. Speech recognition of Santali has not been measured on real voices yet. |
+| Green does not appear for a spoken Santali answer | Type ᱗ instead. Santali speech recognition was measured only on adult public data (IndicVoices validation split), not on children. |
+| The tablet app shows no lessons | Settings → सामग्री पैक: import the pack again (from a file or the hub). If it still fails, skip the 3:35 segment. |

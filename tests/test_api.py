@@ -400,3 +400,20 @@ def test_curriculum_accepts_a_csv_file(api):
 def test_worksheet_is_a_pdf(api):
     r = api.app.test_client().post("/worksheet", json={"hindi_text": "आज", "santali_text": "ᱛᱮᱦᱮᱸᱡ"})
     assert r.status_code == 200 and r.data[:4] == b"%PDF"
+
+
+def test_audio_from_an_old_cache_entry_is_still_served(api):
+    # A voice clip cached long ago must not make the new reply look old: the
+    # pruner deleted such replies at once (demo_reset.py got a 404, 25 Sep 2026).
+    import os
+    import time
+    client = api.app.test_client()
+    text = "ᱡᱚᱦᱟᱨ ᱜᱩᱨᱩ"
+    first = client.post("/speak", json={"text": text, "lang": "sat"}).get_json()
+    assert client.get(first["audio_url"]).status_code == 200
+    old = time.time() - config.AUDIO_KEEP_SECONDS - 3600
+    for f in config.TTS_CACHE_DIR.glob("*.wav"):
+        os.utime(f, (old, old))
+    second = client.post("/speak", json={"text": text, "lang": "sat"}).get_json()
+    assert second["tts_engine"] == "cache"
+    assert client.get(second["audio_url"]).status_code == 200

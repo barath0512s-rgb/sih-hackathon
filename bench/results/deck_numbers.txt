@@ -185,8 +185,8 @@ Speech recognition time, synthetic clips (median ms; laptop, offline)
 Speech recognition accuracy (public dataset, adult speech; laptop, offline)
   hi: rnnt, trim off                           WER raw 14.1%, normalised 12.9%, CER 4.9%; 1428 ms (n=80, n_distinct=69) [bench/results/asr_decoding_public.jsonl]
   hi: rnnt, trim on                            WER raw 14.3%, normalised 13.1%, CER 4.9%; 1314 ms (n=80, n_distinct=69) [bench/results/asr_decoding_public.jsonl]
-  hi: ctc, trim off                            WER raw 13.6%, normalised 12.5%, CER 4.8%; 516 ms (n=80, n_distinct=69) [bench/results/asr_decoding_public.jsonl]
-  hi: ctc, trim on (in use)                    WER raw 14.3%, normalised 13.1%, CER 4.9%; 485 ms (n=80, n_distinct=69) [bench/results/asr_decoding_public.jsonl]
+  hi: ctc, trim off (in use)                   WER raw 13.6%, normalised 12.5%, CER 4.8%; 516 ms (n=80, n_distinct=69) [bench/results/asr_decoding_public.jsonl]
+  hi: ctc, trim on                             WER raw 14.3%, normalised 13.1%, CER 4.9%; 485 ms (n=80, n_distinct=69) [bench/results/asr_decoding_public.jsonl]
   sat: rnnt, trim off                          WER raw 31.3%, normalised 31.2%, CER 10.4%; 1281 ms (n=80, n_distinct=80) [bench/results/asr_decoding_public.jsonl]
   sat: rnnt, trim on (in use)                  WER raw 31.1%, normalised 31.0%, CER 10.3%; 1144 ms (n=80, n_distinct=80) [bench/results/asr_decoding_public.jsonl]
   sat: ctc, trim off                           WER raw 34.5%, normalised 34.4%, CER 11.6%; 404 ms (n=80, n_distinct=80) [bench/results/asr_decoding_public.jsonl]

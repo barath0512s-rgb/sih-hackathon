@@ -165,7 +165,8 @@ class Api(
         val lang = if (direction == "hi-to-sat") "sat" else "hi"
         val audio = pack?.audioFile(out, lang)
         val t2 = System.nanoTime()
-        val lat = JSONObject().put("asr", 0.0).put("nmt", (t1 - t0) / 1e9).put("tts", (t2 - t1) / 1e9).put("total", (t2 - t0) / 1e9)
+        fun sec(ns: Long) = Math.round(ns / 1e6) / 1000.0         // seconds, 3 decimals, as the hub rounds
+        val lat = JSONObject().put("asr", 0.0).put("nmt", sec(t1 - t0)).put("tts", sec(t2 - t1)).put("total", sec(t2 - t0))
         val rid = UUID.randomUUID().toString().replace("-", "")
         store.logLatency(rid, JSONObject().put("direction", direction).put("input_type", "typed").put("source", source)
             .put("server_ms", (t2 - t0) / 1e6).put("tts_engine", if (audio != null) "pack" else "none"))

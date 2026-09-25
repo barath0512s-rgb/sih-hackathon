@@ -1545,7 +1545,7 @@ const LANG_COL = { hi:0, sat:1, en:2 };
 function stepNote(topic, i){
   const arr = NOTES[topic];
   if (!arr || !arr[i]) return "";
-  return arr[i][LANG_COL[S.lang] ?? 0] || arr[i][0];
+  return arr[i][nz(LANG_COL[S.lang], 0)] || arr[i][0];
 }
 
 /* ───────────────── digits, in the script the teacher is reading ───────────── */
@@ -1557,6 +1557,8 @@ function num(v){
 }
 const p2 = n => num(String(n).padStart(2,"0"));
 const t  = k => (T[S.lang] && T[S.lang][k]) || T.hi[k] || k;
+// The nullish operator, spelled out: Android 9 WebView (Chrome 69) lacks it and optional chaining (tests/test_frontend_offline.py)
+const nz = (a, b) => (a === null || a === undefined) ? b : a;
 
 /* ───────────────── server ───────────────── */
 let DEVICE_ID = "";
@@ -1633,7 +1635,7 @@ const Api = {
                              is_correct:isCorrect, corrected_text:corrected || ""}),
   clientTiming:(rid, totalMs, responseMs, lastMs) =>
       postJSON("/metrics/client", {request_id:rid, client_total_ms:totalMs, response_ms:responseMs,
-                                   client_last_ms: lastMs ?? null}),
+                                   client_last_ms: nz(lastMs, null)}),
   markVoice:(sid, blob, step, lang) => {
     const fd = new FormData();
     fd.append("audio", blob, "answer.webm");
@@ -1901,7 +1903,7 @@ function typeIn(el, text){
   el.textContent = "";
   const chars = [...text];
   let i = 0;
-  (function tick(){ el.textContent += chars[i++] ?? ""; if (i < chars.length) setTimeout(tick, 16); })();
+  (function tick(){ el.textContent += nz(chars[i++], ""); if (i < chars.length) setTimeout(tick, 16); })();
 }
 
 // The big number is what the user waited, measured in this browser: from the
@@ -2044,7 +2046,7 @@ function startVad(stream, onEnd){
       if (!S.autostop) return;
       if ((v.lastLoud !== null && now - v.lastLoud >= need) || now - v.t0 >= MAX_REC_MS){
         clearInterval(v.timer);
-        onEnd(v.lastLoud ?? now);
+        onEnd(nz(v.lastLoud, now));
       }
     }, FRAME_MS);
     return v;
@@ -2148,11 +2150,11 @@ async function mic(dir){
           const report = () => {
             if (Q.first === null) return;
             const client = {seconds: (Q.first - t0) / 1000, played: true, cached: false,
-                            last: (Q.last ?? Q.first) - t0};
+                            last: nz(Q.last, Q.first) - t0};
             timing(r.latency, true, null, client);
             if (S.log[0]) { S.log[0].t = +client.seconds.toFixed(2); rows(); }
-            Api.clientTiming(r.request_id, Q.first - t0, (tResp ?? performance.now()) - t0,
-                             (Q.last ?? Q.first) - t0).catch(() => {});
+            Api.clientTiming(r.request_id, Q.first - t0, nz(tResp, performance.now()) - t0,
+                             nz(Q.last, Q.first) - t0).catch(() => {});
           };
           if (S.autoplay && nChunks && Q.last === null) Q.onAll = report; else report();
           say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
@@ -2212,7 +2214,7 @@ function answersPending(step){
 
 function showVerdict(r){
     const key = SIGNAL[r.signal] || "amber";
-    const graded = S.lesson && S.lesson.plan ? S.lesson.plan[r.step ?? S.step] : null;
+    const graded = S.lesson && S.lesson.plan ? S.lesson.plan[nz(r.step, S.step)] : null;
     $("#verdictReview").textContent = t("ans_pending");
     $("#verdictReview").hidden = !answersPending(graded);
     const box = $("#verdict");
@@ -2475,7 +2477,7 @@ function drawDraft(){
 // A server error in the teacher's language when the page knows its code.
 function impError(e){
   const k = e.code ? "err_" + e.code : null;
-  const text = k && T.hi[k] ? t(k).replace("{n}", num((e.params || {}).n ?? "")) : e.message;
+  const text = k && T.hi[k] ? t(k).replace("{n}", num(nz((e.params || {}).n, ""))) : e.message;
   return t("imp_fail") + " " + text;
 }
 function unconfirm(){ $("#impConfirm").checked = false; $("#impSave").disabled = true; }

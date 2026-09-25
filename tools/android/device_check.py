@@ -7,8 +7,10 @@ Steps: install the APK; copy the pack into the app's private files (run-as, debu
 build) and import it through the app's own verified import; forward a local port
 to the in-app server (127.0.0.1:5000 on the device); run contract/rest_contract.json
 with no engines on the device (so engine cases must answer 503); switch airplane
-mode on and run it again; read the app's PSS with dumpsys meminfo. Writes
-bench/results/android_m1_<label>.md. Every figure names the device and its RAM.
+mode on and run it again; record from the native microphone (MicBridge, debug
+intent) and check audio came out; sample the app's PSS every second throughout
+(dumpsys meminfo) and report the peak. Writes bench/results/android_m1_<label>.md.
+Every figure names the device and its RAM.
 """
 
 import argparse
@@ -17,6 +19,7 @@ import json
 import re
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -55,6 +58,33 @@ def pss_kb(serial):
     return int(m.group(1)) if m else None
 
 
+def renderer_pss_kb(serial):
+    """PSS of the WebView renderer (a separate sandboxed process), from the summary list."""
+    out = adb(serial, "shell", "dumpsys", "meminfo", check=False)
+    vals = [int(m.group(1).replace(",", "")) for m in re.finditer(r"^\s*([\d,]+)K: \S*sandboxed_process\d*", out, re.M)]
+    return max(vals) if vals else 0
+
+
+class PssSampler(threading.Thread):
+    """PSS every second: the app process, the WebView renderer, and their sum; peaks kept."""
+
+    def __init__(self, serial):
+        super().__init__(daemon=True)
+        self.serial, self.peak, self.peak_renderer, self.peak_sum = serial, 0, 0, 0
+        self.samples, self.running = 0, True
+
+    def run(self):
+        while self.running:
+            try:
+                v, w = pss_kb(self.serial) or 0, renderer_pss_kb(self.serial)
+                if v:
+                    self.peak = max(self.peak, v); self.peak_renderer = max(self.peak_renderer, w)
+                    self.peak_sum = max(self.peak_sum, v + w); self.samples += 1
+            except Exception:
+                pass
+            time.sleep(1)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--apk", type=Path, required=True)
@@ -69,7 +99,7 @@ def main():
     mem = adb(s, "shell", "cat", "/proc/meminfo").splitlines()[0]
     kb = int(re.search(r"(\d+)", mem).group(1))
     dev["ram"] = f"{kb / 1024 / 1024:.1f} GB (MemTotal)"
-    dev["cores"] = adb(s, "shell", "nproc")
+    dev["cores"] = str(adb(s, "shell", "cat", "/proc/cpuinfo").count("processor	"))   # no nproc on Android 9
     print(dev)
 
     adb(s, "install", "-r", str(a.apk))
@@ -79,6 +109,7 @@ def main():
     adb(s, "shell", "am", "start", "-W", "-n", f"{PKG}/.MainActivity")
     adb(s, "shell", "run-as", PKG, "cp", "/data/local/tmp/pack.zip", "files/pack.zip")
     adb(s, "forward", f"tcp:{PORT}", "tcp:5000")
+    sampler = PssSampler(s); sampler.start()
     t0 = time.time()
     adb(s, "shell", "am", "start", "-n", f"{PKG}/.MainActivity", "--es", "import_pack", "pack.zip")
     counts = None
@@ -111,7 +142,18 @@ def main():
         send("POST", "/translate/text", {"text": line, "direction": "hi-to-sat"})
         typed.append((time.perf_counter() - t) * 1000)
     typed.sort()
-    pss = pss_kb(s)
+    # Native microphone: 3 s through MicBridge (debug intent), result read back.
+    adb(s, "shell", "run-as", PKG, "rm", "-f", "files/mic_test.json", check=False)
+    adb(s, "shell", "am", "start", "-n", f"{PKG}/.MainActivity", "--ei", "mic_test_ms", "3000")
+    mic = None
+    for _ in range(20):
+        time.sleep(1)
+        out = adb(s, "shell", "run-as", PKG, "cat", "files/mic_test.json", check=False)
+        if out.startswith("{"):
+            mic = json.loads(out); break
+    time.sleep(2)
+    sampler.running = False; sampler.join(5)
+    pss = sampler.peak
 
     n_cases = len(json.loads((ROOT / "contract" / "rest_contract.json").read_text(encoding="utf-8"))["cases"])
     lines = [f"# F1 M1 on {dev['model']} ({a.label})", "",
@@ -126,7 +168,11 @@ def main():
              f"| REST contract, network on | {n_cases - len(online)} of {n_cases} cases pass |",
              f"| REST contract, airplane mode (airplane_mode_on={airplane}) | {n_cases - len(offline)} of {n_cases} cases pass |",
              f"| Typed lesson line from the pack, round trip over adb forward (20 runs) | median {typed[10]:.0f} ms, max {typed[-1]:.0f} ms |",
-             f"| App PSS after the checks (dumpsys meminfo) | {pss / 1024:.0f} MB |" if pss else "| App PSS | NOT MEASURED |"]
+             (f"| Native mic (MicBridge, 3 s, 16 kHz) | {mic['seconds']:.2f} s of audio, RMS {mic['rms']:.4f}, "
+              f"peak {mic['peak']:.3f} |" if mic and mic.get("ok") else f"| Native mic | FAILED: {mic} |"),
+             f"| Peak PSS (dumpsys meminfo every 1 s, {sampler.samples} samples): app process / WebView renderer / "
+             f"sum | {pss / 1024:.0f} / {sampler.peak_renderer / 1024:.0f} / **{sampler.peak_sum / 1024:.0f} MB** |"
+             if pss else "| App PSS | NOT MEASURED |"]
     if online or offline:
         lines += ["", "Failures:", ""] + [f"- online: {f}" for f in online] + [f"- airplane: {f}" for f in offline]
     out = ROOT / "bench" / "results" / f"android_m1_{a.label}.md"

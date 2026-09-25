@@ -11,26 +11,26 @@
    "dataset_revision": "18cd45870ff0a9e65df9b80dbbcc615eec0e4899",
    "direction": "hin_Deva-sat_Olck",
    "n": 1503,
-   "chrf++": 32.0,
-   "bleu": 5.3,
-   "seconds": 219.5,
-   "paper_avg_chrf++": 30.4,
    "n_distinct": 1497,
+   "chrf++": 32.0,
+   "bleu": 5.4,
    "chrf++_distinct": 32.0,
-   "bleu_distinct": 5.3
+   "bleu_distinct": 5.4,
+   "seconds": 252.7,
+   "paper_avg_chrf++": 30.4
   },
   {
    "set": "in22-conv",
    "dataset_revision": "18cd45870ff0a9e65df9b80dbbcc615eec0e4899",
    "direction": "sat_Olck-hin_Deva",
    "n": 1503,
+   "n_distinct": 1500,
    "chrf++": 35.0,
    "bleu": 15.6,
-   "seconds": 172.2,
-   "paper_avg_chrf++": 33.8,
-   "n_distinct": 1500,
    "chrf++_distinct": 35.0,
-   "bleu_distinct": 15.6
+   "bleu_distinct": 15.6,
+   "seconds": 191.8,
+   "paper_avg_chrf++": 33.8
   }
  ]
 }
