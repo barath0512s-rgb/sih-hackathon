@@ -342,4 +342,12 @@
   text: "The Android app measured on a 2 GB RAM, Android 9+ device"
   status: "NOT MEASURED"
   evidence: STATUS.md
+- id: f1_rnnt_export
+  text: "IndicConformer 120M RNN-T exported to sherpa-onnx: fp32 greedy WER Hindi 10.9% (NeMo 10.9%), Santali 33.4% (NeMo 34.5%); 0 empty outputs in every configuration (laptop, WSL2)"
+  status: "TRUE"
+  evidence: bench/results/sherpa_vs_nemo_rnnt.md
+- id: f1_hotwords_broad
+  text: "Hotwords from all lesson answers (score 1.5) change 15 of 80 Hindi and up to 37 of 80 Santali transcripts; Hindi WER 10.8% to 16.5%"
+  status: "TRUE"
+  evidence: bench/results/sherpa_vs_nemo_rnnt.md
 

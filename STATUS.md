@@ -1,4 +1,19 @@
-# STATUS, 25 Sep 2026: Checkpoint F1-M1 (master prompt v2)
+# STATUS, 25 Sep 2026: Checkpoint F1-A2 (master prompt v2)
+
+## F1-A2. Transducer (RNN-T) export for hotwords (branch `android-wp4`)
+
+Laptop (WSL2), 2 threads; public clips (n = 80 per language; Hindi n_distinct = 69). Santali: IndicVoices
+validation split (no public Santali test split); may overlap model-development data. Nothing on a tablet yet.
+
+| Item | Result | Evidence |
+|---|---|---|
+| Export | IndicConformer 120M hi and sat, RNN-T branch, to sherpa-onnx NeMo transducer: encoder 481.5 MB (int8 137.5), decoder 13.8 (3.5), joiner 3.6 (0.9); tokens.txt and bpe.vocab (for hotwords). Multisoftmax as the fork decodes it (read from nemo-v2's source): per-language joiner layer (257 outputs), blank = local index 256, local token ids fed back into the shared embedding. The fork's joiner could not go through NeMo's exporter (a `language_ids` input); exported through a wrapper of the same computation | `tools/export/indicconformer_sherpa_export_rnnt.py` |
+| Accuracy vs NeMo RNN-T (normalised WER vs reference) | fp32 greedy: Hindi 10.9% (NeMo 10.9%), Santali 33.4% (NeMo 34.5%); same text as NeMo on 59 / 44 of 80. int8 greedy: 11.0% / 35.8% | `bench/results/sherpa_vs_nemo_rnnt.md` |
+| Issue #3267 (empty / hallucinated output with modified beam search) | **Not reproduced on our RNN-T models:** 0 empty outputs in every configuration (greedy, beam, beam+hotwords; fp32 and int8). Hallucinated (WER ≥ 0.5 against NeMo where NeMo was < 0.5 against the reference), without hotwords: 0-2 of 80 | same |
+| Hotwords, unrelated to the clip (all lesson answers in that language, score 1.5) | Changes 15 of 80 Hindi and 34-37 of 80 Santali outputs; WER vs reference rises about 3-6 points (Hindi fp32 beam 10.8% → 16.5%, Santali 33.2% → 36.2%); hallucinated 2-7 of 80. Biasing with a broad list harms free speech: F4 must bias only an assessment step, with that step's answers, and must pass the false-accept test (STATUS PF3) | same |
+| 120M RNN-T vs the app's 600M | Santali NeMo RNN-T 120M 34.5% vs 600M RNN-T 31.0% (trim on); Hindi 10.9% vs 13.1% | `asr_decoding_public.md` |
+
+---
 
 ## F1-M1. App shell (branch `android-wp4`)
 

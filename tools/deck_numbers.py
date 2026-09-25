@@ -267,6 +267,14 @@ def f1_phase_a():
             out(f"ASR 120M {m.group(1)} sherpa-onnx {m.group(2)}",
                 f"WER {m.group(6)} (NeMo {m.group(8)}); same as NeMo {m.group(4)}; {m.group(9)} ms; {m.group(10)} MB",
                 f"bench/results/{sv.name}")
+    rn = RESULTS / "sherpa_vs_nemo_rnnt.md"
+    if rn.exists():
+        for m in re.finditer(r"^\| (hi|sat) \| (int8|fp32) \| ([\w+]+) \| (\d+) \| (\d+) \| (\d+/\d+) \| ([\d.]+%) \| "
+                             r"([\d.]+%) \| ([\d.]+%) \| (\d+) \| (\d+) \| (\d*) \| (\d+) \|", rn.read_text(encoding="utf-8"), re.M):
+            out(f"ASR 120M {m.group(1)} RNN-T sherpa {m.group(2)} {m.group(3)}",
+                f"WER {m.group(8)} (NeMo {m.group(9)}); empty {m.group(10)}, hallucinated {m.group(11)}"
+                + (f", changed by hotwords {m.group(12)}" if m.group(12) else "")
+                + f"; {m.group(13)} ms (n={m.group(4)}, n_distinct={m.group(5)})", f"bench/results/{rn.name}")
     for g in gold:
         t = g.read_text(encoding="utf-8")
         same = re.search(r"Identical token IDs \| (\d+ of \d+)", t)
