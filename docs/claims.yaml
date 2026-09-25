@@ -35,8 +35,8 @@
   status: "TRUE"
   evidence: docs/sources.md#nipun
 - id: google_translate_santali
-  text: "Google Translate supports Santali"
-  status: "NOT MEASURED"
+  text: "Google Translate (consumer product) added Santali in June 2024; the Cloud Translation API does not list it; script not specified"
+  status: "TRUE"
   evidence: docs/sources.md#google-translate-santali
 
 # ── Speed (laptop, offline) ─────────────────────────────────────────────────

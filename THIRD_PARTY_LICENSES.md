@@ -53,6 +53,13 @@ GPL dependency. This change has not been made yet.
 These run tests and evaluations on developer machines and in CI. They are not
 part of the application and are never shipped.
 
+The two AGPL tools (aksharamukha and pymupdf) were approved by the team on
+25 Sep 2026 for dev and test use only. They are pinned only in
+`requirements-dev.txt`; CI installs those two pins from there.
+`tests/test_agpl_isolation.py` checks three things: that neither is listed in
+`requirements.txt` or `requirements-ci.txt`, that no app source file imports
+them, and that loading the app's modules leaves neither in memory.
+
 | Package | Version | Licence |
 |---|---|---|
 | aksharamukha | 2.3 | **GNU AGPL 3.0** (transliteration cross-check in tests) |

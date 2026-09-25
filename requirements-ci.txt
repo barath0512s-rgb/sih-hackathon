@@ -1,10 +1,10 @@
 # The tests that need no model weights (GitHub Actions). The model tests
 # (tests/test_api.py, tests/test_offline.py) skip themselves without models.
+# The AGPL test tools are pinned in requirements-dev.txt only; the workflow
+# installs them from there (see .github/workflows/tests.yml).
 pytest==8.4.2
 reportlab==5.0.1
-pymupdf==1.28.2
 cryptography==50.0.1
 numpy==1.26.4
 soundfile==0.14.0
-aksharamukha==2.3
 PyYAML==6.0.3

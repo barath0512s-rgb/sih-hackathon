@@ -48,17 +48,24 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 - p. 18: "…accounting for around 51.2% of students, indicating that a sizeable portion of the student population possesses a very less or no understanding of Hindi."
 - The report gives both 36.1% and 51.2%; we quote both.
 
-### <a name="google-translate-santali"></a>Is Santali in Google Translate? (correction)
-- The team's audit said Google Translate added Santali in June 2024. **We could
-  not confirm this.**
-- https://blog.google/products/translate/google-translate-new-languages-2024/
-  (27 June 2024, accessed 2026-09-25) does not mention Santali.
-- https://docs.cloud.google.com/translate/docs/languages ("Last updated
-  2026-09-18 UTC", accessed 2026-09-25) does not list Santali. The page lists
-  Maithili, Dogri, Bhojpuri and Sanskrit, so the search worked.
-- **Status: NOT VERIFIED** for the consumer Google Translate app; absent from the
-  Cloud Translation list. An earlier chat message and the pushed commit message
-  of `6a03f6a` said the opposite; that was wrong.
+### <a name="google-translate-santali"></a>Santali in Google Translate
+- **Google Translate (the consumer product) added Santali in June 2024. TRUE.**
+- Google India blog, 27 June 2024,
+  https://blog.google/intl/en-in/google-translate-new-languages-2024/ (accessed
+  2026-09-25): "The list includes 7 new Indian languages - Awadhi, Bodo, Khasi,
+  Kokborok, Marwadi, Santali, and Tulu."
+- Google Translate Help, "What's new in Google Translate: More than 100 new
+  languages", https://support.google.com/translate/answer/15139004 (accessed
+  2026-09-25): "Santali" is in the list of new languages (between "Sango" and
+  "Seychellois Creole").
+- **Script: not specified** by either page.
+- The **Cloud Translation API** is a different product. Its language list,
+  https://docs.cloud.google.com/translate/docs/languages ("Last updated
+  2026-09-18 UTC", accessed 2026-09-25), does **not** list Santali.
+- Correction history: on 25 Sep we first marked this claim NOT VERIFIED,
+  because we had checked only the global blog post (which does not name
+  Santali) and the Cloud API list. The India blog and the Help page, found by
+  the team, confirm it.
 
 ## Models
 
