@@ -115,17 +115,25 @@
   status: "TRUE"
   evidence: bench/results/deck_numbers.txt
 - id: asr_wer_public_sat
-  text: "Santali speech-recognition WER/CER on IndicVoices (public dataset, adult speech)"
-  status: "NOT MEASURED"
-  evidence: docs/sources.md#indicvoices
+  text: "Santali speech recognition on IndicVoices (public dataset, adult speech, n=80): RNN-T (in use) WER 31.3%, CER 10.6%; CTC WER 34.5%, CER 11.9%"
+  status: "TRUE"
+  evidence: bench/results/asr_decoding_public.md
 - id: asr_child_speech
   text: "Speech recognition on children's speech"
   status: "NOT MEASURED"
   evidence: STATUS.md
 - id: mt_chrf
-  text: "chrF++ hin↔sat on IN22-Gen, IN22-Conv, FLORES-200"
-  status: "NOT MEASURED"
-  evidence: docs/sources.md#in22
+  text: "chrF++ hin→sat / sat→hin (the model alone, ONNX fp32): IN22-Gen 31.3 / 37.6, IN22-Conv 32.2 / 35.1, FLORES-200 devtest 27.4 / 34.1"
+  status: "TRUE"
+  evidence: eval/results/benchmarks.md
+- id: mt_int8_in22conv
+  text: "ONNX int8 translation on IN22-Conv: chrF++ 32.0 / 35.0 (hin→sat / sat→hin), 0.2 / 0.1 below fp32"
+  status: "TRUE"
+  evidence: eval/results/benchmarks_onnx-int8.md
+- id: v2v_public_both
+  text: "Voice to voice, public adult speech, laptop, offline, upload to reply audio: hi→sat median 1.95 s, p90 2.24 s (n=79, FLEURS); sat→hi with RNN-T median 2.19 s, p90 2.61 s, 2 of 79 over 3 s (IndicVoices)"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
 - id: mt_paper_reference
   text: "IndicTrans2 paper, IT2-Dist-M2M, chrF++ averaged into/from Santali: FLORES 26.1/31.5, IN22-Gen 30.0/35.8, IN22-Conv 30.4/33.8"
   status: "TRUE"
@@ -249,13 +257,17 @@
 
 # ── Phase L: latency on realistic speech (laptop, offline) ─────────────────
 - id: phase_l_targets
-  text: "From the end of speech, public FLEURS Hindi: full-time p90 2.48 s for sentences of up to 17 words; time to first audio p90 2.32 s for all sentences (clause streaming); lesson lines full p90 1.24 s"
+  text: "From the end of speech, public FLEURS Hindi, two runs: full-time p90 for sentences of up to 17 words 2.48 s (run 1) and 3.02 s (run 2); time to first audio p90 for all sentences 2.32 / 2.30 s (clause streaming); lesson lines full p90 1.24 / 1.21 s"
   status: "TRUE"
   evidence: bench/results/deck_numbers.txt
 - id: phase_l_before_after
-  text: "Before / after Phase L: full median 3.15 / 2.15 s, p90 4.07 / 3.11 s, over 3 s 51 / 12 of 80; last audio 3.35 / 3.17 s median, 4.86 / 4.42 s p90; lesson p90 1.63 / 1.24 s; first audio p90 2.27 s before"
+  text: "Before / after Phase L (run 1): full median 3.15 / 2.15 s, p90 4.07 / 3.11 s, over 3 s 51 / 12 of 80; last audio 3.35 / 3.17 s median, 4.86 / 4.42 s p90; lesson p90 1.63 / 1.24 s; first audio p90 2.27 s before"
   status: "TRUE"
   evidence: bench/results/deck_numbers.txt
+- id: chunk_quality_flores
+  text: "Clause streaming vs whole sentence, FLORES-200 devtest sentences of 18+ words (n=814), Hindi to Santali: chrF++ 27.3 vs 27.5, BLEU 2.3 vs 3.4"
+  status: "TRUE"
+  evidence: eval/results/chunk_quality.md
 - id: phase_l_engines
   text: "Translation engines (median ms, identical outputs of 110): PyTorch 14 threads 1450 (110), 4 threads 968, PyTorch int8 901 (16), ONNX fp32 504 (110), ONNX int8 228 (43)"
   status: "TRUE"

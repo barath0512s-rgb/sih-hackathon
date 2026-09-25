@@ -100,6 +100,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--sets", nargs="+", choices=sorted(SETS), default=sorted(SETS))
     ap.add_argument("--limit", type=int, help="first N sentences only (a quick check, not a result)")
+    ap.add_argument("--engine", choices=("torch", "onnx-fp32", "onnx-int8"),
+                    help="translation engine (default: the app's, config.NMT_BACKEND); results get a suffix")
     a = ap.parse_args()
 
     import sacrebleu
@@ -126,7 +128,12 @@ def main():
 
     os.environ["HF_HUB_OFFLINE"] = "1"            # the model must not reach the Hub
     import pipeline
+    if a.engine:
+        pipeline.config.NMT_BACKEND = a.engine
     pl = pipeline.VaaniSetuPipeline()
+    if a.engine and pl.nmt_backend != a.engine:
+        sys.exit(f"Asked for {a.engine}, got {pl.nmt_backend} (exported files missing?)")
+    tag = ("_limit" if a.limit else "") + (f"_{a.engine}" if a.engine else "")
     HYPS.mkdir(parents=True, exist_ok=True)
     RESULTS.mkdir(parents=True, exist_ok=True)
 
@@ -146,7 +153,7 @@ def main():
             refs = [p[tgt_i] for p in pairs]
             chrf = sacrebleu.corpus_chrf(hyps, [refs], word_order=2).score
             bleu = sacrebleu.corpus_bleu(hyps, [refs]).score
-            (HYPS / f"hyp_{name}_{direction}.txt").write_text("\n".join(hyps) + "\n", encoding="utf-8")
+            (HYPS / f"hyp_{name}_{direction}{tag}.txt").write_text("\n".join(hyps) + "\n", encoding="utf-8")
             paper = PAPER[name][0 if tl == "sat_Olck" else 1]
             out["results"].append({"set": name, "dataset_revision": rev, "direction": direction,
                                    "n": len(pairs), "chrf++": round(chrf, 1), "bleu": round(bleu, 1),
@@ -154,7 +161,6 @@ def main():
             print(f"{name:10} {direction}  n={len(pairs)}  chrF++ {chrf:.1f}  BLEU {bleu:.1f}  "
                   f"(paper, all-source average: {paper})  {secs:.0f} s")
 
-    tag = "_limit" if a.limit else ""
     (RESULTS / f"benchmarks{tag}.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
     lines = ["# Translation benchmark: Hindi <-> Santali", "",
              f"- Date: {out['date']}; model {out['model']} @ {out['model_revision'][:10]}, {out['decoding']};",

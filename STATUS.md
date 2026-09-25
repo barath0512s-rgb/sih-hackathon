@@ -1,4 +1,28 @@
-# STATUS, 25 Sep 2026: Checkpoint P (master prompt v2)
+# STATUS, 25 Sep 2026: Checkpoint P-finish (master prompt v2)
+
+## PF. Phase P finished: Santali speech, translation benchmarks (branch `phase-p-finish`)
+
+Hugging Face access arrived for all seven gated repos. Laptop, offline; public
+datasets, adult speech; child speech NOT MEASURED. Numbers: `tools/deck_numbers.py`.
+
+| Item | Result | Evidence |
+|---|---|---|
+| Santali clips | 80 IndicVoices valid clips (CC BY 4.0, 62 speakers, extempore and conversation, Ol Chiki transcripts), seeded like FLEURS. `fetch_public_clips.py` fixed for this dataset (audio column, clip id, age group) | `bench/clips/public/manifest.json` |
+| ASR per language | Hindi: **CTC** (WER 11.1% vs 11.3%, 499 vs 1260 ms). Santali: **RNN-T** (WER 31.3% vs 34.5%, CER 10.6% vs 11.9%; 1154 vs 424 ms). `config.ASR_DECODING` changed to `sat: rnnt` | `bench/results/asr_decoding_public.md` |
+| Voice to voice, both directions | Upload to reply audio: hi→sat median 1.95 s, p90 2.24 s, 0 of 79 over 3 s. sat→hi with RNN-T median 2.19 s, p90 2.61 s, **2 of 79 over 3 s** (max 3.25 s); with CTC 1.68 / 1.94 s, 0 of 80 | `…_public.md`, `…_public_sat_rnnt.md` |
+| Translation, chrF++ / BLEU | hin→sat / sat→hin: IN22-Gen 31.3 / 37.6, IN22-Conv 32.2 / 35.1, FLORES devtest 27.4 / 34.1 (chrF++). All at or above the paper's all-source averages (a plausibility range only) | `eval/results/benchmarks.md` |
+| Int8 translation (L1 rule) | IN22-Conv chrF++ 32.0 / 35.0: drops 0.2 / 0.1, within 0.5. **Kept for the tablet (F1)**; the laptop stays on fp32 (identical to PyTorch, targets already met; int8 has run-on outputs on long sentences) | `eval/results/benchmarks_onnx-int8.md` |
+| Chunking quality | FLORES devtest, 814 sentences of 18+ words: chunked chrF++ 27.3 vs whole 27.5 (BLEU 2.3 vs 3.4). Closes the L2 "NOT MEASURED" | `eval/results/chunk_quality.md` |
+| Phase L re-run | Same settings, second run: ≤ 17-word full p90 **3.02 s** (run 1: 2.48 s); first audio p90 2.30 s. The slow clips were slow in every step at once (ASR 1.7-2.4 s vs 0.7 s median): machine noise. **The ≤ 17-word target is borderline on this laptop**, not reliably met | `latency_steps_app.md`, `latency_steps_app_run1.md` |
+| Unexplained earlier | The Phase L step bench (from end of speech) gives a higher hi→sat p90 (3.11 s) than the upload-to-audio bench (2.24 s) on the same clips. The two measure different paths (step-by-step calls vs one request) and ran at different times; not explained yet | both files above |
+| deck_numbers fix | Sentence-length bins were pooling Hindi and Santali clips; now per direction | `tools/deck_numbers.py` |
+| F1 Phase A prepared (not run) | Export notebook for the 120M hi/sat IndicConformer to sherpa-onnx CTC int8 (needs Python 3.10 + AI4Bharat NeMo `nemo-v2`: Colab or WSL2); stops rather than guesses if the model has per-language output masks. Comparison script sherpa vs NeMo | `tools/export/indicconformer_sherpa_export.{py,ipynb}`, `compare_nemo_sherpa.py` |
+
+**Decisions for you:** (1) Santali on RNN-T (more accurate, 2 of 79 replies
+over 3 s) or CTC (0 over 3 s)? I chose RNN-T. (2) Int8 translation for the
+laptop too, or tablet only? I chose tablet only.
+
+---
 
 ## L. Phase L: latency on realistic speech (branch `latency`)
 

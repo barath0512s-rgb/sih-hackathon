@@ -57,7 +57,9 @@ def latency(label, csv_path, md_path):
     rows = list(csv.DictReader(csv_path.open(encoding="utf-8")))
     warm = [r for r in rows if r["cold"] == "False"]
     src = f"bench/results/{csv_path.name}"
-    kind = ("synthetic clips, BEFORE the latency work (baseline)" if "baseline" in label else
+    kind = ("public dataset, adult speech, BEFORE Phase L" if "before_phase_l" in label else
+            "public dataset, adult speech, Santali speech recognition with RNN-T" if "sat_rnnt" in label else
+            "synthetic clips, BEFORE the latency work (baseline)" if "baseline" in label else
             "synthetic clips" if "synthetic" in label else
             "public dataset, adult speech" if "public" in label else
             "real clips" if "real" in label else label)
@@ -78,17 +80,22 @@ def latency(label, csv_path, md_path):
         out("server boot, all models loaded", f"{m.group(1)} s" if m else NM, f"bench/results/{md_path.name}")
     if "synthetic" in label:
         print("  (Synthetic clips are Piper reading the lines. Their CER is NOT an ASR accuracy figure.)")
-    # Time grows with sentence length, so say how long the sentences were.
-    words = [len(r["reference"].split()) for r in warm]
-    if words:
-        out("sentence length, median words", f"{statistics.median(words):g}", src)
-    if "public" in label:
+    # Time grows with sentence length, so say how long the sentences were (per
+    # direction: Hindi and Santali words are not comparable).
+    for d in ("hi-to-sat", "sat-to-hi"):
+        dw = [r for r in warm if r["direction"] == d]
+        if not dw:
+            continue
+        out(f"{d}: sentence length, median words", f"{statistics.median(len(r['reference'].split()) for r in dw):g}",
+            src)
+        if "public" not in label:
+            continue
         for lo, hi in ((0, 12), (12, 18), (18, 24), (24, 999)):
-            b = [r for r in warm if lo <= len(r["reference"].split()) < hi]
+            b = [r for r in dw if lo <= len(r["reference"].split()) < hi]
             if b:
                 ms = [float(r["pipeline_ms"]) for r in b]
                 span = f"{lo}-{hi - 1}" if hi < 999 else f"{lo}+"
-                out(f"  {span} words: median / over 3 s",
+                out(f"  {d} {span} words: median / over 3 s",
                     f"{sec(statistics.median(ms) / 1000)} s / {sum(m > 3000 for m in ms)} of {len(b)}", src)
 
 

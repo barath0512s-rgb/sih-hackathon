@@ -1,16 +1,46 @@
 VaaniSetu: deck numbers. Values come from files in this repo; measurements are 'laptop, offline'.
 
 Voice to voice, public dataset, adult speech (run 'public', laptop, offline; excludes Wi-Fi)
-  hi-to-sat median / p90 / max                 2.95 / 3.69 / 5.68 s (n=79)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-  requests over 3 s                            38 of 79                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-  answered by the verified sentence glossary   0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-  speech (TTS) failures                        0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-  server boot, all models loaded               22.3 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.md]
-  sentence length, median words                17                           [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-    0-11 words: median / over 3 s              2.67 s / 0 of 4              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-    12-17 words: median / over 3 s             2.76 s / 10 of 36            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-    18-23 words: median / over 3 s             3.22 s / 22 of 32            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
-    24+ words: median / over 3 s               3.48 s / 6 of 7              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  hi-to-sat median / p90 / max                 1.95 / 2.24 / 2.74 s (n=79)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  sat-to-hi median / p90 / max                 1.68 / 1.94 / 2.25 s (n=80)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  requests over 3 s                            0 of 159                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  answered by the verified sentence glossary   0 of 159                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  speech (TTS) failures                        0 of 159                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  server boot, all models loaded               20.2 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.md]
+  hi-to-sat: sentence length, median words     17                           [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    hi-to-sat 0-11 words: median / over 3 s    1.67 s / 0 of 4              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    hi-to-sat 12-17 words: median / over 3 s   1.86 s / 0 of 36             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    hi-to-sat 18-23 words: median / over 3 s   2.06 s / 0 of 32             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    hi-to-sat 24+ words: median / over 3 s     2.12 s / 0 of 7              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+  sat-to-hi: sentence length, median words     10                           [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    sat-to-hi 0-11 words: median / over 3 s    1.58 s / 0 of 48             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    sat-to-hi 12-17 words: median / over 3 s   1.79 s / 0 of 19             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    sat-to-hi 18-23 words: median / over 3 s   1.88 s / 0 of 10             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+    sat-to-hi 24+ words: median / over 3 s     2.11 s / 0 of 3              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]
+
+Voice to voice, public dataset, adult speech, BEFORE Phase L (run 'public_before_phase_l', laptop, offline; excludes Wi-Fi)
+  hi-to-sat median / p90 / max                 2.95 / 3.69 / 5.68 s (n=79)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+  requests over 3 s                            38 of 79                     [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+  answered by the verified sentence glossary   0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+  speech (TTS) failures                        0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+  server boot, all models loaded               22.3 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.md]
+  hi-to-sat: sentence length, median words     17                           [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+    hi-to-sat 0-11 words: median / over 3 s    2.67 s / 0 of 4              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+    hi-to-sat 12-17 words: median / over 3 s   2.76 s / 10 of 36            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+    hi-to-sat 18-23 words: median / over 3 s   3.22 s / 22 of 32            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+    hi-to-sat 24+ words: median / over 3 s     3.48 s / 6 of 7              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_before_phase_l.csv]
+
+Voice to voice, public dataset, adult speech, Santali speech recognition with RNN-T (run 'public_sat_rnnt', laptop, offline; excludes Wi-Fi)
+  sat-to-hi median / p90 / max                 2.19 / 2.61 / 3.25 s (n=79)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+  requests over 3 s                            2 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+  answered by the verified sentence glossary   0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+  speech (TTS) failures                        0 of 79                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+  server boot, all models loaded               19.0 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.md]
+  sat-to-hi: sentence length, median words     10                           [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+    sat-to-hi 0-11 words: median / over 3 s    2.04 s / 1 of 47             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+    sat-to-hi 12-17 words: median / over 3 s   2.30 s / 0 of 19             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+    sat-to-hi 18-23 words: median / over 3 s   2.49 s / 0 of 10             [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
+    sat-to-hi 24+ words: median / over 3 s     2.70 s / 1 of 3              [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public_sat_rnnt.csv]
 
 Voice to voice, synthetic clips (run 'synthetic-after', laptop, offline; excludes Wi-Fi)
   hi-to-sat median / p90 / max                 1.51 / 1.68 / 2.08 s (n=29)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
@@ -20,7 +50,8 @@ Voice to voice, synthetic clips (run 'synthetic-after', laptop, offline; exclude
   speech (TTS) failures                        0 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
   server boot, all models loaded               20.4 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.md]
   (Synthetic clips are Piper reading the lines. Their CER is NOT an ASR accuracy figure.)
-  sentence length, median words                6                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  hi-to-sat: sentence length, median words     6                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
+  sat-to-hi: sentence length, median words     7                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-after.csv]
 
 Voice to voice, synthetic clips, BEFORE the latency work (baseline) (run 'synthetic-baseline', laptop, offline; excludes Wi-Fi)
   hi-to-sat median / p90 / max                 2.19 / 2.69 / 3.06 s (n=29)  [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
@@ -30,7 +61,8 @@ Voice to voice, synthetic clips, BEFORE the latency work (baseline) (run 'synthe
   speech (TTS) failures                        0 of 59                      [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
   server boot, all models loaded               21.8 s                       [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.md]
   (Synthetic clips are Piper reading the lines. Their CER is NOT an ASR accuracy figure.)
-  sentence length, median words                6                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  hi-to-sat: sentence length, median words     6                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
+  sat-to-hi: sentence length, median words     7                            [bench/results/Dell-Inc-Dell-G15-5520_2026-09-24_synthetic-baseline.csv]
 
 Voice to voice, real teacher/child recordings: NOT MEASURED (bench/clips/real/ has no run yet)
 
@@ -59,13 +91,20 @@ Content
 
 Phase L: time from the end of speech, by step (laptop, offline; in-process: upload and decoding excluded)
   full = whole utterance translated and voiced; first / last = clause streaming, first / last chunk's audio ready
-  app (the app now): public full median / p90  2.15 / 3.11 s (n=80)         [bench/results/latency_steps_app.csv]
-  app: public full over 3 s                    12 of 80                     [bench/results/latency_steps_app.csv]
-  app: public ≤17 words, full p90              2.48 s (n=38)                [bench/results/latency_steps_app.csv]
-  app: public first audio p90                  2.32 s                       [bench/results/latency_steps_app.csv]
-  app: public last audio median / p90          3.17 / 4.42 s                [bench/results/latency_steps_app.csv]
+  app (the app now): public full median / p90  1.97 / 3.11 s (n=80)         [bench/results/latency_steps_app.csv]
+  app: public full over 3 s                    11 of 80                     [bench/results/latency_steps_app.csv]
+  app: public ≤17 words, full p90              3.02 s (n=38)                [bench/results/latency_steps_app.csv]
+  app: public first audio p90                  2.30 s                       [bench/results/latency_steps_app.csv]
+  app: public last audio median / p90          2.82 / 4.32 s                [bench/results/latency_steps_app.csv]
   app: chunked vs whole agreement (chrF++, median) 69.0                         [bench/results/latency_steps_app.csv]
-  app: lesson lines full median / p90          1.12 / 1.24 s (n=30)         [bench/results/latency_steps_app.csv]
+  app: lesson lines full median / p90          1.13 / 1.21 s (n=30)         [bench/results/latency_steps_app.csv]
+  app_run1: public full median / p90           2.15 / 3.11 s (n=80)         [bench/results/latency_steps_app_run1.csv]
+  app_run1: public full over 3 s               12 of 80                     [bench/results/latency_steps_app_run1.csv]
+  app_run1: public ≤17 words, full p90         2.48 s (n=38)                [bench/results/latency_steps_app_run1.csv]
+  app_run1: public first audio p90             2.32 s                       [bench/results/latency_steps_app_run1.csv]
+  app_run1: public last audio median / p90     3.17 / 4.42 s                [bench/results/latency_steps_app_run1.csv]
+  app_run1: chunked vs whole agreement (chrF++, median) 69.0                         [bench/results/latency_steps_app_run1.csv]
+  app_run1: lesson lines full median / p90     1.12 / 1.24 s (n=30)         [bench/results/latency_steps_app_run1.csv]
   onnx-int8-t6: public full median / p90       1.99 / 3.10 s (n=80)         [bench/results/latency_steps_onnx-int8-t6.csv]
   onnx-int8-t6: public full over 3 s           9 of 80                      [bench/results/latency_steps_onnx-int8-t6.csv]
   onnx-int8-t6: public ≤17 words, full p90     2.29 s (n=38)                [bench/results/latency_steps_onnx-int8-t6.csv]
@@ -97,11 +136,17 @@ Speech recognition time, synthetic clips (median ms; laptop, offline)
 Speech recognition accuracy (public dataset, adult speech; laptop, offline)
   hi: ctc (in use) WER / CER                   11.1% / 4.5% (n=80)          [bench/results/asr_decoding_public.jsonl]
   hi: rnnt WER / CER                           11.3% / 4.5% (n=80)          [bench/results/asr_decoding_public.jsonl]
-  sat: WER / CER                               NOT MEASURED                 [no clips for this language yet]
+  sat: ctc WER / CER                           34.5% / 11.9% (n=80)         [bench/results/asr_decoding_public.jsonl]
+  sat: rnnt (in use) WER / CER                 31.3% / 10.6% (n=80)         [bench/results/asr_decoding_public.jsonl]
   Child speech: NOT MEASURED.
 
 Translation quality (the model alone; laptop, offline)
-  chrF++ hin<->sat on IN22-Gen, IN22-Conv, FLORES NOT MEASURED                 [test sets are gated; run eval/eval_benchmarks.py after access]
+  flores hin_Deva-sat_Olck chrF++ / BLEU       27.4 / 3.3 (n=1012)          [eval/results/benchmarks.json]
+  flores sat_Olck-hin_Deva chrF++ / BLEU       34.1 / 12.6 (n=1012)         [eval/results/benchmarks.json]
+  in22-conv hin_Deva-sat_Olck chrF++ / BLEU    32.2 / 5.5 (n=1503)          [eval/results/benchmarks.json]
+  in22-conv sat_Olck-hin_Deva chrF++ / BLEU    35.1 / 15.3 (n=1503)         [eval/results/benchmarks.json]
+  in22-gen hin_Deva-sat_Olck chrF++ / BLEU     31.3 / 4.2 (n=1024)          [eval/results/benchmarks.json]
+  in22-gen sat_Olck-hin_Deva chrF++ / BLEU     37.6 / 15.8 (n=1024)         [eval/results/benchmarks.json]
 
   ASR WER on child speech / classroom noise    NOT MEASURED                 [no child or noisy test set]
   chrF++ on the 33-row training CSV            not used                     [it is training data, never a test set]

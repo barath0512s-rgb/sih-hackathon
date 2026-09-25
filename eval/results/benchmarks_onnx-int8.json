@@ -1,0 +1,30 @@
+{
+ "date": "2026-09-25",
+ "model": "ai4bharat/indictrans2-indic-indic-dist-320M",
+ "engine": "onnx-int8",
+ "model_revision": "ffb7582b6d43791f1fb26b2153fc065f2e9ea575",
+ "decoding": "greedy (beams=1)",
+ "limit": null,
+ "results": [
+  {
+   "set": "in22-conv",
+   "dataset_revision": "18cd45870ff0a9e65df9b80dbbcc615eec0e4899",
+   "direction": "hin_Deva-sat_Olck",
+   "n": 1503,
+   "chrf++": 32.0,
+   "bleu": 5.3,
+   "seconds": 219.5,
+   "paper_avg_chrf++": 30.4
+  },
+  {
+   "set": "in22-conv",
+   "dataset_revision": "18cd45870ff0a9e65df9b80dbbcc615eec0e4899",
+   "direction": "sat_Olck-hin_Deva",
+   "n": 1503,
+   "chrf++": 35.0,
+   "bleu": 15.6,
+   "seconds": 172.2,
+   "paper_avg_chrf++": 33.8
+  }
+ ]
+}

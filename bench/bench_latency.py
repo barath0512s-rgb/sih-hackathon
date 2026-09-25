@@ -76,11 +76,20 @@ def main():
     ap.add_argument("--clips", default=str(ROOT / "bench/clips/synthetic/manifest.json"))
     ap.add_argument("--label", default="synthetic")
     ap.add_argument("--limit", type=int, default=0, help="clips per language (0 = all)")
+    ap.add_argument("--lang", choices=("hi", "sat"), help="one source language only")
+    ap.add_argument("--asr-decoding", action="append", default=[], metavar="LANG=ctc|rnnt",
+                    help="override config.ASR_DECODING for this run (e.g. sat=rnnt)")
     a = ap.parse_args()
+    for kv in a.asr_decoding:
+        lang, mode = kv.split("=")
+        assert lang in config.ASR_DECODING and mode in ("ctc", "rnnt"), kv
+        config.ASR_DECODING[lang] = mode
 
     manifest = json.loads(Path(a.clips).read_text(encoding="utf-8"))
     if a.limit:
         manifest = [c for lang in ("hi", "sat") for c in [m for m in manifest if m["lang"] == lang][:a.limit]]
+    if a.lang:
+        manifest = [c for c in manifest if c["lang"] == a.lang]
     synthetic = any("synthetic" in c.get("kind", "") for c in manifest)
 
     # Throw-away state: nothing served from an earlier run.
@@ -140,6 +149,8 @@ def main():
              f"- Clips: {len(rows)} ({a.clips})",
              f"- Models: ASR {config.ASR_REVISION[:10]}, NMT {config.NMT_REVISION[:10]} "
              f"(beams={config.NMT_NUM_BEAMS}), TTS {app.pl._voice_model('hindi')}",
+             f"- ASR decoding: {config.ASR_DECODING}; trim silence: {config.ASR_TRIM_SILENCE}; "
+             f"NMT engine: {app.pl.nmt_backend}",
              f"- Server boot (all models loaded): {boot_s:.1f} s",
              f"- Cold request (first after boot, {rows[0]['lang']}): {rows[0]['pipeline_ms']:.0f} ms",
              "- Caches empty at start; database throw-away.",

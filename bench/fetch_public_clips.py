@@ -99,6 +99,7 @@ def fetch(name):
         return None
     table = pq.read_table(path)
     text_col, id_col = _columns(table.schema.names, src)
+    audio_col = "audio" if "audio" in table.schema.names else "audio_filepath"   # IndicVoices
     rows = table.to_pylist()
     # Durations first (cheap for FLEURS: num_samples; else decode).
     cand = []
@@ -107,7 +108,7 @@ def fetch(name):
         if secs is None:
             secs = r.get("duration")
         if secs is None:
-            secs = _decode(r["audio"])[1]
+            secs = _decode(r[audio_col])[1]
         if MIN_S <= secs <= MAX_S and (r.get(text_col) or "").strip():
             cand.append(i)
     random.Random(SEED).shuffle(cand)
@@ -117,8 +118,11 @@ def fetch(name):
     entries = []
     for i in picked:
         r = rows[i]
-        audio, secs = _decode(r["audio"])
-        rid = str(r.get(id_col, i)) if id_col else str(i)
+        audio, secs = _decode(r[audio_col])
+        rid = r.get(id_col, i) if id_col else i
+        if isinstance(rid, dict):                 # IndicVoices: audio_filepath is {bytes, path}
+            rid = rid.get("path") or i
+        rid = str(rid)
         safe = "".join(ch if ch.isalnum() else "_" for ch in Path(rid).stem)[:40]
         f = out_dir / f"{name}_{i:05d}_{safe}.wav"
         sf.write(f, audio, SR, subtype="PCM_16")
@@ -130,7 +134,7 @@ def fetch(name):
                        "split": src["split"], "row": i, "id": rid},
             "license": src["license"], "url": src["url"],
             "sha256": hashlib.sha256(f.read_bytes()).hexdigest(),
-            **{k: r[k] for k in ("gender", "speaker_id", "task_name", "scenario", "state", "district")
+            **{k: r[k] for k in ("gender", "age_group", "speaker_id", "task_name", "scenario", "state", "district")
                if k in r and not isinstance(r[k], (bytes, dict))},
         })
     print(f"{name}: {len(entries)} clips from {len(cand)} of {len(rows)} utterances in {MIN_S}-{MAX_S} s "
