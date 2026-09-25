@@ -57,6 +57,37 @@ Content
   sentence glossary entries                    18                           [education_glossary.py]
   transliteration test vectors                 125                          [tests/data/olchiki_vectors.json]
 
+Phase L: time from the end of speech, by step (laptop, offline; in-process: upload and decoding excluded)
+  full = whole utterance translated and voiced; first / last = clause streaming, first / last chunk's audio ready
+  app (the app now): public full median / p90  2.15 / 3.11 s (n=80)         [bench/results/latency_steps_app.csv]
+  app: public full over 3 s                    12 of 80                     [bench/results/latency_steps_app.csv]
+  app: public ≤17 words, full p90              2.48 s (n=38)                [bench/results/latency_steps_app.csv]
+  app: public first audio p90                  2.32 s                       [bench/results/latency_steps_app.csv]
+  app: public last audio median / p90          3.17 / 4.42 s                [bench/results/latency_steps_app.csv]
+  app: chunked vs whole agreement (chrF++, median) 69.0                         [bench/results/latency_steps_app.csv]
+  app: lesson lines full median / p90          1.12 / 1.24 s (n=30)         [bench/results/latency_steps_app.csv]
+  onnx-int8-t6: public full median / p90       1.99 / 3.10 s (n=80)         [bench/results/latency_steps_onnx-int8-t6.csv]
+  onnx-int8-t6: public full over 3 s           9 of 80                      [bench/results/latency_steps_onnx-int8-t6.csv]
+  onnx-int8-t6: public ≤17 words, full p90     2.29 s (n=38)                [bench/results/latency_steps_onnx-int8-t6.csv]
+  onnx-int8-t6: public first audio p90         2.13 s                       [bench/results/latency_steps_onnx-int8-t6.csv]
+  onnx-int8-t6: public last audio median / p90 2.82 / 3.88 s                [bench/results/latency_steps_onnx-int8-t6.csv]
+  onnx-int8-t6: chunked vs whole agreement (chrF++, median) 66.0                         [bench/results/latency_steps_onnx-int8-t6.csv]
+  onnx-int8-t6: lesson lines full median / p90 1.10 / 1.24 s (n=30)         [bench/results/latency_steps_onnx-int8-t6.csv]
+  torch-t14 (before Phase L): public full median / p90 3.15 / 4.07 s (n=80)         [bench/results/latency_steps_torch-t14.csv]
+  torch-t14: public full over 3 s              51 of 80                     [bench/results/latency_steps_torch-t14.csv]
+  torch-t14: public ≤17 words, full p90        3.74 s (n=38)                [bench/results/latency_steps_torch-t14.csv]
+  torch-t14: public first audio p90            2.27 s                       [bench/results/latency_steps_torch-t14.csv]
+  torch-t14: public last audio median / p90    3.35 / 4.86 s                [bench/results/latency_steps_torch-t14.csv]
+  torch-t14: chunked vs whole agreement (chrF++, median) 69.0                         [bench/results/latency_steps_torch-t14.csv]
+  torch-t14: lesson lines full median / p90    1.27 / 1.63 s (n=30)         [bench/results/latency_steps_torch-t14.csv]
+
+Translation engines, public sentences, median ms and outputs identical to PyTorch (laptop, offline; bench/results/nmt_engines.md)
+  torch-fp32-t14                               1450 ms, 110 of 110 identical [bench/results/nmt_engines.md]
+  torch-fp32-t4                                968 ms, 110 of 110 identical [bench/results/nmt_engines.md]
+  torch-int8-t4                                901 ms, 16 of 110 identical  [bench/results/nmt_engines.md]
+  onnx-fp32-t6                                 504 ms, 110 of 110 identical [bench/results/nmt_engines.md]
+  onnx-int8-t6                                 228 ms, 43 of 110 identical  [bench/results/nmt_engines.md]
+
 Speech recognition time, synthetic clips (median ms; laptop, offline)
   hi: CTC vs RNN-T, no trimming                693 vs 1521 ms               [bench/results/asr_decoding_synthetic.md]
   hi: time saved by trimming silence (CTC)     115 ms                       [bench/results/asr_decoding_synthetic.md]

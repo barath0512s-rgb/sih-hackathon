@@ -92,6 +92,53 @@ def latency(label, csv_path, md_path):
                     f"{sec(statistics.median(ms) / 1000)} s / {sum(m > 3000 for m in ms)} of {len(b)}", src)
 
 
+def latency_steps():
+    """Phase L: step-by-step latency from bench/latency_steps.py (one CSV per engine)."""
+    files = sorted(RESULTS.glob("latency_steps_*.csv"))
+    if not files:
+        return
+    print(f"\nPhase L: time from the end of speech, by step ({LAPTOP}; in-process: upload and "
+          f"decoding excluded)")
+    print("  full = whole utterance translated and voiced; first / last = clause streaming, "
+          "first / last chunk's audio ready")
+    for f in files:
+        name = f.stem.replace("latency_steps_", "")
+        rows = list(csv.DictReader(f.open(encoding="utf-8")))
+        src = f"bench/results/{f.name}"
+        tag = " (the app now)" if name == "app" else " (before Phase L)" if name == "torch-t14" else ""
+        pub = [r for r in rows if r["set"] == "public"]
+        les = [r for r in rows if r["set"] == "lesson"]
+        g = lambda rs, k: [float(r[k]) / 1000 for r in rs]
+        up17 = [r for r in pub if int(r["words"]) <= 17]
+        if pub:
+            full = g(pub, "full_ms")
+            out(f"{name}{tag}: public full median / p90",
+                f"{sec(statistics.median(full))} / {sec(pct(full, 90))} s (n={len(pub)})", src)
+            out(f"{name}: public full over 3 s", f"{sum(x > 3 for x in full)} of {len(pub)}", src)
+            if up17:
+                out(f"{name}: public ≤17 words, full p90", f"{sec(pct(g(up17, 'full_ms'), 90))} s (n={len(up17)})", src)
+            out(f"{name}: public first audio p90", f"{sec(pct(g(pub, 'first_audio_ms'), 90))} s", src)
+            out(f"{name}: public last audio median / p90",
+                f"{sec(statistics.median(g(pub, 'last_audio_ms')))} / {sec(pct(g(pub, 'last_audio_ms'), 90))} s", src)
+            out(f"{name}: chunked vs whole agreement (chrF++, median)",
+                f"{statistics.median(float(r['chunk_vs_whole_chrf']) for r in pub):.1f}", src)
+        if les:
+            out(f"{name}: lesson lines full median / p90",
+                f"{sec(statistics.median(g(les, 'full_ms')))} / {sec(pct(g(les, 'full_ms'), 90))} s (n={len(les)})", src)
+    eng = RESULTS / "nmt_engines.md"
+    if eng.exists():
+        print(f"\nTranslation engines, public sentences, median ms and outputs identical to PyTorch "
+              f"({LAPTOP}; bench/results/{eng.name})")
+        for m in re.finditer(r"^\| (\S+) \| ([\d-]+) \| ([\d-]+) \| ([\d-]+) \| ([\d-]+) \| (\d+) \| (\d+) \| (\d+) of (\d+) \|",
+                             eng.read_text(encoding="utf-8"), re.M):
+            out(f"{m.group(1)}", f"{m.group(6)} ms, {m.group(8)} of {m.group(9)} identical", f"bench/results/{eng.name}")
+
+
+def pct(v, p):
+    v = sorted(v)
+    return v[max(0, min(len(v) - 1, -(-len(v) * p // 100) - 1))]
+
+
 def asr_decoding_synthetic():
     """CTC vs RNN-T and silence trimming, from bench/results/asr_decoding_synthetic.md."""
     f = RESULTS / "asr_decoding_synthetic.md"
@@ -214,6 +261,7 @@ def main():
     vec = _j.loads((ROOT / "tests" / "data" / "olchiki_vectors.json").read_text(encoding="utf-8"))
     out("transliteration test vectors", str(len(vec["vectors"])), "tests/data/olchiki_vectors.json")
 
+    latency_steps()
     asr_decoding_synthetic()
     asr_accuracy()
     translation()

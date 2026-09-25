@@ -96,6 +96,28 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 - **Licence:** MIT (Hub card data). **Gated.** One `.nemo` file each, 523,192,320 bytes. Accessed 2026-09-24.
 - Our account does not have access yet (403), so the card text itself is unread.
 
+### <a name="ctranslate2"></a>CTranslate2 and IndicTrans2 (Phase L1a)
+- CTranslate2 Transformers converter guide,
+  https://opennmt.net/CTranslate2/guides/transformers.html (accessed
+  2026-09-25). The supported families it lists include BART, M2M100, MarianMT,
+  MBART, NLLB and T5; IndicTrans2's custom architecture
+  (`IndicTransForConditionalGeneration`, loaded with `trust_remote_code`) is not
+  among them.
+- IndicTrans2 README, https://github.com/AI4Bharat/IndicTrans2 (accessed
+  2026-09-25): CT2 checkpoints are provided for the fairseq En-Indic and Indic-En
+  models ("The pretrained checkpoints have 3 directories, a fairseq model
+  directory and 2 CT-ported model directories"). The Indic-Indic models,
+  including indic-indic-dist-320M, are listed as HF only, so there is no fairseq
+  checkpoint to convert either.
+- **Conclusion: CTranslate2 does not support this model.** Not measured.
+
+### <a name="in22-bpcc"></a>IN22 through the BPCC repository
+- The IndicTrans2 README links an IN22 download:
+  https://huggingface.co/datasets/ai4bharat/BPCC/resolve/main/additional/IN22_testset.zip
+  (licence in the README's table: IN22-Gen and IN22-Conv, "CC-BY-4.0").
+- `ai4bharat/BPCC` is gated too (403 on 2026-09-25), so it is not a way round
+  the IN22 gate.
+
 ### <a name="piper-pratham"></a>Piper voice hi_IN-pratham-medium (in use)
 - MODEL_CARD: https://huggingface.co/rhasspy/piper-voices/blob/main/hi/hi_IN/pratham/medium/MODEL_CARD, accessed 2026-09-24.
 - Licence given as "http://creativecommons.org/licenses/by-nc-sa/4.0/" (**CC BY-NC-SA 4.0**). Dataset: AI4Bharat indicnlp_corpus.

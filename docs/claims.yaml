@@ -246,3 +246,53 @@
   text: "DPDP Act 2023 aligned"
   status: "NOT MEASURED"
   evidence: STATUS.md
+
+# ── Phase L: latency on realistic speech (laptop, offline) ─────────────────
+- id: phase_l_targets
+  text: "From the end of speech, public FLEURS Hindi: full-time p90 2.48 s for sentences of up to 17 words; time to first audio p90 2.32 s for all sentences (clause streaming); lesson lines full p90 1.24 s"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: phase_l_before_after
+  text: "Before / after Phase L: full median 3.15 / 2.15 s, p90 4.07 / 3.11 s, over 3 s 51 / 12 of 80; last audio 3.35 / 3.17 s median, 4.86 / 4.42 s p90; lesson p90 1.63 / 1.24 s; first audio p90 2.27 s before"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: phase_l_engines
+  text: "Translation engines (median ms, identical outputs of 110): PyTorch 14 threads 1450 (110), 4 threads 968, PyTorch int8 901 (16), ONNX fp32 504 (110), ONNX int8 228 (43)"
+  status: "TRUE"
+  evidence: bench/results/nmt_engines.md
+- id: phase_l_golden
+  text: "ONNX fp32 translation identical to PyTorch token for token on 176 of 176 sentences"
+  status: "TRUE"
+  evidence: bench/results/golden_nmt_fp32.md
+- id: phase_l_int8_outliers
+  text: "ONNX int8 end to end: some long outputs run on (24+ words full p90 7043 ms)"
+  status: "TRUE"
+  evidence: bench/results/latency_steps_onnx-int8-t6.md
+- id: phase_l_threads
+  text: "More threads were slower: translation best at 6 of 14 cores, speech recognition at 8"
+  status: "TRUE"
+  evidence: bench/results/thread_sweep.md
+- id: phase_l_chunk_agreement
+  text: "Chunked translation agrees with the whole-sentence one at chrF++ 69 (median); whether it is worse needs references"
+  status: "TRUE"
+  evidence: bench/results/deck_numbers.txt
+- id: phase_l_streaming_threshold
+  text: "Utterances of up to 17 words are translated whole; 18 or more are streamed; chunks of at most 10 words"
+  status: "TRUE"
+  evidence: config.py
+- id: phase_l_endpointing
+  text: "A 500 ms silence endpoint cuts 27 of 78 read FLEURS sentences early and 0 of 30 lesson lines; adaptive 500/1000 ms cuts 16 of 78; off by default"
+  status: "TRUE"
+  evidence: bench/results/endpoint_sim_public.md
+- id: phase_l_endpointing_lesson
+  text: "Endpointing on the 30 lesson lines: 0 cut early"
+  status: "TRUE"
+  evidence: bench/results/endpoint_sim_synthetic.md
+- id: phase_l_speaking_rate
+  text: "Hindi speaking rate for the word estimate: 2.2 words per second (FLEURS clips, median)"
+  status: "TRUE"
+  evidence: frontend.html
+- id: phase_l_ctranslate2
+  text: "CTranslate2 does not support IndicTrans2 indic-indic-dist-320M"
+  status: "TRUE"
+  evidence: docs/sources.md#ctranslate2

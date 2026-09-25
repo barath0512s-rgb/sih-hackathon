@@ -51,7 +51,7 @@ laptop, offline, and checked by the named test or script.
 |---|---|---|---|---|
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality: **NOT MEASURED** (no held-out test set yet). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
-| 3 | Real-time voice-to-voice dialogue, no more than 3 s | **Short lesson lines** (synthetic clips, median 6 words): median **1.51 s** Hindi→Santali and **1.57 s** Santali→Hindi; **0 of 59** over 3 s. **Long general sentences** (public adult speech, FLEURS Hindi, median 17 words): median **2.95 s** Hindi→Santali, **38 of 79** over 3 s. Laptop, offline | Met for short lines, not for long ones. Santali speech input from public data, child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py`, then `python tools/deck_numbers.py` |
+| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, measured from the end of speech (§6, "Speed on realistic speech"). **Public adult speech** (FLEURS Hindi → Santali, median 17 words): full-sentence p90 **2.48 s** for sentences of up to 17 words; for all sentences, clause streaming gives first audio at p90 **2.32 s**. **Lesson lines**: full-sentence p90 **1.24 s** | Sentences of 18+ words take longer to finish (full p90 **3.11 s** over all sentences; 12 of 80 over 3 s). Santali speech input from public data, child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
@@ -116,6 +116,7 @@ shown. The model runs only when the other three cannot answer.
 ### Translation: IndicTrans2 indic-indic 320M
 - `ai4bharat/indictrans2-indic-indic-dist-320M`, **direct** Hindi ↔ Santali. Going through English would lose distinctions English does not make, such as respectful आप versus familiar तुम.
 - Greedy decoding (`NMT_NUM_BEAMS = 1`), `no_repeat_ngram_size = 3`, and an output-length cap sized to the input.
+- Runs on **ONNX Runtime** (fp32, 6 threads) when the exported model is on disk (`tools/export/export_indictrans2_onnx.py`); otherwise on PyTorch. The ONNX output is token-for-token identical to PyTorch on every sentence tested (`bench/results/golden_nmt_fp32.md`).
 - The model sometimes starts its output with a label such as `ᱥᱮᱪᱮᱫ:` ("Teaching:"); that prefix is removed.
 - At start-up, a background thread translates every lesson line and flashcard word once, so the lesson answers from the cache.
 
@@ -197,6 +198,56 @@ short lesson lines). So the 3 s target holds for short classroom lines but not
 for long general sentences. Santali speech from public data and the translation
 benchmarks (IN22, FLORES) wait for access to gated datasets: **NOT MEASURED**.
 
+### Speed on realistic speech (Phase L)
+
+Two measures, both timed **from the end of speech**: from the moment the
+recorded audio reaches the speech recogniser. Upload and audio decoding are not
+included (laptop, in-process), and neither is endpointing (below).
+
+- **Full time**: until the Santali audio for the **whole** utterance is ready.
+  This is what a reply costs when the sentence is translated in one piece.
+- **Time to first audio**: with **clause streaming** (`streaming.py`), a long
+  utterance is cut at sentence ends and clause words (लेकिन, क्योंकि, और, कि…,
+  never inside a phrase, at most 10 words per chunk). The first chunk is
+  translated and spoken while the rest are still being prepared, and time to
+  first audio runs until that first chunk's audio is ready. **Time to last
+  audio** runs until the last chunk's audio is ready; the listener hears it
+  after the chunks before it have played.
+
+The app translates utterances of up to 17 words whole, and streams only longer
+ones (`config.STREAM_MIN_WORDS`), because chunking changes the wording: the
+chunked translation agrees with the whole-sentence one at chrF++ 69 (median).
+Whether that is worse or just different needs human references (FLORES,
+gated): **NOT MEASURED**.
+
+80 FLEURS Hindi sentences (public dataset, adult speech) and the 30 lesson
+lines; laptop, offline; `bench/latency_steps.py`.
+
+| Measure | Before Phase L | Now | Target |
+|---|---|---|---|
+| Full time, sentences of ≤ 17 words, p90 | 3.74 s | **2.48 s** | ≤ 3 s: **met** |
+| Time to first audio, all sentences, p90 | 2.27 s | **2.32 s** | ≤ 3 s: **met** |
+| Full time, all sentences, median / p90 | 3.15 / 4.07 s | 2.15 / 3.11 s | — |
+| Full time over 3 s | 51 of 80 | 12 of 80 | — |
+| Time to last audio, median / p90 | 3.35 / 4.86 s | 3.17 / 4.42 s | — |
+| Lesson lines, full time, p90 | 1.63 s | 1.24 s | — |
+
+What changed (each measured):
+
+| Step | Result | Decision |
+|---|---|---|
+| Translation on ONNX Runtime fp32 instead of PyTorch | median 504 vs 1450 ms on the long sentences; 110 of 110 outputs identical | **Adopted** |
+| Threads | More threads were slower: translation best at 6 (of 14 cores), speech recognition at 8 | NMT 6, ASR 8 |
+| ONNX Runtime dynamic int8 | 228 ms, but only 43 of 110 outputs identical, and some long outputs run on (24+ words: full p90 7043 ms) | Off until IN22-Conv shows its quality |
+| PyTorch dynamic int8 (Linear layers) | 901 ms, only 16 of 110 identical | Rejected |
+| CTranslate2 | Its converters do not support this model (`docs/sources.md#ctranslate2`) | Not possible |
+| Endpointing: stop after 500 ms of silence | Cuts 27 of 78 read FLEURS sentences early (a pause mid-sentence); 0 of 30 lesson lines. Adaptive 500/1000 ms: 16 of 78 | A **setting, off by default** (`bench/results/endpoint_sim_*.md`) |
+| Word counter | Live count while typing; an estimate (≈) while speaking, from FLEURS' 2.2 words per second; past 15 words a Hindi hint to speak shorter sentences | Built |
+
+Sources: `bench/results/latency_steps_app.md`, `latency_steps_torch-t14.md`,
+`latency_steps_onnx-int8-t6.md`, `nmt_engines.md`, `golden_nmt_fp32.md`,
+`golden_nmt_int8.md`, `endpoint_sim_public.md`, `endpoint_sim_synthetic.md`.
+
 ### Not measured yet
 
 | What | Status |
@@ -261,6 +312,8 @@ vaanisetu_env\Scripts\activate            # Windows
 source vaanisetu_env/bin/activate         # Mac/Linux
 pip install -r requirements.txt
 python download_models.py                  # models and voices, pinned revisions, checked against model_manifest.json
+pip install -r tools/export/requirements-export.txt
+python tools/export/export_indictrans2_onnx.py   # optional: faster translation (ONNX Runtime), same output
 python verify_models.py                    # loads everything, checks speech is audible
 python app.py                              # the first start also adds the team's lessons, so it takes longer
 ```

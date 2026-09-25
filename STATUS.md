@@ -1,5 +1,31 @@
 # STATUS, 25 Sep 2026: Checkpoint P (master prompt v2)
 
+## L. Phase L: latency on realistic speech (branch `latency`)
+
+Laptop, offline, from the end of speech (audio handed to the recogniser; upload,
+decoding and endpointing not included). 80 FLEURS Hindi sentences (public
+dataset, adult speech) and 30 lesson lines. Numbers: `tools/deck_numbers.py`.
+
+| Target | Before | Now | Verdict |
+|---|---|---|---|
+| p90 full time, FLEURS sentences of ≤ 17 words | 3.74 s | **2.48 s** | **met** |
+| p90 time to first audio, all FLEURS sentences (clause streaming) | 2.27 s | **2.32 s** | **met** |
+
+| Item | Result | Evidence |
+|---|---|---|
+| L1a CTranslate2 | Not supported for this model (official converter list; no fairseq checkpoint for Indic-Indic) | `docs/sources.md#ctranslate2` |
+| L1b ONNX Runtime fp32 | **Adopted.** 504 vs 1450 ms median on long sentences; 110 of 110 outputs identical to PyTorch; golden test 176 of 176 | `bench/results/nmt_engines.md`, `golden_nmt_fp32.md` |
+| L1b ONNX Runtime int8 | 228 ms, but 43 of 110 identical and some long outputs run on (24+ words, full p90 7043 ms). **Off** until IN22-Conv shows chrF++ within 0.5 | `nmt_engines.md`, `latency_steps_onnx-int8-t6.md` |
+| L1c PyTorch dynamic int8 | 901 ms, 16 of 110 identical. **Rejected** | `nmt_engines.md` |
+| L2 clause streaming | `streaming.py` and `POST /translate/audio_stream` (NDJSON); the page plays chunks as they arrive. Used for utterances of 18+ words only: chunked output agrees with whole-sentence output at chrF++ 69 (median), quality vs references NOT MEASURED | `latency_steps_app.md`, `tests/test_api.py` |
+| L3 endpointing | A 500 ms silence endpoint cuts **27 of 78** read FLEURS sentences early (pauses at commas); 0 of 30 lesson lines. Adaptive 500/1000 ms: 16 of 78. Built as a **setting, off by default** | `bench/results/endpoint_sim_*.md` |
+| L4 tuning | Threads: translation 6, speech recognition 8 (more was slower); every engine warmed at start; output-length cap already sized to input; caches unchanged. In the end-to-end run, speech recognition was not faster (836 vs 774 ms median) despite the thread sweep; not explained yet | `bench/results/thread_sweep.md` |
+| L5 word counter | Live count for typed Hindi; an estimate (≈, 2.2 words/s from FLEURS) while speaking; real count after recognition; past 15 words a Hindi hint | `frontend.html` |
+| Environment incident | Installing an export tool pulled numpy 2, which breaks torch 2.2; restored numpy 1.26.4. `tests/test_environment.py` now guards it, and the export tools have their own requirements file | `tools/export/requirements-export.txt` |
+| Model files | ONNX fp32 2.05 GB (the two decoder graphs each hold the decoder weights); int8 517 MB. For Android the two decoder graphs should share weights | `tools/export/export_indictrans2_onnx.py` |
+
+---
+
 ## P. Phase P: publish and measure on public data (branch `phase-p`)
 
 | Item | Result | Evidence |
