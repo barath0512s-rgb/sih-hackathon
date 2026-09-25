@@ -51,18 +51,28 @@ def digits_of(text: str) -> str:
 _TAG = re.compile(r"<[^<>\s]*>")
 
 
+def strip_reference_tags(text: str):
+    """(reference without dataset annotation tags, number of tags removed).
+    For REFERENCES only: a tag in a hypothesis stays and counts as an error."""
+    if not text:
+        return "", 0
+    found = _TAG.findall(text)
+    return _TAG.sub(" ", text), len(found)
+
+
 def normalize_for_wer(text: str) -> str:
     """Text for the *normalised* WER/CER in bench/ (rules in bench/README.md).
 
     Only formatting is removed, the same way for Hindi and Santali: Unicode NFC;
-    dataset annotation tags such as <unintelligible>; every punctuation mark
-    (Unicode category P: , . ? । ॥ ᱾ ᱿ - ...) replaced by a space; Devanagari
-    and Ol Chiki digits written as ASCII digits; whitespace collapsed. Spelling
-    is left alone (no nukta or chandrabindu folding, unlike normalize_key).
+    every punctuation mark (Unicode category P: , . ? । ॥ ᱾ ᱿ - ...) replaced by
+    a space; Devanagari and Ol Chiki digits written as ASCII digits; whitespace
+    collapsed. Spelling is left alone (no nukta or chandrabindu folding, unlike
+    normalize_key). Dataset tags are removed from references before this, by
+    strip_reference_tags, never from hypotheses.
     """
     if not text:
         return ""
-    s = _TAG.sub(" ", unicodedata.normalize("NFC", text))
+    s = unicodedata.normalize("NFC", text)
     s = "".join(_DIGITS.get(c, c) for c in s)
     s = "".join(" " if unicodedata.category(c).startswith("P") else c for c in s)
     return re.sub(r"\s+", " ", s).strip()

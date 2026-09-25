@@ -67,7 +67,13 @@ def main():
         (ROOT / "bench/clips/public/manifest.json").read_text(encoding="utf-8")) if c["lang"] == "hi"]
     les = [(c["reference"], "lesson") for c in json.loads(
         (ROOT / "bench/clips/synthetic/manifest.json").read_text(encoding="utf-8")) if c["lang"] == "hi"]
-    sents = pub + les
+    # Distinct sentences only: FLEURS has several readers per sentence (80 clips, 69 sentences).
+    from textnorm import normalize_key
+    n_clips = {"public": len(pub), "lesson": len(les)}
+    seen, sents = set(), []
+    for s_, kind in pub + les:
+        if (kind, normalize_key(s_)) not in seen:
+            seen.add((kind, normalize_key(s_))); sents.append((s_, kind))
 
     res = {}
     for name, run in engines.items():
@@ -83,7 +89,10 @@ def main():
     lines = ["# Translation engines, same sentences (Phase L1)", "",
              "IndicTrans2 indic-indic-dist-320M, hin_Deva → sat_Olck, greedy, the app's settings. Laptop, offline.",
              "Median ms per sentence. \"same\" = token IDs identical to PyTorch fp32 (14 threads).",
-             "public = FLEURS Hindi references (long); lesson = Hindi lesson lines (short).", "",
+             "public = FLEURS Hindi references (long); lesson = Hindi lesson lines (short).",
+             f"Distinct sentences: public n={n_clips['public']} clips, n_distinct="
+             f"{sum(k == 'public' for _, k in sents)}; lesson n={n_clips['lesson']}, n_distinct="
+             f"{sum(k == 'lesson' for _, k in sents)}.", "",
              "| Engine | public 0-11 | 12-17 | 18-23 | 24+ | public all | lesson all | same as PyTorch |",
              "|---|---|---|---|---|---|---|---|"]
     for name, rows in res.items():
@@ -96,7 +105,7 @@ def main():
         same = sum(a[3] == b[3] for a, b in zip(rows, ref))
         lines.append(f"| {name} | {' | '.join(cells)} | {allp:.0f} | {alll:.0f} | {same} of {len(rows)} |")
     out = ROOT / "bench" / "results" / "nmt_engines.md"
-    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print("\n".join(lines))
 
 

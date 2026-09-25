@@ -3,6 +3,7 @@
     python bench/latency_steps.py --backend torch-t14      # the app today (14 threads)
     python bench/latency_steps.py --backend torch-t4       # 4 threads for translation
     python bench/latency_steps.py --backend torch-int8-t4  # + dynamic int8 Linear layers
+    python bench/latency_steps.py --backend app --rescore  # rebuild the report from the CSV
 
 Inputs: the public FLEURS Hindi clips (bench/clips/public/manifest.json;
 public dataset, adult speech) and the Hindi lesson lines
@@ -22,7 +23,11 @@ i.e. after the end of speech; endpointing is reported separately):
   stalls                  chunks whose audio is not ready when the previous
                           chunk's audio ends (a gap in the speech)
 Quality: chrF++ of the chunked translation against the whole-sentence one
-(agreement, not accuracy; accuracy needs FLORES references: NOT MEASURED).
+(agreement, not accuracy; accuracy against references: eval/chunk_quality.py).
+
+The public tables use DISTINCT sentences: FLEURS has several readers per
+sentence (80 clips, 69 sentences), so only the first clip of each sentence (in
+manifest order) counts; every table gives n (clips) and n_distinct (used).
 
 Writes bench/results/latency_steps_<backend>.csv and .md.
 """
@@ -50,6 +55,87 @@ BINS = ((0, 11), (12, 17), (18, 23), (24, 999))
 def pct(v, p):
     v = sorted(v)
     return v[max(0, min(len(v) - 1, -(-len(v) * p // 100) - 1))]
+
+
+def distinct_first(rows, manifest_path=ROOT / "bench/clips/public/manifest.json"):
+    """Public rows reduced to the first clip of each distinct reference sentence."""
+    from textnorm import normalize_key
+    ref = {c["file"]: normalize_key(c["reference"])
+           for c in json.loads(Path(manifest_path).read_text(encoding="utf-8"))}
+    seen, out = set(), []
+    for r in rows:
+        if r["set"] != "public":
+            out.append(r); continue
+        k = ref.get(r["clip"], r["clip"])
+        if k not in seen:
+            seen.add(k); out.append(r)
+    return out
+
+
+def write_report(backend, desc, rows):
+    out = ROOT / "bench" / "results" / f"latency_steps_{backend}"
+    used = distinct_first(rows)
+
+    def block(rs):
+        if not rs:
+            return None
+        g = lambda k: [r[k] for r in rs]
+        return (len(rs), statistics.median(g("asr_ms")), statistics.median(g("nmt_ms")), statistics.median(g("tts_ms")),
+                statistics.median(g("full_ms")), pct(g("full_ms"), 90), sum(x > 3000 for x in g("full_ms")),
+                statistics.median(g("first_audio_ms")), pct(g("first_audio_ms"), 90),
+                statistics.median(g("last_audio_ms")), pct(g("last_audio_ms"), 90), sum(g("stalls")),
+                statistics.median(g("chunk_vs_whole_chrf")))
+
+    lines = [f"# Latency by step and sentence length: {backend}", "",
+             desc,
+             "- **public** = google/fleurs Hindi test clips (public dataset, adult speech). "
+             "**lesson** = the Hindi lesson lines (synthetic speech). Child speech: NOT MEASURED.",
+             "- Times in ms from the end of speech (audio handed to the recogniser); endpointing, "
+             "upload and audio decoding not included. Median / p90.",
+             "- full = whole utterance translated and voiced. first / last audio = clause streaming "
+             "(streaming.py): first chunk ready / all chunks ready.",
+             "- agree = chrF++ of the chunked translation against the whole-sentence translation "
+             "(how much chunking changes the output), not accuracy.",
+             "- **n** = clips run; **n_distinct** = distinct sentences, the rows every figure is computed on "
+             "(first clip of each sentence).", "",
+             "| Set | Words | n | n_distinct | ASR | NMT | TTS | full med | full p90 | full >3 s | first med | first p90 | "
+             "last med | last p90 | stalls | agree |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for label in ("public", "lesson"):
+        sel = lambda src, lo=None, hi=None: [r for r in src if r["set"] == label and
+                                             (lo is None or lo <= r["words"] <= hi)]
+        groups = [("all", sel(rows), sel(used))]
+        if label == "public":
+            groups += [(f"{lo}-{hi}" if hi < 999 else f"{lo}+", sel(rows, lo, hi), sel(used, lo, hi)) for lo, hi in BINS]
+        for name, all_rs, rs in groups:
+            b = block(rs)
+            if b:
+                lines.append(f"| {label} | {name} | {len(all_rs)} | {b[0]} | {b[1]:.0f} | {b[2]:.0f} | {b[3]:.0f} | "
+                             f"{b[4]:.0f} | {b[5]:.0f} | {b[6]} | {b[7]:.0f} | {b[8]:.0f} | {b[9]:.0f} | {b[10]:.0f} | "
+                             f"{b[11]} | {b[12]:.1f} |")
+    up17 = [r for r in used if r["set"] == "public" and r["words"] <= 17]
+    pub = [r for r in used if r["set"] == "public"]
+    if pub:
+        lines += ["", "Targets (Phase L), on distinct sentences:",
+                  f"- p90 time to first audio, all public sentences (n_distinct={len(pub)}): "
+                  f"{pct([r['first_audio_ms'] for r in pub], 90)} ms (target ≤ 3000)",
+                  f"- p90 full time, public sentences of ≤ 17 words (n_distinct={len(up17)}): "
+                  f"{pct([r['full_ms'] for r in up17], 90) if up17 else 'n/a'} ms (target ≤ 3000)"]
+    out.with_suffix(".md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    print("\n".join(lines))
+
+
+def read_rows(backend):
+    """The rows of a saved run (CSV), with numbers as numbers."""
+    path = ROOT / "bench" / "results" / f"latency_steps_{backend}.csv"
+    ints = ("words", "chunks", "asr_ms", "nmt_ms", "tts_ms", "full_ms", "first_audio_ms", "last_audio_ms", "stalls")
+    rows = []
+    for r in csv.DictReader(path.open(encoding="utf-8")):
+        for k in ints:
+            r[k] = int(float(r[k]))
+        r["chunk_vs_whole_chrf"] = float(r["chunk_vs_whole_chrf"])
+        rows.append(r)
+    return rows
 
 
 def wav_seconds(path):
@@ -93,7 +179,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--backend", default="torch-t14")
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--rescore", action="store_true", help="rebuild the .md from the saved .csv (no models)")
     a = ap.parse_args()
+    if a.rescore:
+        md = ROOT / "bench" / "results" / f"latency_steps_{a.backend}.md"
+        desc = next(l for l in md.read_text(encoding="utf-8").splitlines() if l.startswith("- Translation backend"))
+        write_report(a.backend, desc, read_rows(a.backend))
+        return
 
     import sacrebleu
     import pipeline
@@ -151,51 +243,10 @@ def main():
     with open(out.with_suffix(".csv"), "w", newline="", encoding="utf-8") as f:
         wr = csv.DictWriter(f, fieldnames=list(rows[0])); wr.writeheader(); wr.writerows(rows)
 
-    def block(rs):
-        if not rs:
-            return None
-        g = lambda k: [r[k] for r in rs]
-        return (len(rs), statistics.median(g("asr_ms")), statistics.median(g("nmt_ms")), statistics.median(g("tts_ms")),
-                statistics.median(g("full_ms")), pct(g("full_ms"), 90), sum(x > 3000 for x in g("full_ms")),
-                statistics.median(g("first_audio_ms")), pct(g("first_audio_ms"), 90),
-                statistics.median(g("last_audio_ms")), pct(g("last_audio_ms"), 90), sum(g("stalls")),
-                statistics.median(g("chunk_vs_whole_chrf")))
-
-    lines = [f"# Latency by step and sentence length: {a.backend}", "",
-             f"- Translation backend: {desc}. Speech recognition: IndicConformer, "
-             f"{config.ASR_DECODING['hi']}, trim={config.ASR_TRIM_SILENCE['hi']}. Speech: Piper "
-             f"{pl._voice_model('santali')}. Every engine warmed first. Laptop, offline, in-process.",
-             "- **public** = google/fleurs Hindi test clips (public dataset, adult speech). "
-             "**lesson** = the Hindi lesson lines (synthetic speech). Child speech: NOT MEASURED.",
-             "- Times in ms from the end of speech (audio handed to the recogniser); endpointing, "
-             "upload and audio decoding not included. Median / p90.",
-             "- full = whole utterance translated and voiced. first / last audio = clause streaming "
-             "(streaming.py): first chunk ready / all chunks ready.",
-             "- agree = chrF++ of the chunked translation against the whole-sentence translation "
-             "(how much chunking changes the output), not accuracy.", "",
-             "| Set | Words | n | ASR | NMT | TTS | full med | full p90 | full >3 s | first med | first p90 | "
-             "last med | last p90 | stalls | agree |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
-    for label in ("public", "lesson"):
-        groups = [("all", [r for r in rows if r["set"] == label])]
-        if label == "public":
-            groups += [(f"{lo}-{hi}" if hi < 999 else f"{lo}+", [r for r in rows if r["set"] == label and lo <= r["words"] <= hi])
-                       for lo, hi in BINS]
-        for name, rs in groups:
-            b = block(rs)
-            if b:
-                lines.append(f"| {label} | {name} | {b[0]} | {b[1]:.0f} | {b[2]:.0f} | {b[3]:.0f} | {b[4]:.0f} | {b[5]:.0f} | "
-                             f"{b[6]} | {b[7]:.0f} | {b[8]:.0f} | {b[9]:.0f} | {b[10]:.0f} | {b[11]} | {b[12]:.1f} |")
-    up17 = [r for r in rows if r["set"] == "public" and r["words"] <= 17]
-    pub = [r for r in rows if r["set"] == "public"]
-    if pub:
-        lines += ["", "Targets (Phase L):",
-                  f"- p90 time to first audio, all public sentences: {pct([r['first_audio_ms'] for r in pub], 90)} ms "
-                  f"(target ≤ 3000)",
-                  f"- p90 full time, public sentences of ≤ 17 words (n={len(up17)}): "
-                  f"{pct([r['full_ms'] for r in up17], 90) if up17 else 'n/a'} ms (target ≤ 3000)"]
-    out.with_suffix(".md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print("\n".join(lines))
+    desc_line = (f"- Translation backend: {desc}. Speech recognition: IndicConformer, "
+                 f"{config.ASR_DECODING['hi']}, trim={config.ASR_TRIM_SILENCE['hi']}. Speech: Piper "
+                 f"{pl._voice_model('santali')}. Every engine warmed first. Laptop, offline, in-process.")
+    write_report(a.backend, desc_line, rows)
 
 
 if __name__ == "__main__":

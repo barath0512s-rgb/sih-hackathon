@@ -51,7 +51,7 @@ laptop, offline, and checked by the named test or script.
 |---|---|---|---|---|
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality on public test sets (the model alone): chrF++ Hindi → Santali 31.3 (IN22-Gen), 32.2 (IN22-Conv), 27.4 (FLORES-200); see §6. Lesson lines themselves: **NOT MEASURED** (no reference translations). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
-| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, upload to reply audio (§6): **Hindi → Santali** median **1.95 s**, p90 **2.24 s**, 0 of 79 over 3 s (FLEURS); **Santali → Hindi** median **2.22 s**, p90 **2.57 s**, 2 of 79 over 3 s (IndicVoices; answers of ≤ 10 words p90 **2.34 s**). Measured from the end of speech by step: time to first audio p90 **2.30-2.32 s** for all sentences (clause streaming); lesson lines p90 **1.21-1.24 s** | Full-sentence p90 for FLEURS sentences of up to 17 words was **2.48 s** in one run and **3.02 s** in a second (the slow clips were slow in every step at once: machine noise, not a pipeline step). Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public`, `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
+| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, upload to reply audio (§6): **Hindi → Santali** median **1.96 s**, p90 **2.25 s**, 0 over 3 s (FLEURS, 68 distinct sentences); **Santali → Hindi** median **2.22 s**, p90 **2.57 s**, 2 of 79 over 3 s, answers of ≤ 10 words p90 **2.34 s** (IndicVoices validation split; may overlap model-development data). From the end of speech, by step: time to first audio p90 **2.46 s** (run 1) / **2.68 s** (run 2) over 69 distinct FLEURS sentences (clause streaming); lesson lines p90 **1.21-1.24 s** | Full-sentence p90 for FLEURS sentences of up to 17 words (32 distinct) was **2.48 s** in one run and **3.02 s** in a second (the slow clips were slow in every step at once: machine noise, not a pipeline step). Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public`, `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
@@ -180,55 +180,61 @@ under it are the server's ASR, NMT and TTS times. Every request is logged, and
 
 ### Public speech (adult), both directions
 
-80 Hindi clips from `google/fleurs` (**test** split, CC BY 4.0, 3-10 s; 69
-distinct sentences, as FLEURS has several readers per sentence) and 80 Santali
-clips from `ai4bharat/IndicVoices` (**valid** split: the dataset has no test
-split; CC BY 4.0, 62 speakers, Ol Chiki transcripts), both seeded. Whether the
-speech model saw the valid split in training is not stated on its card. None of
-these clips, sentences or speakers can be used for fine-tuning
-(`eval/leakage.py`). **Public dataset, adult speech;
-child speech NOT MEASURED.** Laptop, offline. `bench/fetch_public_clips.py`
-fetches the same clips for anyone with access.
+80 Hindi clips from `google/fleurs` (**test** split, CC BY 4.0, 3-10 s) and 80
+Santali clips from `ai4bharat/IndicVoices` (**IndicVoices validation split (no
+public Santali test split)**; CC BY 4.0, 62 speakers, Ol Chiki transcripts),
+both seeded. The model cards do not say how that split was used, so the Santali
+numbers **may overlap model-development data** (`docs/sources.md#indicvoices`).
+None of these clips, sentences or speakers can be used for fine-tuning
+(`eval/leakage.py`). **Public dataset, adult speech; child speech NOT MEASURED.**
+Laptop, offline. `bench/fetch_public_clips.py` fetches the same clips for
+anyone with access.
+
+**n** = clips, **n_distinct** = distinct sentences. FLEURS has several readers
+per sentence (80 clips, 69 sentences): WER uses all 80 clips (different
+speakers); translation and latency use the first clip of each sentence.
 
 Speech recognition (`bench/results/asr_decoding_public.md`; corpus-level).
 **Raw** WER compares the texts exactly as written; **normalised** WER and CER
-remove punctuation (including ᱾ and ।), dataset tags and digit-script
-differences only, the same way for both languages (rules: `bench/README.md`).
+remove punctuation (including ᱾ and ।) and digit-script differences, the same
+way for both languages, after removing dataset tags (`<unintelligible>`: 2 in
+the Santali references) from the **references only** (rules: `bench/README.md`).
 
-| Language | Decoding | Silence trimmed | WER raw | WER normalised | CER normalised | Median time |
-|---|---|---|---|---|---|---|
-| Hindi | **CTC (in use)** | **yes (in use)** | 14.3% | 13.1% | 4.9% | 485 ms |
-| Hindi | CTC | no | 13.6% | 12.5% | 4.8% | 516 ms |
-| Hindi | RNN-T | yes | 14.3% | 13.1% | 4.9% | 1314 ms |
-| Santali | **RNN-T (in use)** | **yes (in use)** | 31.1% | 31.0% | 10.3% | 1144 ms |
-| Santali | RNN-T | no | 31.3% | 31.2% | 10.4% | 1281 ms |
-| Santali | CTC | yes | 34.7% | 34.7% | 11.6% | 386 ms |
+| Language | Decoding | Silence trimmed | n | n_distinct | WER raw | WER normalised | CER normalised | Median time |
+|---|---|---|---|---|---|---|---|---|
+| Hindi | **CTC (in use)** | **yes (in use)** | 80 | 69 | 14.3% | 13.1% | 4.9% | 485 ms |
+| Hindi | CTC | no | 80 | 69 | 13.6% | 12.5% | 4.8% | 516 ms |
+| Hindi | RNN-T | yes | 80 | 69 | 14.3% | 13.1% | 4.9% | 1314 ms |
+| Santali | **RNN-T (in use)** | **yes (in use)** | 80 | 80 | 31.1% | 31.0% | 10.3% | 1144 ms |
+| Santali | RNN-T | no | 80 | 80 | 31.3% | 31.2% | 10.4% | 1281 ms |
+| Santali | CTC | yes | 80 | 80 | 34.7% | 34.7% | 11.6% | 386 ms |
 
-Voice to voice, upload to reply audio, in-process (no Wi-Fi):
+Voice to voice, upload to reply audio, in-process (no Wi-Fi), warm requests:
 
-| Direction | n | Median | p90 | Max | Over 3 s | Source |
-|---|---|---|---|---|---|---|
-| Hindi → Santali | 79 | 1.95 s | 2.24 s | 2.74 s | 0 | `…_2026-09-25_public.csv` |
-| Santali → Hindi (RNN-T, trimmed: in use) | 79 | 2.22 s | 2.57 s | 3.15 s | 2 | `…_public_sat_rnnt_trim.csv` |
-| Santali → Hindi (CTC, trimmed) | 79 | 1.69 s | 2.01 s | 3.85 s | 1 | `…_public_sat_ctc_trim.csv` |
-| Hindi → Santali, before Phase L | 79 | 2.95 s | 3.69 s | 5.68 s | 38 | `…_public_before_phase_l.csv` |
+| Direction | n | n_distinct | Median | p90 | Max | Over 3 s | Source |
+|---|---|---|---|---|---|---|---|
+| Hindi → Santali | 79 | 68 | 1.96 s | 2.25 s | 2.74 s | 0 | `…_2026-09-25_public.csv` |
+| Santali → Hindi (RNN-T, trimmed: in use) | 79 | 79 | 2.22 s | 2.57 s | 3.15 s | 2 | `…_public_sat_rnnt_trim.csv` |
+| Santali → Hindi (CTC, trimmed) | 79 | 79 | 1.69 s | 2.01 s | 3.85 s | 1 | `…_public_sat_ctc_trim.csv` |
+| Hindi → Santali, before Phase L | 79 | 68 | 2.99 s | 3.72 s | 5.68 s | 34 | `…_public_before_phase_l.csv` |
 
-Santali → Hindi by answer length (Santali words), median / p90:
+Santali → Hindi by answer length (Santali words), median / p90 (IndicVoices
+validation split; may overlap model-development data):
 
-| Answer length | n | RNN-T (in use) | CTC |
-|---|---|---|---|
-| ≤ 10 words | 41 | 1.98 / **2.34 s** (1 over 3 s) | 1.58 / 1.77 s (0 over) |
-| ≤ 5 words | 10 | 1.82 / 1.99 s | 1.34 / 1.54 s |
-| 6-10 words | 31 | 2.04 / 2.34 s | 1.60 / 1.77 s |
-| 11-17 words | 25 | 2.26 / 2.56 s | 1.73 / 2.01 s |
-| 18+ words | 13 | 2.50 / 2.76 s | 1.90 / 2.21 s |
+| Answer length | n | n_distinct | RNN-T (in use) | CTC |
+|---|---|---|---|---|
+| ≤ 10 words | 41 | 41 | 1.98 / **2.34 s** (1 over 3 s) | 1.58 / 1.77 s (0 over) |
+| ≤ 5 words | 10 | 10 | 1.82 / 1.99 s | 1.34 / 1.54 s |
+| 6-10 words | 31 | 31 | 2.04 / 2.34 s | 1.60 / 1.77 s |
+| 11-17 words | 25 | 25 | 2.26 / 2.56 s | 1.73 / 2.01 s |
+| 18+ words | 13 | 13 | 2.50 / 2.76 s | 1.90 / 2.21 s |
 
 Santali uses RNN-T because the rule was: RNN-T if its p90 for answers of up to
 10 words stays within 3 s (2.34 s). The trade-off: about 0.4-0.6 s more per
 reply for 3.7 fewer word errors per 100 words. Silence trimming is on for
 Santali too: normalised WER 31.0% vs 31.2% without, 137 ms faster.
-Hindi trimming stays on for now (it was chosen on synthetic clips); on this
-data it is 0.6 WER points worse and 31 ms faster. See STATUS.md.
+Hindi stays on CTC. Hindi trimming stays on for now (it was chosen on synthetic
+clips); on this data it is 0.6 WER points worse and 31 ms faster. See STATUS.md.
 
 ### Translation quality (public test sets)
 
@@ -237,11 +243,15 @@ The model alone (no glossary, cache or teacher corrections), as the app runs it
 (`eval/eval_benchmarks.py`, `eval/results/benchmarks.md`). These sets are for
 evaluation only; `eval/leakage.py` stops any training script that sees them.
 
-| Test set | Licence | n | Hindi → Santali chrF++ / BLEU | Santali → Hindi chrF++ / BLEU |
-|---|---|---|---|---|
-| IN22-Gen | CC BY 4.0 | 1024 | 31.3 / 4.2 | 37.6 / 15.8 |
-| IN22-Conv | CC BY 4.0 | 1503 | 32.2 / 5.5 | 35.1 / 15.3 |
-| FLORES-200 devtest | CC BY-SA 4.0 | 1012 | 27.4 / 3.3 | 34.1 / 12.6 |
+| Test set | Licence | n | n_distinct (hi / sat sources) | Hindi → Santali chrF++ / BLEU | Santali → Hindi chrF++ / BLEU | Paper chrF++ (all-source avg, → sat / sat →) |
+|---|---|---|---|---|---|---|
+| IN22-Gen | CC BY 4.0 | 1024 | 1024 / 1024 | 31.3 / 4.2 | 37.6 / 15.8 | 30.0 / 35.8 |
+| IN22-Conv | CC BY 4.0 | 1503 | 1497 / 1500 | 32.2 / 5.5 | 35.1 / 15.3 | 30.4 / 33.8 |
+| FLORES-200 devtest | CC BY-SA 4.0 | 1012 | 1012 / 1012 | 27.4 / 3.3 | 34.1 / 12.6 | 26.1 / 31.5 |
+
+Scores use every pair, as published results do. On distinct sources only
+(IN22-Conv repeats a few short lines) every score is the same to one decimal
+(`eval/results/benchmarks.md`).
 
 For comparison only: the IndicTrans2 paper reports this model's chrF++
 **averaged over all Indic languages** into / out of Santali (FLORES 26.1 / 31.5,
@@ -272,18 +282,29 @@ Against human references it costs little: on the 814 FLORES-200 devtest
 sentences of 18+ words, chunked chrF++ 27.3 vs whole 27.5 (BLEU 2.3 vs 3.4);
 chunking scores higher on 387 of them (`eval/results/chunk_quality.md`).
 
-80 FLEURS Hindi sentences (public dataset, adult speech) and the 30 lesson
-lines; laptop, offline; `bench/latency_steps.py`. Run twice with the same
-settings (run 1: `latency_steps_app_run1.*`; run 2: `latency_steps_app.*`).
+FLEURS Hindi (public dataset, adult speech; n = 80 clips, n_distinct = 69
+sentences, the first clip of each counted) and the 30 lesson lines; laptop,
+offline; `bench/latency_steps.py`. Run twice with the same settings (run 1:
+`latency_steps_app_run1.*`; run 2: `latency_steps_app.*`).
 
-| Measure | Before Phase L | Now, run 1 | Now, run 2 | Target |
-|---|---|---|---|---|
-| Full time, sentences of ≤ 17 words, p90 | 3.74 s | **2.48 s** | **3.02 s** | ≤ 3 s: met in run 1, missed by 20 ms in run 2 |
-| Time to first audio, all sentences, p90 | 2.27 s | **2.32 s** | **2.30 s** | ≤ 3 s: **met** |
-| Full time, all sentences, median / p90 | 3.15 / 4.07 s | 2.15 / 3.11 s | 1.97 / 3.11 s | — |
-| Full time over 3 s | 51 of 80 | 12 of 80 | 11 of 80 | — |
-| Time to last audio, median / p90 | 3.35 / 4.86 s | 3.17 / 4.42 s | 2.82 / 4.32 s | — |
-| Lesson lines, full time, p90 | 1.63 s | 1.24 s | 1.21 s | — |
+| Measure (distinct sentences) | n / n_distinct | Before Phase L | Now, run 1 | Now, run 2 | Target |
+|---|---|---|---|---|---|
+| Full time, sentences of ≤ 17 words, p90 | 38 / 32 | 3.46 s | **2.48 s** | **3.02 s** | ≤ 3 s: met in run 1, missed by 20 ms in run 2 |
+| Time to first audio, all sentences, median / p90 | 80 / 69 | 1.80 / 2.43 s | 1.80 / **2.46 s** | 1.66 / **2.68 s** | p90 ≤ 3 s: **met** |
+| Full time, all sentences, median / p90 | 80 / 69 | 3.16 / 4.13 s | 2.26 / 3.29 s | 2.01 / 3.57 s | — |
+| Full time over 3 s | 80 / 69 | 47 of 69 | 12 of 69 | 11 of 69 | — |
+| Time to last audio, median / p90 | 80 / 69 | 3.42 / 5.35 s | 3.41 / 4.54 s | 3.15 / 4.52 s | — |
+| Lesson lines, full time, p90 | 30 / 30 | 1.63 s | 1.24 s | 1.21 s | — |
+
+By sentence length (words recognised), full time median / p90, and time to
+first audio p90:
+
+| Words | n / n_distinct | Before Phase L: full | first p90 | Run 1: full | first p90 | Run 2: full | first p90 |
+|---|---|---|---|---|---|---|---|
+| 0-11 | 3 / 3 | 2.70 / 2.86 s | 1.80 s | 2.09 / 2.30 s | 1.85 s | 1.69 / 3.02 s | 2.30 s |
+| 12-17 | 35 / 29 | 2.99 / 3.74 s | 2.27 s | 1.97 / 2.84 s | 2.25 s | 1.84 / 3.02 s | 2.11 s |
+| 18-23 | 33 / 28 | 3.41 / 4.15 s | 2.80 s | 2.35 / 3.39 s | 2.55 s | 2.10 / 4.97 s | 3.21 s |
+| 24+ | 9 / 9 | 3.40 / 4.80 s | 2.26 s | 2.87 / 3.29 s | 2.71 s | 2.14 / 4.32 s | 3.48 s |
 
 The slowest clips in run 2 were slow in all three steps at once (speech
 recognition 1.7-2.4 s against a 0.7 s median), so the tail is the laptop, not a
@@ -294,12 +315,12 @@ What changed (each measured):
 
 | Step | Result | Decision |
 |---|---|---|
-| Translation on ONNX Runtime fp32 instead of PyTorch | median 504 vs 1450 ms on the long sentences; 110 of 110 outputs identical | **Adopted** |
+| Translation on ONNX Runtime fp32 instead of PyTorch | median 504 vs 1455 ms on the FLEURS sentences; identical outputs on 99 of 99 distinct sentences (69 FLEURS + 30 lesson lines) | **Adopted** |
 | Threads | More threads were slower: translation best at 6 (of 14 cores), speech recognition at 8 | NMT 6, ASR 8 |
-| ONNX Runtime dynamic int8 | 228 ms; IN22-Conv chrF++ 32.0 / 35.0, only 0.2 / 0.1 below fp32 (`eval/results/benchmarks_onnx-int8.md`). But only 43 of 110 outputs identical, and some long outputs run on (24+ words: full p90 7043 ms) | Passes the quality rule; **kept for the tablet** (F1). The laptop stays on fp32, which already meets the targets |
-| PyTorch dynamic int8 (Linear layers) | 901 ms, only 16 of 110 identical | Rejected |
+| ONNX Runtime dynamic int8 | 244 ms; IN22-Conv chrF++ 32.0 / 35.0 vs fp32 32.2 / 35.1 (n = 1503; `eval/results/benchmarks_onnx-int8.md`). But only 42 of 99 outputs identical, some long outputs run on (24+ words: full p90 7.04 s), and time to first audio p90 is 3.07 s | Passes the quality rule; **kept for the tablet** (F1). The laptop stays on fp32, which already meets the targets |
+| PyTorch dynamic int8 (Linear layers) | 1111 ms, only 15 of 99 identical | Rejected |
 | CTranslate2 | Its converters do not support this model (`docs/sources.md#ctranslate2`) | Not possible |
-| Endpointing: stop after 500 ms of silence | Cuts 27 of 78 read FLEURS sentences early (a pause mid-sentence); 0 of 30 lesson lines. Adaptive 500/1000 ms: 16 of 78 | A **setting, off by default** (`bench/results/endpoint_sim_*.md`) |
+| Endpointing: stop after 500 ms of silence | Cuts 27 of 78 read FLEURS clips early (n = 80 clips, 78 evaluated, n_distinct = 67 sentences; each recording's pauses count); 0 of 30 lesson lines. Adaptive 500/1000 ms: 16 of 78 | A **setting, off by default** (`bench/results/endpoint_sim_*.md`) |
 | Word counter | Live count while typing; an estimate (≈) while speaking, from FLEURS' 2.2 words per second; past 15 words a Hindi hint to speak shorter sentences | Built |
 
 Sources: `bench/results/latency_steps_app.md`, `latency_steps_torch-t14.md`,

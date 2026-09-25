@@ -145,11 +145,16 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 ### <a name="indicvoices"></a>ai4bharat/IndicVoices (Santali speech benchmark)
 - https://huggingface.co/datasets/ai4bharat/IndicVoices @ `c96f9088f1…`. **Licence: CC BY 4.0** (Hub card data). **Gated.**
 - Santali: 45 train shards and one `valid` shard (217,769,865 bytes). **There is no test split** (repo file list, 2026-09-25; the card lists only `valid` and `train` for every language). We use `valid` only: 80 clips, 62 speakers.
-- Access granted 2026-09-25. The IndicConformer cards do not say whether `valid` was used in training or model selection, so the Santali ASR numbers come from a validation split of unknown status, not a guaranteed held-out test set.
-- Card fields used: `text` (transcript), `speaker_id`, `gender`, `age_group`, `task_name`, `scenario`. Two of the 80 transcripts contain the tag `<unintelligible>`.
+- Access granted 2026-09-25. **Label used wherever a Santali ASR number appears:** "IndicVoices validation split (no public Santali test split); may overlap model-development data".
+- **How the validation split was used, checked 2026-09-25:**
+  - IndicVoices paper (Javed et al., arXiv 2403.01926, https://arxiv.org/html/2403.01926), Section 7, on the paper's own model: "we train a multilingual 130M conformer based model (IndicASR) following the same architecture as proposed by [38], using only the IndicVoices train set." Table 6 caption: "Number of speakers (#sp) and hours (#h) in the train, validation and test and splits across languages." The paper does not say how the validation split was used (early stopping, checkpoint selection or neither), and it describes a test split that the Hub dataset does not contain for Santali.
+  - The IndicConformer model cards we use (600M multilingual; 120M `..._hi_...` and `..._sat_...`) name no training data, cite no paper and say nothing about a validation split (read 2026-09-24/25).
+  - Nothing links the paper's 130M IndicASR to either checkpoint we use. **So: unknown.** The validation clips may overlap the data used to develop the models (training or checkpoint selection); our Santali WER may be optimistic.
+- **Not used for ASR evaluation:** `ai4bharat/indicvoices_r` (its Santali `test` split is derived from the same IndicVoices recordings; decision 2026-09-25).
+- Card fields used: `text` (transcript), `speaker_id`, `gender`, `age_group`, `task_name`, `scenario`. Two of the 80 transcripts contain the tag `<unintelligible>`: removed from the references only before normalised WER (2 tokens; `bench/README.md`).
 
 ### <a name="indicvoices-r"></a>ai4bharat/indicvoices_r
-- @ `5f4495c91d…`, **CC BY 4.0**, gated; has a Santali **test** split (2 shards, 537 MB) and 108 train shards. Access granted 2026-09-25; not used yet. It is a speech-synthesis corpus built from IndicVoices recordings (enhanced audio), so its test clips may be IndicVoices utterances; whether they overlap IndicConformer's training data: unknown.
+- @ `5f4495c91d…`, **CC BY 4.0**, gated; has a Santali **test** split (2 shards, 537 MB) and 108 train shards. Access granted 2026-09-25; not used yet. It is a speech-synthesis corpus built from IndicVoices recordings (enhanced audio), so its test clips may be IndicVoices utterances. **Not used for ASR evaluation** (derived from the same recordings).
 
 ### <a name="in22"></a>ai4bharat/IN22-Gen and IN22-Conv (translation benchmark)
 - IN22-Gen @ `e042ab3d30…`, 1024 sentences; IN22-Conv @ `18cd45870f…`, 1503 sentences. **CC BY 4.0** (card: `license: cc-by-4.0`), n-way parallel, includes `hin_Deva` and `sat_Olck`. Gated; access granted 2026-09-25; used by `eval/eval_benchmarks.py`.

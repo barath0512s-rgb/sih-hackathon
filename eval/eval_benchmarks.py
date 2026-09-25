@@ -96,13 +96,82 @@ def load(name):
     return [(h.strip(), s_.strip()) for h, s_ in pairs if h and s_], rev
 
 
+def scores(pairs, hyps, src_i, tgt_i):
+    """chrF++/BLEU on every pair (as published) and on distinct source sentences
+    (the first occurrence of each: IN22-Conv repeats some short lines)."""
+    import sacrebleu
+    refs = [p[tgt_i] for p in pairs]
+    seen, keep = set(), []
+    for i, p in enumerate(pairs):
+        if p[src_i] not in seen:
+            seen.add(p[src_i]); keep.append(i)
+    dh, dr = [hyps[i] for i in keep], [refs[i] for i in keep]
+    return {"n": len(pairs), "n_distinct": len(keep),
+            "chrf++": round(sacrebleu.corpus_chrf(hyps, [refs], word_order=2).score, 1),
+            "bleu": round(sacrebleu.corpus_bleu(hyps, [refs]).score, 1),
+            "chrf++_distinct": round(sacrebleu.corpus_chrf(dh, [dr], word_order=2).score, 1),
+            "bleu_distinct": round(sacrebleu.corpus_bleu(dh, [dr]).score, 1)}
+
+
+DIRECTIONS = {"hin_Deva-sat_Olck": (0, 1, "hin_Deva", "sat_Olck"),
+              "sat_Olck-hin_Deva": (1, 0, "sat_Olck", "hin_Deva")}
+
+
+def write_report(out, tag, skipped=()):
+    (RESULTS / f"benchmarks{tag}.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8", newline="\n")
+    lines = ["# Translation benchmark: Hindi <-> Santali", "",
+             f"- Date: {out['date']}; model {out['model']} @ {out['model_revision'][:10]}, {out['decoding']}, "
+             f"engine {out.get('engine')};",
+             "  the model alone (no teacher corrections, glossary or cache). Laptop, offline.",
+             "- chrF++ = sacrebleu corpus_chrf(word_order=2); BLEU = sacrebleu corpus_bleu (13a).",
+             "- n = sentence pairs in the set; n_distinct = distinct source sentences. The main columns use every",
+             "  pair, as published results do; the distinct columns keep the first occurrence of each source.",
+             "- **Paper column:** IndicTrans2 paper (arXiv 2305.16307v3, Tables 19-21), IT2-Dist-M2M, chrF++",
+             "  averaged over ALL Indic languages into Santali (for hin→sat) or from Santali (for sat→hin).",
+             "  It is not the Hindi pair itself: a plausibility range, not a like-for-like comparison.",
+             "- These test sets are for evaluation only. eval/test_set_hashes.json lets training scripts",
+             "  refuse any of their sentences (eval/leakage.py).", ""]
+    if out.get("limit"):
+        lines += [f"> **Quick check on the first {out['limit']} sentences only. Not a result.**", ""]
+    if skipped:
+        lines += ["Not run (no access yet): " + "; ".join(skipped), ""]
+    lines += ["| Test set | Direction | n | n_distinct | chrF++ | BLEU | chrF++ (distinct) | BLEU (distinct) | "
+              "Paper chrF++ (all-source avg) | Time |",
+              "|---|---|---|---|---|---|---|---|---|---|"]
+    for r in out["results"]:
+        lines.append(f"| {r['set']} ({SETS[r['set']]['license']}) | {r['direction']} | {r['n']} | "
+                     f"{r.get('n_distinct', '')} | {r['chrf++']} | {r['bleu']} | {r.get('chrf++_distinct', '')} | "
+                     f"{r.get('bleu_distinct', '')} | {r['paper_avg_chrf++']} | {r['seconds']:.0f} s |")
+    (RESULTS / f"benchmarks{tag}.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    print("\n".join(lines))
+
+
+def rescore(tag):
+    """Recompute the report from the saved translations (data/eval), no model."""
+    out = json.loads((RESULTS / f"benchmarks{tag}.json").read_text(encoding="utf-8"))
+    cache = {}
+    for r in out["results"]:
+        if r["set"] not in cache:
+            cache[r["set"]] = load(r["set"])[0]
+        pairs = cache[r["set"]][:out["limit"]] if out.get("limit") else cache[r["set"]]
+        src_i, tgt_i, _, _ = DIRECTIONS[r["direction"]]
+        hyps = (HYPS / f"hyp_{r['set']}_{r['direction']}{tag}.txt").read_text(encoding="utf-8").split("\n")[:len(pairs)]
+        assert len(hyps) == len(pairs), (r["set"], r["direction"], len(hyps), len(pairs))
+        r.update(scores(pairs, hyps, src_i, tgt_i))
+    write_report(out, tag)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--sets", nargs="+", choices=sorted(SETS), default=sorted(SETS))
     ap.add_argument("--limit", type=int, help="first N sentences only (a quick check, not a result)")
     ap.add_argument("--engine", choices=("torch", "onnx-fp32", "onnx-int8"),
                     help="translation engine (default: the app's, config.NMT_BACKEND); results get a suffix")
+    ap.add_argument("--rescore", action="store_true", help="rebuild the report from saved translations, no model")
     a = ap.parse_args()
+    if a.rescore:
+        rescore(("_limit" if a.limit else "") + (f"_{a.engine}" if a.engine else ""))
+        return
 
     import sacrebleu
     from eval.leakage import normalise_for_hash
@@ -143,45 +212,22 @@ def main():
            "limit": a.limit, "results": []}
     for name, (pairs, rev) in data.items():
         pairs = pairs[:a.limit] if a.limit else pairs
-        for direction, (src_i, tgt_i, sl, tl) in {"hin_Deva-sat_Olck": (0, 1, "hin_Deva", "sat_Olck"),
-                                                  "sat_Olck-hin_Deva": (1, 0, "sat_Olck", "hin_Deva")}.items():
+        for direction, (src_i, tgt_i, sl, tl) in DIRECTIONS.items():
             t0, hyps = time.perf_counter(), []
             for p in pairs:
                 h, _ = pl._nmt(p[src_i], sl, tl)          # the app's engine
                 hyps.append(pl._apply_domain_glossary(h, "sat_Olck") if tl == "sat_Olck" else h)
             secs = time.perf_counter() - t0
-            refs = [p[tgt_i] for p in pairs]
-            chrf = sacrebleu.corpus_chrf(hyps, [refs], word_order=2).score
-            bleu = sacrebleu.corpus_bleu(hyps, [refs]).score
+            sc = scores(pairs, hyps, src_i, tgt_i)
+            chrf, bleu = sc["chrf++"], sc["bleu"]
             (HYPS / f"hyp_{name}_{direction}{tag}.txt").write_text("\n".join(hyps) + "\n", encoding="utf-8")
             paper = PAPER[name][0 if tl == "sat_Olck" else 1]
-            out["results"].append({"set": name, "dataset_revision": rev, "direction": direction,
-                                   "n": len(pairs), "chrf++": round(chrf, 1), "bleu": round(bleu, 1),
+            out["results"].append({"set": name, "dataset_revision": rev, "direction": direction, **sc,
                                    "seconds": round(secs, 1), "paper_avg_chrf++": paper})
             print(f"{name:10} {direction}  n={len(pairs)}  chrF++ {chrf:.1f}  BLEU {bleu:.1f}  "
                   f"(paper, all-source average: {paper})  {secs:.0f} s")
 
-    (RESULTS / f"benchmarks{tag}.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
-    lines = ["# Translation benchmark: Hindi <-> Santali", "",
-             f"- Date: {out['date']}; model {out['model']} @ {out['model_revision'][:10]}, {out['decoding']};",
-             "  the model alone (no teacher corrections, glossary or cache). Laptop, offline.",
-             "- chrF++ = sacrebleu corpus_chrf(word_order=2); BLEU = sacrebleu corpus_bleu (13a).",
-             "- **Paper column:** IndicTrans2 paper (arXiv 2305.16307v3, Tables 19-21), IT2-Dist-M2M, chrF++",
-             "  averaged over ALL Indic languages into Santali (for hin→sat) or from Santali (for sat→hin).",
-             "  It is not the Hindi pair itself: a plausibility range, not a like-for-like comparison.",
-             "- These test sets are for evaluation only. eval/test_set_hashes.json lets training scripts",
-             "  refuse any of their sentences (eval/leakage.py).", ""]
-    if a.limit:
-        lines += [f"> **Quick check on the first {a.limit} sentences only. Not a result.**", ""]
-    if skipped:
-        lines += ["Not run (no access yet): " + "; ".join(skipped), ""]
-    lines += ["| Test set | Direction | n | chrF++ | BLEU | Paper chrF++ (all-source avg) | Time |",
-              "|---|---|---|---|---|---|---|"]
-    for r in out["results"]:
-        lines.append(f"| {r['set']} ({SETS[r['set']]['license']}) | {r['direction']} | {r['n']} | "
-                     f"{r['chrf++']} | {r['bleu']} | {r['paper_avg_chrf++']} | {r['seconds']:.0f} s |")
-    (RESULTS / f"benchmarks{tag}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print("\n".join(lines))
+    write_report(out, tag, skipped)
 
 
 if __name__ == "__main__":
