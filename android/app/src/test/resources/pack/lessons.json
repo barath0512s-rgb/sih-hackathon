@@ -1,0 +1,1948 @@
+[
+{
+"grade": "1",
+"topic": "counting_1_10",
+"lesson": {
+"title": "Counting 1 to 10",
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🍎",
+"n": 1
+},
+{
+"hi": "दो",
+"emoji": "🍎",
+"n": 2
+},
+{
+"hi": "तीन",
+"emoji": "🍎",
+"n": 3
+},
+{
+"hi": "चार",
+"emoji": "🍎",
+"n": 4
+},
+{
+"hi": "पांच",
+"emoji": "🍎",
+"n": 5
+},
+{
+"hi": "छह",
+"emoji": "🌰",
+"n": 6
+},
+{
+"hi": "सात",
+"emoji": "🌰",
+"n": 7
+},
+{
+"hi": "आठ",
+"emoji": "🌰",
+"n": 8
+},
+{
+"hi": "नौ",
+"emoji": "🌰",
+"n": 9
+},
+{
+"hi": "दस",
+"emoji": "🌰",
+"n": 10
+}
+],
+"competency": "Counts objects up to 10 and says numbers in order",
+"lakshya_ids": [
+"NIPUN-BV-NUM-1",
+"NIPUN-G1-NUM-1"
+],
+"domain": "numeracy",
+"mapping": "full for BV-NUM-1 (numerals up to 10); partial for G1-NUM-1 (only up to 10 of 99)",
+"review_status": "pending_teacher_review",
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम एक से दस तक गिनना सीखेंगे।",
+"note": "Show fingers — introduction"
+},
+{
+"type": "activity_instruction",
+"hindi": "अपनी उंगलियां दिखाओ और मेरे साथ गिनो।",
+"note": "Count together with fingers"
+},
+{
+"type": "activity_instruction",
+"hindi": "अब तुम्हारे सामने पांच पत्थर हैं। उन्हें गिनो।",
+"note": "Count physical objects"
+},
+{
+"type": "assessment_prompt",
+"hindi": "यहाँ कितने पत्थर हैं? बताओ।",
+"note": "Hold up 3 objects",
+"accept_answers": {
+"digits": [
+"3"
+],
+"hi": [
+"तीन",
+"teen"
+],
+"sat": [
+"ᱯᱮ",
+"ᱯᱮᱭᱟ"
+],
+"sat_sources": {
+"ᱯᱮ": "education_glossary",
+"ᱯᱮᱭᱟ": "IndicTrans2 output"
+},
+"review_status": "pending_native_review"
+}
+}
+]
+}
+},
+{
+"grade": "1",
+"topic": "shapes",
+"lesson": {
+"title": "Basic Shapes",
+"flashcards": [
+{
+"hi": "गोल",
+"emoji": "⭕"
+},
+{
+"hi": "चौकोर",
+"emoji": "🟦"
+},
+{
+"hi": "तिकोन",
+"emoji": "🔺"
+},
+{
+"hi": "तारा",
+"emoji": "⭐"
+},
+{
+"hi": "अंडाकार",
+"emoji": "🥚"
+},
+{
+"hi": "रेखा",
+"emoji": "➖"
+}
+],
+"competency": "Identifies circle, square, and triangle",
+"lakshya_ids": [
+"NIPUN-BV-NUM-2"
+],
+"domain": "numeracy",
+"mapping": "partial: the lesson names shapes; the goal is arranging shapes in a sequence",
+"review_status": "pending_teacher_review",
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "यह गोल है। यह एक वृत्त है।",
+"note": "Hold up a circle"
+},
+{
+"type": "lesson_script",
+"hindi": "यह चौकोर है। इसके चार कोने हैं।",
+"note": "Hold up a square"
+},
+{
+"type": "activity_instruction",
+"hindi": "अपने आसपास गोल चीज़ें ढूंढो।",
+"note": "Find circular objects around classroom"
+},
+{
+"type": "assessment_prompt",
+"hindi": "यह कौन सा आकार है?",
+"note": "Point to a triangle on the board",
+"accept_answers": {
+"hi": [
+"त्रिकोण",
+"तिकोन",
+"त्रिभुज",
+"trikon",
+"tikon"
+],
+"sat": [
+"ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+"ᱴᱨᱤᱝᱜᱚᱞ",
+"ᱴᱤᱠᱚᱱ"
+],
+"sat_sources": {
+"ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+"ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+"ᱴᱤᱠᱚᱱ": "IndicTrans2 output"
+},
+"review_status": "pending_native_review"
+}
+}
+]
+}
+},
+{
+"grade": "2",
+"topic": "addition",
+"lesson": {
+"title": "Simple Addition",
+"flashcards": [
+{
+"hi": "दो और एक तीन",
+"emoji": "🥭🥭 ➕ 🥭"
+},
+{
+"hi": "दो और दो चार",
+"emoji": "🍌🍌 ➕ 🍌🍌"
+},
+{
+"hi": "तीन और दो पांच",
+"emoji": "🪨🪨🪨 ➕ 🪨🪨"
+},
+{
+"hi": "तीन और चार सात",
+"emoji": "🌼🌼🌼 ➕ 🌼🌼🌼🌼"
+},
+{
+"hi": "पांच और पांच दस",
+"emoji": "✋ ➕ ✋"
+}
+],
+"competency": "Adds two single-digit numbers using objects",
+"lakshya_ids": [
+"NIPUN-G1-NUM-2"
+],
+"domain": "numeracy",
+"mapping": "full: single-digit addition is 'simple addition' (a Grade 1 goal, revised in Grade 2)",
+"review_status": "pending_teacher_review",
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम जोड़ना सीखेंगे। एक और एक मिलाओ।",
+"note": "Introduction — show joining of groups"
+},
+{
+"type": "activity_instruction",
+"hindi": "दो आम और तीन आम मिलाओ। कुल कितने हुए? उंगलियों पर गिनो।",
+"note": "Use objects to add"
+},
+{
+"type": "activity_instruction",
+"hindi": "अब तुम एक जोड़ का सवाल बनाओ।",
+"note": "Student creates own addition problem"
+},
+{
+"type": "assessment_prompt",
+"hindi": "तीन और चार कितने होते हैं?",
+"note": "Oral number answer expected",
+"accept_answers": {
+"digits": [
+"7"
+],
+"hi": [
+"सात",
+"saat"
+],
+"sat": [
+"ᱮᱭᱟᱭ",
+"ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+],
+"sat_sources": {
+"ᱮᱭᱟᱭ": "education_glossary",
+"ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+},
+"review_status": "pending_native_review"
+}
+}
+]
+}
+},
+{
+"grade": "2",
+"topic": "reading_words",
+"lesson": {
+"title": "Reading Simple Words",
+"flashcards": [
+{
+"hi": "माँ",
+"emoji": "👩"
+},
+{
+"hi": "पानी",
+"emoji": "💧"
+},
+{
+"hi": "घर",
+"emoji": "🏠"
+},
+{
+"hi": "फूल",
+"emoji": "🌸"
+},
+{
+"hi": "किताब",
+"emoji": "📕"
+},
+{
+"hi": "गाय",
+"emoji": "🐄"
+}
+],
+"competency": "Reads common two-syllable words aloud",
+"lakshya_ids": [
+"NIPUN-BV-LIT-2",
+"NIPUN-G2-LIT-1"
+],
+"domain": "literacy",
+"mapping": "full for BV-LIT-2 (simple 2-3 letter words); partial for G2-LIT-1 (single words, not text)",
+"review_status": "pending_teacher_review",
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "यह शब्द है — माँ। इसे पढ़ो।",
+"note": "Show word card: माँ"
+},
+{
+"type": "activity_instruction",
+"hindi": "इस शब्द को तीन बार पढ़ो — पानी।",
+"note": "Choral reading practice"
+},
+{
+"type": "assessment_prompt",
+"hindi": "यह शब्द क्या है? पढ़कर बताओ।",
+"note": "Hold up word card: घर",
+"accept_answers": {
+"hi": [
+"घर",
+"ghar"
+],
+"sat": [
+"ᱳᱲᱟᱜ",
+"ᱚᱲᱟᱜ"
+],
+"sat_sources": {
+"ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+"ᱚᱲᱟᱜ": "IndicTrans2 output"
+},
+"review_status": "pending_native_review"
+}
+}
+]
+}
+},
+{
+"grade": "3",
+"topic": "subtraction",
+"lesson": {
+"title": "Simple Subtraction",
+"flashcards": [
+{
+"hi": "पांच में से दो तीन",
+"emoji": "🪨🪨🪨🪨🪨 ➖ 🪨🪨"
+},
+{
+"hi": "चार में से एक तीन",
+"emoji": "🍬🍬🍬🍬 ➖ 🍬"
+},
+{
+"hi": "छह में से तीन तीन",
+"emoji": "🐟🐟🐟🐟🐟🐟 ➖ 🐟🐟🐟"
+},
+{
+"hi": "आठ में से पांच तीन",
+"emoji": "🌟🌟🌟🌟🌟🌟🌟🌟 ➖ 🌟🌟🌟🌟🌟"
+}
+],
+"competency": "Subtracts single-digit numbers using objects",
+"lakshya_ids": [
+"NIPUN-G1-NUM-2",
+"NIPUN-G2-NUM-2"
+],
+"domain": "numeracy",
+"mapping": "full for G1-NUM-2; partial for G2-NUM-2 (single digits only, goal is up to 99)",
+"review_status": "pending_teacher_review",
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम घटाना सीखेंगे। दस में से तीन घटाओ।",
+"note": "Introduction — remove objects"
+},
+{
+"type": "activity_instruction",
+"hindi": "सात पत्थर लो। तीन हटा दो। अब कितने बचे?",
+"note": "Concrete subtraction with objects"
+},
+{
+"type": "assessment_prompt",
+"hindi": "आठ में से पांच घटाओ। उत्तर क्या है?",
+"note": "Oral answer expected",
+"accept_answers": {
+"digits": [
+"3"
+],
+"hi": [
+"तीन",
+"teen"
+],
+"sat": [
+"ᱯᱮ",
+"ᱯᱮᱭᱟ"
+],
+"sat_sources": {
+"ᱯᱮ": "education_glossary",
+"ᱯᱮᱭᱟ": "IndicTrans2 output"
+},
+"review_status": "pending_native_review"
+}
+}
+]
+}
+},
+{
+"grade": "0",
+"topic": "imp_67cb986ab3",
+"lesson": {
+"title": "पाँच तक गिनती",
+"competency": "Recognizes and reads numerals up to 10.",
+"lakshya_ids": [
+"NIPUN-BV-NUM-1"
+],
+"domain": "numeracy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम एक से पाँच तक गिनेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱢᱤᱫ ᱠᱷᱚᱱ ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱞᱮᱠᱷᱟ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/0"
+},
+{
+"type": "lesson_script",
+"hindi": "यह एक गेंद है।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱢᱤᱫᱴᱟᱝ ᱵᱚᱞ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/1"
+},
+{
+"type": "lesson_script",
+"hindi": "ये दो केले हैं।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱵᱟᱨᱭᱟ ᱠᱟᱞ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/2"
+},
+{
+"type": "lesson_script",
+"hindi": "मेज़ पर तीन पत्थर हैं।",
+"note": "",
+"santali": "ᱴᱮᱵᱤᱞ ᱨᱮ ᱯᱮᱭᱟ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "मेरे साथ एक, दो, तीन, चार, पाँच बोलो।",
+"note": "",
+"santali": "ᱤᱧ ᱥᱟᱶ ᱢᱤᱫ, ᱵᱟᱨ, ᱯᱮᱭᱟ, ᱯᱳᱱ, ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱠᱟᱛᱷᱟ ᱞᱟᱹᱭ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/4"
+},
+{
+"type": "activity_instruction",
+"hindi": "अपनी उंगलियों पर पाँच तक गिनो।",
+"note": "",
+"santali": "ᱟᱢᱟᱜ ᱛᱤ ᱨᱮ ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱫᱷᱟᱹᱵᱤᱡ ᱜᱤᱭᱩᱱ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "मेज़ पर कितने पत्थर हैं?",
+"note": "",
+"accept_answers": {
+"hi": [
+"तीन"
+],
+"sat": [
+"ᱯᱮ"
+],
+"sat_sources": {
+"ᱯᱮ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"3"
+]
+},
+"santali": "ᱴᱮᱵᱤᱞ ᱨᱮ ᱛᱤᱱᱟᱹᱜ ᱜᱟᱱ ᱫᱷᱤᱨᱤ ᱢᱮᱱᱟᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/6"
+},
+{
+"type": "lesson_script",
+"hindi": "शाबाश, तुमने अच्छा गिना।",
+"note": "",
+"santali": "ᱥᱟᱵᱟᱥ, ᱟᱢ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱛᱮ ᱞᱮᱠᱷᱟ ᱟᱠᱟᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_67cb986ab3/7"
+}
+],
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "पाँच",
+"emoji": "🔵",
+"n": 5
+},
+{
+"hi": "गेंद",
+"emoji": "⚽"
+},
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "केले",
+"emoji": "🍌"
+},
+{
+"hi": "तीन",
+"emoji": "🔵",
+"n": 3
+},
+{
+"hi": "पत्थर",
+"emoji": "🪨"
+},
+{
+"hi": "चार",
+"emoji": "🔵",
+"n": 4
+}
+]
+}
+},
+{
+"grade": "0",
+"topic": "imp_223bee4bcc",
+"lesson": {
+"title": "छोटे से बड़े तक",
+"competency": "Arranges numbers/objects/shapes /occurrence of events in a sequence",
+"lakshya_ids": [
+"NIPUN-BV-NUM-2"
+],
+"domain": "numeracy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम चीज़ों को क्रम से रखना सीखेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱡᱤᱱᱤᱥ ᱠᱚ ᱵᱚᱱᱚᱫᱚᱞ ᱨᱮ ᱫᱚᱦᱚ ᱥᱮᱪ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/0"
+},
+{
+"type": "lesson_script",
+"hindi": "यह छोटी गेंद है और यह बड़ी गेंद है।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱢᱤᱫᱴᱟᱝ ᱦᱩᱰᱤᱧ ᱵᱚᱞ ᱟᱨ ᱱᱚᱶᱟ ᱫᱚ ᱢᱟᱨᱟᱝ ᱵᱚᱞ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/1"
+},
+{
+"type": "activity_instruction",
+"hindi": "सबसे छोटी चीज़ पहले रखो।",
+"note": "",
+"santali": "ᱯᱳᱭᱞᱳ ᱨᱮ ᱦᱩᱰᱤᱧ ᱡᱤᱱᱤᱥ ᱠᱚ ᱫᱚᱦᱚ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/2"
+},
+{
+"type": "activity_instruction",
+"hindi": "उसके बाद उससे बड़ी चीज़ रखो।",
+"note": "",
+"santali": "ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱚᱱᱟ ᱠᱷᱚᱱ ᱢᱟᱨᱟᱝ ᱠᱤᱪᱷᱩ ᱫᱚᱦᱚ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "सबसे बड़ी चीज़ आखिर में रखो।",
+"note": "",
+"santali": "ᱢᱩᱪᱟᱹᱫ ᱨᱮ ᱡᱚᱛᱚ ᱠᱷᱚᱱ ᱢᱟᱨᱟᱝ ᱫᱚ ᱫᱚᱦᱚ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/4"
+},
+{
+"type": "assessment_prompt",
+"hindi": "पहले कौन सी संख्या आती है, एक या दो?",
+"note": "",
+"accept_answers": {
+"hi": [
+"एक"
+],
+"sat": [
+"ᱢᱤᱫ"
+],
+"sat_sources": {
+"ᱢᱤᱫ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"1"
+]
+},
+"santali": "ᱯᱳᱭᱞᱳ ᱮᱞ ᱫᱚ ᱪᱮᱫ, ᱢᱤᱫ ᱥᱮ ᱵᱟᱨᱭᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "दो के बाद कौन सी संख्या आती है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"तीन"
+],
+"sat": [
+"ᱯᱮ"
+],
+"sat_sources": {
+"ᱯᱮ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"3"
+]
+},
+"santali": "ᱵᱟᱨᱭᱟ ᱛᱟᱭᱚᱢ ᱪᱮᱫ ᱮᱞ ᱦᱮᱡᱚᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_223bee4bcc/6"
+}
+],
+"flashcards": [
+{
+"hi": "गेंद",
+"emoji": "⚽"
+},
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+}
+]
+}
+},
+{
+"grade": "0",
+"topic": "imp_6e62f3af3c",
+"lesson": {
+"title": "अक्षर म",
+"competency": "Recognises letters and corresponding sounds",
+"lakshya_ids": [
+"NIPUN-BV-LIT-1"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम अक्षर म सीखेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱚᱞᱼᱵᱩᱴᱟᱹ ᱠᱚ ᱥᱮᱪ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/0"
+},
+{
+"type": "lesson_script",
+"hindi": "म की ध्वनि है म।",
+"note": "",
+"santali": "ᱤᱧᱟᱹᱜ ᱥᱮᱨᱮᱧ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱤᱧ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/1"
+},
+{
+"type": "lesson_script",
+"hindi": "माँ शब्द म से शुरू होता है।",
+"note": "",
+"santali": "ᱟᱭᱳ ᱥᱟᱵᱟᱫ ᱫᱚ ᱤᱧ ᱠᱷᱚᱱ ᱮᱦᱚᱵᱚᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/2"
+},
+{
+"type": "lesson_script",
+"hindi": "मछली शब्द भी म से शुरू होता है।",
+"note": "",
+"santali": "ᱢᱤᱥ ᱥᱟᱵᱟᱫ ᱦᱚᱸ'ᱤᱧ'ᱠᱷᱚᱱ ᱮᱛᱚᱦᱚᱵᱚᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/3"
+},
+{
+"type": "lesson_script",
+"hindi": "मेरे साथ बोलो, म, म, माँ।",
+"note": "",
+"santali": "ᱤᱧ ᱥᱟᱶ ᱠᱟᱛᱷᱟ ᱞᱟᱹᱭ ᱢᱮ, ᱤᱧ, ᱤᱧ ᱟᱨ ᱟᱭᱳ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/4"
+},
+{
+"type": "activity_instruction",
+"hindi": "हवा में उंगली से म लिखो।",
+"note": "",
+"santali": "ᱦᱚᱭ ᱨᱮ ᱢᱤᱫᱴᱟᱝ ᱯᱷᱤᱝᱜᱟᱨ ᱛᱮ ᱚᱞ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "माँ शब्द किस अक्षर से शुरू होता है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"म"
+],
+"sat": [
+"ᱤᱧᱟᱹᱜ ᱟᱭᱢᱟᱜᱟᱱ ᱟᱭᱢᱟᱹᱜ ᱟᱭ"
+],
+"sat_sources": {
+"ᱤᱧᱟᱹᱜ ᱟᱭᱢᱟᱜᱟᱱ ᱟᱭᱢᱟᱹᱜ ᱟᱭ": "model"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ᱟᱭᱳ ᱥᱟᱵᱟᱫ ᱫᱚ ᱪᱮᱫ ᱮᱞ ᱠᱷᱚᱱ ᱮᱦᱚᱵᱚᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_6e62f3af3c/6"
+}
+],
+"flashcards": [
+{
+"hi": "माँ",
+"emoji": "👩"
+},
+{
+"hi": "मछली",
+"emoji": "🐟"
+},
+{
+"hi": "उंगली",
+"emoji": "☝️"
+}
+]
+}
+},
+{
+"grade": "0",
+"topic": "imp_f2598edf54",
+"lesson": {
+"title": "दो अक्षर वाले शब्द",
+"competency": "Reads simple words comprising of at least 2 to 3 alphabets.",
+"lakshya_ids": [
+"NIPUN-BV-LIT-2"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम छोटे शब्द पढ़ेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱦᱩᱰᱤᱧ ᱦᱩᱰᱤᱧ ᱠᱟᱛᱷᱟ ᱠᱚ ᱯᱟᱲᱦᱟᱣᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/0"
+},
+{
+"type": "lesson_script",
+"hindi": "यह शब्द है जल।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱥᱟᱵᱟᱫ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱫᱟᱜ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/1"
+},
+{
+"type": "lesson_script",
+"hindi": "जल में दो अक्षर हैं, ज और ल।",
+"note": "",
+"santali": "ᱫᱟᱜ ᱨᱮ ᱵᱟᱨᱭᱟ ᱮᱞ ᱢᱮᱱᱟᱜᱼᱟ, ᱡᱮ ᱟᱨ ᱮᱞ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/2"
+},
+{
+"type": "lesson_script",
+"hindi": "यह शब्द है घर।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱥᱟᱵᱟᱫ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱚᱲᱟᱜ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/3"
+},
+{
+"type": "lesson_script",
+"hindi": "यह शब्द है फल।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱥᱟᱵᱟᱫ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱯᱷᱚᱞᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/4"
+},
+{
+"type": "activity_instruction",
+"hindi": "इन शब्दों को मेरे साथ पढ़ो।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱠᱟᱛᱷᱟ ᱠᱚ ᱤᱧ ᱥᱟᱶ ᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "पढ़कर बताओ, यह शब्द क्या है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"घर"
+],
+"sat": [
+"ᱳᱲᱟᱜ"
+],
+"sat_sources": {
+"ᱳᱲᱟᱜ": "wordlist"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ᱯᱟᱲᱦᱟᱣ ᱢᱮ, ᱱᱚᱶᱟ ᱥᱟᱵᱟᱫ ᱫᱚ ᱪᱮᱫ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f2598edf54/6"
+}
+],
+"flashcards": [
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "घर",
+"emoji": "🏠"
+}
+]
+}
+},
+{
+"grade": "1",
+"topic": "imp_f571c8bd6b",
+"lesson": {
+"title": "दस से बीस तक",
+"competency": "Read and write numbers up to 99",
+"lakshya_ids": [
+"NIPUN-G1-NUM-1"
+],
+"domain": "numeracy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम दस से बीस तक गिनेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱜᱮᱞ ᱠᱷᱚᱱ ᱵᱟᱨ ᱥᱟᱭ ᱞᱮᱠᱷᱟ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/0"
+},
+{
+"type": "lesson_script",
+"hindi": "दस के बाद ग्यारह आता है।",
+"note": "",
+"santali": "ᱜᱮᱞ ᱛᱟᱭᱚᱢ ᱜᱮᱞ ᱜᱮᱞ ᱦᱮᱡᱚᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/1"
+},
+{
+"type": "lesson_script",
+"hindi": "ग्यारह के बाद बारह आता है।",
+"note": "",
+"santali": "ᱜᱮᱞ ᱜᱮᱞ ᱛᱟᱭᱚᱢ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱢᱤᱫ ᱵᱟᱨ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/2"
+},
+{
+"type": "activity_instruction",
+"hindi": "मेरे साथ दस से बीस तक गिनो।",
+"note": "",
+"santali": "ᱤᱧ ᱥᱟᱶᱛᱮ ᱜᱮᱞ ᱠᱷᱚᱱ ᱵᱟᱨ ᱥᱟᱭ ᱫᱷᱟᱹᱵᱤᱡ ᱥᱮᱨᱮᱧ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "बोर्ड पर पंद्रह लिखो।",
+"note": "",
+"santali": "ᱵᱳᱨᱰ ᱨᱮ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱚᱞ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/4"
+},
+{
+"type": "assessment_prompt",
+"hindi": "बारह के बाद कौन सी संख्या आती है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"तेरह"
+],
+"sat": [
+"ᱜᱮᱞ ᱯᱮ"
+],
+"sat_sources": {
+"ᱜᱮᱞ ᱯᱮ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"13"
+]
+},
+"santali": "ᱵᱟᱨ ᱜᱚᱴᱟᱝ ᱛᱟᱭᱚᱢ ᱪᱮᱫ ᱮᱞ ᱢᱮᱱᱟᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "बीस से पहले कौन सी संख्या आती है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"उन्नीस"
+],
+"sat": [
+"ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱮᱨᱢᱟ"
+],
+"sat_sources": {
+"ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱮᱨᱢᱟ": "model"
+},
+"review_status": "pending_native_review",
+"digits": [
+"19"
+]
+},
+"santali": "ᱵᱟᱨ ᱥᱟᱭ ᱨᱮᱭᱟᱜ ᱞᱟᱦᱟ ᱨᱮ ᱪᱮᱫ ᱮᱞ ᱢᱮᱱᱟᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_f571c8bd6b/6"
+}
+],
+"flashcards": [
+{
+"hi": "दस",
+"emoji": "🔵",
+"n": 10
+},
+{
+"hi": "बीस",
+"emoji": "🔢"
+},
+{
+"hi": "ग्यारह",
+"emoji": "🔢"
+},
+{
+"hi": "बारह",
+"emoji": "🔢"
+},
+{
+"hi": "पंद्रह",
+"emoji": "🔢"
+}
+]
+}
+},
+{
+"grade": "1",
+"topic": "imp_746143be92",
+"lesson": {
+"title": "छोटे वाक्य पढ़ना",
+"competency": "Reads small sentences consisting of at least 4-5 simple words in an age appropriate unknown text.",
+"lakshya_ids": [
+"NIPUN-G1-LIT-1"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम छोटे वाक्य पढ़ेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱦᱩᱰᱤᱧ ᱦᱩᱰᱤᱧ ᱵᱚᱨᱱᱚᱱ ᱠᱚ ᱯᱟᱲᱦᱟᱣᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_746143be92/0"
+},
+{
+"type": "lesson_script",
+"hindi": "यह वाक्य है, राम घर जाता है।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱠᱟᱛᱷᱟ, ᱨᱟᱢ ᱚᱲᱟᱜ ᱮ ᱪᱟᱞᱟᱣ ᱮᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_746143be92/1"
+},
+{
+"type": "lesson_script",
+"hindi": "यह वाक्य है, मीना पानी पीती है।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱠᱟᱛᱷᱟ, ᱢᱮᱱᱟ ᱫᱟᱜ ᱠᱚ ᱦᱟᱛᱟᱣᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_746143be92/2"
+},
+{
+"type": "lesson_script",
+"hindi": "हर वाक्य में चार शब्द हैं।",
+"note": "",
+"santali": "ᱥᱟᱱᱟᱢ ᱵᱚᱨᱱᱚᱱ ᱨᱮ ᱯᱳᱱ ᱜᱚᱴᱟᱝ ᱵᱚᱨᱱᱚᱱ ᱢᱮᱱᱟᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_746143be92/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "इस वाक्य को धीरे धीरे पढ़ो।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱥᱟᱵᱟᱫ ᱫᱚ ᱠᱚᱢ ᱚᱠᱛᱚ ᱨᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_746143be92/4"
+},
+{
+"type": "assessment_prompt",
+"hindi": "मीना क्या पीती है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"पानी"
+],
+"sat": [
+"ᱫᱟᱜ"
+],
+"sat_sources": {
+"ᱫᱟᱜ": "wordlist"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ᱢᱮᱱᱟ ᱪᱮᱫ ᱮᱧᱟᱢᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_746143be92/5"
+}
+],
+"flashcards": [
+{
+"hi": "घर",
+"emoji": "🏠"
+},
+{
+"hi": "पानी",
+"emoji": "💧"
+},
+{
+"hi": "चार",
+"emoji": "🔵",
+"n": 4
+}
+]
+}
+},
+{
+"grade": "2",
+"topic": "imp_acb593a491",
+"lesson": {
+"title": "सौ से बड़ी संख्याएँ",
+"competency": "Read and write numbers up to 999",
+"lakshya_ids": [
+"NIPUN-G2-NUM-1"
+],
+"domain": "numeracy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम सौ से बड़ी संख्याएँ पढ़ेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱥᱟᱭ ᱠᱷᱚᱱ ᱦᱚᱸ ᱰᱷᱮᱨ ᱮᱞ ᱠᱚ ᱯᱟᱲᱦᱟᱣᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_acb593a491/0"
+},
+{
+"type": "lesson_script",
+"hindi": "एक सौ बीस में एक सौ और बीस है।",
+"note": "",
+"santali": "ᱢᱤᱫ ᱥᱟᱭ ᱵᱟᱨ ᱨᱮᱭᱟᱜ ᱢᱤᱫ ᱥᱟᱭ ᱟᱨ ᱵᱟᱨ ᱥᱟᱭ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_acb593a491/1"
+},
+{
+"type": "lesson_script",
+"hindi": "दो सौ पचास में दो सौ और पचास है।",
+"note": "",
+"santali": "ᱵᱟᱨ ᱥᱟᱭ ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱢᱩᱫᱽᱨᱮ ᱵᱟᱨ ᱥᱟᱭ ᱟᱨ ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱢᱮᱱᱟᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_acb593a491/2"
+},
+{
+"type": "activity_instruction",
+"hindi": "बोर्ड पर लिखी संख्या को पढ़ो।",
+"note": "",
+"santali": "ᱵᱳᱨᱰ ᱨᱮ ᱚᱞ ᱮᱞ ᱫᱚ ᱯᱟᱲᱦᱟᱣ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_acb593a491/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "अपनी कॉपी में तीन सौ लिखो।",
+"note": "",
+"santali": "ᱟᱢᱟᱜ ᱠᱚᱯᱤ ᱨᱮ ᱯᱮ ᱥᱟᱭ ᱚᱞ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_acb593a491/4"
+},
+{
+"type": "assessment_prompt",
+"hindi": "एक सौ और बीस मिलकर कितने होते हैं?",
+"note": "",
+"accept_answers": {
+"hi": [
+"एक सौ बीस"
+],
+"sat": [
+"ᱢᱤᱫ ᱥᱟᱭ ᱵᱟᱨ ᱥᱟᱭ ᱥᱟᱭ ᱥᱟᱭ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱟᱭ ᱥᱟᱭ ᱢᱤᱫ ᱥᱟᱭ ᱥᱟᱭ ᱵᱟᱨ ᱜᱮᱞ ᱜᱮᱞ ᱢᱤᱫ ᱥᱟᱭ ᱜᱮᱞ ᱥᱟᱭ ᱜᱮᱞ ᱢᱤᱫ ᱜᱮᱞ ᱜᱮᱞ ᱵᱟᱨ ᱜᱮᱞ ᱥᱟᱭ"
+],
+"sat_sources": {
+"ᱢᱤᱫ ᱥᱟᱭ ᱵᱟᱨ ᱥᱟᱭ ᱥᱟᱭ ᱥᱟᱭ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱟᱭ ᱥᱟᱭ ᱢᱤᱫ ᱥᱟᱭ ᱥᱟᱭ ᱵᱟᱨ ᱜᱮᱞ ᱜᱮᱞ ᱢᱤᱫ ᱥᱟᱭ ᱜᱮᱞ ᱥᱟᱭ ᱜᱮᱞ ᱢᱤᱫ ᱜᱮᱞ ᱜᱮᱞ ᱵᱟᱨ ᱜᱮᱞ ᱥᱟᱭ": "model"
+},
+"review_status": "pending_native_review",
+"digits": [
+"120"
+]
+},
+"santali": "ᱢᱤᱫ ᱥᱟᱭ ᱟᱨ ᱵᱟᱨ ᱥᱟᱭ ᱢᱤᱫ ᱥᱟᱶᱛᱮ ᱛᱤᱱᱟᱹᱜ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_acb593a491/5"
+}
+],
+"flashcards": [
+{
+"hi": "सौ",
+"emoji": "🔢"
+},
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "बीस",
+"emoji": "🔢"
+},
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "पचास",
+"emoji": "🔢"
+},
+{
+"hi": "तीन",
+"emoji": "🔵",
+"n": 3
+}
+]
+}
+},
+{
+"grade": "2",
+"topic": "imp_8835da564c",
+"lesson": {
+"title": "कहानी सुनो और समझो",
+"competency": "Read with meaning",
+"lakshya_ids": [
+"NIPUN-G2-LIT-1"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज मैं एक छोटी कहानी पढ़ूँगी।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱤᱧ ᱢᱤᱫᱴᱟᱝ ᱦᱩᱰᱤᱧ ᱠᱟᱹᱦᱱᱤᱭ ᱯᱟᱲᱦᱟᱣᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/0"
+},
+{
+"type": "lesson_script",
+"hindi": "एक गाँव में एक प्यासी चिड़िया थी।",
+"note": "",
+"santali": "ᱢᱤᱫᱴᱟᱝ ᱟᱛᱳ ᱨᱮ ᱢᱤᱫᱴᱟᱝ ᱠᱷᱮᱹᱞᱚᱜ ᱠᱟᱱ ꯎꯆꯦꯛ ᱛᱟᱦᱮᱸ ᱠᱟᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/1"
+},
+{
+"type": "lesson_script",
+"hindi": "उसे एक घड़े में थोड़ा पानी मिला।",
+"note": "",
+"santali": "ᱩᱱᱤ ᱫᱚ ᱢᱤᱫᱴᱟᱝ ᱞᱚᱫᱚᱢ ᱨᱮ ᱠᱤᱪᱷᱩᱠ ᱫᱟᱜ ᱮ ᱧᱟᱢ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/2"
+},
+{
+"type": "lesson_script",
+"hindi": "चिड़िया ने घड़े में छोटे पत्थर डाले।",
+"note": "",
+"santali": "ꯎꯆꯦꯛ ᱫᱚ ᱞᱚᱫᱚᱢ ᱨᱮ ᱦᱩᱰᱤᱧ ᱚᱛᱢᱚᱱ ᱠᱚ ᱫᱚᱦᱚ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/3"
+},
+{
+"type": "lesson_script",
+"hindi": "पानी ऊपर आ गया और चिड़िया ने पानी पिया।",
+"note": "",
+"santali": "ᱫᱟᱜ ᱪᱮᱛᱟᱱ ᱨᱮ ᱦᱮᱡ ᱮᱱᱟ ᱟᱨ ꯎꯆꯦꯛ ᱫᱚ ᱫᱟᱜ ᱮ ᱦᱟᱛᱟᱣ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/4"
+},
+{
+"type": "activity_instruction",
+"hindi": "कहानी ध्यान से सुनो।",
+"note": "",
+"santali": "ᱠᱟᱹᱦᱱᱤ ᱫᱚ ᱩᱭᱦᱟᱹᱨ ᱥᱟᱞᱟᱜ ᱵᱟᱰᱟᱭ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "चिड़िया ने घड़े में क्या डाला?",
+"note": "",
+"accept_answers": {
+"hi": [
+"पत्थर"
+],
+"sat": [
+"ᱫᱷᱤᱨᱤ"
+],
+"sat_sources": {
+"ᱫᱷᱤᱨᱤ": "wordlist"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ᱜᱳᱲᱤᱭᱟᱹ ᱫᱚ ᱪᱮᱫ ᱮ ᱫᱚᱦᱚ ᱠᱮᱫᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/6"
+},
+{
+"type": "assessment_prompt",
+"hindi": "चिड़िया को क्या चाहिए था?",
+"note": "",
+"accept_answers": {
+"hi": [
+"पानी"
+],
+"sat": [
+"ᱫᱟᱜ"
+],
+"sat_sources": {
+"ᱫᱟᱜ": "wordlist"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ꯎꯆꯦꯛ ᱫᱚ ᱪᱮᱫ ᱮ ᱠᱷᱚᱡ ᱞᱮᱫᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_8835da564c/7"
+}
+],
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "चिड़िया",
+"emoji": "🐦"
+},
+{
+"hi": "पानी",
+"emoji": "💧"
+},
+{
+"hi": "पत्थर",
+"emoji": "🪨"
+}
+]
+}
+},
+{
+"grade": "3",
+"topic": "imp_2a190b718f",
+"lesson": {
+"title": "गुणा: बराबर समूह",
+"competency": "Solve simple multiplication problems",
+"lakshya_ids": [
+"NIPUN-G3-NUM-2"
+],
+"domain": "numeracy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम गुणा सीखेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱜᱩᱱᱢᱟᱜᱟᱱ ᱥᱮᱪ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/0"
+},
+{
+"type": "lesson_script",
+"hindi": "यहाँ तीन थैले हैं और हर थैले में दो आम हैं।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱨᱮ ᱯᱮᱭᱟ ᱵᱮᱜᱽ ᱢᱮᱱᱟᱜᱼᱟ ᱟᱨ ᱡᱚᱛᱚ ᱵᱮᱜᱽ ᱨᱮ ᱵᱟᱨᱭᱟ ᱥᱟᱫᱷᱟᱨᱚᱱ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/1"
+},
+{
+"type": "lesson_script",
+"hindi": "तीन बार दो आम मतलब छह आम।",
+"note": "",
+"santali": "ᱯᱮᱭᱟ ᱵᱟᱨ ᱵᱟᱨ ᱵᱟᱨ ᱵᱟᱨᱭᱟ ᱥᱟᱫᱷᱟᱨᱚᱱ ᱨᱮᱭᱟᱜ ᱢᱮᱱᱮᱫ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱛᱩᱨᱩᱭ ᱜᱚᱴᱟᱝ ᱥᱟᱫᱷᱟᱨᱚᱱ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/2"
+},
+{
+"type": "lesson_script",
+"hindi": "इसे तीन गुणा दो कहते हैं।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱯᱮ ᱜᱩᱱ ᱵᱟᱨ ᱢᱮᱱ ᱦᱩᱭᱩᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "चार समूह बनाओ, हर समूह में दो पत्थर रखो।",
+"note": "",
+"santali": "ᱯᱳᱱ ᱜᱚᱴᱟᱝ ᱜᱟᱫᱮᱞ ᱵᱮᱱᱟᱣ ᱢᱮ, ᱡᱚᱛᱚ ᱜᱟᱫᱮᱞ ᱨᱮ ᱵᱟᱨᱭᱟ ᱫᱷᱤᱨᱤ ᱫᱚᱦᱚ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/4"
+},
+{
+"type": "assessment_prompt",
+"hindi": "चार गुणा दो कितने होते हैं?",
+"note": "",
+"accept_answers": {
+"hi": [
+"आठ"
+],
+"sat": [
+"ᱤᱨᱟᱹᱞ"
+],
+"sat_sources": {
+"ᱤᱨᱟᱹᱞ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"8"
+]
+},
+"santali": "ᱯᱳᱱ ᱜᱩᱱ ᱵᱟᱨ ᱫᱚ ᱛᱤᱱᱟᱹᱜ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "दो गुणा पाँच कितने होते हैं?",
+"note": "",
+"accept_answers": {
+"hi": [
+"दस"
+],
+"sat": [
+"ᱜᱮᱞ"
+],
+"sat_sources": {
+"ᱜᱮᱞ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"10"
+]
+},
+"santali": "ᱵᱟᱨ ᱜᱩᱱ ᱢᱚᱬᱮ ᱫᱚ ᱛᱤᱱᱟᱹᱜ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_2a190b718f/6"
+}
+],
+"flashcards": [
+{
+"hi": "तीन",
+"emoji": "🔵",
+"n": 3
+},
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "आम",
+"emoji": "🥭"
+},
+{
+"hi": "छह",
+"emoji": "🔵",
+"n": 6
+},
+{
+"hi": "चार",
+"emoji": "🔵",
+"n": 4
+},
+{
+"hi": "पत्थर",
+"emoji": "🪨"
+},
+{
+"hi": "पाँच",
+"emoji": "🔵",
+"n": 5
+}
+]
+}
+},
+{
+"grade": "3",
+"topic": "imp_e065e91dbc",
+"lesson": {
+"title": "पढ़कर समझना",
+"competency": "Read with meaning",
+"lakshya_ids": [
+"NIPUN-G3-LIT-1"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम एक छोटा पाठ पढ़कर समझेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱢᱤᱫᱴᱟᱝ ᱦᱩᱰᱤᱧ ᱚᱞ ᱯᱟᱲᱦᱟᱣ ᱠᱟᱛᱮ ᱵᱟᱰᱟᱭ ᱧᱟᱢᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/0"
+},
+{
+"type": "lesson_script",
+"hindi": "सोनू हर सुबह स्कूल जाता है।",
+"note": "",
+"santali": "ᱥᱳᱱᱩ ᱡᱚᱛᱚ صبح ᱜᱮ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮᱭ ᱥᱮᱱᱚᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/1"
+},
+{
+"type": "lesson_script",
+"hindi": "उसके थैले में दो किताबें और एक कलम है।",
+"note": "",
+"santali": "ᱩᱱᱤᱭᱟᱜ ᱵᱮᱜᱽ ᱨᱮ ᱵᱟᱨᱭᱟ ᱯᱚᱛᱚᱵ ᱟᱨ ᱢᱤᱫᱴᱟᱝ ᱯᱮᱱ ᱢᱮᱱᱟᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/2"
+},
+{
+"type": "lesson_script",
+"hindi": "स्कूल में वह अपने दोस्तों के साथ खेलता है।",
+"note": "",
+"santali": "ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮ ᱩᱱᱤ ᱫᱚ ᱟᱡ ᱨᱮᱱ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱮ ᱠᱷᱮᱞᱳᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/3"
+},
+{
+"type": "activity_instruction",
+"hindi": "पाठ को ध्यान से पढ़ो।",
+"note": "",
+"santali": "ᱚᱞ ᱫᱚ ᱱᱟᱯᱟᱭ ᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/4"
+},
+{
+"type": "assessment_prompt",
+"hindi": "सोनू हर सुबह कहाँ जाता है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"स्कूल"
+],
+"sat": [
+"ᱵᱤᱨᱫᱟᱹᱜᱟᱲ"
+],
+"sat_sources": {
+"ᱵᱤᱨᱫᱟᱹᱜᱟᱲ": "model"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ᱥᱳᱱᱩ ᱡᱚᱛᱚ صبحᱮ ᱪᱮᱫ ᱥᱮᱫ ᱮ ᱥᱮᱱᱚᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "सोनू के थैले में कितनी किताबें हैं?",
+"note": "",
+"accept_answers": {
+"hi": [
+"दो"
+],
+"sat": [
+"ᱵᱟᱨ"
+],
+"sat_sources": {
+"ᱵᱟᱨ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"2"
+]
+},
+"santali": "ᱥᱳᱱᱩᱭᱟᱜ ᱵᱮᱜᱽ ᱨᱮ ᱛᱤᱱᱟᱹᱜ ᱜᱟᱱ ᱯᱚᱛᱚᱵ ᱢᱮᱱᱟᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_e065e91dbc/6"
+}
+],
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "कलम",
+"emoji": "🖊️"
+}
+]
+}
+},
+{
+"grade": "3",
+"topic": "imp_5c91c0c1bb",
+"lesson": {
+"title": "हज़ार तक की संख्याएँ",
+"competency": "Read and write numbers up to 9999",
+"lakshya_ids": [
+"NIPUN-G3-NUM-1"
+],
+"domain": "numeracy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम हज़ार तक की संख्याएँ पढ़ना और लिखना सीखेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱜᱚᱴᱟᱝ ᱞᱮᱠᱷᱟ ᱯᱟᱲᱦᱟᱣ ᱟᱨ ᱚᱞ ᱥᱮᱪ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/0"
+},
+{
+"type": "lesson_script",
+"hindi": "हर अंक की एक जगह होती है: इकाई, दहाई, सैकड़ा और हज़ार।",
+"note": "",
+"santali": "ᱡᱚᱛᱚ پوائنٹس ᱨᱮᱭᱟᱜ ᱢᱤᱫᱴᱟᱝ ᱴᱷᱟᱶ ᱢᱮᱱᱟᱜᱼᱟ ᱤᱭᱩᱱᱤᱴ, ᱵᱟᱨ ᱥᱟᱭ ᱥᱟᱭ ᱥᱟᱭ ᱜᱮᱞ ᱥᱟᱭ ᱥᱟᱭ ᱟᱭ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/1"
+},
+{
+"type": "lesson_script",
+"hindi": "संख्या 3425 में 3 हज़ार की जगह पर है।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱮᱞ ᱫᱚ 3425 ᱨᱮ 3 ᱥᱟᱭ ᱨᱮᱭᱟᱜ ᱴᱷᱟᱶᱮ ᱦᱟᱛᱟᱣ ᱟᱠᱟᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/2"
+},
+{
+"type": "lesson_script",
+"hindi": "4 सैकड़े की जगह पर है, 2 दहाई की जगह पर और 5 इकाई की जगह पर।",
+"note": "",
+"santali": "4 ᱥᱟᱭ ᱥᱟᱭ ᱥᱟᱭ ᱰᱟᱣᱩᱱ ᱰᱟᱣᱚᱱ ᱰᱟᱣᱩ ᱰᱟᱣᱤᱱ ᱰᱟᱣᱮᱱ ᱰᱟᱣᱱ ᱰᱟᱣꯟ ᱰᱟᱣᱳᱱ ᱰᱟᱣون ᱰᱟᱣᱩᱱᱰ ᱰᱟᱣᱩᱱᱤᱴ ᱰᱟᱣୂନ ᱰᱟᱣᱩᱢ ᱰᱟᱣᱩᱴ ᱰᱟᱣᱟᱣᱩᱱᱰ ᱰᱟᱣᱚᱞ ᱰᱟᱣᱩᱱᱩ ᱰᱟᱣun ᱰᱟᱣᱟᱱ ᱰᱟᱣᱧ ᱰᱟᱣᱟᱹᱲ ᱰᱟᱣ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/3"
+},
+{
+"type": "lesson_script",
+"hindi": "इसे पढ़ते हैं: तीन हज़ार चार सौ पच्चीस।",
+"note": "",
+"santali": "ᱱᱚᱶᱟ ᱫᱚ ᱯᱟᱲᱦᱟᱣ ᱢᱮ, ᱯᱮ ᱥᱟᱭ ᱥᱟᱭ ᱥᱟᱭ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱟᱭ ᱥᱟᱭ ᱟᱭ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/4"
+},
+{
+"type": "activity_instruction",
+"hindi": "अपनी कॉपी में 5208 लिखो और पढ़ो।",
+"note": "",
+"santali": "ᱟᱢᱟᱜ ᱠᱚᱯᱤ ᱨᱮ ᱚᱞ ᱢᱮ ᱟᱨ 5208 ᱚᱞ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/5"
+},
+{
+"type": "assessment_prompt",
+"hindi": "संख्या 3425 में सैकड़े की जगह पर कौन सा अंक है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"चार"
+],
+"sat": [
+"ᱯᱩᱱ"
+],
+"sat_sources": {
+"ᱯᱩᱱ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"4"
+]
+},
+"santali": "3425 ᱱᱟᱢᱵᱟᱨ ᱨᱮ ᱥᱟᱭ ᱨᱮᱭᱟᱜ ᱴᱷᱟᱶ ᱨᱮ ᱪᱮᱫ ᱱᱟᱢᱵᱟᱨ ᱢᱮᱱᱟᱜᱼᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/6"
+},
+{
+"type": "assessment_prompt",
+"hindi": "सबसे बड़ी चार अंकों की संख्या कौन सी है?",
+"note": "",
+"accept_answers": {
+"hi": [
+"नौ हज़ार नौ सौ निन्यानवे"
+],
+"sat": [
+"ᱱᱟᱶᱟ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱮᱨᱢᱟ"
+],
+"sat_sources": {
+"ᱱᱟᱶᱟ ᱜᱮᱞ ᱜᱮᱞ ᱜᱮᱞ ᱥᱮᱨᱢᱟ": "model"
+},
+"review_status": "pending_native_review",
+"digits": [
+"9999"
+]
+},
+"santali": "ᱡᱚᱛᱚ ᱠᱷᱚᱱ ᱢᱟᱨᱟᱝ ᱯᱳᱱ ᱱᱟᱢᱵᱟᱨ ᱮᱞ ᱫᱚ ᱪᱮᱫ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_5c91c0c1bb/7"
+}
+],
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "3425",
+"emoji": "🔢"
+},
+{
+"hi": "3",
+"emoji": "🔵",
+"n": 3
+},
+{
+"hi": "4",
+"emoji": "🔵",
+"n": 4
+},
+{
+"hi": "2",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "5",
+"emoji": "🔵",
+"n": 5
+},
+{
+"hi": "तीन",
+"emoji": "🔵",
+"n": 3
+},
+{
+"hi": "चार",
+"emoji": "🔵",
+"n": 4
+},
+{
+"hi": "सौ",
+"emoji": "🔢"
+},
+{
+"hi": "5208",
+"emoji": "🔢"
+}
+]
+}
+},
+{
+"grade": "3",
+"topic": "imp_46b74c74d2",
+"lesson": {
+"title": "ज़ोर से पढ़ना: रीना और तालाब",
+"competency": "at least 60 words per minute",
+"lakshya_ids": [
+"NIPUN-G3-LIT-2",
+"NIPUN-G3-LIT-1"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम एक कहानी ज़ोर से पढ़ेंगे और देखेंगे कि एक मिनट में कितने शब्द पढ़ पाते हैं।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱢᱤᱫᱴᱟᱝ ᱠᱟᱹᱦᱱᱤᱭ ᱟᱹᱰᱤ ᱜᱟᱹᱨᱫᱷᱟᱹᱛᱮ ᱯᱟᱲᱦᱟᱣᱼᱟ ᱟᱨ ᱧᱮᱞᱼᱟ ᱡᱮ ᱢᱤᱫ ᱴᱤᱲᱤᱡ ᱨᱮ ᱛᱤᱱᱟᱹᱜ ᱜᱟᱱ ᱠᱟᱛᱷᱟ ᱯᱟᱲᱦᱟᱣ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/0"
+},
+{
+"type": "lesson_script",
+"hindi": "रीना के गाँव के पास एक बड़ा तालाब है।",
+"note": "",
+"santali": "ᱨᱮᱭᱮᱱᱟ ᱟᱛᱳ ᱥᱳᱨ ᱨᱮ ᱢᱤᱫᱴᱟᱝ ᱢᱟᱨᱟᱝ ᱫᱟᱜᱫᱩᱱᱩᱞ ᱢᱮᱱᱟᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/1"
+},
+{
+"type": "lesson_script",
+"hindi": "हर सुबह वह अपनी दादी के साथ तालाब पर जाती है।",
+"note": "",
+"santali": "ᱡᱚᱛᱚ صبح ᱜᱮ ᱩᱱᱤ ᱫᱚ ᱟᱡ ᱟᱭᱳ ᱥᱟᱶᱛᱮ ᱞᱚᱫᱚᱢ ᱨᱮ ᱥᱮᱱᱚᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/2"
+},
+{
+"type": "lesson_script",
+"hindi": "तालाब में बतखें तैरती हैं और किनारे पर बगुले खड़े रहते हैं।",
+"note": "",
+"santali": "ᱰᱩᱠᱠᱚ ᱫᱚ ᱞᱚᱫᱚᱢ ᱨᱮ ᱰᱩᱞᱟᱹᱜᱼᱟ ᱟᱨ ᱥᱩᱨ ᱨᱮ ᱵᱟᱜᱟᱹ ᱠᱚ ᱫᱚᱦᱚᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/3"
+},
+{
+"type": "lesson_script",
+"hindi": "एक दिन रीना ने पानी में एक छोटी मछली देखी।",
+"note": "",
+"santali": "ᱢᱤᱫ ᱫᱤᱱ ᱨᱤᱱᱟ ᱫᱟᱜ ᱨᱮ ᱢᱤᱫᱴᱟᱝ ᱦᱩᱰᱤᱧ ᱢᱤᱥ ᱮ ᱧᱮᱞ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/4"
+},
+{
+"type": "lesson_script",
+"hindi": "मछली बार बार ऊपर आती और फिर नीचे चली जाती।",
+"note": "",
+"santali": "ᱢᱤᱥ ᱫᱚ ᱵᱟᱨᱵᱟᱨ ᱪᱮᱛᱟᱱ ᱨᱮ ᱦᱮᱡ ᱮᱱᱟ ᱟᱨ ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱞᱟᱛᱟᱨ ᱨᱮ ᱪᱟᱞᱟᱣ ᱮᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/5"
+},
+{
+"type": "lesson_script",
+"hindi": "दादी ने बताया कि मछलियाँ पानी के अंदर ही साँस लेती हैं।",
+"note": "",
+"santali": "ᱢᱟᱨᱮ ᱞᱟᱹᱭ ᱞᱮᱫᱟᱭ ᱡᱮ, ᱢᱤᱥ ᱠᱚᱫᱚ ᱫᱟᱜ ᱨᱮᱭᱟᱜ ᱞᱟᱛᱟᱨ ᱨᱮ ᱜᱷᱟᱹᱞᱚᱜᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/6"
+},
+{
+"type": "lesson_script",
+"hindi": "रीना को यह बात बहुत अच्छी लगी।",
+"note": "",
+"santali": "ᱨᱤᱱᱟ ᱱᱚᱣᱟ ᱠᱟᱛᱷᱟ ᱫᱚ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱮ ᱧᱟᱢ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/7"
+},
+{
+"type": "lesson_script",
+"hindi": "घर आकर उसने अपने छोटे भाई को मछली की पूरी बात सुनाई।",
+"note": "",
+"santali": "ᱚᱲᱟᱜ ᱦᱮᱡ ᱛᱟᱭᱚᱢ ᱩᱱᱤ ᱫᱚ ᱟᱡ ᱦᱩᱰᱤᱧ ᱵᱚᱭᱦᱟ ᱫᱚ ᱢᱤᱥ ᱨᱮᱭᱟᱜ ᱥᱟᱱᱟᱢ ᱠᱟᱛᱷᱟ ᱮ ᱞᱟᱹᱭ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/8"
+},
+{
+"type": "activity_instruction",
+"hindi": "अब इस कहानी को ज़ोर से पढ़ो, मैं एक मिनट गिनूँगी।",
+"note": "",
+"santali": "ᱱᱤᱛ ᱱᱚᱶᱟ ᱠᱟᱹᱦᱱᱤ ᱫᱚ ᱟᱹᱰᱤ ᱜᱟᱹᱨᱫᱷᱟᱹᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ, ᱤᱧ ᱢᱤᱫ ᱴᱤᱲᱤᱡ ᱞᱮᱠᱷᱟᱧᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/9"
+},
+{
+"type": "assessment_prompt",
+"hindi": "रीना ने तालाब में क्या देखा?",
+"note": "",
+"accept_answers": {
+"hi": [
+"मछली"
+],
+"sat": [
+"ᱢᱤᱥ"
+],
+"sat_sources": {
+"ᱢᱤᱥ": "model"
+},
+"review_status": "pending_native_review"
+},
+"santali": "ᱨᱤᱱᱟ ᱪᱮᱫ ᱮ ᱧᱮᱞ ᱞᱮᱫᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_46b74c74d2/10"
+}
+],
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "पानी",
+"emoji": "💧"
+},
+{
+"hi": "मछली",
+"emoji": "🐟"
+},
+{
+"hi": "घर",
+"emoji": "🏠"
+}
+]
+}
+}
+]

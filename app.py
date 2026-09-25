@@ -809,6 +809,16 @@ def hub_ca():
                      download_name=f"{config.APP_NAME}-hub-ca.crt")
 
 
+@app.route("/pack/latest")
+def pack_latest():
+    """The newest content pack (tools/build_content_pack.py writes dist/packs/),
+    for the Android app's "From the hub" import. 404 until one is built."""
+    packs = sorted((config.BASE_DIR / "dist" / "packs").glob("content-pack-*.zip"))
+    if not packs:
+        abort(404)
+    return send_file(packs[-1], mimetype="application/zip", download_name=packs[-1].name)
+
+
 if __name__ == "__main__":
     import sys
     seed_team_lessons()

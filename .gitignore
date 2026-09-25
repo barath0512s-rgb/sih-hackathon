@@ -64,3 +64,13 @@ Claude outputs/
 
 # Local Claude Code preview config
 /.claude/
+
+# Content packs are build outputs (tools/build_content_pack.py)
+/dist/
+# Android build outputs
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.apk

@@ -1203,6 +1203,22 @@ input:focus,textarea:focus,select:focus{
       </div>
     </div>
 
+    <div class="slab item" id="packSlab" hidden>
+      <button class="open-btn" aria-expanded="false"><span class="e">📦</span><b data-t="se_pack">सामग्री पैक</b><span class="sign">+</span></button>
+      <div class="body">
+        <div class="srow"><span class="txt"><b data-t="se_pack_now">अभी का पैक</b><small id="packNow">…</small></span></div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_pack_file">फ़ाइल से</b><small data-t="se_pack_file_s">USB, SD कार्ड या डाउनलोड से .zip चुनिए</small></span>
+          <button class="btn" id="packFile"><span class="e">📂</span> <span data-t="se_pack_pick">चुनें</span></button>
+        </div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_pack_hub">हब से</b><small data-t="se_pack_hub_s">हब का https:// पता</small></span>
+          <input type="url" id="packHub" inputmode="url" autocomplete="off" spellcheck="false" aria-label="hub">
+          <button class="btn" id="packHubBtn"><span class="e">⬇️</span> <span data-t="se_pack_get">लाएँ</span></button>
+        </div>
+      </div>
+    </div>
+
     <div class="slab item">
       <button class="open-btn" aria-expanded="false"><span class="e">🧠</span><b data-t="se_models">मॉडल</b><span class="sign">+</span></button>
       <div class="body">
@@ -1302,6 +1318,10 @@ hi: {
   se_msg:"हर बार संदेश", se_msg_s:"अनुवाद होने पर छोटा संदेश",
   se_server:"सर्वर", se_addr:"सर्वर का पता", se_addr_s:"दूसरे उपकरण से जुड़ने पर बदलिए",
   se_grade:"आपकी कक्षा", se_save:"सहेजें", se_models:"मॉडल",
+  se_pack:"सामग्री पैक", se_pack_now:"अभी का पैक", se_pack_none:"कोई पैक नहीं: पाठ पाने के लिए पैक लाइए",
+  se_pack_file:"फ़ाइल से", se_pack_file_s:"USB, SD कार्ड या डाउनलोड से .zip चुनिए", se_pack_pick:"चुनें",
+  se_pack_hub:"हब से", se_pack_hub_s:"हब का https:// पता", se_pack_get:"लाएँ",
+  se_pack_ok:"पैक लग गया", se_pack_bad:"पैक नहीं लगा",
   se_m_hear:"सुनना", se_m_trans:"अनुवाद", se_m_speak:"बोलना", se_on:"चालू", se_off:"बंद",
   wr_title:"कक्षा कैसी रही", wr_steps:"पंक्तियाँ पूरी", wr_lines:"अनुवाद", wr_time:"समय",
   wr_sec:"औसत सेकंड", wr_back:"वापस",
@@ -1437,6 +1457,10 @@ en: {
   se_msg:"A note each time", se_msg_s:"A small message when a translation comes back",
   se_server:"Server", se_addr:"Server address", se_addr_s:"Change it when another device connects",
   se_grade:"Your grade", se_save:"Save", se_models:"Models",
+  se_pack:"Content pack", se_pack_now:"Installed pack", se_pack_none:"No pack yet: import one to get the lessons",
+  se_pack_file:"From a file", se_pack_file_s:"Pick the .zip from USB, SD card or Downloads", se_pack_pick:"Choose",
+  se_pack_hub:"From the hub", se_pack_hub_s:"The hub's https:// address", se_pack_get:"Download",
+  se_pack_ok:"Pack installed", se_pack_bad:"Pack not installed",
   se_m_hear:"Hearing", se_m_trans:"Translating", se_m_speak:"Speaking", se_on:"on", se_off:"off",
   wr_title:"How the class went", wr_steps:"Lines finished", wr_lines:"Translations", wr_time:"Time",
   wr_sec:"Average seconds", wr_back:"Back",
@@ -2000,6 +2024,7 @@ function wordLabel(n, estimate){
   el.classList.toggle("long", long);
 }
 function startVad(stream, onEnd){
+  if (!stream) return null;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const an = ctx.createAnalyser(); an.fftSize = 1024;
@@ -2026,9 +2051,37 @@ function startVad(stream, onEnd){
   } catch(e){ return null; }     // no Web Audio: the teacher stops by hand, as before
 }
 function pickMime(){
+  if (NATIVE_MIC) return "audio/wav";
   const want = ["audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus","audio/mp4"];
   return want.find(x => window.MediaRecorder && MediaRecorder.isTypeSupported(x)) || "";
 }
+/* Android app (F1 M1): the native 16 kHz microphone (window.VaaniMic), behind
+   the same small part of the MediaRecorder interface the code below uses. In a
+   browser (the hub) nothing changes. */
+const NATIVE_MIC = !!window.VaaniMic;
+function NativeRecorder(){ this.state = "inactive"; this.ondataavailable = null; this.onstop = null; }
+NativeRecorder.prototype.start = function(){ if (window.VaaniMic.start()) this.state = "recording"; };
+NativeRecorder.prototype.stop = function(){
+  if (this.state === "inactive") return;
+  this.state = "inactive";
+  const b64 = window.VaaniMic.stop();
+  if (b64 && this.ondataavailable){
+    const bin = atob(b64), u = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    this.ondataavailable({data: new Blob([u], {type: "audio/wav"})});
+  }
+  if (this.onstop) setTimeout(this.onstop, 0);
+};
+function micReady(){ return NATIVE_MIC || !!(navigator.mediaDevices && window.MediaRecorder); }
+async function micStream(){
+  if (!NATIVE_MIC) return navigator.mediaDevices.getUserMedia({audio:true});
+  if (!window.VaaniMic.available()) throw new Error("microphone permission");
+  return null;                              // no MediaStream: the app records natively
+}
+function newRecorder(stream, type){
+  return NATIVE_MIC ? new NativeRecorder() : new MediaRecorder(stream, type ? {mimeType:type} : undefined);
+}
+function endStream(stream){ if (stream) stream.getTracks().forEach(x => x.stop()); }
 async function mic(dir){
   const el = $(dir === "hi-to-sat" ? "#micHi" : "#micSa");
   const tEl = $(dir === "hi-to-sat" ? "#tHi" : "#tSa");
@@ -2039,11 +2092,11 @@ async function mic(dir){
     if (mr && mr.state !== "inactive") mr.stop();
     return;
   }
-  if (!navigator.mediaDevices || !window.MediaRecorder){ say(t("m_mic_none"), "🚫"); return; }
+  if (!micReady()){ say(t("m_mic_none"), "🚫"); return; }
 
   stopRec();
   let stream;
-  try { stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  try { stream = await micStream(); }
   catch(e){ say(t("m_mic_no"), "🚫"); return; }
 
   S.dir = dir; facing();
@@ -2056,10 +2109,10 @@ async function mic(dir){
 
   const type = pickMime();
   S.chunks = [];
-  S.mr = new MediaRecorder(stream, type ? {mimeType:type} : undefined);
+  S.mr = newRecorder(stream, type);
   S.mr.ondataavailable = e => { if (e.data && e.data.size) S.chunks.push(e.data); };
   S.mr.onstop = async () => {
-    stream.getTracks().forEach(x => x.stop());
+    endStream(stream);
     const blob = new Blob(S.chunks, {type: type || "audio/webm"});
     if (blob.size < 1200){ say(t("m_mic_short"), "⏱️"); return; }
     const src = dir === "hi-to-sat" ? $("#hi") : $("#sa");
@@ -2179,16 +2232,16 @@ function showVerdict(r){
 let ansRec = null;
 $("#micAns").onclick = async () => {
   if (ansRec){ ansRec.stop(); return; }
-  if (!navigator.mediaDevices || !window.MediaRecorder){ say(t("m_mic_none"), "🚫"); return; }
+  if (!micReady()){ say(t("m_mic_none"), "🚫"); return; }
   let stream;
-  try { stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  try { stream = await micStream(); }
   catch(e){ say(t("m_mic_no"), "🚫"); return; }
   const type = pickMime(), chunks = [];
-  ansRec = new MediaRecorder(stream, type ? {mimeType:type} : undefined);
+  ansRec = newRecorder(stream, type);
   $("#micAns").classList.add("live");
   ansRec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
   ansRec.onstop = async () => {
-    stream.getTracks().forEach(x => x.stop());
+    endStream(stream);
     $("#micAns").classList.remove("live");
     ansRec = null;
     const blob = new Blob(chunks, {type: type || "audio/webm"});
@@ -2654,6 +2707,24 @@ function toggle(id, fn){
 }
 toggle("#tgAuto", v => { S.autoplay = v; localStorage.setItem("vs_autoplay", v?"1":"0"); });
 toggle("#tgStop", v => { S.autostop = v; try { localStorage.setItem("vs_autostop", v?"1":"0"); } catch(e){} });
+// Android app: content-pack import (F1 M1). The result comes back through onPackImported.
+if (window.VaaniPack){
+  $("#packSlab").hidden = false;
+  const showPack = () => {
+    let st = {}; try { st = JSON.parse(window.VaaniPack.status()); } catch(e){}
+    $("#packNow").textContent = st.installed
+      ? (st.created || "") + " · " + num((st.counts && st.counts.lessons) || 0) + " " + t("les_title")
+      : t("se_pack_none");
+  };
+  showPack();
+  $("#packFile").onclick = () => window.VaaniPack.pickFile();
+  $("#packHubBtn").onclick = () => window.VaaniPack.fromHub($("#packHub").value.trim());
+  window.onPackImported = r => {
+    say((r.ok ? t("se_pack_ok") : t("se_pack_bad")) + (r.ok ? "" : ": " + r.message), r.ok ? "📦" : "⚠️");
+    showPack();
+    if (r.ok) setTimeout(() => location.reload(), 800);
+  };
+}
 toggle("#tgBig",  v => bigType(v));
 toggle("#tgAsk",  v => { S.confirm = v; localStorage.setItem("vs_confirm", v?"1":"0"); });
 $("#saveSet").onclick = async () => {

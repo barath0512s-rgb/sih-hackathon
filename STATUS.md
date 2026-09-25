@@ -1,4 +1,35 @@
-# STATUS, 25 Sep 2026: Checkpoint F1-A (master prompt v2)
+# STATUS, 25 Sep 2026: Checkpoint F1-M1 (master prompt v2)
+
+## F1-M1. App shell (branch `android-wp4`)
+
+Measured on the Android **emulator with 4 GB RAM** (API 37, x86_64, 4 cores).
+The AVD asks for 2 GB, but the emulator raises API 37 images to 4096 MB, so this
+is **not** a 2 GB measurement. Not yet on the Samsung tablet or on Android 9.
+
+| Item | Result | Evidence |
+|---|---|---|
+| Shared REST contract | `contract/rest_contract.json` (24 cases + setup) and `contract/runner.py`. The **hub passes** (`tests/test_contract.py`); the tablet's Kotlin API passes the same file in JVM tests (`ContractTest.kt`) and **on the emulator: 24 of 24 with network, 24 of 24 in airplane mode** | `bench/results/android_m1_emulator-4gb.md` |
+| App shell | Kotlin, minSdk 28, no AndroidX; WebView loads the repo's `frontend.html` (copied at build) from NanoHTTPD (BSD-3) on 127.0.0.1:5000, loopback only; cleartext allowed only for 127.0.0.1; APK 3.6 MB | `android/`, screenshot checked |
+| Typed mode offline | Lesson lines, flashcard words and glossary sentences answer from the pack (teacher corrections first); a new sentence answers 503 `engine_not_on_device` until M4. Typed lesson line round trip: median 35 ms (over adb forward) | same |
+| Content pack v0 | `tools/build_content_pack.py`: the hub's own /config, /lessons, /flashcards, all 17 lessons, 189 hi→sat and 18 sat→hi translations with source and review status, 399 Piper clips, 17 worksheet PDFs, SHA-256 manifest; 32.8 MB. Import checks every hash, refuses extra or changed files and paths outside the pack, keeps the old pack on failure (5 JVM tests); 3.3 s on the emulator. Hub route `GET /pack/latest`. Signing: M5 | `PackTest.kt` |
+| Kotlin ports | `normalize_key` and answer grading match Python on 22 + 29 vectors (`tests/data/normalize_key_vectors.json`, checked from both sides) | `TextNormTest.kt`, `tests/test_android_assets.py` |
+| Mic bridge | `window.VaaniMic`: AudioRecord 16 kHz mono PCM16 → WAV; the page uses it only inside the app. **Built, not exercised** (the emulator ran with no audio, and there is no on-device ASR before M3) | `MicBridge.kt` |
+| Peak PSS | 117 MB after the checks (one dumpsys reading, not a peak over time) | `android_m1_emulator-4gb.md` |
+| Bugs found on the device, fixed | (1) Android's ICU regex rejects `(?U)`: the Kotlin whitespace collapse crashed the app; now a plain loop. (2) A naming clash made `PackBridge.status()` call itself (stack overflow). (3) One failing request killed the app; the server now answers 500 and keeps running | commit |
+
+**Not done in M1 / differences:** file-picker and hub-download import are built
+but were only exercised through the debug import path (same verified import code);
+`/worksheet` on the tablet returns the pack's per-lesson sheet, not one made from
+the session's translated lines as on the hub; endpointing is off with the native mic;
+new UI strings exist in Hindi and English, and Santali falls back to Hindi until a
+native speaker writes them.
+
+**Needed from you:** (1) a 2 GB emulator needs an Android 9-11 x86_64 system image
+(about 1 GB download from Google via Android Studio's SDK Manager); may I install
+one, or will you? (2) the Samsung tablet over USB (developer mode, USB debugging)
+for M1 on real hardware.
+
+---
 
 ## F1-A. Phase A: can the engines run on a tablet? (branch `android-wp4`)
 

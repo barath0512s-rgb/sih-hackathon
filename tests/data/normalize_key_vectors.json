@@ -1,0 +1,711 @@
+{
+ "about": "textnorm.normalize_key and lesson_engine.grade outputs, for the Kotlin port (android). Regenerate if either changes.",
+ "normalize_key": [
+  {
+   "in": "आज हम जोड़ना सीखेंगे।",
+   "key": "आज हम जोडना सीखेंगे"
+  },
+  {
+   "in": "आज  हम जोडना सीखेंगे",
+   "key": "आज हम जोडना सीखेंगे"
+  },
+  {
+   "in": "पाँच",
+   "key": "पांच"
+  },
+  {
+   "in": "पांच",
+   "key": "पांच"
+  },
+  {
+   "in": "ज़रूर!",
+   "key": "जरूर"
+  },
+  {
+   "in": "  ᱫᱚ ᱵᱟᱨ᱾ ",
+   "key": "ᱫᱚ ᱵᱟᱨ"
+  },
+  {
+   "in": "᱗",
+   "key": "7"
+  },
+  {
+   "in": "७",
+   "key": "7"
+  },
+  {
+   "in": "7",
+   "key": "7"
+  },
+  {
+   "in": "Hello, World?",
+   "key": "hello world"
+  },
+  {
+   "in": "ᱟᱢ​‍ ᱪᱮᱫ?",
+   "key": "ᱟᱢ ᱪᱮᱫ"
+  },
+  {
+   "in": "",
+   "key": ""
+  },
+  {
+   "in": "   ",
+   "key": ""
+  },
+  {
+   "in": "१२ + ३ = १५",
+   "key": "12 + 3 = 15"
+  },
+  {
+   "in": "क़लम, ख़त।",
+   "key": "कलम खत"
+  },
+  {
+   "in": "ᱮᱦᱚᱵ᱿ ᱵᱟᱝ",
+   "key": "ᱮᱦᱚᱵ ᱵᱟᱝ"
+  },
+  {
+   "in": "“उद्धरण” — डैश",
+   "key": "उद्धरण डैश"
+  },
+  {
+   "in": "\tटैब\nपंक्ति",
+   "key": "टैब पंक्ति"
+  },
+  {
+   "in": "ﾟ",
+   "key": "ﾟ"
+  },
+  {
+   "in": "ABC def",
+   "key": "abc def"
+  },
+  {
+   "in": "ऋषि-मुनि",
+   "key": "ऋषि मुनि"
+  },
+  {
+   "in": "ᱯᱩᱱ᱑᱒",
+   "key": "ᱯᱩᱱ12"
+  }
+ ],
+ "grade": [
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "तीन",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "ᱯᱮ",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "3",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "गलत जवाब",
+   "signal": "yellow"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "  ।  ",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "त्रिकोण",
+     "तिकोन",
+     "त्रिभुज",
+     "trikon",
+     "tikon"
+    ],
+    "sat": [
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+     "ᱴᱨᱤᱝᱜᱚᱞ",
+     "ᱴᱤᱠᱚᱱ"
+    ],
+    "sat_sources": {
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+     "ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+     "ᱴᱤᱠᱚᱱ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "त्रिकोण",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "त्रिकोण",
+     "तिकोन",
+     "त्रिभुज",
+     "trikon",
+     "tikon"
+    ],
+    "sat": [
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+     "ᱴᱨᱤᱝᱜᱚᱞ",
+     "ᱴᱤᱠᱚᱱ"
+    ],
+    "sat_sources": {
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+     "ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+     "ᱴᱤᱠᱚᱱ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "त्रिकोण",
+     "तिकोन",
+     "त्रिभुज",
+     "trikon",
+     "tikon"
+    ],
+    "sat": [
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+     "ᱴᱨᱤᱝᱜᱚᱞ",
+     "ᱴᱤᱠᱚᱱ"
+    ],
+    "sat_sources": {
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+     "ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+     "ᱴᱤᱠᱚᱱ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "गलत जवाब",
+   "signal": "yellow"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "त्रिकोण",
+     "तिकोन",
+     "त्रिभुज",
+     "trikon",
+     "tikon"
+    ],
+    "sat": [
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+     "ᱴᱨᱤᱝᱜᱚᱞ",
+     "ᱴᱤᱠᱚᱱ"
+    ],
+    "sat_sources": {
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+     "ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+     "ᱴᱤᱠᱚᱱ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "त्रिकोण",
+     "तिकोन",
+     "त्रिभुज",
+     "trikon",
+     "tikon"
+    ],
+    "sat": [
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ",
+     "ᱴᱨᱤᱝᱜᱚᱞ",
+     "ᱴᱤᱠᱚᱱ"
+    ],
+    "sat_sources": {
+     "ᱛᱤᱱ ᱠᱩᱱᱟᱹ ᱪᱤᱛᱟᱹᱨ": "education_glossary",
+     "ᱴᱨᱤᱝᱜᱚᱞ": "IndicTrans2 output",
+     "ᱴᱤᱠᱚᱱ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "  ।  ",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "7"
+    ],
+    "hi": [
+     "सात",
+     "saat"
+    ],
+    "sat": [
+     "ᱮᱭᱟᱭ",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+    ],
+    "sat_sources": {
+     "ᱮᱭᱟᱭ": "education_glossary",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "सात",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "7"
+    ],
+    "hi": [
+     "सात",
+     "saat"
+    ],
+    "sat": [
+     "ᱮᱭᱟᱭ",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+    ],
+    "sat_sources": {
+     "ᱮᱭᱟᱭ": "education_glossary",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "ᱮᱭᱟᱭ",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "7"
+    ],
+    "hi": [
+     "सात",
+     "saat"
+    ],
+    "sat": [
+     "ᱮᱭᱟᱭ",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+    ],
+    "sat_sources": {
+     "ᱮᱭᱟᱭ": "education_glossary",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "7",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "7"
+    ],
+    "hi": [
+     "सात",
+     "saat"
+    ],
+    "sat": [
+     "ᱮᱭᱟᱭ",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+    ],
+    "sat_sources": {
+     "ᱮᱭᱟᱭ": "education_glossary",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "गलत जवाब",
+   "signal": "yellow"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "7"
+    ],
+    "hi": [
+     "सात",
+     "saat"
+    ],
+    "sat": [
+     "ᱮᱭᱟᱭ",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+    ],
+    "sat_sources": {
+     "ᱮᱭᱟᱭ": "education_glossary",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "7"
+    ],
+    "hi": [
+     "सात",
+     "saat"
+    ],
+    "sat": [
+     "ᱮᱭᱟᱭ",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ"
+    ],
+    "sat_sources": {
+     "ᱮᱭᱟᱭ": "education_glossary",
+     "ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "  ।  ",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "घर",
+     "ghar"
+    ],
+    "sat": [
+     "ᱳᱲᱟᱜ",
+     "ᱚᱲᱟᱜ"
+    ],
+    "sat_sources": {
+     "ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+     "ᱚᱲᱟᱜ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "घर",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "घर",
+     "ghar"
+    ],
+    "sat": [
+     "ᱳᱲᱟᱜ",
+     "ᱚᱲᱟᱜ"
+    ],
+    "sat_sources": {
+     "ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+     "ᱚᱲᱟᱜ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "ᱳᱲᱟᱜ",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "घर",
+     "ghar"
+    ],
+    "sat": [
+     "ᱳᱲᱟᱜ",
+     "ᱚᱲᱟᱜ"
+    ],
+    "sat_sources": {
+     "ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+     "ᱚᱲᱟᱜ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "गलत जवाब",
+   "signal": "yellow"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "घर",
+     "ghar"
+    ],
+    "sat": [
+     "ᱳᱲᱟᱜ",
+     "ᱚᱲᱟᱜ"
+    ],
+    "sat_sources": {
+     "ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+     "ᱚᱲᱟᱜ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "hi": [
+     "घर",
+     "ghar"
+    ],
+    "sat": [
+     "ᱳᱲᱟᱜ",
+     "ᱚᱲᱟᱜ"
+    ],
+    "sat_sources": {
+     "ᱳᱲᱟᱜ": "education_glossary (corrected 2026-09-24)",
+     "ᱚᱲᱟᱜ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "  ।  ",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "तीन",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "ᱯᱮ",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "3",
+   "signal": "green"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "गलत जवाब",
+   "signal": "yellow"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "",
+   "signal": "red"
+  },
+  {
+   "accept_answers": {
+    "digits": [
+     "3"
+    ],
+    "hi": [
+     "तीन",
+     "teen"
+    ],
+    "sat": [
+     "ᱯᱮ",
+     "ᱯᱮᱭᱟ"
+    ],
+    "sat_sources": {
+     "ᱯᱮ": "education_glossary",
+     "ᱯᱮᱭᱟ": "IndicTrans2 output"
+    },
+    "review_status": "pending_native_review"
+   },
+   "answer": "  ।  ",
+   "signal": "red"
+  },
+  {
+   "accept_answers": null,
+   "answer": "कुछ",
+   "signal": "yellow"
+  }
+ ]
+}

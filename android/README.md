@@ -1,0 +1,49 @@
+# Tablet app (F1)
+
+Kotlin, minSdk 28 (Android 9), no AndroidX. The app shows the same
+`frontend.html` as the hub in a WebView, and answers the page from an in-app
+server on `127.0.0.1:5000` (loopback only) with the hub's REST contract
+(`contract/rest_contract.json`).
+
+State at M1: lessons, flashcards, sessions and answer marking, typed
+translation of the pack's lines, pack audio, worksheets and teacher corrections
+all work offline from a **content pack**. Speech recognition (M3), translation
+of new sentences (M4) and synthesising new speech (M2) are not on the device yet:
+those requests answer `503 engine_not_on_device`, never a fake result.
+
+## Build
+
+Needs JDK 17 and the Android SDK (platform 36).
+
+```bash
+python tools/android/sync_config.py        # app name from config.py
+cd android
+./gradlew testDebugUnitTest assembleDebug
+```
+
+On Windows, if Gradle fails with "Unable to establish loopback connection", the
+temp path is too long for Java's sockets: set
+`JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:\gt` (any short folder).
+
+## Content pack
+
+Built on the hub, with its models:
+
+```bash
+python tools/build_content_pack.py         # dist/packs/content-pack-<time>.zip
+```
+
+On the tablet: Settings → Content pack → From a file (USB, SD card, Downloads),
+or From the hub (`https://<hub>:5443`; the hub serves `GET /pack/latest`, and the
+tablet must trust the hub CA from `/hub-ca.crt`). The app checks the SHA-256 of
+every file against `manifest.json` and keeps the previous pack if anything is
+wrong. Signing (Ed25519) arrives in M5.
+
+## Checks
+
+- `android/app/src/test`: the contract (same file as the hub), the Kotlin
+  ports of `normalize_key` and answer grading against Python's vectors
+  (`tests/data/normalize_key_vectors.json`), and pack import refusals.
+- `tools/android/device_check.py`: on a device or emulator, installs the APK,
+  imports a pack, runs the contract with the network on and in airplane mode,
+  and reads the app's PSS. Results in `bench/results/android_m1_<label>.md`.

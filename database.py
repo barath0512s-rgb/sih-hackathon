@@ -163,6 +163,23 @@ def get_correction(source_text, direction="hi-to-sat"):
     return None
 
 
+def list_corrections(direction="hi-to-sat"):
+    """Source sentences that have a teacher-verified translation (for the
+    content pack): [{"source_text": ...}], newest first, one per sentence."""
+    with _db() as c:
+        rows = c.execute("""
+            SELECT hindi_text, santali_text, source_key FROM feedback
+            WHERE direction=? AND (is_correct OR TRIM(corrected_text) <> '')
+            ORDER BY timestamp DESC, id DESC""", (direction,)).fetchall()
+    seen, out = set(), []
+    for r in rows:
+        if r["source_key"] in seen:
+            continue
+        seen.add(r["source_key"])
+        out.append({"source_text": r["hindi_text"] if direction == "hi-to-sat" else r["santali_text"]})
+    return out
+
+
 def export_to_csv(output_path="training_data/human_feedback_dataset.csv"):
     """Export the corrections to a CSV for LoRA fine-tuning."""
     import pandas as pd

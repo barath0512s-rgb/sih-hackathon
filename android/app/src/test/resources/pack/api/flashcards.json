@@ -1,0 +1,945 @@
+{
+"decks": [
+{
+"cards": [
+{
+"emoji": "🍎",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🍎",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🍎",
+"hi": "तीन",
+"n": 3,
+"review_status": "pending_native_review",
+"sat": "ᱯᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🍎",
+"hi": "चार",
+"n": 4,
+"review_status": "pending_native_review",
+"sat": "ᱯᱩᱱ",
+"source": "wordlist"
+},
+{
+"emoji": "🍎",
+"hi": "पांच",
+"n": 5,
+"review_status": "pending_native_review",
+"sat": "ᱢᱚᱬᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🌰",
+"hi": "छह",
+"n": 6,
+"review_status": "pending_native_review",
+"sat": "ᱛᱩᱨᱩᱭ",
+"source": "wordlist"
+},
+{
+"emoji": "🌰",
+"hi": "सात",
+"n": 7,
+"review_status": "pending_native_review",
+"sat": "ᱮᱭᱟᱭ",
+"source": "wordlist"
+},
+{
+"emoji": "🌰",
+"hi": "आठ",
+"n": 8,
+"review_status": "pending_native_review",
+"sat": "ᱤᱨᱟᱹᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🌰",
+"hi": "नौ",
+"n": 9,
+"review_status": "pending_native_review",
+"sat": "ᱟᱨᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🌰",
+"hi": "दस",
+"n": 10,
+"review_status": "pending_native_review",
+"sat": "ᱜᱮᱞ",
+"source": "wordlist"
+}
+],
+"grade": "1",
+"lakshya": [
+"NIPUN-BV-NUM-1 (Balvatika, numeracy): Recognizes and reads numerals up to 10.",
+"NIPUN-G1-NUM-1 (Grade 1, numeracy): Read and write numbers up to 99"
+],
+"lakshya_ids": [
+"NIPUN-BV-NUM-1",
+"NIPUN-G1-NUM-1"
+],
+"title": "Counting 1 to 10",
+"topic": "counting_1_10"
+},
+{
+"cards": [
+{
+"emoji": "⭕",
+"hi": "गोल",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱜᱚᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🟦",
+"hi": "चौकोर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱪᱟᱩᱠᱟ",
+"source": "wordlist"
+},
+{
+"emoji": "🔺",
+"hi": "तिकोन",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱴᱤᱠᱳᱱ",
+"source": "model"
+},
+{
+"emoji": "⭐",
+"hi": "तारा",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱥᱴᱟᱨ",
+"source": "model"
+},
+{
+"emoji": "🥚",
+"hi": "अंडाकार",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱳᱣᱟᱵᱚᱞ",
+"source": "model"
+},
+{
+"emoji": "➖",
+"hi": "रेखा",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱨᱮᱠᱷᱟ",
+"source": "wordlist"
+}
+],
+"grade": "1",
+"lakshya": [
+"NIPUN-BV-NUM-2 (Balvatika, numeracy): Arranges numbers/objects/shapes /occurrence of events in a sequence"
+],
+"lakshya_ids": [
+"NIPUN-BV-NUM-2"
+],
+"title": "Basic Shapes",
+"topic": "shapes"
+},
+{
+"cards": [
+{
+"emoji": "🥭🥭 ➕ 🥭",
+"hi": "दो और एक तीन",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱵᱟᱨᱭᱟ ᱟᱨ ᱢᱤᱫᱴᱟᱝ ᱯᱮᱭᱟ",
+"source": "model"
+},
+{
+"emoji": "🍌🍌 ➕ 🍌🍌",
+"hi": "दो और दो चार",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱵᱟᱨ ᱟᱨ ᱵᱟᱨ ᱯᱳᱱ",
+"source": "model"
+},
+{
+"emoji": "🪨🪨🪨 ➕ 🪨🪨",
+"hi": "तीन और दो पांच",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱯᱮᱭᱟ ᱟᱨ ᱵᱟᱨᱭᱟ ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ",
+"source": "model"
+},
+{
+"emoji": "🌼🌼🌼 ➕ 🌼🌼🌼🌼",
+"hi": "तीन और चार सात",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱯᱮᱭᱟ ᱟᱨ ᱯᱳᱱ ᱮᱭᱟᱭ ᱜᱚᱴᱟᱝ",
+"source": "model"
+},
+{
+"emoji": "✋ ➕ ✋",
+"hi": "पांच और पांच दस",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱢᱚᱬᱮ ᱟᱨ ᱢᱚᱬᱮ ᱜᱮᱞ",
+"source": "model"
+}
+],
+"grade": "2",
+"lakshya": [
+"NIPUN-G1-NUM-2 (Grade 1, numeracy): Perform simple addition and subtraction"
+],
+"lakshya_ids": [
+"NIPUN-G1-NUM-2"
+],
+"title": "Simple Addition",
+"topic": "addition"
+},
+{
+"cards": [
+{
+"emoji": "👩",
+"hi": "माँ",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱟᱭᱳ",
+"source": "wordlist"
+},
+{
+"emoji": "💧",
+"hi": "पानी",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "🏠",
+"hi": "घर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱳᱲᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "🌸",
+"hi": "फूल",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱚᱛᱢᱚᱱ",
+"source": "model"
+},
+{
+"emoji": "📕",
+"hi": "किताब",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱯᱩᱛᱷᱤ",
+"source": "wordlist"
+},
+{
+"emoji": "🐄",
+"hi": "गाय",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱜᱳᱭ",
+"source": "model"
+}
+],
+"grade": "2",
+"lakshya": [
+"NIPUN-BV-LIT-2 (Balvatika, literacy): Reads simple words comprising of at least 2 to 3 alphabets.",
+"NIPUN-G2-LIT-1 (Grade 2, literacy): Read with meaning"
+],
+"lakshya_ids": [
+"NIPUN-BV-LIT-2",
+"NIPUN-G2-LIT-1"
+],
+"title": "Reading Simple Words",
+"topic": "reading_words"
+},
+{
+"cards": [
+{
+"emoji": "🪨🪨🪨🪨🪨 ➖ 🪨🪨",
+"hi": "पांच में से दो तीन",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱢᱩᱫᱽᱨᱮ ᱵᱟᱨ ᱜᱚᱴᱟᱝ, ᱯᱮᱭᱟ",
+"source": "model"
+},
+{
+"emoji": "🍬🍬🍬🍬 ➖ 🍬",
+"hi": "चार में से एक तीन",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱯᱳᱱᱭᱟ ᱢᱩᱫᱨᱮ ᱢᱤᱫᱴᱟᱝ ᱯᱮ",
+"source": "model"
+},
+{
+"emoji": "🐟🐟🐟🐟🐟🐟 ➖ 🐟🐟🐟",
+"hi": "छह में से तीन तीन",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱛᱩᱨᱩᱭ ᱜᱚᱴᱟᱝ ᱢᱩᱫᱽᱨᱮ ᱯᱮᱭᱟ",
+"source": "model"
+},
+{
+"emoji": "🌟🌟🌟🌟🌟🌟🌟🌟 ➖ 🌟🌟🌟🌟🌟",
+"hi": "आठ में से पांच तीन",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "8 ᱜᱚᱴᱟᱝ ᱢᱩᱫᱽᱨᱮ 5 ᱜᱚᱴᱟᱝ, 3 ᱜᱚᱴᱟᱝ",
+"source": "model"
+}
+],
+"grade": "3",
+"lakshya": [
+"NIPUN-G1-NUM-2 (Grade 1, numeracy): Perform simple addition and subtraction",
+"NIPUN-G2-NUM-2 (Grade 2, numeracy): Subtract numbers up to 99"
+],
+"lakshya_ids": [
+"NIPUN-G1-NUM-2",
+"NIPUN-G2-NUM-2"
+],
+"title": "Simple Subtraction",
+"topic": "subtraction"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "पाँच",
+"n": 5,
+"review_status": "pending_native_review",
+"sat": "ᱢᱚᱬᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "⚽",
+"hi": "गेंद",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱵᱚᱞ",
+"source": "model"
+},
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🍌",
+"hi": "केले",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱱᱚᱶᱟ ᱫᱚ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ",
+"source": "model"
+},
+{
+"emoji": "🔵",
+"hi": "तीन",
+"n": 3,
+"review_status": "pending_native_review",
+"sat": "ᱯᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🪨",
+"hi": "पत्थर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱷᱤᱨᱤ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "चार",
+"n": 4,
+"review_status": "pending_native_review",
+"sat": "ᱯᱩᱱ",
+"source": "wordlist"
+}
+],
+"grade": "0",
+"lakshya": [
+"NIPUN-BV-NUM-1 (Balvatika, numeracy): Recognizes and reads numerals up to 10."
+],
+"lakshya_ids": [
+"NIPUN-BV-NUM-1"
+],
+"title": "पाँच तक गिनती",
+"topic": "imp_67cb986ab3"
+},
+{
+"cards": [
+{
+"emoji": "⚽",
+"hi": "गेंद",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱵᱚᱞ",
+"source": "cached"
+},
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+}
+],
+"grade": "0",
+"lakshya": [
+"NIPUN-BV-NUM-2 (Balvatika, numeracy): Arranges numbers/objects/shapes /occurrence of events in a sequence"
+],
+"lakshya_ids": [
+"NIPUN-BV-NUM-2"
+],
+"title": "छोटे से बड़े तक",
+"topic": "imp_223bee4bcc"
+},
+{
+"cards": [
+{
+"emoji": "👩",
+"hi": "माँ",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱟᱭᱳ",
+"source": "wordlist"
+},
+{
+"emoji": "🐟",
+"hi": "मछली",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱢᱤᱥ",
+"source": "model"
+},
+{
+"emoji": "☝️",
+"hi": "उंगली",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱩᱝᱜᱽᱞᱤ",
+"source": "wordlist"
+}
+],
+"grade": "0",
+"lakshya": [
+"NIPUN-BV-LIT-1 (Balvatika, literacy): Recognises letters and corresponding sounds"
+],
+"lakshya_ids": [
+"NIPUN-BV-LIT-1"
+],
+"title": "अक्षर म",
+"topic": "imp_6e62f3af3c"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🏠",
+"hi": "घर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱳᱲᱟᱜ",
+"source": "wordlist"
+}
+],
+"grade": "0",
+"lakshya": [
+"NIPUN-BV-LIT-2 (Balvatika, literacy): Reads simple words comprising of at least 2 to 3 alphabets."
+],
+"lakshya_ids": [
+"NIPUN-BV-LIT-2"
+],
+"title": "दो अक्षर वाले शब्द",
+"topic": "imp_f2598edf54"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "दस",
+"n": 10,
+"review_status": "pending_native_review",
+"sat": "ᱜᱮᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "बीस",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ ᱜᱮᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "ग्यारह",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱜᱮᱞ ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "बारह",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱜᱮᱞ ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "पंद्रह",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱜᱮᱞ ᱢᱚᱬᱮ",
+"source": "wordlist"
+}
+],
+"grade": "1",
+"lakshya": [
+"NIPUN-G1-NUM-1 (Grade 1, numeracy): Read and write numbers up to 99"
+],
+"lakshya_ids": [
+"NIPUN-G1-NUM-1"
+],
+"title": "दस से बीस तक",
+"topic": "imp_f571c8bd6b"
+},
+{
+"cards": [
+{
+"emoji": "🏠",
+"hi": "घर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱳᱲᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "💧",
+"hi": "पानी",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "चार",
+"n": 4,
+"review_status": "pending_native_review",
+"sat": "ᱯᱩᱱ",
+"source": "wordlist"
+}
+],
+"grade": "1",
+"lakshya": [
+"NIPUN-G1-LIT-1 (Grade 1, literacy): Reads small sentences consisting of at least 4-5 simple words in an age appropriate unknown text."
+],
+"lakshya_ids": [
+"NIPUN-G1-LIT-1"
+],
+"title": "छोटे वाक्य पढ़ना",
+"topic": "imp_746143be92"
+},
+{
+"cards": [
+{
+"emoji": "🔢",
+"hi": "सौ",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱥᱟᱭ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "बीस",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ ᱜᱮᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "पचास",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱢᱚᱬᱮ ᱜᱮᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "तीन",
+"n": 3,
+"review_status": "pending_native_review",
+"sat": "ᱯᱮ",
+"source": "wordlist"
+}
+],
+"grade": "2",
+"lakshya": [
+"NIPUN-G2-NUM-1 (Grade 2, numeracy): Read and write numbers up to 999"
+],
+"lakshya_ids": [
+"NIPUN-G2-NUM-1"
+],
+"title": "सौ से बड़ी संख्याएँ",
+"topic": "imp_acb593a491"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🐦",
+"hi": "चिड़िया",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱵᱤᱨ ᱫᱚ",
+"source": "model"
+},
+{
+"emoji": "💧",
+"hi": "पानी",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "🪨",
+"hi": "पत्थर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱷᱤᱨᱤ",
+"source": "wordlist"
+}
+],
+"grade": "2",
+"lakshya": [
+"NIPUN-G2-LIT-1 (Grade 2, literacy): Read with meaning"
+],
+"lakshya_ids": [
+"NIPUN-G2-LIT-1"
+],
+"title": "कहानी सुनो और समझो",
+"topic": "imp_8835da564c"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "तीन",
+"n": 3,
+"review_status": "pending_native_review",
+"sat": "ᱯᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🥭",
+"hi": "आम",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱩᱞ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "छह",
+"n": 6,
+"review_status": "pending_native_review",
+"sat": "ᱛᱩᱨᱩᱭ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "चार",
+"n": 4,
+"review_status": "pending_native_review",
+"sat": "ᱯᱩᱱ",
+"source": "wordlist"
+},
+{
+"emoji": "🪨",
+"hi": "पत्थर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱷᱤᱨᱤ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "पाँच",
+"n": 5,
+"review_status": "pending_native_review",
+"sat": "ᱢᱚᱬᱮ",
+"source": "wordlist"
+}
+],
+"grade": "3",
+"lakshya": [
+"NIPUN-G3-NUM-2 (Grade 3, numeracy): Solve simple multiplication problems"
+],
+"lakshya_ids": [
+"NIPUN-G3-NUM-2"
+],
+"title": "गुणा: बराबर समूह",
+"topic": "imp_2a190b718f"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "🖊️",
+"hi": "कलम",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱠᱚᱞᱟᱢ",
+"source": "model"
+}
+],
+"grade": "3",
+"lakshya": [
+"NIPUN-G3-LIT-1 (Grade 3, literacy): Read with meaning"
+],
+"lakshya_ids": [
+"NIPUN-G3-LIT-1"
+],
+"title": "पढ़कर समझना",
+"topic": "imp_e065e91dbc"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "3425",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "3425",
+"source": "model"
+},
+{
+"emoji": "🔵",
+"hi": "3",
+"n": 3,
+"review_status": "pending_native_review",
+"sat": "᱓",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "4",
+"n": 4,
+"review_status": "pending_native_review",
+"sat": "᱔",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "2",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "᱒",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "5",
+"n": 5,
+"review_status": "pending_native_review",
+"sat": "᱕",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "तीन",
+"n": 3,
+"review_status": "pending_native_review",
+"sat": "ᱯᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "चार",
+"n": 4,
+"review_status": "pending_native_review",
+"sat": "ᱯᱩᱱ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "सौ",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱥᱟᱭ",
+"source": "wordlist"
+},
+{
+"emoji": "🔢",
+"hi": "5208",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "5208",
+"source": "model"
+}
+],
+"grade": "3",
+"lakshya": [
+"NIPUN-G3-NUM-1 (Grade 3, numeracy): Read and write numbers up to 9999"
+],
+"lakshya_ids": [
+"NIPUN-G3-NUM-1"
+],
+"title": "हज़ार तक की संख्याएँ",
+"topic": "imp_5c91c0c1bb"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "💧",
+"hi": "पानी",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "🐟",
+"hi": "मछली",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱢᱤᱥ",
+"source": "cached"
+},
+{
+"emoji": "🏠",
+"hi": "घर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱳᱲᱟᱜ",
+"source": "wordlist"
+}
+],
+"grade": "3",
+"lakshya": [
+"NIPUN-G3-LIT-2 (Grade 3, literacy): at least 60 words per minute",
+"NIPUN-G3-LIT-1 (Grade 3, literacy): Read with meaning"
+],
+"lakshya_ids": [
+"NIPUN-G3-LIT-2",
+"NIPUN-G3-LIT-1"
+],
+"title": "ज़ोर से पढ़ना: रीना और तालाब",
+"topic": "imp_46b74c74d2"
+}
+]
+}

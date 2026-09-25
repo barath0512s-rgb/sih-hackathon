@@ -330,3 +330,16 @@
   text: "Speech recognition or translation measured on a tablet"
   status: "NOT MEASURED"
   evidence: STATUS.md
+- id: m1_contract_device
+  text: "The Android app's in-app server passes the hub's REST contract: 24 of 24 cases with network and 24 of 24 in airplane mode (emulator, 4 GB RAM)"
+  status: "TRUE"
+  evidence: bench/results/android_m1_emulator-4gb.md
+- id: m1_pss
+  text: "App PSS 117 MB after the M1 checks (emulator, 4 GB RAM)"
+  status: "TRUE"
+  evidence: bench/results/android_m1_emulator-4gb.md
+- id: m1_on_2gb
+  text: "The Android app measured on a 2 GB RAM, Android 9+ device"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+
