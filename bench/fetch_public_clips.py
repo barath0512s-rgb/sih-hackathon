@@ -170,6 +170,9 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     rows = sorted(manifest.values(), key=lambda e: (e["lang"], e["file"]))
     MANIFEST.write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    # Keep these clips out of any future fine-tuning (eval/leakage.py).
+    from eval.leakage import record_asr_clips
+    record_asr_clips(MANIFEST)
     print(f"Manifest: {MANIFEST.relative_to(ROOT)} ({len(rows)} clips: "
           + ", ".join(f"{l} {sum(e['lang'] == l for e in rows)}" for l in ("hi", "sat")) + ")")
 

@@ -46,15 +46,17 @@ OFFLINE_ENV = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
                "HF_HUB_DISABLE_TELEMETRY": "1"}
 
 # ── Speech recognition ────────────────────────────────────────────────────────
-# Chosen per language from bench/asr_decoding.py on public speech (80 clips per
-# language, bench/results/asr_decoding_public.md). Hindi: CTC, same WER as RNN-T
-# (11.1% vs 11.3%) at 499 vs 1260 ms. Santali: RNN-T, WER 31.3% vs 34.5% for CTC,
-# about 0.7 s slower; Santali -> Hindi voice to voice stays within target with it
-# (p90 2.61 s, bench/results/*_public_sat_rnnt.md). Trimming silence helped Hindi
-# but not Santali, whose unreleased word-final stops are quiet enough to be clipped.
-# Child speech: NOT MEASURED.
+# Chosen per language from public speech (80 clips per language):
+# bench/results/asr_decoding_public.md (normalised WER, rules in bench/README.md)
+# and the Santali -> Hindi voice-to-voice runs *_public_sat_{rnnt,ctc}_trim.md.
+# Hindi: CTC, same accuracy as RNN-T at about a third of the time.
+# Santali: RNN-T, normalised WER 31.0% vs 34.7% for CTC. Rule: RNN-T only if
+# voice-to-voice p90 stays within 3 s for answers of up to 10 words: 2.34 s
+# (CTC 1.77 s). Santali trimming: WER 31.0% trimmed vs 31.2% not, 137 ms
+# faster, so on. (Synthetic clips had suggested it clipped word-final stops;
+# on real speech 3 clips got better and 2 worse.) Child speech: NOT MEASURED.
 ASR_DECODING = {"hi": "ctc", "sat": "rnnt"}
-ASR_TRIM_SILENCE = {"hi": True, "sat": False}
+ASR_TRIM_SILENCE = {"hi": True, "sat": True}
 
 # ── Translation ───────────────────────────────────────────────────────────────
 NMT_NUM_BEAMS       = 1      # greedy; beam search is slower on CPU for short lines

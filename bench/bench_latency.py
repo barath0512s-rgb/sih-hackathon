@@ -79,7 +79,13 @@ def main():
     ap.add_argument("--lang", choices=("hi", "sat"), help="one source language only")
     ap.add_argument("--asr-decoding", action="append", default=[], metavar="LANG=ctc|rnnt",
                     help="override config.ASR_DECODING for this run (e.g. sat=rnnt)")
+    ap.add_argument("--asr-trim", action="append", default=[], metavar="LANG=on|off",
+                    help="override config.ASR_TRIM_SILENCE for this run (e.g. sat=on)")
     a = ap.parse_args()
+    for kv in a.asr_trim:
+        lang, v = kv.split("=")
+        assert lang in config.ASR_TRIM_SILENCE and v in ("on", "off"), kv
+        config.ASR_TRIM_SILENCE[lang] = v == "on"
     for kv in a.asr_decoding:
         lang, mode = kv.split("=")
         assert lang in config.ASR_DECODING and mode in ("ctc", "rnnt"), kv

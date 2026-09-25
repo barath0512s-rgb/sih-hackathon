@@ -94,7 +94,14 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 ### <a name="indicconformer-120m"></a>AI4Bharat IndicConformer 120M, Hindi and Santali (for Android, not yet used)
 - `ai4bharat/indicconformer_stt_hi_hybrid_ctc_rnnt_large` @ `deada84ce8…`; `ai4bharat/indicconformer_stt_sat_hybrid_ctc_rnnt_large` @ `507c307549…`.
 - **Licence:** MIT (Hub card data). **Gated.** One `.nemo` file each, 523,192,320 bytes. Accessed 2026-09-24.
-- Our account does not have access yet (403), so the card text itself is unread.
+- Card read 2026-09-25 (access granted): "a conformer-Large model, consisting of 120M parameters, as the encoder, with a hybrid CTC-RNNT decoder"; 17 conformer blocks, model dimension 512. Needs the AI4Bharat NeMo fork (`nemo-v2`). **The card does not say which data it was trained or validated on.**
+
+### <a name="sherpa-hotwords"></a>sherpa-onnx hotwords (contextual biasing)
+- https://k2-fsa.github.io/sherpa/onnx/hotwords/index.html, accessed 2026-09-25. Licence of sherpa-onnx: Apache-2.0.
+- Quote: "Only transducer models support hotwords in sherpa-onnx." Also: "You have to change the decoding method to `modified_beam_search` to use hotwords." Hotwords file: one phrase per line, optional per-phrase score (`phrase :3.5`); needs `bpe.vocab` (modeling unit `bpe`) for sentencepiece models.
+- **CTC models: not supported.** So "expected-answer biasing" needs the RNN-T (transducer) branch of IndicConformer exported to sherpa-onnx, not only the CTC branch.
+- NeMo transducers: modified beam search and hotwords for NeMo transducer models were added by PR #3077, merged 5 Feb 2026 (https://github.com/k2-fsa/sherpa-onnx/pull/3077). The hotwords page's own examples use only Zipformer/Conformer (icefall) models.
+- Open risk: issue #3267 (open, accessed 2026-09-25) reports that `modified_beam_search` with a NeMo **TDT** model returns empty or hallucinated text about 20% of the time, even with no hotwords (https://github.com/k2-fsa/sherpa-onnx/issues/3267). IndicConformer is RNN-T, not TDT; whether it is affected: **NOT MEASURED**.
 
 ### <a name="ctranslate2"></a>CTranslate2 and IndicTrans2 (Phase L1a)
 - CTranslate2 Transformers converter guide,
@@ -132,22 +139,24 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 - https://huggingface.co/datasets/google/fleurs @ `70bb2e84b976b7e960aa89f1c648e09c59f894dd`. **Licence: CC BY 4.0** (Hub card data). Not gated.
 - Used: `hi_in` test split (418 utterances); 80 of the 187 that last 3-10 s,
   picked with seed 26042 (`bench/fetch_public_clips.py`,
-  `bench/clips/public/manifest.json`). Adult read speech.
+  `bench/clips/public/manifest.json`). Adult read speech. FLEURS has several
+  speakers per sentence: the 80 clips hold 69 distinct sentences.
 
 ### <a name="indicvoices"></a>ai4bharat/IndicVoices (Santali speech benchmark)
 - https://huggingface.co/datasets/ai4bharat/IndicVoices @ `c96f9088f1…`. **Licence: CC BY 4.0** (Hub card data). **Gated.**
-- Santali: 45 train shards and one `valid` shard (217,769,865 bytes). We will use `valid` only.
-- **No access yet** (403 on the data files). Accessed 2026-09-25.
+- Santali: 45 train shards and one `valid` shard (217,769,865 bytes). **There is no test split** (repo file list, 2026-09-25; the card lists only `valid` and `train` for every language). We use `valid` only: 80 clips, 62 speakers.
+- Access granted 2026-09-25. The IndicConformer cards do not say whether `valid` was used in training or model selection, so the Santali ASR numbers come from a validation split of unknown status, not a guaranteed held-out test set.
+- Card fields used: `text` (transcript), `speaker_id`, `gender`, `age_group`, `task_name`, `scenario`. Two of the 80 transcripts contain the tag `<unintelligible>`.
 
 ### <a name="indicvoices-r"></a>ai4bharat/indicvoices_r
-- @ `5f4495c91d…`, **CC BY 4.0**, gated; has `Santali/test-*.parquet`. No access yet.
+- @ `5f4495c91d…`, **CC BY 4.0**, gated; has a Santali **test** split (2 shards, 537 MB) and 108 train shards. Access granted 2026-09-25; not used yet. It is a speech-synthesis corpus built from IndicVoices recordings (enhanced audio), so its test clips may be IndicVoices utterances; whether they overlap IndicConformer's training data: unknown.
 
 ### <a name="in22"></a>ai4bharat/IN22-Gen and IN22-Conv (translation benchmark)
-- IN22-Gen @ `e042ab3d30…`, 1024 sentences; IN22-Conv @ `18cd45870f…`, 1503 sentences. **CC BY 4.0** (card: `license: cc-by-4.0`), n-way parallel, includes `hin_Deva` and `sat_Olck`. **Gated; no access yet.**
+- IN22-Gen @ `e042ab3d30…`, 1024 sentences; IN22-Conv @ `18cd45870f…`, 1503 sentences. **CC BY 4.0** (card: `license: cc-by-4.0`), n-way parallel, includes `hin_Deva` and `sat_Olck`. Gated; access granted 2026-09-25; used by `eval/eval_benchmarks.py`.
 
 ### <a name="flores"></a>FLORES-200 devtest (translation benchmark)
 - `facebook/flores` @ `71abf77d8b…` has `sat_Olck` and `hin_Deva` devtest; the maintained successor `openlanguagedata/flores_plus` also has both.
-- **Licence: CC BY-SA 4.0** (Hub card data for both). Gated; no access yet.
+- **Licence: CC BY-SA 4.0** (Hub card data for both). Gated; access granted 2026-09-25.
 - The master prompt gave no licence for FLORES. The official card says CC BY-SA 4.0.
 
 ## Software licences (from each installed package's metadata)

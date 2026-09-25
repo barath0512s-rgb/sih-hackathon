@@ -58,7 +58,9 @@ def latency(label, csv_path, md_path):
     warm = [r for r in rows if r["cold"] == "False"]
     src = f"bench/results/{csv_path.name}"
     kind = ("public dataset, adult speech, BEFORE Phase L" if "before_phase_l" in label else
-            "public dataset, adult speech, Santali speech recognition with RNN-T" if "sat_rnnt" in label else
+            ("public dataset, adult speech, Santali speech recognition "
+             + ("RNN-T" if "rnnt" in label else "CTC") + (", silence trimmed" if "trim" in label else ", no trimming"))
+            if label.startswith("public_sat_") else
             "synthetic clips, BEFORE the latency work (baseline)" if "baseline" in label else
             "synthetic clips" if "synthetic" in label else
             "public dataset, adult speech" if "public" in label else
@@ -90,13 +92,20 @@ def latency(label, csv_path, md_path):
             src)
         if "public" not in label:
             continue
-        for lo, hi in ((0, 12), (12, 18), (18, 24), (24, 999)):
+        # Santali answers are short: bin them finer, and give the <= 10-word figure
+        # the Santali decoding choice depends on.
+        bins = (((0, 6), (6, 11), (11, 18), (18, 999)) if d == "sat-to-hi" else
+                ((0, 12), (12, 18), (18, 24), (24, 999)))
+        if d == "sat-to-hi":
+            bins = ((0, 11),) + bins
+        for lo, hi in bins:
             b = [r for r in dw if lo <= len(r["reference"].split()) < hi]
             if b:
                 ms = [float(r["pipeline_ms"]) for r in b]
-                span = f"{lo}-{hi - 1}" if hi < 999 else f"{lo}+"
-                out(f"  {d} {span} words: median / over 3 s",
-                    f"{sec(statistics.median(ms) / 1000)} s / {sum(m > 3000 for m in ms)} of {len(b)}", src)
+                span = f"≤ {hi - 1}" if lo == 0 else f"{lo}-{hi - 1}" if hi < 999 else f"{lo}+"
+                out(f"  {d} {span} words: median / p90 / over 3 s",
+                    f"{sec(statistics.median(ms) / 1000)} / {sec(pct(ms, 90) / 1000)} s / "
+                    f"{sum(m > 3000 for m in ms)} of {len(b)}", src)
 
 
 def latency_steps():
@@ -180,14 +189,23 @@ def asr_accuracy():
         if not mine:
             out(f"{lang}: WER / CER", NM, "no clips for this language yet")
             continue
+        if "reference_raw" not in mine[0]:
+            out(f"{lang}: WER raw / normalised", NM, "re-run bench/asr_decoding.py (old file format)")
+            continue
         for dec in ("ctc", "rnnt"):
-            v = [r for r in mine if r["decoding"] == dec and r["trim"] == config.ASR_TRIM_SILENCE[lang]]
-            if v:
+            for trim in (False, True):
+                v = [r for r in mine if r["decoding"] == dec and r["trim"] == trim]
+                if not v:
+                    continue
+                raw_w = jiwer.wer([r["reference_raw"] for r in v], [r["hypothesis_raw"] for r in v])
                 wer = jiwer.wer([r["reference_norm"] for r in v], [r["hypothesis_norm"] for r in v])
                 cer = jiwer.cer([r["reference_norm"] for r in v], [r["hypothesis_norm"] for r in v])
-                used = " (in use)" if dec == config.ASR_DECODING[lang] else ""
-                out(f"{lang}: {dec}{used} WER / CER",
-                    f"{wer * 100:.1f}% / {cer * 100:.1f}% (n={len(v)})", src)
+                ms = statistics.median(r["asr_ms"] for r in v)
+                used = " (in use)" if (dec == config.ASR_DECODING[lang]
+                                       and trim == config.ASR_TRIM_SILENCE[lang]) else ""
+                out(f"{lang}: {dec}, trim {'on' if trim else 'off'}{used}",
+                    f"WER raw {raw_w * 100:.1f}%, normalised {wer * 100:.1f}%, CER {cer * 100:.1f}%; "
+                    f"{ms:.0f} ms (n={len(v)})", src)
     print("  Child speech: NOT MEASURED.")
 
 

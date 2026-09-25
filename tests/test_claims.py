@@ -54,3 +54,21 @@ def test_every_readme_number_has_evidence():
     missing = [n for n in readme_numbers() if n not in text and n.replace(",", "") not in flat]
     assert not missing, (f"README numbers with no evidence file in docs/claims.yaml: {missing}. "
                          "Add the source to docs/sources.md or a results file, or remove the number.")
+
+
+def test_every_claim_number_is_in_its_own_evidence_file():
+    """A decimal number in a claim (31.3, 2.61) must appear in the file that
+    claim cites, not just somewhere in the repo: a number copied from the wrong
+    row or run fails here. Percentages are also checked as fractions (31.3% is
+    0.313 in a results table)."""
+    bad = []
+    for c in CLAIMS:
+        path = ROOT / c["evidence"].split("#")[0]
+        if not path.is_file():
+            continue
+        ev = path.read_text(encoding="utf-8", errors="replace").replace(",", "")
+        for n in re.findall(r"(?<![\w.])\d+\.\d+", c["text"]):
+            frac = f"{float(n) / 100:.3f}"
+            if n not in ev and frac not in ev and f"{float(n):g}" not in ev:
+                bad.append(f"{c['id']}: {n} not in {c['evidence']}")
+    assert not bad, "\n".join(bad)

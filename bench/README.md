@@ -46,7 +46,7 @@ re-fetch can be checked with `--check`.
 | Language | Source | Licence | Status |
 |---|---|---|---|
 | Hindi | `google/fleurs`, `hi_in` test: 80 of the 187 utterances of 3-10 s | CC BY 4.0 | fetched |
-| Santali | `ai4bharat/IndicVoices`, `santali` valid split | CC BY 4.0 | **gated**: accept the terms on the dataset page, then re-run |
+| Santali | `ai4bharat/IndicVoices`, `santali` **valid** split (the dataset has no test split): 80 clips of 3-10 s, 62 speakers | CC BY 4.0 | fetched (gated: accept the terms first) |
 
 ```bash
 python bench/fetch_public_clips.py
@@ -58,10 +58,28 @@ python tools/deck_numbers.py --write
 Every result from these clips is labelled **"public dataset, adult speech"**.
 None of them is child speech: child-speech accuracy is **NOT MEASURED**.
 `asr_decoding.py` reports corpus-level WER and CER (all errors over all
-reference words or characters). Both sides are normalised with
-`textnorm.normalize_key`, so punctuation, nukta and spacing do not count.
-Numbers written as digits in the reference but spoken as words (or the reverse)
-still count as errors.
+reference words or characters), two ways.
+
+### WER normalisation
+
+- **Raw WER**: the dataset's transcript and the recogniser's output exactly as
+  written, split on spaces.
+- **Normalised WER and CER**: both sides through `textnorm.normalize_for_wer`,
+  the same rules for Hindi and Santali:
+  1. Unicode NFC (two encodings of the same letter compare equal).
+  2. Dataset annotation tags in angle brackets are removed (IndicVoices writes
+     `<unintelligible>`; no recogniser outputs it). 2 of the 80 Santali
+     transcripts have one.
+  3. Every punctuation mark (Unicode category P) becomes a space: `, . ? ! : ;`
+     hyphens and quotes, Devanagari `।` `॥`, Ol Chiki `᱾` `᱿`.
+  4. Devanagari digits (०-९) and Ol Chiki digits (᱐-᱙) become ASCII digits.
+  5. Whitespace is collapsed to single spaces and trimmed.
+
+  Nothing else changes. Spelling variants still count as errors (nukta,
+  chandrabindu vs anusvara, Latin case), and so do numbers written as digits
+  on one side and as words on the other. (The app's answer matching,
+  `textnorm.normalize_key`, is looser: it also folds nukta and chandrabindu.
+  It is not used for WER.)
 
 ## Real recordings (needed)
 

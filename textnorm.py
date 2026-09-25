@@ -45,3 +45,24 @@ def digits_of(text: str) -> str:
     """The ASCII digit string in a short answer ("᱗" -> "7"), or "" if none."""
     s = normalize_key(text)
     return s if s.isdigit() else ""
+
+
+# Annotation tags in IndicVoices transcripts ("<unintelligible>"): no recogniser writes them.
+_TAG = re.compile(r"<[^<>\s]*>")
+
+
+def normalize_for_wer(text: str) -> str:
+    """Text for the *normalised* WER/CER in bench/ (rules in bench/README.md).
+
+    Only formatting is removed, the same way for Hindi and Santali: Unicode NFC;
+    dataset annotation tags such as <unintelligible>; every punctuation mark
+    (Unicode category P: , . ? । ॥ ᱾ ᱿ - ...) replaced by a space; Devanagari
+    and Ol Chiki digits written as ASCII digits; whitespace collapsed. Spelling
+    is left alone (no nukta or chandrabindu folding, unlike normalize_key).
+    """
+    if not text:
+        return ""
+    s = _TAG.sub(" ", unicodedata.normalize("NFC", text))
+    s = "".join(_DIGITS.get(c, c) for c in s)
+    s = "".join(" " if unicodedata.category(c).startswith("P") else c for c in s)
+    return re.sub(r"\s+", " ", s).strip()

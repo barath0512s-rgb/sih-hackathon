@@ -1,6 +1,29 @@
-# STATUS, 25 Sep 2026: Checkpoint P-finish (master prompt v2)
+# STATUS, 25 Sep 2026: Checkpoint P-finish, review round 2 (master prompt v2)
 
-## PF. Phase P finished: Santali speech, translation benchmarks (branch `phase-p-finish`)
+## PF2. Checkpoint review answers (branch `phase-p-finish`)
+
+Laptop, offline; public datasets, adult speech; child speech NOT MEASURED.
+Every number below is printed by `tools/deck_numbers.py` from the file named.
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Numbers from files | My earlier chat summary quoted the Santali RNN-T row **with** trimming (31.1%, 1070 ms) while the app then ran it without (31.3%, 1154 ms). Files and docs were right; the summary was not. New test: every decimal number in `docs/claims.yaml` must appear in the file that claim cites (`tests/test_claims.py`). It caught one more: the int8 claim quoted differences (0.2 / 0.1) I had computed; now it quotes only file values | `tests/test_claims.py` |
+| 3 | WER normalisation | Raw and normalised WER, rules in `bench/README.md` ("WER normalisation"): NFC; dataset tags (`<unintelligible>`, 2 Santali transcripts) removed; all punctuation incl. `।` `॥` `᱾` `᱿` to spaces; Devanagari and Ol Chiki digits to ASCII; whitespace collapsed. Same rules for Hindi. **Correction:** the WERs reported before (Hindi 11.1%, Santali 31.3%) used the app's answer-matching key, which also folds nukta and chandrabindu; they were neither raw nor normalised by these rules. Replaced | `bench/results/asr_decoding_public.md`, `textnorm.normalize_for_wer`, `tests/test_wer_norm.py` |
+| 3 | Hindi, CTC, trimmed (in use) | WER raw 14.3%, normalised 13.1%, CER 4.9%; 485 ms median | `asr_decoding_public.md` |
+| 2 | Santali silence trimming | RNN-T: normalised WER 31.0% trimmed vs 31.2% not; 1144 vs 1281 ms. 8 of 80 transcripts change: 3 better, 2 worse. **Trimming on for Santali** (`config.ASR_TRIM_SILENCE`). The earlier "off" came from synthetic clips, where trimming seemed to clip quiet word-final stops; real speech does not show it | `asr_decoding_public.md`, `.jsonl` |
+| 2 | Hindi silence trimming (not changed) | On this data trimming is 0.6 points **worse** for Hindi (normalised WER 13.1% vs 12.5%) for 31 ms. It was chosen on synthetic clips. **Your call:** switch Hindi trimming off? (All Hindi latency numbers were measured with it on) | `asr_decoding_public.md` |
+| 4 | Santali decoding | Rule: RNN-T if Santali → Hindi p90 ≤ 3 s for answers of ≤ 10 words. RNN-T (trimmed): **2.34 s** (41 answers, 1 over 3 s) → **RNN-T**. CTC (trimmed): 1.77 s. Trade-off: 0.4-0.6 s more per reply for normalised WER 31.0% vs 34.7%. All lengths: RNN-T median 2.22 s, p90 2.57 s, 2 of 79 over 3 s; CTC 1.69 / 2.01 s, 1 of 79 | `…_public_sat_rnnt_trim.md`, `…_public_sat_ctc_trim.md`; length table in README §6 |
+| 4 | Hotwords (sherpa-onnx) | Official docs: "Only transducer models support hotwords", with `modified_beam_search`; CTC not supported. NeMo transducer hotwords added 5 Feb 2026 (PR #3077). Open issue #3267: modified beam search on a NeMo TDT model returns empty or wrong text ~20% of the time; IndicConformer is RNN-T, effect NOT MEASURED | `docs/sources.md#sherpa-hotwords` |
+| 4 | F4 plan: expected-answer biasing | Export the **RNN-T** branch (encoder, decoder, joiner) to sherpa-onnx as well as CTC, with `bpe.vocab`. At an assessment step, pass the lesson's `accept_answers` (Santali, plus Ol Chiki digits) as the stream's hotwords with a moderate score; everywhere else, no hotwords. Measure before adopting: answer accuracy with and without biasing, the false-accept rate on wrong answers (biasing must not turn a wrong answer into a right one), and the empty-output rate from issue #3267 | plan |
+| 5 | Test split | Hindi: FLEURS **test** split only. Santali: IndicVoices has **no test split** (only `train` and `valid`), so the clips are from **valid**; the model card does not say whether valid was used in training. IndicVoices-R has a Santali test split, but it is a speech-synthesis corpus built from IndicVoices recordings. **Your call:** keep valid (labelled), switch to IndicVoices-R test, or record our own | `docs/sources.md#indicvoices`, `#indicvoices-r` |
+| 5 | Leakage guard | `eval/test_set_hashes.json` now also holds the benchmark clips ("asr-public"): transcript hashes, source ids and the 62 Santali speaker ids. `assert_no_asr_test_leakage()` rejects a fine-tuning item with the same sentence, clip or speaker; `fetch_public_clips.py` refreshes it; a test fails if any training or fine-tuning script does not call a guard. FLEURS: the 80 clips hold 69 distinct sentences (several readers per sentence) | `eval/leakage.py`, `tests/test_leakage.py` |
+
+Also since the first P-finish report: `bench_latency.py --asr-trim`; deck_numbers
+length bins per direction, finer for Santali, with p90.
+
+---
+
+## PF. Phase P finished (first report; ASR numbers in it are superseded by PF2): Santali speech, translation benchmarks (branch `phase-p-finish`)
 
 Hugging Face access arrived for all seven gated repos. Laptop, offline; public
 datasets, adult speech; child speech NOT MEASURED. Numbers: `tools/deck_numbers.py`.

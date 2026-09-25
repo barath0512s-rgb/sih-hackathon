@@ -59,3 +59,51 @@ def assert_no_test_leakage(pairs, path=HASHES, require=True):
         raise LeakedTestSentence(f"{len(hits)} training items are test sentences from {sets}, "
                           f"e.g. item {hits[0][0]}: {hits[0][1]!r}")
     return len(pairs)
+
+
+# ── Speech: the benchmark clips (bench/clips/public/manifest.json) ─────────────
+# Their transcripts, source ids ("dataset:id") and speakers are recorded as the
+# "asr-public" entry, so no fine-tuning run can use them: not the clip, not the
+# same sentence, and not another recording by the same speaker (IndicVoices'
+# train split may hold the valid split's speakers). Speaker ids are dataset
+# identifiers, not names; transcripts are stored only as hashes.
+
+def _sha(text):
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def record_asr_clips(manifest, path=HASHES):
+    """Add the public benchmark clips to the hash file (called by
+    bench/fetch_public_clips.py after it writes the manifest)."""
+    clips = json.loads(Path(manifest).read_text(encoding="utf-8"))
+    data = json.loads(Path(path).read_text(encoding="utf-8")) if Path(path).exists() else {}
+    data["asr-public"] = {
+        "revision": sorted({f"{c['source']['dataset']}@{c['source']['revision'][:10]}:{c['source']['split']}"
+                            for c in clips}),
+        "sha256": sorted({_sha(normalise_for_hash(c["reference"])) for c in clips}),
+        "source_ids": sorted({f"{c['source']['dataset']}:{c['source']['id']}" for c in clips}),
+        "speaker_ids": sorted({f"{c['source']['dataset']}:{c['speaker_id']}" for c in clips if c.get("speaker_id")}),
+    }
+    Path(path).write_text(json.dumps(data, indent=0) + "\n", encoding="utf-8")
+    return len(clips)
+
+
+def assert_no_asr_test_leakage(items, path=HASHES, require=True):
+    """Raise LeakedTestSentence if any fine-tuning item is, or shares a sentence
+    or a speaker with, a benchmark clip. items: dicts with any of "text",
+    "dataset" + "id", "dataset" + "speaker_id"."""
+    if not Path(path).exists() or "asr-public" not in json.loads(Path(path).read_text(encoding="utf-8")):
+        if require:
+            raise LeakedTestSentence(f"{Path(path).name} has no asr-public entry: run "
+                                     "bench/fetch_public_clips.py first, so the benchmark clips can be excluded.")
+        return 0
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    texts, _ = load_hashes(path)
+    ids, spk = set(data["asr-public"]["source_ids"]), set(data["asr-public"]["speaker_ids"])
+    for i, it in enumerate(items):
+        why = ("same sentence" if it.get("text") and _sha(normalise_for_hash(it["text"])) in texts else
+               "same clip" if f"{it.get('dataset')}:{it.get('id')}" in ids else
+               "same speaker" if f"{it.get('dataset')}:{it.get('speaker_id')}" in spk else None)
+        if why:
+            raise LeakedTestSentence(f"fine-tuning item {i} matches a benchmark clip ({why}): {it}")
+    return len(items)

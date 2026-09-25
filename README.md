@@ -51,7 +51,7 @@ laptop, offline, and checked by the named test or script.
 |---|---|---|---|---|
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality on public test sets (the model alone): chrF++ Hindi → Santali 31.3 (IN22-Gen), 32.2 (IN22-Conv), 27.4 (FLORES-200); see §6. Lesson lines themselves: **NOT MEASURED** (no reference translations). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
-| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, upload to reply audio (§6): **Hindi → Santali** median **1.95 s**, p90 **2.24 s**, 0 of 79 over 3 s (FLEURS); **Santali → Hindi** median **2.19 s**, p90 **2.61 s**, 2 of 79 over 3 s (IndicVoices). Measured from the end of speech by step: time to first audio p90 **2.30-2.32 s** for all sentences (clause streaming); lesson lines p90 **1.21-1.24 s** | Full-sentence p90 for FLEURS sentences of up to 17 words was **2.48 s** in one run and **3.02 s** in a second (the slow clips were slow in every step at once: machine noise, not a pipeline step). Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public`, `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
+| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, upload to reply audio (§6): **Hindi → Santali** median **1.95 s**, p90 **2.24 s**, 0 of 79 over 3 s (FLEURS); **Santali → Hindi** median **2.22 s**, p90 **2.57 s**, 2 of 79 over 3 s (IndicVoices; answers of ≤ 10 words p90 **2.34 s**). Measured from the end of speech by step: time to first audio p90 **2.30-2.32 s** for all sentences (clause streaming); lesson lines p90 **1.21-1.24 s** | Full-sentence p90 for FLEURS sentences of up to 17 words was **2.48 s** in one run and **3.02 s** in a second (the slow clips were slow in every step at once: machine noise, not a pipeline step). Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public`, `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop**. A tablet's browser can use the laptop hub over local Wi-Fi. The hub can serve HTTPS so the browser may use the microphone (§9), but that is not yet checked on a real tablet. The tablet then needs the laptop | The on-device Android app, content pack and sync are **not built** (work package 4). Nothing runs on the tablet itself | `pytest tests/test_offline.py`; `GET /health/models` shows `online_dependencies: []` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
@@ -180,31 +180,55 @@ under it are the server's ASR, NMT and TTS times. Every request is logged, and
 
 ### Public speech (adult), both directions
 
-80 Hindi clips from `google/fleurs` (test split, CC BY 4.0, 3-10 s) and 80
-Santali clips from `ai4bharat/IndicVoices` (valid split, CC BY 4.0, 62
-speakers, Ol Chiki transcripts), both seeded. **Public dataset, adult speech;
+80 Hindi clips from `google/fleurs` (**test** split, CC BY 4.0, 3-10 s; 69
+distinct sentences, as FLEURS has several readers per sentence) and 80 Santali
+clips from `ai4bharat/IndicVoices` (**valid** split: the dataset has no test
+split; CC BY 4.0, 62 speakers, Ol Chiki transcripts), both seeded. Whether the
+speech model saw the valid split in training is not stated on its card. None of
+these clips, sentences or speakers can be used for fine-tuning
+(`eval/leakage.py`). **Public dataset, adult speech;
 child speech NOT MEASURED.** Laptop, offline. `bench/fetch_public_clips.py`
 fetches the same clips for anyone with access.
 
-Speech recognition (`bench/results/asr_decoding_public.md`; WER/CER corpus-level):
+Speech recognition (`bench/results/asr_decoding_public.md`; corpus-level).
+**Raw** WER compares the texts exactly as written; **normalised** WER and CER
+remove punctuation (including ᱾ and ।), dataset tags and digit-script
+differences only, the same way for both languages (rules: `bench/README.md`).
 
-| Language | Decoding | WER | CER | Median time |
-|---|---|---|---|---|
-| Hindi | **CTC (in use)**, silence trimmed | 11.1% | 4.5% | 499 ms |
-| Hindi | RNN-T, silence trimmed | 11.3% | 4.5% | 1260 ms |
-| Santali | CTC | 34.5% | 11.9% | 424 ms |
-| Santali | **RNN-T (in use)** | 31.3% | 10.6% | 1154 ms |
+| Language | Decoding | Silence trimmed | WER raw | WER normalised | CER normalised | Median time |
+|---|---|---|---|---|---|---|
+| Hindi | **CTC (in use)** | **yes (in use)** | 14.3% | 13.1% | 4.9% | 485 ms |
+| Hindi | CTC | no | 13.6% | 12.5% | 4.8% | 516 ms |
+| Hindi | RNN-T | yes | 14.3% | 13.1% | 4.9% | 1314 ms |
+| Santali | **RNN-T (in use)** | **yes (in use)** | 31.1% | 31.0% | 10.3% | 1144 ms |
+| Santali | RNN-T | no | 31.3% | 31.2% | 10.4% | 1281 ms |
+| Santali | CTC | yes | 34.7% | 34.7% | 11.6% | 386 ms |
 
 Voice to voice, upload to reply audio, in-process (no Wi-Fi):
 
 | Direction | n | Median | p90 | Max | Over 3 s | Source |
 |---|---|---|---|---|---|---|
 | Hindi → Santali | 79 | 1.95 s | 2.24 s | 2.74 s | 0 | `…_2026-09-25_public.csv` |
-| Santali → Hindi (RNN-T, in use) | 79 | 2.19 s | 2.61 s | 3.25 s | 2 | `…_2026-09-25_public_sat_rnnt.csv` |
-| Santali → Hindi (CTC) | 80 | 1.68 s | 1.94 s | 2.25 s | 0 | `…_2026-09-25_public.csv` |
+| Santali → Hindi (RNN-T, trimmed: in use) | 79 | 2.22 s | 2.57 s | 3.15 s | 2 | `…_public_sat_rnnt_trim.csv` |
+| Santali → Hindi (CTC, trimmed) | 79 | 1.69 s | 2.01 s | 3.85 s | 1 | `…_public_sat_ctc_trim.csv` |
 | Hindi → Santali, before Phase L | 79 | 2.95 s | 3.69 s | 5.68 s | 38 | `…_public_before_phase_l.csv` |
 
-Santali uses RNN-T: 3 fewer word errors per 100 words for about 0.5 s more.
+Santali → Hindi by answer length (Santali words), median / p90:
+
+| Answer length | n | RNN-T (in use) | CTC |
+|---|---|---|---|
+| ≤ 10 words | 41 | 1.98 / **2.34 s** (1 over 3 s) | 1.58 / 1.77 s (0 over) |
+| ≤ 5 words | 10 | 1.82 / 1.99 s | 1.34 / 1.54 s |
+| 6-10 words | 31 | 2.04 / 2.34 s | 1.60 / 1.77 s |
+| 11-17 words | 25 | 2.26 / 2.56 s | 1.73 / 2.01 s |
+| 18+ words | 13 | 2.50 / 2.76 s | 1.90 / 2.21 s |
+
+Santali uses RNN-T because the rule was: RNN-T if its p90 for answers of up to
+10 words stays within 3 s (2.34 s). The trade-off: about 0.4-0.6 s more per
+reply for 3.7 fewer word errors per 100 words. Silence trimming is on for
+Santali too: normalised WER 31.0% vs 31.2% without, 137 ms faster.
+Hindi trimming stays on for now (it was chosen on synthetic clips); on this
+data it is 0.6 WER points worse and 31 ms faster. See STATUS.md.
 
 ### Translation quality (public test sets)
 

@@ -111,11 +111,11 @@
 
 # ── Accuracy ───────────────────────────────────────────────────────────────
 - id: asr_wer_public_hi
-  text: "Hindi speech recognition on FLEURS (public dataset, adult speech): CTC WER 11.1%, CER 4.5%; RNN-T WER 11.3%, CER 4.5% (n=80)"
+  text: "Hindi speech recognition on FLEURS test (public dataset, adult speech, n=80), CTC with trimming (in use): WER raw 14.3%, normalised 13.1%, CER normalised 4.9%"
   status: "TRUE"
-  evidence: bench/results/deck_numbers.txt
+  evidence: bench/results/asr_decoding_public.md
 - id: asr_wer_public_sat
-  text: "Santali speech recognition on IndicVoices (public dataset, adult speech, n=80): RNN-T (in use) WER 31.3%, CER 10.6%; CTC WER 34.5%, CER 11.9%"
+  text: "Santali speech recognition on IndicVoices valid (no test split exists; public dataset, adult speech, n=80), RNN-T with trimming (in use): WER raw 31.1%, normalised 31.0%, CER normalised 10.3%; CTC with trimming normalised WER 34.7%"
   status: "TRUE"
   evidence: bench/results/asr_decoding_public.md
 - id: asr_child_speech
@@ -127,11 +127,11 @@
   status: "TRUE"
   evidence: eval/results/benchmarks.md
 - id: mt_int8_in22conv
-  text: "ONNX int8 translation on IN22-Conv: chrF++ 32.0 / 35.0 (hin→sat / sat→hin), 0.2 / 0.1 below fp32"
+  text: "ONNX int8 translation on IN22-Conv: chrF++ 32.0 / 35.0 (hin→sat / sat→hin); fp32 in mt_chrf"
   status: "TRUE"
   evidence: eval/results/benchmarks_onnx-int8.md
 - id: v2v_public_both
-  text: "Voice to voice, public adult speech, laptop, offline, upload to reply audio: hi→sat median 1.95 s, p90 2.24 s (n=79, FLEURS); sat→hi with RNN-T median 2.19 s, p90 2.61 s, 2 of 79 over 3 s (IndicVoices)"
+  text: "Voice to voice, public adult speech, laptop, offline, upload to reply audio: hi→sat median 1.95 s, p90 2.24 s (n=79, FLEURS); sat→hi with RNN-T and trimming median 2.22 s, p90 2.57 s, 2 of 79 over 3 s, answers of up to 10 words p90 2.34 s (IndicVoices)"
   status: "TRUE"
   evidence: bench/results/deck_numbers.txt
 - id: mt_paper_reference
