@@ -17,6 +17,40 @@ import soundfile as sf
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models", "indicconformer")
 
 
+def _asr_threads():
+    try:
+        import config as _config
+        return getattr(_config, "ASR_THREADS", None)
+    except ImportError:
+        return None
+
+
+class _session_threads:
+    """While active, onnxruntime.InferenceSession gets intra_op_num_threads=n."""
+
+    def __init__(self, n):
+        self.n = n
+
+    def __enter__(self):
+        import onnxruntime as ort
+        self.ort, self.orig = ort, ort.InferenceSession
+        if not self.n:
+            return self
+        n, orig = self.n, self.orig
+
+        def make(path, sess_options=None, providers=None, **kw):
+            so = sess_options or ort.SessionOptions()
+            so.intra_op_num_threads = n
+            so.inter_op_num_threads = 1
+            return orig(path, so, providers=providers, **kw)
+        ort.InferenceSession = make
+        return self
+
+    def __exit__(self, *exc):
+        self.ort.InferenceSession = self.orig
+        return False
+
+
 def _load_model_class():
     """Dynamically load the IndicASRModel class from the downloaded repo."""
     onnx_py = os.path.join(MODEL_DIR, "model_onnx.py")
@@ -55,7 +89,11 @@ class IndicConformerASR:
 
         IndicASRConfig, IndicASRModel = _load_model_class()
         config = IndicASRConfig(ts_folder=MODEL_DIR)
-        self.model  = IndicASRModel(config)
+        # AI4Bharat's loader creates its ONNX sessions with the default thread
+        # count (all physical cores). Phase L measured 8 threads as faster on
+        # this laptop, so the sessions are created with config.ASR_THREADS.
+        with _session_threads(_asr_threads()):
+            self.model = IndicASRModel(config)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"  IndicConformer ready on {self.device}. Supports: {self.SUPPORTED_LANGS}")
 

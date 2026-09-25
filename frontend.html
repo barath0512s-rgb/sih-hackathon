@@ -365,6 +365,8 @@ p{margin:0}
 
 /* ═════════ FLASHCARDS ═════════ */
 .deck-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.wordcount{font-size:13px;font-weight:700;opacity:.8;margin:6px 0 0;min-height:1.2em}
+.wordcount.long{opacity:1;color:var(--bad,#b3261e)}
 .importer{margin:0 0 22px;padding:18px 20px}
 .importer h2{margin:0 0 6px}.importer h3{margin:16px 0 8px;font-size:15px}
 .imp-row{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:10px 0}
@@ -989,6 +991,7 @@ input:focus,textarea:focus,select:focus{
         </span>
       </div>
       <div class="text" id="hi" contenteditable="true" role="textbox" data-tt="ph_hi" data-ph="यहाँ लिखिए" aria-label="हिंदी"></div>
+      <p class="wordcount" id="wordCount" aria-live="polite"></p>
       <p class="foot"><span class="e">✏️</span> <span data-t="pan_edit">भेजने से पहले बदल सकते हैं</span></p>
     </div>
 
@@ -1176,6 +1179,10 @@ input:focus,textarea:focus,select:focus{
           <span class="txt"><b data-t="se_msg">हर बार संदेश</b><small data-t="se_msg_s">अनुवाद होने पर छोटा संदेश</small></span>
           <button class="toggle" id="tgAsk" aria-pressed="true" aria-label="हर बार संदेश"></button>
         </div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_stop">चुप होते ही भेजें</b><small data-t="se_stop_s">बोलना रुकने पर रिकॉर्डिंग अपने आप रुकेगी। लंबे वाक्यों में बीच का विराम भी रोक सकता है</small></span>
+          <button class="toggle" id="tgStop" aria-pressed="false" aria-label="चुप होते ही भेजें"></button>
+        </div>
       </div>
     </div>
 
@@ -1276,6 +1283,9 @@ hi: {
   t3_yes:"ठीक", t3_fix:"सुधारें", t3_save:"सहेजें", t3_cancel:"रहने दें",
   t3_none:"अभी कोई सुधार नहीं", t3_saved:"सुधार सहेजे गए",
   les_title:"पाठ", les_sub:"कोई भी पाठ चुनिए, वह कक्षा में खुल जाएगा",
+  words_n:"{n} शब्द", words_est:"≈ {n} शब्द", words_hint:"छोटे वाक्य बोलिए: अनुवाद जल्दी मिलेगा",
+  m_autostop:"चुप्पी मिली, रिकॉर्डिंग रुक गई",
+  se_stop:"चुप होते ही भेजें", se_stop_s:"बोलना रुकने पर रिकॉर्डिंग अपने आप रुकेगी। लंबे वाक्यों में बीच का विराम भी रोक सकता है",
   imp_add:"➕ नया पाठ जोड़िए", imp_title:"नया पाठ जोड़िए", imp_sub:"हिंदी पाठ चिपकाइए या फ़ाइल (.txt, .csv, .json) चुनिए। हर पंक्ति का प्रकार और NIPUN लक्ष्य आप जाँचेंगे।", imp_grade:"कक्षा", imp_name:"पाठ का नाम", imp_text:"पाठ (हिंदी)", imp_file:"या फ़ाइल चुनिए", imp_split:"✂️ पंक्तियाँ बनाइए", imp_lines:"पंक्तियाँ: प्रकार बदलने के लिए दबाइए", imp_answer:"सही उत्तर, जैसे तीन (कई हों तो / से अलग)", imp_goals:"NIPUN लक्ष्य: सुझाए गए लक्ष्य चुने हुए हैं, जाँच लीजिए", imp_confirm:"मैंने NIPUN लक्ष्य जाँच लिए हैं", imp_save:"📘 पाठ बनाइए", imp_saving:"पाठ बन रहा है: अनुवाद और आवाज़…", imp_done:"पाठ बन गया। हर संताली पंक्ति की समीक्षा बाकी है।", imp_open:"कक्षा में खोलिए", imp_sheet:"📄 कार्यपत्रक", imp_fail:"पाठ नहीं बन सका:", imp_next:"फ़ाइल में अगला पाठ", imp_why:"सुझाव का कारण:", imp_why_num:"गिनती/गणित के {n} शब्द मिले", imp_why_lit:"पढ़ने-लिखने के {n} शब्द मिले", imp_none:"कोई सुझाव नहीं, लक्ष्य खुद चुनिए", ty_lesson_script:"📖 पाठ", ty_activity_instruction:"🙌 गतिविधि", ty_assessment_prompt:"❓ प्रश्न", balvatika:"बालवाटिका",
   err_file_encoding:"फ़ाइल UTF-8 टेक्स्ट होनी चाहिए।", err_json_bad:"JSON फ़ाइल पढ़ी नहीं जा सकी।", err_json_shape:"JSON फ़ाइल में grade, topic, line वाली सूची होनी चाहिए।", err_file_type:".txt, .csv या .json फ़ाइल चुनिए।", err_no_text:"पाठ का कोई टेक्स्ट नहीं है।", err_row_bad:"फ़ाइल की पंक्ति {n} सही नहीं है।", err_no_rows:"फ़ाइल में grade, topic और line वाली कोई पंक्ति नहीं है।", err_grade:"कक्षा बालवाटिका, 1, 2 या 3 होनी चाहिए।", err_title:"पाठ का नाम लिखिए।", err_title_long:"पाठ का नाम {n} अक्षरों से छोटा रखिए।", err_no_lines:"पाठ में कोई पंक्ति नहीं है।", err_too_many_lines:"एक पाठ में ज़्यादा से ज़्यादा {n} पंक्तियाँ हो सकती हैं।", err_line_bad:"पंक्ति {n} सही नहीं है।", err_line_not_hindi:"पंक्ति {n} हिंदी (देवनागरी) में नहीं है।", err_line_long:"पंक्ति {n} बहुत लंबी है।", err_line_type:"पंक्ति {n} का प्रकार सही नहीं है।", err_confirm:"पहले NIPUN लक्ष्य जाँचकर पुष्टि कीजिए।", err_no_goals:"कम से कम एक NIPUN लक्ष्य चुनिए।", err_goal_unknown:"यह NIPUN लक्ष्य मान्य नहीं है।", err_goal_domains:"लक्ष्य एक ही क्षेत्र से चुनिए: साक्षरता या संख्या ज्ञान।",
   les_all:"सब", les_grade:"कक्षा", les_lines:"पंक्तियाँ", les_open:"खोलिए", les_none:"इस कक्षा का कोई पाठ नहीं",
@@ -1409,6 +1419,9 @@ en: {
   t3_yes:"Right", t3_fix:"Fix it", t3_save:"Save", t3_cancel:"Never mind",
   t3_none:"No corrections yet", t3_saved:"corrections saved",
   les_title:"Lessons", les_sub:"Pick any lesson and it opens in the classroom",
+  words_n:"{n} words", words_est:"≈ {n} words", words_hint:"Speak in shorter sentences: the translation comes sooner",
+  m_autostop:"Silence detected, recording stopped",
+  se_stop:"Send when I stop talking", se_stop_s:"Recording stops by itself when speech stops. In long sentences a pause can stop it too",
   imp_add:"➕ Add a lesson", imp_title:"Add a lesson", imp_sub:"Paste Hindi lesson text or choose a file (.txt, .csv, .json). You check each line's type and the NIPUN goals.", imp_grade:"Grade", imp_name:"Lesson name", imp_text:"Lesson (Hindi)", imp_file:"or choose a file", imp_split:"✂️ Make lines", imp_lines:"Lines: press a label to change it", imp_answer:"Expected answer, e.g. तीन (separate several with /)", imp_goals:"NIPUN goals: the suggested ones are ticked, please check", imp_confirm:"I have checked the NIPUN goals", imp_save:"📘 Create lesson", imp_saving:"Creating: translation and audio…", imp_done:"Lesson created. Every Santali line awaits review.", imp_open:"Open in classroom", imp_sheet:"📄 Worksheet", imp_fail:"Could not create the lesson:", imp_next:"Next lesson in the file", imp_why:"Why suggested:", imp_why_num:"{n} number or maths words", imp_why_lit:"{n} reading or writing words", imp_none:"No suggestion; choose the goals yourself", ty_lesson_script:"📖 Script", ty_activity_instruction:"🙌 Activity", ty_assessment_prompt:"❓ Question", balvatika:"Balvatika",
   les_all:"All", les_grade:"Grade", les_lines:"lines", les_open:"Open", les_none:"No lesson for that grade",
   fc_title:"Flashcards", fc_sub:"Press a card, it flips over and shows the Santali",
@@ -1571,11 +1584,32 @@ const Api = {
     fd.append("device_id", DEVICE_ID);
     return api("/translate/audio", {method:"POST", body:fd}).then(r => r.json());
   },
+  // Phase L2: NDJSON, one event per line; onEvent is called as each arrives.
+  translateAudioStream: async (blob, direction, mode, sid, onEvent) => {
+    const fd = new FormData();
+    fd.append("audio", blob, "recording.webm");
+    fd.append("direction", direction); fd.append("mode", mode); fd.append("session_id", sid);
+    fd.append("device_id", DEVICE_ID);
+    const res = await api("/translate/audio_stream", {method:"POST", body:fd});
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let buf = "";
+    for (;;){
+      const {value, done} = await reader.read();
+      if (value) buf += dec.decode(value, {stream:true});
+      let nl;
+      while ((nl = buf.indexOf("\n")) >= 0){
+        const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+        if (line) onEvent(JSON.parse(line));
+      }
+      if (done) break;
+    }
+  },
   feedback:(hindi, santali, isCorrect, corrected, direction) =>
       postJSON("/feedback", {hindi_text:hindi, santali_text:santali, direction:direction || "hi-to-sat",
                              is_correct:isCorrect, corrected_text:corrected || ""}),
-  clientTiming:(rid, totalMs, responseMs) =>
-      postJSON("/metrics/client", {request_id:rid, client_total_ms:totalMs, response_ms:responseMs}),
+  clientTiming:(rid, totalMs, responseMs, lastMs) =>
+      postJSON("/metrics/client", {request_id:rid, client_total_ms:totalMs, response_ms:responseMs,
+                                   client_last_ms: lastMs ?? null}),
   markVoice:(sid, blob, step, lang) => {
     const fd = new FormData();
     fd.append("audio", blob, "answer.webm");
@@ -1916,11 +1950,80 @@ function play(quiet){
 }
 $("#playBtn").onclick = () => play();
 
+/* Streamed replies (Phase L2): chunks play one after another as they arrive.
+   Times are taken from the end of speech (t0): first = the first chunk starts,
+   last = the last chunk starts. */
+const Q = {urls: [], playing: false, t0: 0, first: null, last: null, total: 0, started: 0, onAll: null};
+function queueReset(t0, total){ Q.urls = []; Q.playing = false; Q.t0 = t0; Q.first = null; Q.last = null;
+  Q.total = total; Q.started = 0; Q.onAll = null; player.pause(); }
+function queuePush(url){ Q.urls.push(url); if (!Q.playing) queueNext(); }
+function queueNext(){
+  const url = Q.urls.shift();
+  if (!url){ Q.playing = false; return; }
+  Q.playing = true;
+  S.audioUrl = url;
+  player.src = SERVER + url;
+  player.play().catch(() => { Q.playing = false; say(t("m_blocked"), "🔈"); });
+}
+player.addEventListener("playing", () => {
+  if (!Q.total) return;
+  const now = performance.now();
+  Q.started++;
+  if (Q.first === null) Q.first = now;
+  if (Q.started >= Q.total){ Q.last = now; if (Q.onAll) Q.onAll(); }
+});
+player.addEventListener("ended", () => { if (Q.total && Q.urls.length) queueNext(); else Q.playing = false; });
+
 /* ───────────────── microphone ───────────────── */
 function stopRec(){
   if (!S.rec) return;
   $(S.rec === "hi-to-sat" ? "#micHi" : "#micSa").classList.remove("live");
   clearInterval(S.recTimer); S.rec = null; S.secs = 0;
+  if (S.vad){ clearInterval(S.vad.timer); try { S.vad.ctx.close(); } catch(e){} S.vad = null; }
+}
+
+/* Endpointing (Phase L3). The level is checked every 20 ms; the first 300 ms
+   set the room's noise floor. After speech has started, ENDPOINT_MS of silence
+   stops the recording by itself. The latency clock starts at the end of
+   speech (the last loud frame), so the silence wait is counted, not hidden. */
+// Adaptive: 500 ms of silence ends a short utterance; once 2.5 s have been
+// spoken, 1000 ms, because read sentences pause at commas. Replayed on recorded
+// clips by bench/endpoint_sim.py (same rule). Off by default: see Settings.
+const ENDPOINT_MS = 500, ENDPOINT_LONG_MS = 1000, LONG_AFTER_MS = 2500;
+const FRAME_MS = 20, CALIBRATE_MS = 300, MAX_REC_MS = 30000;
+const WORDS_PER_SEC = 2.2;     // Hindi speaking rate: FLEURS test clips, median words per second of clip
+function wordLabel(n, estimate){
+  const long = n > 15;
+  const el = $("#wordCount");
+  if (!el) return;
+  el.textContent = t(estimate ? "words_est" : "words_n").replace("{n}", num(n)) + (long ? "  ·  " + t("words_hint") : "");
+  el.classList.toggle("long", long);
+}
+function startVad(stream, onEnd){
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const an = ctx.createAnalyser(); an.fftSize = 1024;
+    ctx.createMediaStreamSource(stream).connect(an);
+    const buf = new Float32Array(an.fftSize);
+    const v = {ctx, t0: performance.now(), floor: 0, n: 0, speechStart: null, lastLoud: null, timer: null};
+    v.timer = setInterval(() => {
+      an.getFloatTimeDomainData(buf);
+      let e = 0; for (const x of buf) e += x * x;
+      const rms = Math.sqrt(e / buf.length), now = performance.now();
+      if (now - v.t0 < CALIBRATE_MS){ v.floor = (v.floor * v.n + rms) / (++v.n); return; }
+      const loud = rms > Math.max(v.floor * 3, 0.01);
+      if (loud){ v.lastLoud = now; if (v.speechStart === null) v.speechStart = now; }
+      if (v.speechStart !== null && S.dir === "hi-to-sat")
+        wordLabel(Math.max(1, Math.round((now - v.speechStart) / 1000 * WORDS_PER_SEC)), true);
+      const need = (v.lastLoud !== null && v.lastLoud - v.speechStart >= LONG_AFTER_MS) ? ENDPOINT_LONG_MS : ENDPOINT_MS;
+      if (!S.autostop) return;
+      if ((v.lastLoud !== null && now - v.lastLoud >= need) || now - v.t0 >= MAX_REC_MS){
+        clearInterval(v.timer);
+        onEnd(v.lastLoud ?? now);
+      }
+    }, FRAME_MS);
+    return v;
+  } catch(e){ return null; }     // no Web Audio: the teacher stops by hand, as before
 }
 function pickMime(){
   const want = ["audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus","audio/mp4"];
@@ -1963,25 +2066,65 @@ async function mic(dir){
     const dst = dir === "hi-to-sat" ? $("#sa") : $("#hi");
     src.classList.add("pending"); dst.classList.add("pending");
     say(t("m_listening"), "👂");
+    const t0 = S.tStop || performance.now();
+    let recognized = "", outs = [], tResp = null, nChunks = 0;
     try {
-      const r = await Api.translateAudio(blob, dir, S.mode, S.sid);
-      src.classList.remove("pending"); dst.classList.remove("pending");
-      src.textContent = r.recognized_text || "";
-      typeIn(dst, r.translated_text || "");
-      keep(r.latency.total,
-        dir === "hi-to-sat" ? r.recognized_text : r.translated_text,
-        dir === "hi-to-sat" ? r.translated_text : r.recognized_text);
-      setOnline(true);
-      clock_reply(r, S.tStop, true);
-      voice(r);
-      say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
+      await Api.translateAudioStream(blob, dir, S.mode, S.sid, ev => {
+        if (ev.type === "asr"){
+          recognized = ev.recognized_text || ""; nChunks = ev.chunks || 1;
+          src.classList.remove("pending");
+          src.textContent = recognized;
+          if (dir === "hi-to-sat") wordLabel(recognized.trim().split(/\s+/).filter(Boolean).length, false);
+          queueReset(t0, S.autoplay ? nChunks : 0);
+        } else if (ev.type === "chunk"){
+          if (tResp === null) tResp = performance.now();
+          outs.push(ev.translated_text || "");
+          dst.classList.remove("pending");
+          dst.textContent = outs.join(" ");
+          badge(ev.source);
+          if (ev.tts_error){ console.warn(ev.tts_error); say(t("m_no_voice"), "🔇"); }
+          else if (ev.audio_url){ S.audioUrl = ev.audio_url; if (S.autoplay) queuePush(ev.audio_url); }
+        } else if (ev.type === "done"){
+          const r = {latency: ev.latency, source: ev.source, request_id: ev.request_id,
+                     tts_engine: "piper", translated_text: ev.translated_text};
+          keep(r.latency.total,
+            dir === "hi-to-sat" ? recognized : r.translated_text,
+            dir === "hi-to-sat" ? r.translated_text : recognized);
+          setOnline(true);
+          timing(r.latency, true, null);
+          const report = () => {
+            if (Q.first === null) return;
+            const client = {seconds: (Q.first - t0) / 1000, played: true, cached: false,
+                            last: (Q.last ?? Q.first) - t0};
+            timing(r.latency, true, null, client);
+            if (S.log[0]) { S.log[0].t = +client.seconds.toFixed(2); rows(); }
+            Api.clientTiming(r.request_id, Q.first - t0, (tResp ?? performance.now()) - t0,
+                             (Q.last ?? Q.first) - t0).catch(() => {});
+          };
+          if (S.autoplay && nChunks && Q.last === null) Q.onAll = report; else report();
+          say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
+        }
+      });
     } catch(e){
       src.classList.remove("pending"); dst.classList.remove("pending"); fail(e);
     }
   };
   S.mr.start();
+  wordLabel(0, true);
+  S.vad = startVad(stream, speechEnd => {
+    if (S.rec !== dir) return;
+    S.tStop = speechEnd;                  // end of speech: the latency clock starts here
+    const mr = S.mr; stopRec();
+    if (mr && mr.state !== "inactive") mr.stop();
+    say(t("m_autostop"), "🤫");
+  });
 }
 $("#micHi").onclick = () => mic("hi-to-sat");
+// Typed Hindi: the exact word count, live (Phase L5).
+$("#hi").addEventListener("input", () => {
+  const n = $("#hi").textContent.trim().split(/\s+/).filter(Boolean).length;
+  if (n) wordLabel(n, false); else { $("#wordCount").textContent = ""; $("#wordCount").classList.remove("long"); }
+});
 $("#micSa").onclick = () => mic("sat-to-hi");
 
 /* ───────────────── stepping ───────────────── */
@@ -2510,6 +2653,7 @@ function toggle(id, fn){
   el.onclick = () => { const on = el.getAttribute("aria-pressed") !== "true"; el.setAttribute("aria-pressed", String(on)); fn(on); };
 }
 toggle("#tgAuto", v => { S.autoplay = v; localStorage.setItem("vs_autoplay", v?"1":"0"); });
+toggle("#tgStop", v => { S.autostop = v; try { localStorage.setItem("vs_autostop", v?"1":"0"); } catch(e){} });
 toggle("#tgBig",  v => bigType(v));
 toggle("#tgAsk",  v => { S.confirm = v; localStorage.setItem("vs_confirm", v?"1":"0"); });
 $("#saveSet").onclick = async () => {
@@ -2551,6 +2695,7 @@ async function boot(quiet){
   $("#server").value = SERVER;
   bigType(localStorage.getItem("vs_big") === "1");
   if (localStorage.getItem("vs_autoplay") === "0"){ S.autoplay = false; $("#tgAuto").setAttribute("aria-pressed","false"); }
+  try { if (localStorage.getItem("vs_autostop") === "1"){ S.autostop = true; $("#tgStop").setAttribute("aria-pressed","true"); } } catch(e){}
   if (localStorage.getItem("vs_confirm") === "0"){ S.confirm  = false; $("#tgAsk").setAttribute("aria-pressed","false"); }
 
   await ping();

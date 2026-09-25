@@ -1,0 +1,10 @@
+# Only for tools/export/ (exporting and quantising models). Install on top of
+# requirements.txt. The app itself needs only onnxruntime (in requirements.txt)
+# to RUN the exported models.
+#
+# Keep numpy at the version requirements.txt pins (1.26.4): torch 2.2 does not
+# run with numpy 2, and a newer ml_dtypes pulls numpy 2 in. ml_dtypes 0.4.1
+# works with numpy 1.26.
+onnx==1.17.0
+ml_dtypes==0.4.1
+numpy==1.26.4

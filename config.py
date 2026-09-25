@@ -63,6 +63,21 @@ NMT_MAX_TOKENS      = 128
 NMT_LIMIT_FACTOR, NMT_LIMIT_MARGIN = 3, 10
 NMT_NO_REPEAT_NGRAM = 3      # blocks the repeating-phrase loops this model can fall into
 
+# Phase L. Translation runs on ONNX Runtime when the exported model is on disk
+# (tools/export/export_indictrans2_onnx.py): fp32, token-for-token identical to
+# PyTorch on every tested sentence (bench/results/golden_nmt_fp32.md) and much
+# faster. Otherwise PyTorch, as before. "int8" is faster still but changes about
+# half the outputs; it stays off until IN22-Conv shows its quality.
+NMT_BACKEND = "onnx-fp32"    # "onnx-fp32" | "onnx-int8" | "torch"
+# Measured on this laptop (Phase L): more threads than this made both slower.
+NMT_THREADS = 6
+ASR_THREADS = 8
+# Clause streaming (Phase L2, streaming.py): utterances longer than this are
+# translated and spoken chunk by chunk, so the first audio comes sooner.
+# Shorter ones are translated whole, as before: chunking changes the wording,
+# and these lines are already fast enough.
+STREAM_MIN_WORDS = 18
+
 # ── Speech ────────────────────────────────────────────────────────────────────
 # No offline voice reads Ol Chiki, so Santali is transliterated first
 # (translit/olchiki.py) and read by an existing Piper voice:

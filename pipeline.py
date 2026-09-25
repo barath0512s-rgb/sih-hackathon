@@ -80,18 +80,36 @@ class VaaniSetuPipeline:
         MODEL_ID = str(config.NMT_DIR)
         self.tok_nmt = AutoTokenizer.from_pretrained(
             MODEL_ID, trust_remote_code=True)
-        self.mdl_nmt = AutoModelForSeq2SeqLM.from_pretrained(
-            MODEL_ID,
-            trust_remote_code=True).to(DEVICE)
-        self.mdl_nmt.eval()
-        print("  NMT Indic->Indic (Direct) ready.")
+        # The PyTorch model is loaded only when something needs it (the
+        # fallback, a test, a benchmark). With the ONNX engine it is never
+        # loaded, which saves its memory.
+        self._mdl_nmt = None
+        self._mdl_lock = threading.Lock()
+        self.ip = IndicProcessor(inference=True)
+        self.onnx_nmt = None
+        self.nmt_backend = "torch"
+        if config.NMT_BACKEND.startswith("onnx"):
+            try:
+                import nmt_onnx
+                if (nmt_onnx.ONNX_DIR / "encoder.onnx").exists():
+                    self.onnx_nmt = nmt_onnx.OnnxNMT(self.tok_nmt, self.ip,
+                                                     int8=config.NMT_BACKEND == "onnx-int8",
+                                                     threads=config.NMT_THREADS)
+                    self.nmt_backend = config.NMT_BACKEND
+                else:
+                    print(f"  ONNX translation files not found in {nmt_onnx.ONNX_DIR}; using PyTorch. "
+                          "Export them with: python tools/export/export_indictrans2_onnx.py")
+            except Exception as e:                     # onnxruntime missing or a bad file
+                print(f"  ONNX translation unavailable ({type(e).__name__}: {e}); using PyTorch.")
+        if self.onnx_nmt is None:
+            _ = self.mdl_nmt
+        print(f"  NMT Indic->Indic (Direct) ready: {self.nmt_backend}.")
 
         # ── TTS: Piper, offline. Voices are loaded in _warmup. ────────────────────
         # Santali: Ol Chiki -> config.SANTALI_TTS_SCRIPT -> a Piper voice.
         # Counts which engine produced each clip, so tests can prove no online call.
         self.tts_engine_counts = {"piper": 0, "cache": 0, "gtts": 0}
 
-        self.ip = IndicProcessor(inference=True)
         self._tts_lock = threading.Lock()
         # IndicProcessor keeps one placeholder queue per instance and clears it
         # in postprocess_batch, so two overlapping translations (two requests,
@@ -112,9 +130,7 @@ class VaaniSetuPipeline:
     def _warmup(self):
         print("  Warming up NMT...")
         try:
-            self._nmt("आज हम जोड़ना सीखेंगे।",
-                      "hin_Deva", "sat_Olck",
-                      self.tok_nmt, self.mdl_nmt)
+            self._nmt("आज हम जोड़ना सीखेंगे।", "hin_Deva", "sat_Olck")
             print("  Warmup complete.")
         except Exception as e:
             print(f"  Warmup skipped: {e}")
@@ -123,8 +139,25 @@ class VaaniSetuPipeline:
         for lang in ("hindi", "santali"):
             self._piper(self._voice_model(lang))
 
-    def _nmt(self, text, src_lang, tgt_lang, tokenizer, model):
+    @property
+    def mdl_nmt(self):
+        """The PyTorch translation model, loaded on first use."""
+        with self._mdl_lock:
+            if self._mdl_nmt is None:
+                self._mdl_nmt = AutoModelForSeq2SeqLM.from_pretrained(
+                    str(config.NMT_DIR), trust_remote_code=True).to(DEVICE).eval()
+            return self._mdl_nmt
+
+    @mdl_nmt.setter
+    def mdl_nmt(self, model):
+        self._mdl_nmt = model
+
+    def _nmt(self, text, src_lang, tgt_lang, tokenizer=None, model=None):
         """Translate one sentence. Returns (text, model_score).
+
+        With no `model`, the app's engine: ONNX Runtime when exported
+        (config.NMT_BACKEND), else PyTorch. Passing a PyTorch model runs that
+        model (tests and benchmarks compare engines this way).
 
         model_score is the geometric mean of the per-token probabilities of the
         greedy output, computed from real log-probs. It is NOT a quality
@@ -133,7 +166,11 @@ class VaaniSetuPipeline:
         and never shown to teachers. None when beam search is on.
         """
         with self._nmt_lock:
-            return self._nmt_locked(text, src_lang, tgt_lang, tokenizer, model)
+            if model is None and self.onnx_nmt is not None:
+                out, _, score = self.onnx_nmt.translate_scored(text, src_lang, tgt_lang)
+                return out, score
+            return self._nmt_locked(text, src_lang, tgt_lang, tokenizer or self.tok_nmt,
+                                    model if model is not None else self.mdl_nmt)
 
     def _nmt_locked(self, text, src_lang, tgt_lang, tokenizer, model):
         batch = self.ip.preprocess_batch(
@@ -240,7 +277,7 @@ class VaaniSetuPipeline:
             return cached
 
         src, tgt = ("hin_Deva", "sat_Olck") if fwd else ("sat_Olck", "hin_Deva")
-        out, score = self._nmt(text, src, tgt, self.tok_nmt, self.mdl_nmt)
+        out, score = self._nmt(text, src, tgt)
         if fwd:
             out = self._apply_domain_glossary(out, "sat_Olck")
         result = {"text": out, "source": "model", "model_score": score}

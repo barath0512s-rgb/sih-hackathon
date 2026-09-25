@@ -131,6 +131,7 @@ def main():
     RESULTS.mkdir(parents=True, exist_ok=True)
 
     out = {"date": datetime.date.today().isoformat(), "model": "ai4bharat/indictrans2-indic-indic-dist-320M",
+           "engine": pl.nmt_backend,
            "model_revision": pipeline.config.NMT_REVISION, "decoding": f"greedy (beams={pipeline.config.NMT_NUM_BEAMS})",
            "limit": a.limit, "results": []}
     for name, (pairs, rev) in data.items():
@@ -139,7 +140,7 @@ def main():
                                                   "sat_Olck-hin_Deva": (1, 0, "sat_Olck", "hin_Deva")}.items():
             t0, hyps = time.perf_counter(), []
             for p in pairs:
-                h, _ = pl._nmt(p[src_i], sl, tl, pl.tok_nmt, pl.mdl_nmt)
+                h, _ = pl._nmt(p[src_i], sl, tl)          # the app's engine
                 hyps.append(pl._apply_domain_glossary(h, "sat_Olck") if tl == "sat_Olck" else h)
             secs = time.perf_counter() - t0
             refs = [p[tgt_i] for p in pairs]

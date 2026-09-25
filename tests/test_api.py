@@ -88,6 +88,44 @@ def test_overlapping_model_translations_all_finish(api):
     assert out[lines[0]] == alone
 
 
+def _stream(api, wav_bytes, direction="hi-to-sat"):
+    import io as _io
+    import json as _json
+    r = api.app.test_client().post("/translate/audio_stream",
+                                   data={"audio": (_io.BytesIO(wav_bytes), "a.wav"), "direction": direction,
+                                         "device_id": "stream-test"},
+                                   content_type="multipart/form-data")
+    assert r.status_code == 200 and r.mimetype == "application/x-ndjson"
+    return [_json.loads(l) for l in r.get_data(as_text=True).splitlines() if l.strip()]
+
+
+def test_long_utterances_stream_in_chunks_short_ones_stay_whole(api, tmp_path):
+    long_hi = ("कुछ अणुओं में अस्थिर केंद्रक होता है जिसका मतलब यह है कि उनमें थोड़े या बिना "
+               "किसी झटके से टूटने की प्रवृत्ति होती है")
+    short_hi = "तीन और चार कितने होते हैं?"
+    for text, want_many in ((long_hi, True), (short_hi, False)):
+        wav = tmp_path / "in.wav"
+        api.pl.hindi_tts(text, str(wav))                     # the offline voice reads the line
+        ev = _stream(api, wav.read_bytes())
+        kinds = [e["type"] for e in ev]
+        assert kinds[0] == "asr" and kinds[-1] == "done"
+        chunks = [e for e in ev if e["type"] == "chunk"]
+        assert len(chunks) == ev[0]["chunks"]
+        assert (len(chunks) > 1) == want_many, (text, ev[0]["recognized_text"])
+        for c in chunks:
+            assert c["translated_text"] and c["audio_url"] and not c["tts_error"]
+        assert [c["ms"] for c in chunks] == sorted(c["ms"] for c in chunks)
+        assert ev[-1]["translated_text"] == " ".join(c["translated_text"] for c in chunks)
+    import database
+    with database._db() as c:
+        row = c.execute("SELECT input_type, chunks FROM latency_log WHERE device_id='stream-test' "
+                        "ORDER BY ts DESC LIMIT 2").fetchall()
+    assert {r["input_type"] for r in row} == {"voice", "voice-stream"}
+    code, _ = post(api, "/metrics/client", request_id=ev[-1]["request_id"], client_total_ms=900.0,
+                   response_ms=700.0, client_last_ms=2500.0)
+    assert code == 200
+
+
 def test_audio_urls_cannot_escape_the_folder(api):
     c = api.app.test_client()
     assert c.get("/audio/..%2Fapp.py").status_code == 404

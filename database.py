@@ -98,8 +98,15 @@ def init_db():
                 model_versions TEXT,
                 tts_error TEXT                       -- why no audio was made, if none was
             )""")
-        if "tts_error" not in {r["name"] for r in c.execute("PRAGMA table_info(latency_log)")}:
+        cols = {r["name"] for r in c.execute("PRAGMA table_info(latency_log)")}
+        if "tts_error" not in cols:
             c.execute("ALTER TABLE latency_log ADD COLUMN tts_error TEXT")
+        # Streaming replies (Phase L2): client_total_ms is the time to the FIRST
+        # audio; client_last_ms is the time to the last chunk's audio starting.
+        if "client_last_ms" not in cols:
+            c.execute("ALTER TABLE latency_log ADD COLUMN client_last_ms REAL")
+        if "chunks" not in cols:
+            c.execute("ALTER TABLE latency_log ADD COLUMN chunks INTEGER")
         # Lessons a teacher imported (curriculum.py). The whole lesson, in the
         # same shape as lesson_engine.NIPUN_LESSONS, is kept as JSON.
         c.execute("""
@@ -200,17 +207,17 @@ def load_session(sid):
 
 # ── Latency ───────────────────────────────────────────────────────────────────
 def log_latency(rid, *, device_id, direction, input_type, source, tts_engine,
-                asr_ms, nmt_ms, tts_ms, server_ms, model_versions, tts_error=None):
+                asr_ms, nmt_ms, tts_ms, server_ms, model_versions, tts_error=None, chunks=None):
     with _db() as c:
         c.execute("""
             INSERT INTO latency_log (id, ts, device_id, direction, input_type, source,
-                tts_engine, asr_ms, nmt_ms, tts_ms, server_ms, model_versions, tts_error)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                tts_engine, asr_ms, nmt_ms, tts_ms, server_ms, model_versions, tts_error, chunks)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (rid, time.time(), device_id, direction, input_type, source, tts_engine,
-             asr_ms, nmt_ms, tts_ms, server_ms, json.dumps(model_versions), tts_error))
+             asr_ms, nmt_ms, tts_ms, server_ms, json.dumps(model_versions), tts_error, chunks))
 
 
-def report_client_timing(rid, client_total_ms, response_ms):
+def report_client_timing(rid, client_total_ms, response_ms, client_last_ms=None):
     """The browser's own measurements for a request. response_ms is from the end
     of input to the response arriving; network = that minus the server's time.
     Returns False if the request id is unknown."""
@@ -219,8 +226,9 @@ def report_client_timing(rid, client_total_ms, response_ms):
         if not r:
             return False
         network = max(0.0, float(response_ms) - (r["server_ms"] or 0.0))
-        c.execute("UPDATE latency_log SET client_total_ms=?, network_ms=? WHERE id=?",
-                  (float(client_total_ms), network, rid))
+        c.execute("UPDATE latency_log SET client_total_ms=?, network_ms=?, client_last_ms=? WHERE id=?",
+                  (float(client_total_ms), network,
+                   float(client_last_ms) if client_last_ms is not None else None, rid))
     return True
 
 
@@ -249,7 +257,8 @@ def latency_summary():
     out = {}
     for key, rs in sorted(groups.items()):
         entry = {"count": len(rs)}
-        for field in ("client_total_ms", "server_ms", "asr_ms", "nmt_ms", "tts_ms", "network_ms"):
+        for field in ("client_total_ms", "client_last_ms", "server_ms", "asr_ms", "nmt_ms", "tts_ms",
+                      "network_ms"):
             vals = [r[field] for r in rs if r[field] is not None]
             if vals:
                 entry[field] = {"n": len(vals), "median": round(statistics.median(vals), 1),

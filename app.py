@@ -1,6 +1,7 @@
 # app.py — REST API for the browser frontend (and, later, the tablet app)
 
 import io
+import json
 import re
 import tempfile
 import threading
@@ -8,13 +9,14 @@ import time
 import uuid
 from pathlib import Path
 
-from flask import Flask, abort, jsonify, request, send_file
+from flask import Flask, Response, abort, jsonify, request, send_file, stream_with_context
 from flask_cors import CORS
 
 import config
 import curriculum
 import database
-from education_glossary import lookup_word_hi_to_sat
+import streaming
+from education_glossary import lookup_hi_to_sat, lookup_sat_to_hi, lookup_word_hi_to_sat
 from lesson_engine import LessonSession, get_all_lessons, get_lesson
 from pipeline import TRANSLATION_CACHE, TTSError, VaaniSetuPipeline
 from nipun import lakshya
@@ -152,10 +154,19 @@ def _size(path):
 # Model files on disk, measured once at start.
 _ASR_MODEL = {"engine": "IndicConformer 600M multilingual, ONNX, RNN-T decoding",
               "path": str(config.ASR_DIR), "bytes": _size(config.ASR_DIR)}
-_NMT_MODEL = {"engine": "IndicTrans2 indic-indic-dist-320M, PyTorch, "
-                        f"{'greedy' if config.NMT_NUM_BEAMS == 1 else f'beam {config.NMT_NUM_BEAMS}'} decoding",
-              "path": str(config.NMT_DIR / "model.safetensors"),
-              "bytes": _size(config.NMT_DIR / "model.safetensors")}
+def _nmt_model():
+    """What actually translates: ONNX Runtime (Phase L) or PyTorch."""
+    dec = "greedy" if config.NMT_NUM_BEAMS == 1 else f"beam {config.NMT_NUM_BEAMS}"
+    if pl.onnx_nmt is not None:
+        import nmt_onnx
+        sfx = ".int8.onnx" if pl.nmt_backend == "onnx-int8" else ".onnx"
+        files = [nmt_onnx.ONNX_DIR / f"{n}{sfx}" for n in ("encoder", "decoder_init", "decoder_step")]
+        return {"engine": f"IndicTrans2 indic-indic-dist-320M, ONNX Runtime {pl.nmt_backend.split('-')[1]}, "
+                          f"{config.NMT_THREADS} threads, {dec} decoding",
+                "path": str(nmt_onnx.ONNX_DIR), "bytes": sum(_size(f) for f in files)}
+    return {"engine": f"IndicTrans2 indic-indic-dist-320M, PyTorch, {dec} decoding",
+            "path": str(config.NMT_DIR / "model.safetensors"),
+            "bytes": _size(config.NMT_DIR / "model.safetensors")}
 
 
 def _tts_engine(lang):
@@ -175,8 +186,8 @@ def health_models():
     online = ["gTTS (Google Text-to-Speech), used only if Piper fails"] if config.ALLOW_ONLINE_TTS else []
     return jsonify({
         "languages": {
-            "hi":  {"asr": _ASR_MODEL, "nmt": _NMT_MODEL, "tts": _tts_engine("hindi")},
-            "sat": {"asr": _ASR_MODEL, "nmt": _NMT_MODEL, "tts": _tts_engine("santali")},
+            "hi":  {"asr": _ASR_MODEL, "nmt": _nmt_model(), "tts": _tts_engine("hindi")},
+            "sat": {"asr": _ASR_MODEL, "nmt": _nmt_model(), "tts": _tts_engine("santali")},
         },
         "online_dependencies": online,
         "tts_engine_counts": pl.tts_engine_counts,
@@ -185,7 +196,8 @@ def health_models():
         "active_sessions": len(sessions),
         # kept for older clients
         "asr_backend": pl.asr_backend,
-        "nmt_loaded": hasattr(pl, "mdl_nmt"),
+        "nmt_loaded": pl.onnx_nmt is not None or pl._mdl_nmt is not None,
+        "nmt_backend": pl.nmt_backend,
     })
 
 
@@ -269,19 +281,20 @@ def speak():
 # ── Translation ───────────────────────────────────────────────────────────────
 def _model_versions():
     return {"asr": config.ASR_REVISION[:10], "nmt": config.NMT_REVISION[:10],
-            "nmt_beams": config.NMT_NUM_BEAMS,
+            "nmt_beams": config.NMT_NUM_BEAMS, "nmt_engine": pl.nmt_backend,
             "tts_hindi": pl._voice_model("hindi"), "tts_santali": pl._voice_model("santali"),
             "santali_script": config.SANTALI_TTS_SCRIPT}
 
 
-def _log(rid, device_id, direction, input_type, r, tts_engine, lat, tts_error=None):
+def _log(rid, device_id, direction, input_type, r, tts_engine, lat, tts_error=None, chunks=None):
     """One latency_log row; the client later adds what the user actually waited.
     A failed clip is recorded here too, with the reason."""
     database.log_latency(
         rid, device_id=device_id or None, direction=direction, input_type=input_type,
         source=r["source"], tts_engine=tts_engine,
         asr_ms=lat["asr"] * 1000, nmt_ms=lat["nmt"] * 1000, tts_ms=lat["tts"] * 1000,
-        server_ms=lat["total"] * 1000, model_versions=_model_versions(), tts_error=tts_error)
+        server_ms=lat["total"] * 1000, model_versions=_model_versions(), tts_error=tts_error,
+        chunks=chunks)
 
 
 def _translation_json(r, audio_url, tts_error, latency, rid=None, tts_engine=None):
@@ -342,6 +355,80 @@ def translate_audio():
     return jsonify(out)
 
 
+def _stream_parts(text, direction):
+    """How a recognised utterance is spoken (Phase L2). Whole: a short line,
+    Santali input (no Santali splitter yet), or a line a teacher corrected or
+    the glossary knows. Otherwise clause chunks (streaming.py)."""
+    if direction != "hi-to-sat" or len(text.split()) < config.STREAM_MIN_WORDS:
+        return [text]
+    if database.get_correction(text, direction) or (lookup_hi_to_sat if direction == "hi-to-sat"
+                                                     else lookup_sat_to_hi)(text):
+        return [text]
+    return streaming.chunks(text) or [text]
+
+
+@app.route("/translate/audio_stream", methods=["POST"])
+def translate_audio_stream():
+    """Like /translate/audio, but a long utterance is translated and spoken
+    chunk by chunk (Phase L2). The reply is NDJSON, one line per event:
+      {"type":"asr", "recognized_text", "chunks"}
+      {"type":"chunk", "i", "source_text", "translated_text", "source",
+       "audio_url", "tts_error", "tts_engine", "ms"}           (ms since the audio arrived)
+      {"type":"done", "request_id", "translated_text", "latency"}
+    The first chunk's audio can play while the rest are still being made."""
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio"}), 400
+    direction = request.form.get("direction", "hi-to-sat")
+    if direction not in DIRECTIONS:
+        return jsonify({"error": f"direction must be one of {DIRECTIONS}"}), 400
+    mode = request.form.get("mode", "lesson_script")
+    sid, device = request.form.get("session_id", ""), request.form.get("device_id")
+    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
+        request.files["audio"].save(tmp.name)
+        tmp_path = Path(tmp.name)
+
+    def events():
+        t0 = time.time()
+        try:
+            recognized = (pl.transcribe_hindi if direction == "hi-to-sat" else pl.transcribe_santali)(str(tmp_path))
+        finally:
+            tmp_path.unlink(missing_ok=True)
+            Path(str(tmp_path) + "_converted.wav").unlink(missing_ok=True)
+        t1 = time.time()
+        parts = _stream_parts(recognized, direction)
+        yield json.dumps({"type": "asr", "recognized_text": recognized, "chunks": len(parts)},
+                         ensure_ascii=False) + "\n"
+        outs, nmt_s, tts_s, sources, engines, errors = [], 0.0, 0.0, [], [], []
+        for i, part in enumerate(parts):
+            a = time.time()
+            r = pl.translate(part, direction, mode)
+            b = time.time()
+            audio_url, tts_error, tts_engine = _speak(direction, r["text"])
+            c = time.time()
+            nmt_s += b - a; tts_s += c - b
+            outs.append(r["text"]); sources.append(r["source"]); engines.append(tts_engine)
+            if tts_error:
+                errors.append(tts_error)
+            yield json.dumps({"type": "chunk", "i": i, "source_text": part, "translated_text": r["text"],
+                              "source": r["source"], "audio_url": audio_url, "tts_error": tts_error,
+                              "tts_engine": tts_engine, "ms": round((c - t0) * 1000)},
+                             ensure_ascii=False) + "\n"
+        whole = " ".join(outs)
+        lat = {"asr": round(t1 - t0, 3), "nmt": round(nmt_s, 3), "tts": round(tts_s, 3),
+               "total": round(time.time() - t0, 3)}
+        rid = uuid.uuid4().hex
+        src = sources[0] if len(set(sources)) == 1 else "model"
+        _record(sid, direction, recognized if direction == "hi-to-sat" else whole,
+                whole if direction == "hi-to-sat" else recognized, lat["total"])
+        _log(rid, device, direction, "voice-stream" if len(parts) > 1 else "voice",
+             {"source": src}, engines[0] if len(set(engines)) == 1 else "piper", lat,
+             "; ".join(errors) or None, chunks=len(parts))
+        yield json.dumps({"type": "done", "request_id": rid, "translated_text": whole, "source": src,
+                          "latency": lat}, ensure_ascii=False) + "\n"
+
+    return Response(stream_with_context(events()), mimetype="application/x-ndjson")
+
+
 @app.route("/translate/text", methods=["POST"])
 def translate_text():
     data = request.json or {}
@@ -384,11 +471,12 @@ def metrics_client():
     d = request.json or {}
     try:
         total, resp = float(d["client_total_ms"]), float(d["response_ms"])
+        last = float(d["client_last_ms"]) if d.get("client_last_ms") is not None else None
     except (KeyError, TypeError, ValueError):
         return jsonify({"error": "request_id, client_total_ms and response_ms are required"}), 400
-    if not (0 <= resp <= total < 10 * 60 * 1000):
+    if not (0 <= resp <= total < 10 * 60 * 1000) or (last is not None and not total <= last < 10 * 60 * 1000):
         return jsonify({"error": "timings out of range"}), 400
-    if not database.report_client_timing(d.get("request_id", ""), total, resp):
+    if not database.report_client_timing(d.get("request_id", ""), total, resp, last):
         return jsonify({"error": "unknown request_id"}), 404
     return jsonify({"status": "ok"})
 
