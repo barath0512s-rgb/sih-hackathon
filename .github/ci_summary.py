@@ -22,3 +22,9 @@ print("|---|---|")
 for name in WATCH:
     hit = [c for c in cases if c.get("name") == name]
     print(f"| `{name}` | {state(hit[0]) if hit else 'NOT FOUND'} |")
+
+# Also as annotations: shown on the public run page without a login.
+if "--annotate" in sys.argv:
+    watched = "; ".join(f"{n}: {state([c for c in cases if c.get('name') == n][0]) if any(c.get('name') == n for c in cases) else 'NOT FOUND'}"
+                        for n in WATCH)
+    sys.stderr.write(f"::notice title=Tests::{', '.join(f'{v} {k}' for k, v in sorted(counts.items()))}. {watched}\n")

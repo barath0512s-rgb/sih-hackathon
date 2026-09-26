@@ -28,4 +28,4 @@ jobs:
       # The step logs need a GitHub login; the run summary does not. Publish the
       # counts, and the old-WebView (Chrome 69) test by name, where anyone can read them.
       - if: always()
-        run: python .github/ci_summary.py junit.xml >> "$GITHUB_STEP_SUMMARY"
+        run: python .github/ci_summary.py junit.xml --annotate 2>&1 >> "$GITHUB_STEP_SUMMARY" | cat
