@@ -74,3 +74,6 @@ android/app/build/
 android/local.properties
 android/.idea/
 *.apk
+
+# The Android test pack needs its few audio clips (tests/test_android_assets.py, PackTest.kt)
+!android/app/src/test/resources/pack/audio/*.wav
