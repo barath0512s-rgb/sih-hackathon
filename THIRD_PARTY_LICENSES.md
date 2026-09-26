@@ -69,9 +69,13 @@ Android section below.
 | OpenMoji pictures (worksheets, flashcards) | content pack PDFs | CC BY-SA 4.0 | `static/openmoji/ATTRIBUTION.md` |
 | Ported code: IndicTransToolkit processor (MIT), Indic NLP Library normalizers/tokenizers (MIT), RFC 8032 Ed25519 reference (Simplified BSD), sentencepiece BPE algorithm (re-implemented; sentencepiece is Apache-2.0) | APK | as listed | the Kotlin files' headers |
 
-The APK therefore includes GPL-3.0 code: distributing it requires offering the
-corresponding source of espeak-ng (link above) and keeping its licence notice.
-Our own code stays MIT.
+The APK therefore includes GPL-3.0 code. **Decision (27 Sep 2026, the team): accepted
+for the submission. The APK as a whole is distributed under GPL-3.0 terms**; our own
+code is public and MIT (GPL-compatible) and can also be used under MIT on its own.
+The GPL-3.0 text is in `android/COPYING-GPL-3.0.txt` and, with a notice linking the
+corresponding source, inside the APK (`assets/licenses/GPL-3.0.txt`, `NOTICE.txt`).
+For the finale: evaluate a character-based voice without espeak-ng (the MMS / VITS
+route of C4 needs no espeak-ng).
 
 ## Laptop hub only
 

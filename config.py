@@ -120,7 +120,7 @@ FREE_FORM_VOICE_MIN_RAM_GB = 3.5
 # model pass, so voice replies skip it unless ROUNDTRIP_ON_VOICE (typed
 # translations and content packs are checked).
 ROUNDTRIP_CHECK = True
-ROUNDTRIP_CHRF_THRESHOLD = 34.5     # eval/results/roundtrip_flag.json (best F1 on the tune half)
+ROUNDTRIP_CHRF_THRESHOLD = 29.0     # eval/results/roundtrip_flag.json (best F1 on the tune half of a seeded split)
 ROUNDTRIP_ON_VOICE = False
 
 # ── Oral reading fluency (C1) ─────────────────────────────────────────────────
@@ -128,6 +128,13 @@ ROUNDTRIP_ON_VOICE = False
 # minute against the NIPUN goals. The recording is deleted after recognition.
 ORF = True
 ORF_PASSAGES_FILE = BASE_DIR / "content" / "orf_passages.json"
+
+# ── Photo import (C2), laptop hub only ───────────────────────────────────────
+# A photographed page of Hindi text -> the lesson import box (ocr.py, Tesseract
+# with hin.traineddata). Not on the tablet: ML Kit sends usage metrics to Google
+# when online (docs/sources.md#mlkit-text). Off until measured (bench/results/ocr_eval.md).
+PHOTO_IMPORT = False
+TESSERACT_CMD = None               # None: PATH, then C:\Program Files\Tesseract-OCR\tesseract.exe
 
 # ── Worksheets (A2) ───────────────────────────────────────────────────────────
 # v2: student exercises with pictures (count and write, match, fill in the blank,

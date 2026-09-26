@@ -84,7 +84,7 @@ class Api(
             "GET /orf/passages" -> Resp.json(pack?.orfPassages ?: JSONObject().put("passages", JSONArray()))
             "POST /orf/score" -> orfScore(pack, body, contentType)
             "POST /sync/import" -> Resp.error(501, "Tablet files are merged on the hub", "hub_only")
-            "POST /curriculum/import", "POST /curriculum/save" ->
+            "POST /curriculum/import", "POST /curriculum/save", "POST /curriculum/photo" ->
                 Resp.error(501, "Lessons are written on the hub and arrive in the content pack", "hub_only")
             else -> when {
                 method == "GET" && path.startsWith("/audio/pack/") -> packAudio(pack, path.removePrefix("/audio/pack/"))

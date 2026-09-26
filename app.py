@@ -656,6 +656,28 @@ def _lesson_audio(topic, i):
     return config.LESSON_AUDIO_DIR / topic / f"{i}.wav"
 
 
+@app.route("/curriculum/photo", methods=["POST"])
+def curriculum_photo():
+    """C2: a photo of a page of Hindi text -> its text, for the teacher to check in the
+    import box (then the usual /curriculum/import). The photo is not kept."""
+    import ocr
+    if not config.PHOTO_IMPORT:
+        return jsonify({"error": "Photo import is off", "code": "photo_off"}), 404
+    f = request.files.get("photo")
+    if f is None:
+        return jsonify({"error": "No photo"}), 400
+    data = f.read()
+    if len(data) > 20 * 1024 * 1024:
+        return jsonify({"error": "The photo is larger than 20 MB"}), 400
+    try:
+        text = ocr.recognise(data)
+    except ocr.OcrError as e:
+        return jsonify({"error": str(e), "code": "ocr_unavailable"}), 503
+    except Exception:
+        return jsonify({"error": "The photo could not be read", "code": "photo_bad"}), 400
+    return jsonify({"text": text, "engine": "tesseract hin", "lines": len(text.splitlines())})
+
+
 @app.route("/curriculum/save", methods=["POST"])
 def curriculum_save():
     try:

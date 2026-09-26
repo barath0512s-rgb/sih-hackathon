@@ -5,11 +5,21 @@ Kotlin, minSdk 28 (Android 9), no AndroidX. The app shows the same
 server on `127.0.0.1:5000` (loopback only) with the hub's REST contract
 (`contract/rest_contract.json`).
 
-State at M1: lessons, flashcards, sessions and answer marking, typed
-translation of the pack's lines, pack audio, worksheets and teacher corrections
-all work offline from a **content pack**. Speech recognition (M3), translation
-of new sentences (M4) and synthesising new speech (M2) are not on the device yet:
-those requests answer `503 engine_not_on_device`, never a fake result.
+State (27 Sep 2026): lessons, flashcards, sessions and answer marking, pack
+lines and audio, worksheet and flashcard PDFs, teacher corrections and the
+reading check work offline from a signed **content pack**. With the signed
+**model pack**: speech recognition and synthesis on the device (M2, M3), a
+spoken lesson line matched to its pre-translated Santali (A1), and typed new
+sentences translated on the device (M4). Free-form *spoken* translation stays
+on the laptop hub (on 2 GB it needs a model swap per utterance). Anything the
+tablet cannot do answers `503 engine_not_on_device`, never a fake result.
+
+## Licence of the APK
+
+The APK includes espeak-ng (GPL-3.0-or-later, inside sherpa-onnx's native
+library), so **the APK as a whole is distributed under GPL-3.0 terms**
+(`COPYING-GPL-3.0.txt`; the app carries it and a source notice in
+`assets/licenses/`). Our code is MIT. Details: `THIRD_PARTY_LICENSES.md`.
 
 ## Build
 

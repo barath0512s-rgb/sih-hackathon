@@ -390,7 +390,7 @@
   status: "NOT BUILT"
   evidence: STATUS.md
 - id: a3_roundtrip
-  text: "Round-trip check on IN22-Conv (test half): threshold 34.5 flags 116 of 208 worst Hindi→Santali translations (recall 0.558) at precision 0.446; it flags 260 of 738 sentences; Spearman 0.295 with sentence chrF"
+  text: "Round-trip caution flag on IN22-Conv, seeded split, tuned on one half and scored on the other: threshold 29.0; test half precision 0.464, recall 0.449 for the worst quarter of translations (tune half 0.484 / 0.492); it flags 181 of 752 test sentences. A caution flag for native review, not a quality score"
   status: "TRUE"
   evidence: eval/results/roundtrip_flag.md
 - id: a3_scope
@@ -418,7 +418,7 @@
   status: "TRUE"
   evidence: mms_tts.py
 - id: a7_samples
-  text: "Mundari and Ho audio samples of teacher-authored lines"
+  text: "Mundari voice samples of MMLoSo test-split sentences; Ho samples (none: no licensed Ho text)"
   status: "NOT BUILT"
   evidence: STATUS.md
 - id: a7_tablet_voices
@@ -449,10 +449,14 @@
   text: "Free-form Hindi speech to Santali speech entirely on the 2 GB emulator: works after the memory fix, p50 13.48 s, p90 15.07 s (models swapped per utterance); off on 2 GB tablets"
   status: "TRUE"
   evidence: bench/results/emulator-2gb-android9_2026-09-26_nmt_memfix.md
-- id: a5_free_form_4gb
-  text: "Free-form speech translation on a 4 GB tablet with both models loaded"
-  status: "NOT MEASURED"
+- id: a5_free_form_tablet
+  text: "Free-form spoken translation on the tablet (it stays on the laptop hub)"
+  status: "NOT BUILT"
   evidence: STATUS.md
+- id: a5_realme_typed
+  text: "Typed translation on the Realme Pad Mini (4 GB, Android 11)"
+  status: "NOT MEASURED"
+  evidence: docs/device_session.md
 - id: a5_memory
   text: "Peak app PSS while translating on the 2 GB emulator (after the memory fix): 1197 MB, above the 900 MB guideline"
   status: "TRUE"
@@ -466,6 +470,10 @@
   status: "NOT MEASURED"
   evidence: bench/results/orf_validation.md
 - id: c2_photo_import
-  text: "Textbook-page photo import (OCR)"
-  status: "NOT BUILT"
+  text: "Textbook-page photo import on the laptop hub: character accuracy on the team's photographed pages"
+  status: "NOT MEASURED"
   evidence: STATUS.md
+- id: c2_photo_import_tablet
+  text: "Photo import on the tablet"
+  status: "NOT BUILT"
+  evidence: docs/sources.md#mlkit-text

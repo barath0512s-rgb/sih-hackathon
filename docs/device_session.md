@@ -7,7 +7,7 @@ itself and reports those). Everything measured here is labelled **"4 GB, Android
 emulator (`bench/results/android_m1_emulator-2gb-android9.md`,
 `bench/results/emulator-2gb-android9_2026-09-26_m1.md`).
 
-Trigger: when you say **"Realme connected"**, I run B, then C, then report, then
+Trigger: when you say **"Realme connected"**, I run B, B2, then C, then report, then
 update `main`, push and tag `v0.95-submission`.
 
 ## A. Before plugging in (on the tablet)
@@ -46,6 +46,22 @@ WebView (lessons, a lesson line, Translate → Santali), screen-recorded to
 the page and of the debug build through MicBridge; peak PSS (app + WebView renderer).
 Output: `bench/results/realme-pad-mini-4gb-android11_<date>_m1.md`. At the end you can
 switch airplane mode off.
+
+## B2. Typed translation on the tablet (A5), timed
+
+After B, with airplane mode still ON (switch it on by hand if B ended with it off; Android 11
+does not let adb switch it):
+
+```bash
+python tools/android/nmt_bench.py --serial <realme serial> --label realme-pad-mini-4gb-android11 --device-label "Realme Pad Mini, 4 GB, Android 11" --in22 200 --skip-phase2
+```
+
+It installs the debug build (the benchmark hook), clears the app's data, imports the signed
+model pack only, and translates the 80 golden sentences (must equal the laptop's output) and
+200 IN22-Conv sentences on the tablet: time per sentence, peak memory, chrF++ beside the
+laptop's. Labelled "Realme Pad Mini, 4 GB, Android 11". Free-form *spoken* translation stays
+on the laptop hub (decision of 27 Sep). Afterwards reinstall the release APK and re-import
+both packs (or run B again with `--resume`) before the demo recording.
 
 ## C. Hub mode: the tablet's browser uses the laptop (microphone test)
 

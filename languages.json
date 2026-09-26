@@ -78,7 +78,7 @@
      "source": "docs/sources.md#mmloso"
     },
     "tts": {
-     "engine": "facebook/mms-tts-unr (reads Odia script; Devanagari converted)",
+     "engine": "facebook/mms-tts-unr (reads Odia script; Devanagari converted); samples from the MMLoSo test split only",
      "licence": "CC BY-NC 4.0",
      "maturity": "preview",
      "source": "docs/sources.md#mms-tts"
@@ -107,7 +107,7 @@
      "source": null
     },
     "tts": {
-     "engine": "facebook/mms-tts-hoc (reads Odia script; Devanagari converted; Warang Citi not supported yet)",
+     "engine": "facebook/mms-tts-hoc (reads Odia script; Devanagari converted; Warang Citi not supported yet). Ho voice model available; content pending a native speaker",
      "licence": "CC BY-NC 4.0",
      "maturity": "preview",
      "source": "docs/sources.md#mms-tts"

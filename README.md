@@ -67,8 +67,8 @@ Maturity: **production** = in the app and measured; **preview** = works, labelle
 |---|---|---|---|
 | Hindi (हिंदी) | **production**: IndicConformer 600M multilingual (hub); 120M CTC int8 via sherpa-onnx (tablet) (MIT) | **production**: IndicTrans2 indic-indic-dist-320M (hub); on the tablet: pack lines, and int8 for typed new sentences (MIT) | **production**: Piper hi_IN-pratham-medium (CC BY-NC-SA 4.0) |
 | Santali (ᱥᱟᱱᱛᱟᱲᱤ) | **production**: IndicConformer 600M multilingual (hub); 120M transducer int8 via sherpa-onnx (tablet) (MIT) | **production**: IndicTrans2 indic-indic-dist-320M (hub); on the tablet: pack lines, and int8 for typed new sentences (MIT) | **production**: Piper hi_IN-pratham-medium reading an Ol Chiki transliteration (pending native review) (CC BY-NC-SA 4.0) |
-| Mundari (मुंडारी) | not available | not available (planned: IndicTrans2 + Hindi–Mundari LoRA (notebooks/mundari_lora.ipynb, not run yet)) | **preview**: facebook/mms-tts-unr (reads Odia script; Devanagari converted) (CC BY-NC 4.0) |
-| Ho (हो) | not available | not available | **preview**: facebook/mms-tts-hoc (reads Odia script; Devanagari converted; Warang Citi not supported yet) (CC BY-NC 4.0) |
+| Mundari (मुंडारी) | not available | not available (planned: IndicTrans2 + Hindi–Mundari LoRA (notebooks/mundari_lora.ipynb, not run yet)) | **preview**: facebook/mms-tts-unr (reads Odia script; Devanagari converted); samples from the MMLoSo test split only (CC BY-NC 4.0) |
+| Ho (हो) | not available | not available | **preview**: facebook/mms-tts-hoc (reads Odia script; Devanagari converted; Warang Citi not supported yet). Ho voice model available; content pending a native speaker (CC BY-NC 4.0) |
 <!-- languages:end -->
 
 ---

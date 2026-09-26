@@ -28,18 +28,30 @@ if ON_COLAB:
 else:
     PERSIST = "/kaggle/working"            # saved as the notebook's output; re-attach it to resume
 os.makedirs(PERSIST, exist_ok=True)
+# Resume on Kaggle: an earlier run's output attached as an input is copied back into
+# /kaggle/working, so finished steps are skipped and training continues from its checkpoints.
+import shutil
+for prev in glob.glob("/kaggle/input/*/"):
+    if any(os.path.exists(os.path.join(prev, m)) for m in ("lora_hi_unr", "lora_unr_hi", "santali_voice_run", "sat_meta.json")):
+        print("resuming from", prev)
+        shutil.copytree(prev, PERSIST, dirs_exist_ok=True)
 if not os.path.exists("repo"):
     subprocess.run(["git", "clone", "-q", "--depth", "1", REPO_URL, "repo"], check=True)
 sys.path.insert(0, os.path.abspath("repo"))
 '''
 
 HF_LOGIN = r'''
-# Hugging Face token: typed here, kept in this process's memory only (no file is written).
-import getpass
+# Hugging Face token. On Kaggle: from Kaggle Secrets (Add-ons -> Secrets, label HF_TOKEN).
+# Elsewhere: typed, hidden. Kept only in this process's memory: never printed, never written.
 if not os.environ.get("HF_TOKEN"):
-    os.environ["HF_TOKEN"] = getpass.getpass("Hugging Face read token (input hidden): ").strip()
+    if os.path.exists("/kaggle"):
+        from kaggle_secrets import UserSecretsClient
+        os.environ["HF_TOKEN"] = UserSecretsClient().get_secret("HF_TOKEN")
+    else:
+        import getpass
+        os.environ["HF_TOKEN"] = getpass.getpass("Hugging Face read token (input hidden): ").strip()
 from huggingface_hub import whoami
-print("Logged in to Hugging Face as", whoami(token=os.environ["HF_TOKEN"])["name"])
+print("Hugging Face account:", whoami(token=os.environ["HF_TOKEN"])["name"])   # the account name only
 '''
 
 
@@ -72,15 +84,19 @@ the same base model the app uses, trained on the **MMLoSo 2025** Hindi–Mundari
 * IndicTrans2 has no Mundari tag. `brx_Deva` (Bodo, Devanagari; unused by the app) is used as the
   **surrogate tag** for Mundari in both directions.
 
-**Run steps (Kaggle, recommended)**
-1. kaggle.com → Competitions → *mm-lo-so-2025* → Data → accept the rules (your account).
-2. New Notebook → File → Import Notebook → this file. Settings → Accelerator **GPU T4 x2** (or P100),
-   Internet **on**. *Add Input* → Competitions → **mm-lo-so-2025**.
-3. Run all. When asked, paste a Hugging Face **read** token (hidden; kept in memory only).
-4. When it finishes: Output tab → download `mundari_onnx.zip`, `mundari_eval.json`,
-   `leakage_hashes.json`. Unzip the ONNX into `models/indictrans2-mundari-onnx/` in the repo.
-5. If the session stops: *Add Input* → this notebook's previous **Output**, then Run all; the training
-   resumes from the newest checkpoint (`RESUME_FROM` cell).
+**Run on Kaggle (exact steps)**
+1. kaggle.com → Settings → Phone verification done (needed for GPU and Internet).
+2. Create → New Notebook → File → **Import Notebook** → upload this `.ipynb`.
+3. Right panel → Session options → **Accelerator: GPU T4 x2** (or P100); **Internet: On**.
+4. Add-ons → **Secrets** → Add secret: label **`HF_TOKEN`**, value = a Hugging Face **read** token → tick it
+   for this notebook. (The code reads it with `UserSecretsClient`; it is never printed or saved.)
+5. kaggle.com/competitions/mm-lo-so-2025 → Data → **accept the rules** (your account); then in the
+   notebook: **Add Input** → Competitions → **mm-lo-so-2025**.
+6. **Save Version → Save & Run All (Commit)** (runs in the background, up to 12 h, keeps the output).
+7. When it finishes: the version's **Output** → download `mundari_onnx.zip`, `mundari_eval.json`,
+   `leakage_hashes.json`, `mmloso_test_mundari_samples.json`. Put them in the repo's `dist/mundari/` and tell me.
+8. If it stops: open the notebook → **Add Input** → *Notebook Output* → the stopped version → Save & Run All
+   again; finished steps are skipped and training resumes from the newest checkpoint.
 
 **Colab:** upload the competition's Hindi–Mundari training CSV (and the test CSV) to
 `MyDrive/nijbhasha/mmloso/`, Runtime → T4 GPU, Run all; checkpoints stay in Drive.
@@ -133,6 +149,19 @@ leak = {"note": "sha1 of normalize_key(text): MMLoSo held-out (hi, unr) and offi
                           for s in list(held_df.hindi) + list(held_df.mundari) + test_src})}
 json.dump(leak, open(f"{PERSIST}/leakage_hashes.json", "w"))
 print(len(leak["hashes"]), "hashes -> leakage_hashes.json")
+
+# A7 voice samples: 10 Mundari sentences from the official TEST file only (Mundari -> Hindi sources),
+# seeded; they are already in leakage_hashes.json. MMLoSo 2025, CC BY-SA 4.0.
+samples = []
+if test_csv:
+    t = pd.read_csv(test_csv[0])
+    mun = t[(t.source_lang.str.lower() == "mundari")]
+    for _, r in mun.sample(n=min(10, len(mun)), random_state=20260927).iterrows():
+        samples.append({"row_id": str(r.row_id), "mundari": r.source_sentence})
+json.dump({"source": "MMLoSo 2025 shared task, official test file (kaggle.com/competitions/mm-lo-so-2025)",
+           "licence": "CC BY-SA 4.0", "split": "test", "sentences": samples},
+          open(f"{PERSIST}/mmloso_test_mundari_samples.json", "w"), ensure_ascii=False, indent=1)
+print(len(samples), "test-split Mundari sentences -> mmloso_test_mundari_samples.json")
 '''),
     ("code", r'''
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, DataCollatorForSeq2Seq, Seq2SeqTrainer, Seq2SeqTrainingArguments
@@ -220,7 +249,8 @@ for d in ("hi_unr", "unr_hi"):
                     "--out", f"{PERSIST}/onnx_{d}"], check=True)
     for f in glob.glob(f"{PERSIST}/onnx_{d}/*.onnx"):
         if not f.endswith(".int8.onnx"): os.remove(f)          # ship int8 only (as the app does)
-subprocess.run(f"cd {PERSIST} && zip -qr mundari_onnx.zip onnx_hi_unr onnx_unr_hi mundari_eval.json leakage_hashes.json", shell=True, check=True)
+subprocess.run(f"cd {PERSIST} && zip -qr mundari_onnx.zip onnx_hi_unr onnx_unr_hi mundari_eval.json leakage_hashes.json "
+               "mmloso_test_mundari_samples.json", shell=True, check=True)
 print(os.path.getsize(f"{PERSIST}/mundari_onnx.zip") / 1e6, "MB")
 '''),
     ("code", r'''
@@ -257,15 +287,19 @@ VOICE = [
 * **Export:** `tools/export/export_mms_vits_onnx.py` (this repo), tested on the laptop with mms-tts-unr.
 * It ships only if it beats the live voice on the A6 round-trip CER, with a model card.
 
-**Run steps**
-1. On huggingface.co/datasets/ai4bharat/indicvoices_r: log in, accept the terms (your account).
-2. Kaggle: import this notebook, Accelerator **GPU T4 x2** or P100, Internet on, Run all.
-   Colab: Runtime → T4 GPU, Run all (Drive is mounted for checkpoints).
-3. Paste a Hugging Face **read** token when asked (hidden; kept in memory only).
-4. At the end download `santali_voice_onnx.zip` (model.onnx, tokens.txt, tts.json, speaker_selection.json,
-   samples) and unzip into `models/santali-voice/` in the repo.
-5. If it stops: re-run all; data extraction skips finished shards and training resumes from the newest
-   `checkpoint-*` (`resume_from_checkpoint: latest`).
+**Run on Kaggle (exact steps)**
+1. kaggle.com → Settings → Phone verification done (needed for GPU and Internet).
+2. Create → New Notebook → File → **Import Notebook** → upload this `.ipynb`.
+3. Right panel → Session options → **Accelerator: GPU T4 x2** (or P100); **Internet: On**.
+4. Add-ons → **Secrets** → Add secret: label **`HF_TOKEN`**, value = a Hugging Face **read** token → tick it
+   for this notebook. (The code reads it with `UserSecretsClient`; it is never printed or saved.)
+5. On huggingface.co/datasets/ai4bharat/indicvoices_r the terms must be accepted by the token's account
+   (already done for this team on 25 Sep).
+6. **Save Version → Save & Run All (Commit)**.
+7. At the end download `santali_voice_onnx.zip` (model.onnx, tokens.txt, tts.json, tokenizer,
+   speaker_selection.json, samples) into the repo's `dist/santali_voice/` and tell me.
+8. If it stops (the 12 h limit): Add Input → the stopped version's output → Save & Run All again;
+   finished shards are skipped and training resumes from the newest `checkpoint-*`.
 
 **Expected runtime (T4):** metadata scan of 108 shards (columns only) ≈ 10–15 min · downloading the
 chosen speaker's shards ≈ 20–60 min (depends on how many shards the speaker spans; the train split is

@@ -11,8 +11,8 @@ For every IN22-Conv sentence (1503, CC BY 4.0; never training data):
   quality   sentence chrF of forward against the reference Santali
   roundtrip sentence chrF of back against the Hindi source
 (sacrebleu sentence_chrf, chrF defaults: character 6-grams, no word n-grams.)
-"Worst" = quality below the 25th percentile of the tune half. Halves by a hash of
-the Hindi sentence. The flag is roundtrip < threshold; the threshold maximises F1
+"Worst" = quality below the 25th percentile of the tune half. Halves: a random
+split of the sentence indices with a fixed seed (SEED), made before any scoring. The flag is roundtrip < threshold; the threshold maximises F1
 for "worst" on the tune half; precision and recall are reported on the test half.
 Writes eval/results/roundtrip_flag.md and .json.
 """
@@ -33,6 +33,7 @@ FWD = HYPS / "hyp_in22-conv_hin_Deva-sat_Olck.txt"
 BACK = HYPS / "hyp_in22-conv_roundtrip_back.txt"
 PARQUET = ROOT / "data/public/ai4bharat__IN22-Conv/data/train-00000-of-00001.parquet"
 OUT = ROOT / "eval" / "results" / "roundtrip_flag"
+SEED = 20260927
 
 
 def pairs():
@@ -86,7 +87,11 @@ def main():
     back = BACK.read_text(encoding="utf-8").split("\n")[: len(P)]
     assert len(back) == len(P), f"{len(back)} back-translations for {len(P)} sentences: run without --score-only"
     chrf = CHRF()
-    rows = [{"i": i, "hi": hi, "half": half(hi), "q": chrf.sentence_score(f, [ref]).score,
+    import random
+    order = list(range(len(P)))
+    random.Random(SEED).shuffle(order)
+    tune_idx = set(order[: len(P) // 2])
+    rows = [{"i": i, "hi": hi, "half": "tune" if i in tune_idx else "test", "q": chrf.sentence_score(f, [ref]).score,
              "rt": chrf.sentence_score(b, [hi]).score} for i, ((hi, ref), f, b) in enumerate(zip(P, fwd, back))]
     tune = [r for r in rows if r["half"] == "tune"]
     test = [r for r in rows if r["half"] == "test"]
@@ -110,8 +115,10 @@ def main():
          f"(`hyp_in22-conv_hin_Deva-sat_Olck.txt`); back-translation by the same model ({engine}).",
          "- Sentence chrF (sacrebleu defaults). **Worst** = forward chrF against the reference below the tune "
          f"half's 25th percentile ({cut:.1f}). Flag = round-trip chrF against the Hindi source below the threshold.",
-         f"- Halves by a hash of the Hindi sentence: tune {len(tune)}, test {len(test)}. Threshold chosen for the best F1 on "
-         "the tune half.", "",
+         f"- Halves: a random split of the 1503 sentences with a fixed seed ({SEED}): tune {len(tune)}, test {len(test)}. "
+         "The 'worst' cut and the threshold come from the tune half only; the test half is scored once.",
+         "- An earlier version split by a hash of the Hindi sentence (tune 765, test 738): threshold 34.5, test precision "
+         "0.446, recall 0.558. The seeded split is the one reported.", "",
          f"**Threshold {thr:.1f}. Test half: precision {res_test['precision']:.3f}, recall {res_test['recall']:.3f}** "
          f"({res_test['caught']} of {res_test['worst']} worst translations flagged; {res_test['flagged']} of "
          f"{res_test['n']} sentences flagged). Tune half: precision {best['precision']:.3f}, recall {best['recall']:.3f}.", "",
