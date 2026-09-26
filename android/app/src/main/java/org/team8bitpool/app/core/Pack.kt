@@ -73,6 +73,9 @@ class Pack(val dir: File) {
     fun flashcardsPdf(grade: String, topic: String): File? =
         File(dir, "flashcards/${grade}_$topic.pdf").takeIf { it.isFile && it.parentFile == File(dir, "flashcards") }
 
+    /** C1: the reading passages ({"passages": [...]}), or none in an older pack. */
+    val orfPassages: JSONObject = File(dir, "orf_passages.json").let { if (it.isFile) JSONObject(it.readText()) else JSONObject().put("passages", JSONArray()) }
+
     fun worksheet(grade: String, topic: String): File? =
         File(dir, "worksheets/${grade}_$topic.pdf").takeIf { it.isFile && it.parentFile == File(dir, "worksheets") }
 

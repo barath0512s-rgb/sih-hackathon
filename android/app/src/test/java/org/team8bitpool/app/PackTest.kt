@@ -41,7 +41,7 @@ class PackTest {
     fun anIntactPackIsImported() {
         val root = tmp.newFolder()
         val p = Pack.import(ByteArrayInputStream(zipOf(packDir)), root)
-        assertEquals(17, p.lessonsApi.getJSONArray("lessons").length())
+        assertEquals(18, p.lessonsApi.getJSONArray("lessons").length())
     }
 
     @Test

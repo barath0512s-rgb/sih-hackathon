@@ -1944,5 +1944,178 @@
 }
 ]
 }
+},
+{
+"grade": "2",
+"topic": "imp_a96a02bca0",
+"lesson": {
+"title": "पढ़ने की गति: बगीचे की सैर",
+"competency": "45-60 words per minute",
+"lakshya_ids": [
+"NIPUN-G2-LIT-2",
+"NIPUN-G2-LIT-1"
+],
+"domain": "literacy",
+"mapping": "suggested from keywords, confirmed by the teacher",
+"review_status": "pending_native_review",
+"imported": true,
+"steps": [
+{
+"type": "lesson_script",
+"hindi": "आज हम एक छोटी कहानी ज़ोर से पढ़ेंगे।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱟᱢ ᱢᱤᱫᱴᱟᱝ ᱦᱩᱰᱤᱧ ᱠᱟᱹᱦᱱᱤᱭ ᱟᱹᱰᱤ ᱜᱟᱹᱨᱫᱷᱟᱹᱛᱮ ᱯᱟᱲᱦᱟᱣᱼᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/0"
+},
+{
+"type": "activity_instruction",
+"hindi": "पहले मेरे साथ धीरे धीरे पढ़ो, फिर खुद पढ़ो।",
+"note": "",
+"santali": "ᱯᱳᱭᱞᱳ ᱤᱧ ᱥᱟᱶ ᱠᱚᱢ ᱚᱠᱛᱚ ᱨᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ, ᱚᱱᱟ ᱛᱟᱭᱚᱢ ᱟᱢ ᱟᱡᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/1"
+},
+{
+"type": "lesson_script",
+"hindi": "आज रविवार है।",
+"note": "",
+"santali": "ᱛᱮᱦᱮᱧ ᱫᱚ اتوار ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/2"
+},
+{
+"type": "lesson_script",
+"hindi": "मीना अपने दादा के साथ बगीचे में गई।",
+"note": "",
+"santali": "ᱢᱮᱱᱟ ᱟᱡ ᱵᱟᱵᱟ ᱥᱟᱶᱛᱮ ᱵᱟᱜᱣᱟᱱ ᱨᱮᱭ ᱥᱮᱱ ᱞᱮᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/3"
+},
+{
+"type": "lesson_script",
+"hindi": "बगीचे में लाल और पीले फूल खिले थे।",
+"note": "",
+"santali": "ᱵᱟᱜᱣᱟᱱ ᱨᱮ ᱟᱨᱟᱜ ᱟᱨ ᱡᱚᱞᱟ ᱚᱛᱢᱚᱱ ᱛᱟᱦᱮᱸ ᱠᱟᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/4"
+},
+{
+"type": "lesson_script",
+"hindi": "एक पेड़ पर दो चिड़ियाँ बैठी थीं।",
+"note": "",
+"santali": "ᱢᱤᱫᱴᱟᱝ ᱫᱟᱨᱮ ᱨᱮ ᱵᱟᱨᱭᱟ ꯎꯆꯦꯛ ᱠᱚ ᱛᱟᱦᱮᱸ ᱠᱟᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/5"
+},
+{
+"type": "lesson_script",
+"hindi": "मीना ने चिड़ियों को दाना दिया।",
+"note": "",
+"santali": "ᱢᱮᱱᱟ ꯎꯆꯦꯛ ᱠᱚ ᱞᱟᱹᱜᱤᱫ ᱡᱚᱢᱟᱜ ᱮ ᱮᱢ ᱞᱮᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/6"
+},
+{
+"type": "activity_instruction",
+"hindi": "दादा ने कहा कि पेड़ों की देखभाल करो।",
+"note": "",
+"santali": "ᱵᱟᱵᱟ ᱢᱮᱱ ᱞᱮᱫᱟᱭ, ᱵᱤᱨ ᱠᱚ ᱧᱮᱞ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/7"
+},
+{
+"type": "lesson_script",
+"hindi": "मीना ने पौधों में पानी डाला और खुश होकर घर लौटी।",
+"note": "",
+"santali": "ᱢᱮᱱᱟ ᱚᱛᱢᱚᱱ ᱨᱮ ᱫᱟᱜ ᱮ ᱰᱟᱣᱩᱱᱞ ᱞᱮᱫᱟ ᱟᱨ ᱱᱟᱯᱟᱭ ᱛᱮ ᱚᱲᱟᱜ ᱮ ᱨᱩᱣᱟᱹᱲ ᱦᱮᱡ ᱞᱮᱱᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/8"
+},
+{
+"type": "activity_instruction",
+"hindi": "अब पूरी कहानी एक मिनट में पढ़ने की कोशिश करो।",
+"note": "",
+"santali": "ᱱᱤᱛ ᱢᱤᱫ ᱴᱤᱲᱤᱡ ᱢᱩᱫᱨᱮ ᱥᱟᱱᱟᱢ ᱠᱟᱹᱦᱱᱤ ᱯᱟᱲᱦᱟᱣ ᱨᱮᱭᱟᱜ ᱨᱤᱠᱟᱹᱭ ᱢᱮ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/9"
+},
+{
+"type": "assessment_prompt",
+"hindi": "पेड़ पर कितनी चिड़ियाँ बैठी थीं?",
+"note": "",
+"accept_answers": {
+"hi": [
+"दो"
+],
+"sat": [
+"ᱵᱟᱨ"
+],
+"sat_sources": {
+"ᱵᱟᱨ": "wordlist"
+},
+"review_status": "pending_native_review",
+"digits": [
+"2"
+]
+},
+"santali": "ᱵᱤᱨ ᱨᱮ ᱛᱤᱱᱟᱹᱜ ᱜᱚᱴᱟᱝ ꯎꯆꯦꯛ ᱠᱚ ᱛᱟᱦᱮᱸ ᱠᱟᱱᱟ?",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/10"
+},
+{
+"type": "lesson_script",
+"hindi": "शाबाश, तुमने अच्छा पढ़ा।",
+"note": "",
+"santali": "ᱥᱟᱵᱟᱥ, ᱟᱢ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱟᱠᱟᱫᱟ ᱾",
+"source": "model",
+"review_status": "pending_native_review",
+"audio_url": "/lesson_audio/imp_a96a02bca0/11"
+}
+],
+"flashcards": [
+{
+"hi": "एक",
+"emoji": "🔵",
+"n": 1
+},
+{
+"hi": "लाल",
+"emoji": "🔴"
+},
+{
+"hi": "फूल",
+"emoji": "🌸"
+},
+{
+"hi": "पेड़",
+"emoji": "🌳"
+},
+{
+"hi": "दो",
+"emoji": "🔵",
+"n": 2
+},
+{
+"hi": "पानी",
+"emoji": "💧"
+},
+{
+"hi": "घर",
+"emoji": "🏠"
+}
+]
+}
 }
 ]

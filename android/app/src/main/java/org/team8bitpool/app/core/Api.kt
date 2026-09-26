@@ -81,6 +81,8 @@ class Api(
             "POST /worksheet" -> worksheet(pack, json)
             "POST /sync/export" -> syncExport()
             "GET /progress/lakshya" -> progressLakshya(query["format"] ?: "json")
+            "GET /orf/passages" -> Resp.json(pack?.orfPassages ?: JSONObject().put("passages", JSONArray()))
+            "POST /orf/score" -> orfScore(pack, body, contentType)
             "POST /sync/import" -> Resp.error(501, "Tablet files are merged on the hub", "hub_only")
             "POST /curriculum/import", "POST /curriculum/save" ->
                 Resp.error(501, "Lessons are written on the hub and arrive in the content pack", "hub_only")
@@ -297,6 +299,28 @@ class Api(
             "json" -> Resp.json(JSONObject().put("rows", JSONArray(rows)))
             else -> Resp.error(404, "The progress PDF is made on the hub; the tablet gives csv", "hub_only")
         }
+    }
+
+    /** C1: a child's reading, recognised on the tablet; the recording is never written. */
+    private fun orfScore(pack: Pack?, body: ByteArray?, contentType: String?): Resp {
+        val sp = speech() ?: return notOnDevice("Speech recognition")
+        pack ?: return noPack()
+        if (contentType?.startsWith("multipart/") != true) return Resp.error(400, "No audio")
+        val parts = Multipart.parse(body ?: ByteArray(0), contentType)
+        if (parts["consent"]?.text() != "1") return Resp.error(400, "The teacher must confirm consent first", "consent_required")
+        val audio = parts["audio"] ?: return Resp.error(400, "No audio")
+        val passages = pack.orfPassages.getJSONArray("passages")
+        val id = parts["passage_id"]?.text() ?: ""
+        val p = (0 until passages.length()).map { passages.getJSONObject(it) }.firstOrNull { it.getString("id") == id }
+            ?: return Resp.error(404, "Unknown passage")
+        val pcm = Audio.decodeWav(audio.data) ?: return Resp.error(415, "The tablet reads WAV recordings only", "audio_format")
+        val x = Audio.to16k(pcm)
+        val spoken = sp.transcribe("hi", x)
+        val seconds = Audio.trimSilence(x).size / 16000.0
+        val s = Orf.score(p.getString("text"), spoken, seconds)
+        val wcpm = if (s.isNull("wcpm")) null else s.getDouble("wcpm")
+        return Resp.json(s.put("passage_id", id).put("grade", p.getString("grade")).put("transcript", spoken)
+            .put("nipun", Orf.nipunBand(p.getString("grade"), wcpm) ?: JSONObject.NULL))
     }
 
     /** A4: the signed corrections-and-counts file for the hub. */

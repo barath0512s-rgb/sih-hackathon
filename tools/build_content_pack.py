@@ -82,6 +82,8 @@ def build(out_dir, audio=True, worksheets=True, audio_lessons=None, log=print):
         lessons.append({"grade": meta["grade"], "topic": meta["topic"],
                         "lesson": get_lesson(meta["grade"], meta["topic"])})
     save("lessons.json", lessons)
+    if config.ORF and config.ORF_PASSAGES_FILE.exists():     # C1: the reading passages
+        save("orf_passages.json", json.loads(config.ORF_PASSAGES_FILE.read_text(encoding="utf-8")))
 
     # Every Hindi line a tablet may be asked to translate from the pack.
     hi_lines = [st["hindi"] for L in lessons for st in L["lesson"]["steps"] if st.get("hindi")]

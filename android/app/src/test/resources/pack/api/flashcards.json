@@ -940,6 +940,77 @@
 ],
 "title": "ज़ोर से पढ़ना: रीना और तालाब",
 "topic": "imp_46b74c74d2"
+},
+{
+"cards": [
+{
+"emoji": "🔵",
+"hi": "एक",
+"n": 1,
+"review_status": "pending_native_review",
+"sat": "ᱢᱤᱫ",
+"source": "wordlist"
+},
+{
+"emoji": "🔴",
+"hi": "लाल",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱦᱤᱨᱤᱧ",
+"source": "wordlist"
+},
+{
+"emoji": "🌸",
+"hi": "फूल",
+"n": null,
+"review_status": "unreviewed_model_output",
+"sat": "ᱚᱛᱢᱚᱱ",
+"source": "cached"
+},
+{
+"emoji": "🌳",
+"hi": "पेड़",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱟᱨᱮ",
+"source": "wordlist"
+},
+{
+"emoji": "🔵",
+"hi": "दो",
+"n": 2,
+"review_status": "pending_native_review",
+"sat": "ᱵᱟᱨ",
+"source": "wordlist"
+},
+{
+"emoji": "💧",
+"hi": "पानी",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱫᱟᱜ",
+"source": "wordlist"
+},
+{
+"emoji": "🏠",
+"hi": "घर",
+"n": null,
+"review_status": "pending_native_review",
+"sat": "ᱳᱲᱟᱜ",
+"source": "wordlist"
+}
+],
+"grade": "2",
+"lakshya": [
+"NIPUN-G2-LIT-2 (Grade 2, literacy): 45-60 words per minute",
+"NIPUN-G2-LIT-1 (Grade 2, literacy): Read with meaning"
+],
+"lakshya_ids": [
+"NIPUN-G2-LIT-2",
+"NIPUN-G2-LIT-1"
+],
+"title": "पढ़ने की गति: बगीचे की सैर",
+"topic": "imp_a96a02bca0"
 }
 ]
 }

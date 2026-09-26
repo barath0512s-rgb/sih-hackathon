@@ -1,0 +1,35 @@
+{
+"about": "Reading passages for the oral reading fluency check (C1), written by Team 8-bitPool in simple Hindi; not copied from any textbook. Teacher review pending. The NIPUN goals: Grade 2 '45-60 words per minute' (NIPUN-G2-LIT-2), Grade 3 'at least 60 words per minute' (NIPUN-G3-LIT-2).",
+"passages": [
+{
+"id": "g2_bageecha",
+"grade": "2",
+"title": "बगीचे की सैर",
+"lakshya_ids": [
+"NIPUN-G2-LIT-2",
+"NIPUN-G2-LIT-1"
+],
+"text": "आज रविवार है। मीना अपने दादा के साथ बगीचे में गई। बगीचे में लाल और पीले फूल खिले थे। एक पेड़ पर दो चिड़ियाँ बैठी थीं। मीना ने चिड़ियों को दाना दिया। दादा ने कहा कि पेड़ों की देखभाल करो। मीना ने पौधों में पानी डाला और खुश होकर घर लौटी।"
+},
+{
+"id": "g2_baarish",
+"grade": "2",
+"title": "बारिश का दिन",
+"lakshya_ids": [
+"NIPUN-G2-LIT-2",
+"NIPUN-G2-LIT-1"
+],
+"text": "सुबह से बारिश हो रही थी। राजू खिड़की के पास बैठा था। उसने कागज़ की एक नाव बनाई। बारिश रुकी तो वह आँगन में गया। उसने नाव को पानी में छोड़ा। नाव धीरे धीरे तैरने लगी। उसकी छोटी बहन ताली बजाने लगी। दोनों बहुत देर तक खेलते रहे।"
+},
+{
+"id": "g3_mela",
+"grade": "3",
+"title": "गाँव का मेला",
+"lakshya_ids": [
+"NIPUN-G3-LIT-2",
+"NIPUN-G3-LIT-1"
+],
+"text": "हमारे गाँव में हर साल मेला लगता है। इस बार मैं अपनी माँ और भाई के साथ मेले में गया। वहाँ बहुत भीड़ थी। एक तरफ़ झूले थे और दूसरी तरफ़ मिठाई की दुकानें थीं। भाई ने एक गुब्बारा खरीदा और मैंने एक किताब ली। शाम को हम थककर घर लौटे, पर सबके चेहरे पर मुस्कान थी।"
+}
+]
+}

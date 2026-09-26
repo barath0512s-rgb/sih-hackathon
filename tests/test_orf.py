@@ -55,3 +55,9 @@ def test_the_route_deletes_the_recording():
     assert "tmp_path.unlink(missing_ok=True)" in body and "wav.unlink(missing_ok=True)" in body
     assert body.index("finally:") < body.index("tmp_path.unlink")
     assert 'consent") != "1"' in body
+
+
+def test_kotlin_vectors_are_current():
+    sys.path.insert(0, str(ROOT / "tools" / "android"))
+    import make_orf_vectors as mk
+    assert mk.OUT.read_text(encoding="utf-8") == mk.build(), "run python tools/android/make_orf_vectors.py"
