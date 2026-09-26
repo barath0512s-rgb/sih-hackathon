@@ -24,4 +24,8 @@ jobs:
       # Dev/test-only AGPL tools (aksharamukha, pymupdf), pinned in
       # requirements-dev.txt only: installed here for the tests, never shipped.
       - run: grep -E '^(aksharamukha|pymupdf)==' requirements-dev.txt > agpl-test-tools.txt && pip install -r agpl-test-tools.txt
-      - run: python -m pytest -q -rs
+      - run: python -m pytest -q -rs --junitxml=junit.xml
+      # The step logs need a GitHub login; the run summary does not. Publish the
+      # counts, and the old-WebView (Chrome 69) test by name, where anyone can read them.
+      - if: always()
+        run: python .github/ci_summary.py junit.xml >> "$GITHUB_STEP_SUMMARY"
