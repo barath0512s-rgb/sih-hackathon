@@ -1,5 +1,5 @@
 @echo off
-REM Start VaaniSetu. Double click this file, or run it from the project folder.
+REM Start Nijbhasha (formerly VaaniSetu). Double click this file, or run it from the project folder.
 cd /d "%~dp0"
 
 if not exist "vaanisetu_env\Scripts\activate.bat" (
@@ -30,7 +30,7 @@ if "%1"=="https" (
   exit /b %errorlevel%
 )
 
-echo Starting VaaniSetu. The first run loads the models, which takes a minute.
+echo Starting Nijbhasha. The first run loads the models, which takes a minute.
 echo When it says Running on http://127.0.0.1:5000, open that in your browser.
 echo.
 python app.py

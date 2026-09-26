@@ -30,11 +30,11 @@ python tools/android/device_check.py --apk android/app/build/outputs/apk/release
 It stops with **ACTION NEEDED** (and I relay the exact taps) when:
 - the install is refused → turn on "Install via USB"; tap **Install** if the tablet asks;
 - taps or the screen dump are refused → turn on "Disable permission monitoring";
-- the microphone permission cannot be granted → App management → VaaniSetu →
+- the microphone permission cannot be granted → App management → Nijbhasha →
   Permissions → Microphone → Allow;
 - **airplane mode** is needed: Android 11 does not let adb switch it → swipe down, tap
   the airplane icon (on); say "done";
-- the app was killed in the background → Battery → VaaniSetu → **Allow background
+- the app was killed in the background → Battery → Nijbhasha → **Allow background
   activity** (and auto launch if shown).
 After each, I run the same command with `--resume`; it continues where it stopped.
 
@@ -52,7 +52,7 @@ switch airplane mode off.
 1. Airplane mode **off** on the tablet. On the laptop: Settings → Network & internet →
    **Mobile hotspot** on. Connect the tablet to that Wi-Fi. (The laptop's hotspot
    address is usually `192.168.137.1`; `ipconfig` shows it.)
-2. **Then** start the hub in HTTPS mode: `run_vaanisetu.bat https`. It remakes the
+2. **Then** start the hub in HTTPS mode: `run_nijbhasha.bat https`. It remakes the
    server certificate for the laptop's current addresses, including the hotspot, and
    keeps the same CA. (Start it after the hotspot is on, or the certificate will not
    name the hotspot address.)

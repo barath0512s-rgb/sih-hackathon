@@ -1,6 +1,6 @@
 """Get the laptop hub ready to record the demo video (docs/demo_video_script.md).
 
-    run_vaanisetu.bat                      (in another window: start the server first)
+    run_nijbhasha.bat                      (in another window: start the server first)
     python tools/demo_reset.py             check, clean sessions, warm up
     python tools/demo_reset.py --forget-demo-correction
                                            also remove earlier corrections of the
@@ -84,7 +84,7 @@ def main():
     try:
         call(base, "/health")
     except (urllib.error.URLError, ConnectionError) as e:
-        sys.exit(f"The server is not running at {base} ({e}). Start run_vaanisetu.bat first, "
+        sys.exit(f"The server is not running at {base} ({e}). Start run_nijbhasha.bat first, "
                  f"wait for 'Running on', then run this again.")
 
     step("1. Backing up the database")

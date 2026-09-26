@@ -1,4 +1,6 @@
-# VaaniSetu (वाणीसेतु), "Voice Bridge"
+# Nijbhasha (निजभाषा)
+
+*Formerly VaaniSetu (renamed on 26 Sep 2026 to avoid confusion with another team's project).*
 
 [![tests](https://github.com/barath0512s-rgb/sih-hackathon/actions/workflows/tests.yml/badge.svg)](https://github.com/barath0512s-rgb/sih-hackathon/actions/workflows/tests.yml)
 
@@ -458,8 +460,8 @@ Already have the models on another checkout? Copy (or link) its `models/`
 folder into the new one and run `python download_models.py --verify-only`
 instead of downloading again.
 
-Open **http://127.0.0.1:5000**. On Windows, double-click `run_vaanisetu.bat`,
-or use `run_vaanisetu.bat verify` to check everything first.
+Open **http://127.0.0.1:5000**. On Windows, double-click `run_nijbhasha.bat`,
+or use `run_nijbhasha.bat verify` to check everything first.
 
 ### Laptop hub for tablets on the same Wi-Fi
 
@@ -467,7 +469,7 @@ A browser allows the microphone only on `https://` pages or on localhost. To
 let a tablet's browser use the laptop:
 
 ```bash
-run_vaanisetu.bat https          # or: python app.py --https
+run_nijbhasha.bat https          # or: python app.py --https
 ```
 
 This makes a certificate for the laptop's current Wi-Fi addresses

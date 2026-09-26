@@ -1,17 +1,19 @@
 """Central configuration. Every path is absolute; every tunable lives here.
 
-The product name is on hold. It lives only in APP_NAME / APP_NAME_LOCAL, and
-the frontend reads it from GET /config, so a rename is a one-line change here.
+The product name lives only in APP_NAME / APP_NAME_LOCAL, and the frontend
+reads it from GET /config, so a rename is a change here (plus the page's
+built-in fallback strings and tools/android/sync_config.py for the Android app).
+Formerly VaaniSetu (renamed on 26 Sep 2026).
 """
 
 from pathlib import Path
 
 # ── Product name ──────────────────────────────────────────────────────────────
-APP_NAME = "VaaniSetu"
+APP_NAME = "Nijbhasha"
 # The same name as shown in each UI language's own script.
 APP_NAME_LOCAL = {
-    "hi":  "वाणीसेतु",
-    "sat": "ᱣᱟᱱᱤᱥᱮᱛᱩ",
+    "hi":  "निजभाषा",
+    "sat": "",          # Ol Chiki form pending native review; the UI falls back to the Hindi form
     "en":  APP_NAME,
 }
 

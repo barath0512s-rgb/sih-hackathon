@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>वाणीसेतु</title>
+<title>निजभाषा</title>
 <meta name="theme-color" content="#FFF7E6">
 
 <!-- Every font is served from static/fonts, so the page renders with no network.
@@ -21,7 +21,7 @@
 
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   वाणीसेतु — कक्षा का रंगीन पर्दा
+   निजभाषा — कक्षा का रंगीन पर्दा
    Bright, light, high contrast. Every control is a chunky pressable
    slab with a hard shadow that sinks when you push it.
    ══════════════════════════════════════════════════════════════════ */
@@ -901,7 +901,7 @@ input:focus,textarea:focus,select:focus{
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#lesson"><span class="b-mark">🌉</span><b data-t="brand">वाणीसेतु</b></a>
+    <a class="brand" href="#lesson"><span class="b-mark">🌉</span><b data-t="brand">निजभाषा</b></a>
     <nav class="tabs" aria-label="मुख्य">
       <a href="#lesson"     data-view="lesson"     aria-current="page"><span class="e">🏫</span><span data-t="nav_class">कक्षा</span></a>
       <a href="#lessons"    data-view="lessons"><span class="e">📚</span><span data-t="nav_lessons">पाठ</span></a>
@@ -1255,7 +1255,7 @@ input:focus,textarea:focus,select:focus{
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <script>
 /* ═══════════════════════════════════════════════════════════════════════════
-   वाणीसेतु — कक्षा का पर्दा
+   निजभाषा — कक्षा का पर्दा
    Wired to the Flask backend in app.py. Endpoints used:
      GET  /lessons /flashcards /health /health/models /config /audio/<id>
      POST /session/start /session/next /session/goto /session/response /speak
@@ -1270,7 +1270,7 @@ input:focus,textarea:focus,select:focus{
    ─────────────────────────────────────────────────────────────────────────── */
 const T = {
 hi: {
-  skip:"मुख्य भाग पर जाएँ", brand:"वाणीसेतु",
+  skip:"मुख्य भाग पर जाएँ", brand:"निजभाषा",
   nav_class:"कक्षा", nav_lessons:"पाठ", nav_cards:"चित्र पत्ते", nav_progress:"प्रगति", nav_settings:"सेटिंग",
   conn_wait:"जुड़ रहे हैं", conn_up:"सर्वर चालू", conn_down:"सर्वर बंद",
   tip_big:"बड़े अक्षर", pick_lesson:"पाठ चुनें",
@@ -1347,7 +1347,7 @@ hi: {
   step:"पंक्ति", grade:"कक्षा"
 },
 sat: {
-  skip:"ᱢᱩᱬᱩᱛ ᱠᱟᱛᱷᱟ ᱛᱮ ᱪᱟᱞᱟᱜ", brand:"ᱣᱟᱱᱤᱥᱮᱛᱩ",
+  skip:"ᱢᱩᱬᱩᱛ ᱠᱟᱛᱷᱟ ᱛᱮ ᱪᱟᱞᱟᱜ", brand:"",
   nav_class:"ᱠᱞᱟᱥ", nav_lessons:"ᱥᱮᱪᱮᱫ", nav_cards:"ᱪᱤᱛᱟᱹᱨ ᱠᱟᱨᱰ", nav_progress:"ᱦᱤᱥᱟᱹᱵ", nav_settings:"ᱥᱮᱴᱤᱝ",
   conn_wait:"ᱡᱚᱲᱟᱣ ᱠᱟᱱᱟ", conn_up:"ᱥᱟᱨᱵᱷᱟᱨ ᱪᱟᱹᱞᱩ", conn_down:"ᱥᱟᱨᱵᱷᱟᱨ ᱵᱚᱸᱫ",
   tip_big:"ᱢᱟᱨᱟᱝ ᱚᱞ", pick_lesson:"ᱥᱮᱪᱮᱫ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
@@ -1411,7 +1411,7 @@ sat: {
   step:"ᱟᱲᱟᱝ", grade:"ᱠᱞᱟᱥ"
 },
 en: {
-  skip:"Skip to the lesson", brand:"VaaniSetu",
+  skip:"Skip to the lesson", brand:"Nijbhasha",
   nav_class:"Classroom", nav_lessons:"Lessons", nav_cards:"Flashcards", nav_progress:"Progress", nav_settings:"Settings",
   conn_wait:"Connecting", conn_up:"Server up", conn_down:"No server",
   tip_big:"Bigger type", pick_lesson:"Choose a lesson",

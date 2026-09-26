@@ -1,4 +1,4 @@
-VaaniSetu: deck numbers. Values come from files in this repo; measurements are 'laptop, offline'.
+Nijbhasha: deck numbers. Values come from files in this repo; measurements are 'laptop, offline'.
 
 Voice to voice, public dataset, adult speech (run 'public', laptop, offline; excludes Wi-Fi)
   hi-to-sat median / p90 / max                 1.96 / 2.25 / 2.74 s (n=79, n_distinct=68) [bench/results/Dell-Inc-Dell-G15-5520_2026-09-25_public.csv]

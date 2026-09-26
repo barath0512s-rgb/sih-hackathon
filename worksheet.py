@@ -131,7 +131,7 @@ def generate_worksheet(hindi, santali, grade="2", topic="",
     grade_txt = (both("balvatika") if str(grade) in ("0", "Balvatika")
                  else f"{L['grade'][0]} {grade} / {L['grade'][1]} {grade}")
     s += [
-        P(f"{names['hi']} / {names['sat']} — {both('title')}", H),
+        P(f"{' / '.join(n for n in (names['hi'], names['sat']) if n)} — {both('title')}", H),
         P("  |  ".join(x for x in (grade_txt, topic,
                                    datetime.date.today().strftime("%d.%m.%Y")) if x), S),
         Spacer(1, 0.5*cm),

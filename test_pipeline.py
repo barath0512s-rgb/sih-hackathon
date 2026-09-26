@@ -18,7 +18,7 @@ def run(name, fn):
         failed.append(name)
         print(f"  FAIL  {name}  —  {e}")
 
-print("\n=== VaaniSetu Pipeline Tests ===\n")
+print("\n=== Nijbhasha Pipeline Tests ===\n")
 
 # Store results between tests using a list (avoids Python global scoping issues)
 state = {}

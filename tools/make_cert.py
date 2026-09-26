@@ -12,7 +12,7 @@ This makes, in certs/ (git-ignored, never shared):
 
 The CA is made once and reused. The server certificate is remade every time,
 so run this again when the laptop joins a different Wi-Fi and gets a new IP.
-run_vaanisetu.bat https does that for you.
+run_nijbhasha.bat https does that for you.
 
 On the tablet, either
   - install hub-ca.crt once (open http://<laptop-ip>:5000/hub-ca.crt while the

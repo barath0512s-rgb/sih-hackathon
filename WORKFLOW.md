@@ -1,6 +1,6 @@
-# VaaniSetu Progress & Workflow Architecture
+# Nijbhasha (formerly VaaniSetu): Progress & Workflow Architecture
 
-This document logs the major architectural decisions and pipeline optimizations applied to VaaniSetu to meet the strict latency and accuracy requirements for live classroom deployment.
+This document logs the major architectural decisions and pipeline optimizations applied to Nijbhasha (formerly VaaniSetu) to meet the strict latency and accuracy requirements for live classroom deployment.
 
 ## Phase 1: Native Speech Recognition (ASR) Upgrade
 - **Problem:** Whisper Small had a 2/10 success rate detecting Hindi and was highly inconsistent with microphone noise.

@@ -23,7 +23,7 @@ tablet or phone.
 ## Before recording
 
 1. Laptop on mains power. Close other programs.
-2. Start `run_vaanisetu.bat` and wait for `Running on http://127.0.0.1:5000`.
+2. Start `run_nijbhasha.bat` and wait for `Running on http://127.0.0.1:5000`.
 3. In a second window, run `python tools/demo_reset.py --forget-demo-correction`.
    It must end with `Ready.` It backs up the database, clears old sessions,
    checks that all lessons loaded, and warms the models.

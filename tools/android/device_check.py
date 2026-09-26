@@ -63,11 +63,11 @@ PERMISSION_MONITORING = (
     "Then say 'done'.")
 MIC_PERMISSION = (
     "The microphone permission could not be granted over adb. On the tablet: Settings -> Apps -> App management "
-    "-> VaaniSetu -> Permissions -> Microphone -> Allow. Then say 'done'.")
+    "-> Nijbhasha -> Permissions -> Microphone -> Allow. Then say 'done'.")
 AIRPLANE_ON = ("Android 11 does not let adb switch airplane mode. On the tablet: swipe down from the top and tap "
                "the airplane icon so it is ON (Wi-Fi and mobile data off). Leave USB connected. Then say 'done'.")
 KILLED = ("The app was stopped in the background by the tablet. On the tablet: Settings -> Battery -> (App battery "
-          "management / More battery settings) -> VaaniSetu -> turn ON 'Allow background activity' (and 'Allow "
+          "management / More battery settings) -> Nijbhasha -> turn ON 'Allow background activity' (and 'Allow "
           "auto launch' if shown). Then say 'done'.")
 
 

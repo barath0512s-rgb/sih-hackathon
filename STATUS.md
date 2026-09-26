@@ -1,5 +1,18 @@
 # STATUS, 26 Sep 2026: submission freeze, round 2 (master prompt v2)
 
+## RENAME. VaaniSetu → Nijbhasha (26 Sep 2026)
+
+Formerly VaaniSetu, renamed to avoid confusion with another team's project.
+
+| What | Now |
+|---|---|
+| Product name (`config.APP_NAME`) | **Nijbhasha**; Devanagari **निजभाषा**; Ol Chiki form **left empty, pending native review** (the UI shows the Devanagari form in its place; the worksheet header prints only the non-empty forms) |
+| Changed | the page (title, brand in hi/sat/en), worksheet and flashcard PDFs (`config.APP_NAME_LOCAL`, download file names), Android launcher label (from `app_config.json`), README (with the "formerly VaaniSetu" note), docs, demo script, tool messages, launcher `run_vaanisetu.bat` → `run_nijbhasha.bat` (git mv) |
+| Unchanged on purpose | **Android package ID `org.team8bitpool.app`** (renaming it would break installs; it never carried the name); the database file `vaanisetu_feedback.db` (renaming would orphan stored corrections and lessons); the `vaanisetu_env` virtual environment and the internal class `VaaniSetuPipeline`; the hub CA already installed on devices (its subject still says VaaniSetu; remaking it would force a reinstall); `_archive/` and dated results files (records); STATUS quotes of the old deck (external file) |
+| No splash screen | The Android app has no separate splash; the name shows in the launcher and the title bar (both from `app_config.json`) |
+| GitHub repository | `barath0512s-rgb/sih-hackathon`: not renamed; waiting for your confirmation and the new name |
+| Re-check after the rename, 2 GB Android 9 emulator, release APK, new content pack | Title bar "Nijbhasha"; pack import 15.0 s; 24/24 online and 24/24 in airplane mode; page check yes / yes / yes; release mic through the page 112,690 bytes (about 3.5 s); peak PSS 182 MB (app 82 + renderer 100). The debug-build MicBridge capture returned 3.04 s of **silence** (RMS 0) this time: the emulator's host audio input gave no sound on this boot (earlier runs of the same code: RMS 0.0035-0.07); not a measurement of the app. Clip re-recorded: `docs/demo_assets/android_emulator.mp4` (7.7 MB) |
+
 ## FREEZE-2 (branch `android-wp4`, fast-forwarded to `main`)
 
 **Device change (26 Sep 2026):** the Samsung tablet (4 GB, Android 13) is replaced by a **Realme Pad Mini (4 GB RAM, 64 GB storage, Android 11)**; earlier plans that named the Samsung now name the Realme. No measurement was ever made on the Samsung. The 2 GB evidence stays the Android 9 emulator.
@@ -298,7 +311,7 @@ The verdicts are TRUE, FALSE and NOT MEASURED. "Fix" is a suggested rewording th
 | "Verified offline — still works with internet sockets forcibly disabled" | TRUE | `tests/test_offline.py` |
 | "Lesson script mode / Activity + assessment modes" | TRUE as UI modes | The modes do not change the translation (README §5) |
 | "One-click worksheet download" | TRUE | |
-| "Laptop or tablet, via Wi-Fi browser" | TRUE for the screen; tablet microphone NOT MEASURED | HTTPS hub added (`run_vaanisetu.bat https`), not yet tried on a tablet |
+| "Laptop or tablet, via Wi-Fi browser" | TRUE for the screen; tablet microphone NOT MEASURED | HTTPS hub added (`run_nijbhasha.bat https`), not yet tried on a tablet |
 | "AI ENGINE — ON-DEVICE" | FALSE | Everything runs on the laptop; no Android app (WP4). Fix: "AI ENGINE — laptop hub, offline" |
 | "Hindi↔Santali ASR — IndicConformer" | TRUE | |
 | "TTS — Piper, offline neural voice" | TRUE | |
