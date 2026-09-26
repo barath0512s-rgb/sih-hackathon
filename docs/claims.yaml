@@ -470,7 +470,7 @@
   status: "NOT MEASURED"
   evidence: bench/results/orf_validation.md
 - id: c2_photo_import
-  text: "Textbook-page photo import on the laptop hub: character accuracy on the team's photographed pages"
+  text: "Textbook-page photo import on the laptop hub (off; finale): character accuracy on the team's photographed pages"
   status: "NOT MEASURED"
   evidence: STATUS.md
 - id: c2_photo_import_tablet
