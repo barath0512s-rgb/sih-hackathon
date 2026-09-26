@@ -297,6 +297,14 @@ def _log(rid, device_id, direction, input_type, r, tts_engine, lat, tts_error=No
         chunks=chunks)
 
 
+def _nearest(r, source_text, direction):
+    """The nearest verified sentence, only for a translation that needs review."""
+    if not r.get("needs_review"):
+        return None
+    from education_glossary import nearest_verified
+    return nearest_verified(source_text, direction)
+
+
 def _translation_json(r, audio_url, tts_error, latency, rid=None, tts_engine=None):
     return {
         # Send back with POST /metrics/client once the audio is playing.
@@ -315,6 +323,11 @@ def _translation_json(r, audio_url, tts_error, latency, rid=None, tts_engine=Non
         # and there is no meaningful confidence number.
         "english_pivot":   "",
         "confidence":      None,
+        # A loop was cut or found in the model's output: the page shows "check
+        # with a native speaker", does not auto-play, and offers the nearest
+        # verified sentence (nmt_guard.py).
+        "needs_review":    bool(r.get("needs_review")),
+        "nearest_verified": r.get("nearest_verified"),
     }
 
 
@@ -341,6 +354,7 @@ def translate_audio():
         Path(str(tmp_path) + "_converted.wav").unlink(missing_ok=True)
     t1 = time.time()
     r = pl.translate(recognized, direction, mode)
+    r = dict(r, nearest_verified=_nearest(r, recognized, direction))
     t2 = time.time()
     audio_url, tts_error, tts_engine = _speak(direction, r["text"])
     t3 = time.time()
@@ -411,7 +425,9 @@ def translate_audio_stream():
                 errors.append(tts_error)
             yield json.dumps({"type": "chunk", "i": i, "source_text": part, "translated_text": r["text"],
                               "source": r["source"], "audio_url": audio_url, "tts_error": tts_error,
-                              "tts_engine": tts_engine, "ms": round((c - t0) * 1000)},
+                              "tts_engine": tts_engine, "ms": round((c - t0) * 1000),
+                              "needs_review": bool(r.get("needs_review")),
+                              "nearest_verified": _nearest(r, part, direction)},
                              ensure_ascii=False) + "\n"
         whole = " ".join(outs)
         lat = {"asr": round(t1 - t0, 3), "nmt": round(nmt_s, 3), "tts": round(tts_s, 3),
@@ -440,6 +456,7 @@ def translate_text():
 
     t0 = time.time()
     r = pl.translate(text, direction, mode)
+    r = dict(r, nearest_verified=_nearest(r, text, direction))
     t1 = time.time()
     audio_url, tts_error, tts_engine = _speak(direction, r["text"])
     t2 = time.time()

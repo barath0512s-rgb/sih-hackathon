@@ -165,12 +165,24 @@ class VaaniSetuPipeline:
         higher than a real classroom sentence. It is returned for evaluation
         and never shown to teachers. None when beam search is on.
         """
+        out, score, _ = self._nmt_review(text, src_lang, tgt_lang, tokenizer, model)
+        return out, score
+
+    def _nmt_review(self, text, src_lang, tgt_lang, tokenizer=None, model=None):
+        """_nmt, plus whether the output needs a native speaker's check: the int8
+        guard cut a loop (nmt_guard.py), or the output itself contains a loop of
+        word variants (the fp32 model can loop too)."""
+        import nmt_guard
         with self._nmt_lock:
+            cut = False
             if model is None and self.onnx_nmt is not None:
                 out, _, score = self.onnx_nmt.translate_scored(text, src_lang, tgt_lang)
-                return out, score
-            return self._nmt_locked(text, src_lang, tgt_lang, tokenizer or self.tok_nmt,
-                                    model if model is not None else self.mdl_nmt)
+                cut = self.onnx_nmt.last_cut
+            else:
+                out, score = self._nmt_locked(text, src_lang, tgt_lang, tokenizer or self.tok_nmt,
+                                              model if model is not None else self.mdl_nmt)
+        looped = nmt_guard.first_loop(out.split()) is not None
+        return out, score, bool(cut or looped)
 
     def _nmt_locked(self, text, src_lang, tgt_lang, tokenizer, model):
         batch = self.ip.preprocess_batch(
@@ -277,10 +289,13 @@ class VaaniSetuPipeline:
             return cached
 
         src, tgt = ("hin_Deva", "sat_Olck") if fwd else ("sat_Olck", "hin_Deva")
-        out, score = self._nmt(text, src, tgt)
+        out, score, needs_review = self._nmt_review(text, src, tgt)
         if fwd:
             out = self._apply_domain_glossary(out, "sat_Olck")
         result = {"text": out, "source": "model", "model_score": score}
+        if needs_review:
+            # A loop was cut or found: the text is not a translation to present as one.
+            result["needs_review"] = True
         TRANSLATION_CACHE[key] = result
         return result
 

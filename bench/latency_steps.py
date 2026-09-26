@@ -180,6 +180,7 @@ def main():
     ap.add_argument("--backend", default="torch-t14")
     ap.add_argument("--limit", type=int)
     ap.add_argument("--rescore", action="store_true", help="rebuild the .md from the saved .csv (no models)")
+    ap.add_argument("--tag", default="", help="appended to the output name, e.g. hp1 -> latency_steps_app_hp1")
     a = ap.parse_args()
     if a.rescore:
         md = ROOT / "bench" / "results" / f"latency_steps_{a.backend}.md"
@@ -239,14 +240,15 @@ def main():
               f"first {r['first_audio_ms']:>5}  last {r['last_audio_ms']:>5}  (asr {r['asr_ms']} nmt {r['nmt_ms']} "
               f"tts {r['tts_ms']})  agree {r['chunk_vs_whole_chrf']}", flush=True)
 
-    out = ROOT / "bench" / "results" / f"latency_steps_{a.backend}"
+    name = a.backend + (f"_{a.tag}" if a.tag else "")
+    out = ROOT / "bench" / "results" / f"latency_steps_{name}"
     with open(out.with_suffix(".csv"), "w", newline="", encoding="utf-8") as f:
         wr = csv.DictWriter(f, fieldnames=list(rows[0])); wr.writeheader(); wr.writerows(rows)
 
     desc_line = (f"- Translation backend: {desc}. Speech recognition: IndicConformer, "
                  f"{config.ASR_DECODING['hi']}, trim={config.ASR_TRIM_SILENCE['hi']}. Speech: Piper "
                  f"{pl._voice_model('santali')}. Every engine warmed first. Laptop, offline, in-process.")
-    write_report(a.backend, desc_line, rows)
+    write_report(name, desc_line, rows)
 
 
 if __name__ == "__main__":

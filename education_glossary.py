@@ -305,3 +305,24 @@ def preprocess_hindi_with_glossary(hindi_text: str) -> str:
     # Not applied here — full sentence lookup handles this case.
     # Reserved for future sentence-level partial substitution.
     return hindi_text
+
+
+def nearest_verified(text: str, direction: str = "hi-to-sat", min_ratio: float = 0.6):
+    """The verified glossary sentence most like `text`, for a translation that needs
+    review: {"source", "target", "similarity"} or None below min_ratio. Compared on
+    textnorm.normalize_key with difflib's ratio."""
+    import difflib
+    from textnorm import normalize_key
+    table = VERIFIED_SENTENCES_HI_SAT if direction == "hi-to-sat" else VERIFIED_SENTENCES_SAT_HI
+    key = normalize_key(text or "")
+    if not key:
+        return None
+    best, best_r = None, 0.0
+    for src, tgt in table.items():
+        r = difflib.SequenceMatcher(None, key, normalize_key(src)).ratio()
+        if r > best_r:
+            best, best_r = (src, tgt), r
+    if best is None or best_r < min_ratio:
+        return None
+    return {"source": best[0], "target": best[1], "similarity": round(best_r, 2)}
+

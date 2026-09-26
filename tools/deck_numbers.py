@@ -254,6 +254,28 @@ def size(path):
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
 
+def latency_three_runs(tag="hp"):
+    """The three runs (High performance plan, AC, apps closed): every run and the median of p90s."""
+    if not (RESULTS / f"latency_steps_app_{tag}3.csv").exists() or not list(RESULTS.glob(f"*_public_{tag}3.csv")):
+        return
+    import latency_runs as lr
+    tags = [f"{tag}{i}" for i in (1, 2, 3)]
+    src = f"bench/results/latency_{tag}_runs.md"
+    print(f"\nLatency, three runs ({', '.join(tags)}; laptop on AC, High performance plan, other apps closed; "
+          "distinct sentences; p90 s)")
+    steps = {t: lr.steps_run(t) for t in tags}
+    for name, (n, nd, _, _) in steps[tags[0]].items():
+        firsts = [steps[t][name][2] for t in tags]; fulls = [steps[t][name][3] for t in tags]
+        out(f"from end of speech, hi->sat, {name} words: first / full p90",
+            " | ".join(f"{a:.2f} / {b:.2f}" for a, b in zip(firsts, fulls))
+            + f"; median {statistics.median(firsts):.2f} / {statistics.median(fulls):.2f} s (n={n}, n_distinct={nd})", src)
+    v2v = {t: lr.v2v_run(t)[0] for t in tags}
+    for key, (n, nd, _) in v2v[tags[0]].items():
+        p = [v2v[t][key][2] for t in tags]
+        out(f"upload to audio, {key[0]}, {key[1]} words: p90",
+            " | ".join(f"{x:.2f}" for x in p) + f"; median {statistics.median(p):.2f} s (n={n}, n_distinct={nd})", src)
+
+
 def f1_phase_a():
     """F1 Phase A (tablet feasibility), measured on the laptop, NOT on a tablet."""
     sv = RESULTS / "sherpa_vs_nemo.md"
@@ -343,6 +365,7 @@ def main():
     out("transliteration test vectors", str(len(vec["vectors"])), "tests/data/olchiki_vectors.json")
 
     latency_steps()
+    latency_three_runs()
     asr_decoding_synthetic()
     asr_accuracy()
     translation()

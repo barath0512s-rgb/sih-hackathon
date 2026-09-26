@@ -51,7 +51,7 @@ laptop, offline, and checked by the named test or script.
 |---|---|---|---|---|
 | 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **Santali only.** Hindi ↔ Santali, typed or spoken, with Santali speech | Ho and Mundari: the translation and speech-recognition models we use do not support them | `python test_pipeline.py` |
 | 2 | Translate Hindi FLN content (lesson scripts, activity instructions, assessment prompts) into accurate text and synthesised audio | Every lesson line is translated to Ol Chiki text and spoken offline. 18 lesson sentences come from a hand-written glossary; other lines come from the model | Translation quality on public test sets (the model alone): chrF++ Hindi → Santali 31.3 (IN22-Gen), 32.2 (IN22-Conv), 27.4 (FLORES-200); see §6. Lesson lines themselves: **NOT MEASURED** (no reference translations). No native speaker has reviewed the output or the Santali voice. Content modes organise the lesson but **do not change the translation** (see §5) | `pytest tests/test_api.py`, `tests/test_offline.py` |
-| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, upload to reply audio (§6): **Hindi → Santali** median **1.96 s**, p90 **2.25 s**, 0 over 3 s (FLEURS, 68 distinct sentences); **Santali → Hindi** median **2.22 s**, p90 **2.57 s**, 2 of 79 over 3 s, answers of ≤ 10 words p90 **2.34 s** (IndicVoices validation split; may overlap model-development data). From the end of speech, by step: time to first audio p90 **2.46 s** (run 1) / **2.68 s** (run 2) over 69 distinct FLEURS sentences (clause streaming); lesson lines p90 **1.21-1.24 s** | Full-sentence p90 for FLEURS sentences of up to 17 words (32 distinct) was **2.48 s** in one run and **3.02 s** in a second (the slow clips were slow in every step at once: machine noise, not a pipeline step). Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public`, `python bench/latency_steps.py --backend app`, then `python tools/deck_numbers.py` |
+| 3 | Real-time voice-to-voice dialogue, no more than 3 s | Laptop, offline, public adult speech, **three runs** (AC power, High performance plan, other apps closed; median of the runs' p90s, distinct sentences, §6): upload to reply audio **Hindi → Santali p90 2.38 s** (68 sentences), **Santali → Hindi p90 2.58 s** (80; IndicVoices validation split, may overlap model-development data), answers of ≤ 10 words 2.27 s. From the end of speech: time to first audio p90 **2.75 s** over all 69 FLEURS sentences (clause streaming); full time p90 **2.85 s** for sentences of ≤ 17 words | The runs vary: first-audio p90 was 2.54, 2.75 and **3.40 s** (one run over 3 s); sentences of 18-23 words take 4.2-4.9 s to finish (p90), though their first audio comes sooner. Child speech, classroom Wi-Fi, and a tablet with no laptop: **NOT MEASURED** | `python bench/latency_steps.py --backend app --tag hp1` and `python bench/bench_latency.py --clips bench/clips/public/manifest.json --label public_hp1` (three times), then `python tools/latency_runs.py` |
 | 4 | Auto-generated bilingual worksheets and visual flashcard sets, aligned to NIPUN Bharat learning outcomes | A bilingual PDF worksheet from the lesson just taught. Flashcard decks built from the lessons (`GET /flashcards`). Both carry the lesson's NIPUN Lakshya IDs, quoted word for word from the Ministry's guidelines. A teacher can add a lesson from Hindi text; it gets Santali, audio, a worksheet and flashcards (§3) | 17 lessons (Balvatika to Grade 3, literacy and numeracy): 5 built in, 12 written by the team and added through the same import path a teacher uses. Every Lakshya except G2-LIT-2 (45-60 words per minute) has a lesson. The lesson-to-goal mapping has not been checked by a teacher | `pytest tests/test_lakshya.py tests/test_curriculum.py` |
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop hub** (tablets use its browser page over local Wi-Fi). **Android app, work in progress (F1 M1):** on an Android 9 emulator with 2 GB RAM, in airplane mode, the app shows the lessons, flashcards and typed translations of lesson lines from a verified content pack, through the same page and REST contract as the hub (24 of 24 contract cases); peak PSS 185 MB (app + WebView) | On the tablet: speech recognition, translation of new sentences and voice synthesis are **not built yet** (M2-M4); the Samsung tablet itself: **NOT MEASURED** yet | `bench/results/android_m1_emulator-2gb-android9.md`; `pytest tests/test_offline.py` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
@@ -294,6 +294,43 @@ chunked translation agrees with the whole-sentence one at chrF++ 69 (median).
 Against human references it costs little: on the 814 FLORES-200 devtest
 sentences of 18+ words, chunked chrF++ 27.3 vs whole 27.5 (BLEU 2.3 vs 3.4);
 chunking scores higher on 387 of them (`eval/results/chunk_quality.md`).
+
+**Current reference: three runs** (26 Sep 2026; laptop on AC power, Windows High performance plan, other apps closed; Hindi silence trimming off). Every run is shown; the bold column is the median of the three runs' p90s (`bench/results/latency_hp_runs.md`).
+
+#### From the end of speech: FLEURS Hindi -> Santali (`bench/latency_steps.py --backend app`)
+
+Time to first audio (clause streaming) and full time (whole utterance voiced), p90 in seconds.
+
+| Words | n | n_distinct | hp1: first / full | hp2: first / full | hp3: first / full | Median of p90s: first / full |
+|---|---|---|---|---|---|---|
+| all | 80 | 69 | 3.40 / 4.08 | 2.75 / 3.62 | 2.54 / 3.67 | **2.75 / 3.67** |
+| ≤ 17 | 37 | 32 | 2.41 / 2.96 | 2.42 / 2.85 | 2.14 / 2.75 | **2.41 / 2.85** |
+| 0-11 | 3 | 3 | 2.23 / 3.29 | 2.47 / 3.21 | 2.13 / 2.90 | **2.23 / 3.21** |
+| 12-17 | 34 | 29 | 2.59 / 2.96 | 2.42 / 2.85 | 2.21 / 2.75 | **2.42 / 2.85** |
+| 18-23 | 34 | 28 | 3.74 / 4.93 | 3.25 / 4.19 | 3.40 / 4.76 | **3.40 / 4.76** |
+| 24+ | 9 | 9 | 3.71 / 4.33 | 3.40 / 4.09 | 3.10 / 3.68 | **3.40 / 4.09** |
+
+Source files: `latency_steps_app_hp1.csv`, `latency_steps_app_hp2.csv`, `latency_steps_app_hp3.csv`
+
+#### Upload to reply audio, both directions (`bench/bench_latency.py`, public clips)
+
+Full time (no streaming in this path), p90 in seconds. Santali clips: IndicVoices validation split (no public Santali test split); may overlap model-development data. Word bins count the reference words of the spoken sentence.
+
+| Direction | Words | n | n_distinct | hp1 | hp2 | hp3 | Median of p90s |
+|---|---|---|---|---|---|---|---|
+| hi-to-sat | all | 79 | 68 | 2.93 | 2.38 | 2.37 | **2.38** |
+| hi-to-sat | 0-11 | 4 | 4 | 2.22 | 1.87 | 1.87 | **1.87** |
+| hi-to-sat | 12-17 | 36 | 30 | 2.60 | 2.14 | 2.09 | **2.14** |
+| hi-to-sat | 18-23 | 32 | 27 | 3.17 | 2.47 | 2.37 | **2.47** |
+| hi-to-sat | 24+ | 7 | 7 | 3.32 | 3.22 | 2.61 | **3.22** |
+| sat-to-hi | all | 80 | 80 | 2.60 | 2.52 | 2.58 | **2.58** |
+| sat-to-hi | 0-10 | 42 | 42 | 2.27 | 2.23 | 2.29 | **2.27** |
+| sat-to-hi | 11-17 | 25 | 25 | 2.62 | 2.55 | 2.69 | **2.62** |
+| sat-to-hi | 18+ | 13 | 13 | 2.94 | 2.80 | 2.75 | **2.80** |
+
+Source files: `Dell-Inc-Dell-G15-5520_2026-09-26_public_hp1.csv`, `Dell-Inc-Dell-G15-5520_2026-09-26_public_hp2.csv`, `Dell-Inc-Dell-G15-5520_2026-09-26_public_hp3.csv`
+
+The two earlier runs below (Balanced plan, Hindi trimming on) are kept for the record.
 
 FLEURS Hindi (public dataset, adult speech; n = 80 clips, n_distinct = 69
 sentences, the first clip of each counted) and the 30 lesson lines; laptop,

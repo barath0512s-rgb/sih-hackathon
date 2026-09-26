@@ -59,7 +59,33 @@ class MainActivity : Activity() {
             { runOnUiThread { requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQ_MIC) } }), "VaaniMic")
         web.addJavascriptInterface(PackBridge(::pickPack, ::downloadPack, ::packStatus), "VaaniPack")
         debugImport(intent)
+        importFolder()
         web.loadUrl("$ORIGIN/")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        importFolder()
+    }
+
+    /**
+     * Release-safe import: a pack placed in the app's own import folder on shared
+     * storage (Android/data/<app>/files/import/, which adb or a file manager with
+     * access can write) is imported with the same checks as the file picker, then
+     * removed. Nothing outside the app's folder is read.
+     */
+    private val importing = java.util.concurrent.atomic.AtomicBoolean(false)
+
+    private fun importFolder() {
+        val dir = getExternalFilesDir("import") ?: return
+        val zip = dir.listFiles { f -> f.isFile && f.name.endsWith(".zip") }?.minByOrNull { it.name } ?: return
+        if (!importing.compareAndSet(false, true)) return          // onCreate and onResume both call this
+        thread(name = "pack-import-folder") {
+            try {
+                runCatching { zip.inputStream().use { install(it) } }.onFailure { report(false, it.message ?: "import failed") }
+                zip.delete()
+            } finally { importing.set(false) }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

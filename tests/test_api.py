@@ -417,3 +417,15 @@ def test_audio_from_an_old_cache_entry_is_still_served(api):
     second = client.post("/speak", json={"text": text, "lang": "sat"}).get_json()
     assert second["tts_engine"] == "cache"
     assert client.get(second["audio_url"]).status_code == 200
+
+
+def test_a_looped_model_output_is_flagged_not_presented(api, monkeypatch):
+    # The int8 guard (or a loop in fp32 output) marks the reply: the API says
+    # needs_review and offers the nearest verified sentence.
+    monkeypatch.setattr(api.pl, "_nmt_review",
+                        lambda text, src, tgt, tokenizer=None, model=None: ("ᱥᱟᱯᱷᱟᱨᱤ", None, True))
+    status, r = post(api, "/translate/text", text="आज हम एक से दस तक गिनती सीखेंगे", direction="hi-to-sat")
+    assert status == 200 and r["needs_review"] is True and r["source"] == "model"
+    assert r["nearest_verified"]["source"] == "आज हम एक से दस तक गिनना सीखेंगे।"
+    status, r = post(api, "/translate/text", text="आज हम एक से दस तक गिनना सीखेंगे।", direction="hi-to-sat")
+    assert r["needs_review"] is False and r["nearest_verified"] is None      # the glossary answers

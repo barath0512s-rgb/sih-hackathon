@@ -1,4 +1,16 @@
-# STATUS, 25 Sep 2026: submission freeze (master prompt v2)
+# STATUS, 26 Sep 2026: submission freeze, round 2 (master prompt v2)
+
+## FREEZE-2 (branch `android-wp4`, fast-forwarded to `main`)
+
+| # | Item | Result | Evidence |
+|---|---|---|---|
+| 1 | Latency, three runs (AC power, High performance plan, other apps closed; set by the user) | Median of the three runs' p90s, distinct sentences. **Upload to reply audio:** Hindi → Santali 2.38 s (n = 79, n_distinct = 68), Santali → Hindi 2.58 s (n = n_distinct = 80), answers of ≤ 10 words 2.27 s. **From the end of speech (FLEURS hi → sat):** time to first audio 2.75 s (all 69), full time 2.85 s (≤ 17 words, n_distinct = 32). **Run to run:** first-audio p90 3.40 / 2.75 / 2.54 s: one run over 3 s. 18-23 words, full p90 4.19-4.93 s. Every run and every word bin in the evidence file | `bench/results/latency_hp_runs.md` |
+| 6 | Loop guard on the page | A reply the guard cut, or whose text contains a loop of word variants, is marked `needs_review`: the page shows "⚠️ मूल वक्ता से जाँचें", does not auto-play it (typed or streamed), and offers the nearest verified glossary sentence (`education_glossary.nearest_verified`). Tests: `tests/test_nmt_review.py` (page and lookup, no models) and `tests/test_api.py` (end to end) | `app.py`, `pipeline.py`, `frontend.html` |
+| 7 | Old-WebView test in CI | CI runs `python -m pytest -q -rs` on every push; `tests/test_frontend_offline.py::test_the_page_runs_on_android_9_webview` needs no models and has no skip marker, so it runs there | `.github/workflows/tests.yml` |
+| 4 | Samsung pass, prepared | One-pass `tools/android/device_check.py` (release APK, release-safe pack import folder, 24 checks online and in airplane mode, page checked through the accessibility tree, optional screen recording, mic via the debug build, peak PSS). Session steps and the CA path: `docs/samsung_session.md`; hub log reader: `tools/hub_mic_check.py`. **No Samsung result yet** | `docs/samsung_session.md` |
+| 5 | Demo script v1.2 | The Android segment is a recorded clip (Samsung if its check passes, else the 2 GB emulator), with its exact caption and the 2 GB emulator line | `docs/demo_video_script.md`, `docs/demo_assets/README.md` |
+
+---
 
 ## FREEZE. Decisions applied; M1 on a 2 GB Android 9 emulator (branch `android-wp4`)
 

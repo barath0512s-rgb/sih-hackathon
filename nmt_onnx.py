@@ -41,6 +41,7 @@ class OnnxNMT:
         # exactly as PyTorch decodes it (golden test: identical token ids).
         self.guard = (bool(int8) and config.NMT_INT8_GUARD) if guard is None else guard
         self.guard_fired = 0
+        self.last_cut = False               # set by each translate_scored call (under the lock)
 
     @staticmethod
     def _banned(tokens, n):
@@ -113,4 +114,7 @@ class OnnxNMT:
                 import nmt_guard
                 out, cut = nmt_guard.cut_stem_loop(out)
                 self.guard_fired += cut
+                self.last_cut = cut
+            else:
+                self.last_cut = False
             return out, seq, score
