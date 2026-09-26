@@ -20,7 +20,9 @@ Pack layout (format 1):
                          and teacher corrections, through the hub's own layers.
   audio/index.json       {"sat": {text: file}, "hi": {text: file}}
   audio/<sha1>.wav       Piper audio for every translation and every Hindi line
-  worksheets/<grade>_<topic>.pdf   one worksheet per lesson
+  worksheets/<grade>_<topic>.pdf   one worksheet per lesson (v2 exercises + answer key when
+                                   config.WORKSHEET_V2, else the lesson-lines sheet)
+  flashcards/<grade>_<topic>.pdf   cut-out flashcards per lesson (A2)
 """
 
 import argparse
@@ -131,7 +133,20 @@ def build(out_dir, audio=True, worksheets=True, audio_lessons=None, log=print):
         log(f"audio: {len(index['sat'])} Santali, {len(index['hi'])} Hindi clips")
     save("audio/index.json", index)
 
-    if worksheets:
+    if worksheets and config.WORKSHEET_V2:
+        from worksheet_v2 import build as build_v2, build_flashcards
+        (out_dir / "worksheets").mkdir()
+        (out_dir / "flashcards").mkdir()
+        decks = {(d["grade"], d["topic"]): d for d in api["flashcards"]["decks"]}
+        sat_of = lambda hi: (trans["hi-to-sat"].get(normalize_key(hi)) or {}).get("text", "")
+        for L in lessons:
+            deck = decks.get((L["grade"], L["topic"]), {"title": L["topic"], "grade": L["grade"], "topic": L["topic"],
+                                                         "lakshya_ids": [], "cards": []})
+            build_v2(L["lesson"], L["grade"], L["topic"], deck["cards"], sat_of,
+                     out_dir / "worksheets" / f"{L['grade']}_{L['topic']}.pdf")
+            build_flashcards(deck, out_dir / "flashcards" / f"{L['grade']}_{L['topic']}.pdf")
+        log(f"worksheets v2 and flashcards: {len(lessons)}")
+    elif worksheets:
         from worksheet import generate_worksheet
         (out_dir / "worksheets").mkdir()
         for L in lessons:

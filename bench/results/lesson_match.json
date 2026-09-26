@@ -1,0 +1,294 @@
+{
+ "hi": {
+  "threshold": 0.9,
+  "tune": {
+   "threshold": 0.9,
+   "precision": 0.9897435897435898,
+   "recall": 0.636963696369637,
+   "accepted": 195,
+   "correct": 193,
+   "positives": 303,
+   "negatives_accepted": 2,
+   "wrong_line": 0
+  },
+  "test": {
+   "threshold": 0.9,
+   "precision": 0.9794871794871794,
+   "recall": 0.7234848484848485,
+   "accepted": 195,
+   "correct": 191,
+   "positives": 264,
+   "negatives_accepted": 4,
+   "wrong_line": 0
+  },
+  "test_by_variant": {
+   "pack audio": {
+    "threshold": 0.9,
+    "precision": 0.9459459459459459,
+    "recall": 0.7954545454545454,
+    "accepted": 74,
+    "correct": 70,
+    "positives": 88,
+    "negatives_accepted": 4,
+    "wrong_line": 0
+   },
+   "piper 0.85": {
+    "threshold": 0.9,
+    "precision": 0.9473684210526315,
+    "recall": 0.8181818181818182,
+    "accepted": 76,
+    "correct": 72,
+    "positives": 88,
+    "negatives_accepted": 4,
+    "wrong_line": 0
+   },
+   "piper 1.2 + noise 15 dB": {
+    "threshold": 0.9,
+    "precision": 0.9245283018867925,
+    "recall": 0.5568181818181818,
+    "accepted": 53,
+    "correct": 49,
+    "positives": 88,
+    "negatives_accepted": 4,
+    "wrong_line": 0
+   }
+  },
+  "negatives_accepted_by_kind": {
+   "IN22-Conv, piper": 0,
+   "near-miss: number swap": 0,
+   "near-miss: word swap": 4,
+   "real speech (public clip)": 0
+  },
+  "negatives_by_kind": {
+   "IN22-Conv, piper": 100,
+   "near-miss: number swap": 34,
+   "near-miss: word swap": 73,
+   "real speech (public clip)": 44
+  },
+  "n_candidates": 189,
+  "counts": {
+   "pos_tune": 303,
+   "pos_test": 264,
+   "neg_tune": 233,
+   "neg_test": 251
+  },
+  "test_curve": [
+   {
+    "threshold": 0.5,
+    "precision": 0.7653061224489796,
+    "recall": 0.8522727272727273,
+    "accepted": 294,
+    "correct": 225,
+    "positives": 264,
+    "negatives_accepted": 66,
+    "wrong_line": 3
+   },
+   {
+    "threshold": 0.6,
+    "precision": 0.778169014084507,
+    "recall": 0.8371212121212122,
+    "accepted": 284,
+    "correct": 221,
+    "positives": 264,
+    "negatives_accepted": 62,
+    "wrong_line": 1
+   },
+   {
+    "threshold": 0.7,
+    "precision": 0.7912087912087912,
+    "recall": 0.8181818181818182,
+    "accepted": 273,
+    "correct": 216,
+    "positives": 264,
+    "negatives_accepted": 56,
+    "wrong_line": 1
+   },
+   {
+    "threshold": 0.75,
+    "precision": 0.8262548262548263,
+    "recall": 0.8106060606060606,
+    "accepted": 259,
+    "correct": 214,
+    "positives": 264,
+    "negatives_accepted": 45,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.8,
+    "precision": 0.8530612244897959,
+    "recall": 0.7916666666666666,
+    "accepted": 245,
+    "correct": 209,
+    "positives": 264,
+    "negatives_accepted": 36,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.85,
+    "precision": 0.9220183486238532,
+    "recall": 0.7613636363636364,
+    "accepted": 218,
+    "correct": 201,
+    "positives": 264,
+    "negatives_accepted": 17,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.9,
+    "precision": 0.9794871794871794,
+    "recall": 0.7234848484848485,
+    "accepted": 195,
+    "correct": 191,
+    "positives": 264,
+    "negatives_accepted": 4,
+    "wrong_line": 0
+   }
+  ]
+ },
+ "sat": {
+  "threshold": 0.95,
+  "tune": {
+   "threshold": 0.95,
+   "precision": 0.9512195121951219,
+   "recall": 0.14444444444444443,
+   "accepted": 41,
+   "correct": 39,
+   "positives": 270,
+   "negatives_accepted": 0,
+   "wrong_line": 2
+  },
+  "test": {
+   "threshold": 0.95,
+   "precision": 1.0,
+   "recall": 0.10774410774410774,
+   "accepted": 32,
+   "correct": 32,
+   "positives": 297,
+   "negatives_accepted": 0,
+   "wrong_line": 0
+  },
+  "test_by_variant": {
+   "pack audio": {
+    "threshold": 0.95,
+    "precision": 1.0,
+    "recall": 0.09090909090909091,
+    "accepted": 9,
+    "correct": 9,
+    "positives": 99,
+    "negatives_accepted": 0,
+    "wrong_line": 0
+   },
+   "piper 0.85": {
+    "threshold": 0.95,
+    "precision": 1.0,
+    "recall": 0.12121212121212122,
+    "accepted": 12,
+    "correct": 12,
+    "positives": 99,
+    "negatives_accepted": 0,
+    "wrong_line": 0
+   },
+   "piper 1.2 + noise 15 dB": {
+    "threshold": 0.95,
+    "precision": 1.0,
+    "recall": 0.1111111111111111,
+    "accepted": 11,
+    "correct": 11,
+    "positives": 99,
+    "negatives_accepted": 0,
+    "wrong_line": 0
+   }
+  },
+  "negatives_accepted_by_kind": {
+   "IN22-Conv, piper": 0,
+   "near-miss: number swap": 0,
+   "near-miss: word swap": 0,
+   "real speech (public clip)": 0
+  },
+  "negatives_by_kind": {
+   "IN22-Conv, piper": 54,
+   "near-miss: number swap": 20,
+   "near-miss: word swap": 79,
+   "real speech (public clip)": 42
+  },
+  "n_candidates": 189,
+  "counts": {
+   "pos_tune": 270,
+   "pos_test": 297,
+   "neg_tune": 181,
+   "neg_test": 195
+  },
+  "test_curve": [
+   {
+    "threshold": 0.5,
+    "precision": 0.7932489451476793,
+    "recall": 0.632996632996633,
+    "accepted": 237,
+    "correct": 188,
+    "positives": 297,
+    "negatives_accepted": 47,
+    "wrong_line": 2
+   },
+   {
+    "threshold": 0.6,
+    "precision": 0.825,
+    "recall": 0.5555555555555556,
+    "accepted": 200,
+    "correct": 165,
+    "positives": 297,
+    "negatives_accepted": 34,
+    "wrong_line": 1
+   },
+   {
+    "threshold": 0.7,
+    "precision": 0.8716216216216216,
+    "recall": 0.43434343434343436,
+    "accepted": 148,
+    "correct": 129,
+    "positives": 297,
+    "negatives_accepted": 19,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.75,
+    "precision": 0.9,
+    "recall": 0.3939393939393939,
+    "accepted": 130,
+    "correct": 117,
+    "positives": 297,
+    "negatives_accepted": 13,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.8,
+    "precision": 0.9056603773584906,
+    "recall": 0.32323232323232326,
+    "accepted": 106,
+    "correct": 96,
+    "positives": 297,
+    "negatives_accepted": 10,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.85,
+    "precision": 0.9696969696969697,
+    "recall": 0.21548821548821548,
+    "accepted": 66,
+    "correct": 64,
+    "positives": 297,
+    "negatives_accepted": 2,
+    "wrong_line": 0
+   },
+   {
+    "threshold": 0.9,
+    "precision": 1.0,
+    "recall": 0.16161616161616163,
+    "accepted": 48,
+    "correct": 48,
+    "positives": 297,
+    "negatives_accepted": 0,
+    "wrong_line": 0
+   }
+  ]
+ }
+}

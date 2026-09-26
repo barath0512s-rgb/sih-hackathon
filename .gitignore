@@ -77,3 +77,9 @@ android/.idea/
 
 # The Android test pack needs its few audio clips (tests/test_android_assets.py, PackTest.kt)
 !android/app/src/test/resources/pack/audio/*.wav
+
+# B1: Parler pre-rendered audio (large, regenerable)
+content_audio/
+
+# sherpa-onnx release AAR (50 MB): tools/android/fetch_sherpa_aar.py
+android/app/libs/*.aar

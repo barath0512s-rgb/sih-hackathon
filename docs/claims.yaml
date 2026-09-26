@@ -359,3 +359,33 @@
   status: "TRUE"
   evidence: bench/results/latency_hp_runs.md
 
+
+# ── Uplift (26 Sep 2026): A1 on-device voice for lesson lines, A2 worksheets v2 ──
+- id: a1_match_laptop
+  text: "Lesson-line matching (synthetic clips, held-out half): Hindi threshold 0.90, precision 0.979, recall 0.723; Santali threshold 0.95, precision 1.000, recall 0.108"
+  status: "TRUE"
+  evidence: bench/results/lesson_match.md
+- id: a1_device_emulator
+  text: "On the 2 GB Android 9 emulator (2 threads, airplane mode, debug build): Hindi transcripts identical to the laptop on 88 of 90 clips; lesson-line matching precision 0.980, recall 0.833; voice to voice for matched lesson lines p50 0.50 s, p90 0.82 s (to the reply audio file, playback start not included); peak PSS app 655 MB + WebView 90 MB"
+  status: "TRUE"
+  evidence: bench/results/emulator-2gb-android9_2026-09-26_voice.md
+- id: a1_answers_emulator
+  text: "Spoken Santali answers on the emulator (synthetic voice): graded as expected in 8 of 16; Hindi feedback audio on every answer"
+  status: "TRUE"
+  evidence: bench/results/emulator-2gb-android9_2026-09-26_voice.md
+- id: a1_real_voices
+  text: "Lesson-line matching and spoken answers with real teachers' and children's voices"
+  status: "NOT MEASURED"
+  evidence: bench/results/lesson_match.md
+- id: a1_realme
+  text: "A1 on the Realme Pad Mini (4 GB, Android 11)"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: a2_worksheets
+  text: "Worksheet v2 (count and write, match, fill in the blank, circle the answer, trace the numeral, answer key) and cut-out flashcards for every lesson; Ol Chiki and Lakshya IDs are extractable text"
+  status: "TRUE"
+  evidence: tests/test_worksheet_v2.py
+- id: a2_tablet_pdf_rendering
+  text: "The tablet renders worksheets itself"
+  status: "NOT BUILT"
+  evidence: STATUS.md

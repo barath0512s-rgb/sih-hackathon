@@ -142,7 +142,16 @@ def main():
     ap.add_argument("--skip-export", action="store_true")
     ap.add_argument("--per-channel", action="store_true",
                     help="one int8 scale per output channel (writes *.int8pc.onnx)")
+    ap.add_argument("--model-dir", help="a Hugging Face model folder to export instead of config.NMT_DIR "
+                    "(e.g. a LoRA-merged Mundari model from notebooks/mundari_lora.ipynb)")
+    ap.add_argument("--out", help="output folder instead of models/indictrans2-onnx")
     a = ap.parse_args()
+    global OUT
+    if a.model_dir:
+        config.NMT_DIR = Path(a.model_dir)
+    if a.out:
+        OUT = Path(a.out)
+        OUT.mkdir(parents=True, exist_ok=True)
     if not a.skip_export:
         tok, m = load()
         export(tok, m)

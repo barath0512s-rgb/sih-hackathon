@@ -181,3 +181,38 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 
 ### <a name="fonts"></a>Fonts
 - Noto Sans Devanagari, Noto Sans Ol Chiki, Baloo 2, Kalam: SIL Open Font License 1.1 (licence files in `static/fonts/`, e.g. "This Font Software is licensed under the SIL Open Font License, Version 1.1.").
+
+## Uplift sources (added 2026-09-26)
+
+### <a name="indic-parler-tts"></a>ai4bharat/indic-parler-tts (B1 pre-render)
+- https://huggingface.co/ai4bharat/indic-parler-tts, accessed 2026-09-26.
+- Licence: "This model is permissively licensed under the Apache 2.0 license."
+- Languages: "Assamese, Bengali, Bodo, Dogri, English, Gujarati, Hindi, Kannada, Konkani, Maithili, Malayalam, Manipuri, Marathi, Nepali, Odia, Sanskrit, Santali, Sindhi, Tamil, Telugu, and Urdu."
+- **Santali has no recommended-speaker table entry, is absent from the card's training-data table and from its evaluation (MOS) table.** So Santali quality is unknown until A6 measures it. Description used (the card's example without the accent): see `tools/parler_prerender.py`; fixed seed 1234.
+
+### <a name="mms-tts"></a>facebook/mms-tts-unr (Mundari) and facebook/mms-tts-hoc (Ho)
+- https://huggingface.co/facebook/mms-tts-unr, https://huggingface.co/facebook/mms-tts-hoc, accessed 2026-09-26. Card licence `cc-by-nc-4.0` (both; approved by the team for non-commercial use). VITS, 16 kHz, 1 speaker.
+- `tokenizer_config.json` of both: `"is_uroman": false`, `"phonemize": false`, `"add_blank": true`, `"normalize": true`. The vocabularies (`vocab.json`, 54 and 55 entries) are **Odia-script** letters.
+- **So the voices read Odia script, not Devanagari or Warang Citi.** Teacher lines in Devanagari are converted by `translit/odia.py` before synthesis. (The uplift prompt assumed Devanagari or Warang Citi input; the model files win.)
+- There is **no `facebook/mms-tts-sat`** (the Hub API returns no such model), so C4 starts from `mms-tts-unr`.
+
+### <a name="mmloso"></a>MMLoSo 2025 shared task (Hindi–Mundari data)
+- Findings paper, ACL Anthology 2025.mmloso-1.14, https://aclanthology.org/2025.mmloso-1.14.pdf, accessed 2026-09-26.
+- Licence: "All data is distributed under the Creative Commons BY-SA 4.0 license." (Confirms the team's approval note.)
+- Script: "Hindi, Bhili, and Mundari are written in Devanagari"; Mundari "Although traditionally written in multiple scripts, we use Devanagari".
+- Size: "each with 20,000 high-quality parallel sentence pairs"; test statistics table: Mundari 2000 source sentences.
+- **Test references are not public:** "The test set contains only the source sentence and language direction; participants must generate the target translation." So our scores use a held-out 5 % of the training file.
+- Hosted on Kaggle: https://kaggle.com/competitions/mm-lo-so-2025 (cited in system paper 2025.mmloso-1.11). Downloading needs a Kaggle account that accepts the competition rules.
+- System paper 2025.mmloso-1.12 used "a stratified 95/5 train-validation split prior to augmentation"; our split is the same size.
+
+### <a name="finetune-hf-vits"></a>ylacombe/finetune-hf-vits (C4 training code)
+- https://github.com/ylacombe/finetune-hf-vits @ `6f3f51f4d667f5c3eef89484d151ffd39d2c2b89`, MIT License (LICENSE file, accessed 2026-09-26). Fine-tuning MMS needs the discriminator converted from the original MMS checkpoint (`convert_original_discriminator_checkpoint.py --language_code <iso>`).
+
+### <a name="indicvoices-r-santali"></a>IndicVoices-R, Santali config (C4 data)
+- Hub API card data (accessed 2026-09-26): config `Santali`, train 32,613 examples, test 660; download size 38.8 GB; fields include `speaker_id`, `gender`, `snr`, `duration`, `text`, `audio` (48 kHz). CC BY 4.0, gated (access already granted 2026-09-25).
+
+### <a name="sherpa-onnx-tts"></a>sherpa-onnx 1.13.8 (Apache-2.0)
+- Same version as the WSL export environment (`tools/export/requirements-nemo-wsl.txt`). VITS models are read with metadata keys `sample_rate`, `add_blank`, `n_speakers`, `language`, `comment` ("piper" for Piper voices), `frontend` ("characters" for character models); source `sherpa-onnx/csrc/offline-tts-vits-model.cc` @ `040afe360a`.
+
+### <a name="openmoji"></a>OpenMoji (A2 pictures)
+- https://github.com/hfg-gmuend/openmoji @ `aeb8bb3a59…`, accessed 2026-09-26. README: "OpenMoji graphics are licensed under the Creative Commons Share Alike License 4.0 ([CC BY-SA 4.0]…)"; attribution suggestion: "All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0". Approved by the team. 29 PNGs in `static/openmoji/` (`ATTRIBUTION.md`).

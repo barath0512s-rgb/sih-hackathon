@@ -1131,6 +1131,7 @@ input:focus,textarea:focus,select:focus{
     <div class="filters" id="deckPick"></div>
     <button class="btn paper" id="shuffleBtn"><span class="e">🔀</span> <span data-t="fc_shuffle">बदलिए</span></button>
     <button class="btn paper" id="flipAllBtn"><span class="e">🔄</span> <span data-t="fc_flipall">सब पलटिए</span></button>
+    <button class="btn paper" id="cardsPdfBtn"><span class="e">🖨️</span> <span data-t="fc_pdf">छापने के लिए</span></button>
   </div>
   <p class="deck-tag" id="deckTag"></p>
   <div class="deck" id="deck"></div>
@@ -1330,6 +1331,7 @@ hi: {
   wr_half:"आधी कक्षा समझी", wr_half_b:"कल शुरू में इसी पाठ के शब्द दोहराइए",
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
+  m_not_lesson:"यह पाठ की पंक्ति नहीं है: लैपटॉप हब इस्तेमाल कीजिए या लिखिए", fc_pdf:"छापने के लिए",
   m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"इस पंक्ति की आवाज़ नहीं बन पाई। अनुवाद ऊपर लिखा है।",
   src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद", src_wordlist:"📝 शब्द सूची", src_pending:"समीक्षा बाकी", src_review:"⚠️ मूल वक्ता से जाँचें",
   m_review:"यह अनुवाद भरोसेमंद नहीं: मूल वक्ता से जाँचें", m_nearest:"सबसे पास का सत्यापित वाक्य", ans_pending:"⏳ उत्तरों की समीक्षा बाकी",
@@ -1470,6 +1472,7 @@ en: {
   wr_half:"About half the class", wr_half_b:"Open tomorrow by repeating these words",
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
+  m_not_lesson:"Not a lesson line: use the laptop hub or type", fc_pdf:"Print",
   m_blocked:"Press once to allow sound", m_no_voice:"The voice for this line could not be made. The translation is shown above.",
   src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model", src_wordlist:"📝 Word list", src_pending:"review pending", src_review:"⚠️ Check with a native speaker",
   m_review:"This translation is not reliable: check with a native speaker", m_nearest:"Nearest verified sentence", ans_pending:"⏳ answers: review pending",
@@ -2136,7 +2139,7 @@ async function mic(dir){
     src.classList.add("pending"); dst.classList.add("pending");
     say(t("m_listening"), "👂");
     const t0 = S.tStop || performance.now();
-    let recognized = "", outs = [], tResp = null, nChunks = 0;
+    let recognized = "", outs = [], tResp = null, nChunks = 0, notLesson = false;
     try {
       await Api.translateAudioStream(blob, dir, S.mode, S.sid, ev => {
         if (ev.type === "asr"){
@@ -2147,6 +2150,12 @@ async function mic(dir){
           queueReset(t0, S.autoplay ? nChunks : 0);
         } else if (ev.type === "chunk"){
           if (tResp === null) tResp = performance.now();
+          if (ev.code === "not_a_lesson_line"){
+            notLesson = true; Q.total = Math.max(0, Q.total - 1);
+            dst.classList.remove("pending"); dst.textContent = "";
+            say(t("m_not_lesson"), "📘");
+            return;
+          }
           outs.push(ev.translated_text || "");
           dst.classList.remove("pending");
           dst.textContent = outs.join(" ");
@@ -2172,7 +2181,8 @@ async function mic(dir){
                              nz(Q.last, Q.first) - t0).catch(() => {});
           };
           if (S.autoplay && nChunks && Q.last === null) Q.onAll = report; else report();
-          say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
+          if (notLesson) say(t("m_not_lesson"), "📘");
+          else say(t("m_heard") + " · " + num(r.latency.total) + " " + t("t1_sec"), "👂");
         }
       });
     } catch(e){
@@ -2267,6 +2277,7 @@ $("#micAns").onclick = async () => {
       const r = await Api.markVoice(S.sid, blob, S.step, "sat");
       if (r.transcript) say(t("m_ans_heard") + ": " + r.transcript, "👂");
       showVerdict(r);
+      if (r.audio_url){ const fb = new Audio(SERVER + r.audio_url); fb.play().catch(() => {}); }
     } catch(e){ fail(e); }
   };
   ansRec.start();
@@ -2343,6 +2354,20 @@ async function worksheet(btn){
   } catch(e){ fail(e); }
   finally { btn.disabled = false; btn.innerHTML = html; }
 }
+// A2: the deck as cut-out cards (fronts and backs), from GET /flashcards/pdf
+$("#cardsPdfBtn").onclick = async () => {
+  const deck = S.decks && S.decks[S.deck];
+  if (!deck) return;
+  try {
+    const r = await api("/flashcards/pdf?grade=" + encodeURIComponent(deck.grade) + "&topic=" + encodeURIComponent(deck.topic));
+    const url = URL.createObjectURL(await r.blob());
+    const a = document.createElement("a");
+    a.href = url; a.download = (S.appName || T.en.brand) + "_" + deck.topic + "_Flashcards.pdf";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    say(t("m_sheet"), "📄");
+  } catch(e){ fail(e); }
+};
 $("#sheetBtn").onclick = e => worksheet(e.currentTarget);
 $("#sheetPdf").onclick = e => worksheet(e.currentTarget);
 

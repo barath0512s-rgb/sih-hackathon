@@ -43,6 +43,36 @@ class Pack(val dir: File) {
         return File(dir, "audio/$name").takeIf { it.isFile }
     }
 
+    /**
+     * The lines a spoken utterance can be matched to (A1), per direction:
+     * {line to match -> {text, source, review_status}}. hi-to-sat: every Hindi line
+     * with its Santali. sat-to-hi: the pack's Santali lines with their Hindi, plus the
+     * Santali side of every hi-to-sat line (the Hindi written as the pack's audio
+     * index has it, so the original spelling and punctuation are shown).
+     */
+    fun lines(direction: String): Map<String, JSONObject> = linesCache.getOrPut(direction) {
+        val out = LinkedHashMap<String, JSONObject>()
+        val hi = translations.optJSONObject("hi-to-sat") ?: JSONObject()
+        if (direction == "hi-to-sat") {
+            for (k in hi.keys()) out[k] = hi.getJSONObject(k)
+        } else {
+            val hiOriginal = HashMap<String, String>()
+            audio.optJSONObject("hi")?.let { a -> for (t in a.keys()) hiOriginal[TextNorm.key(t)] = t }
+            for (k in hi.keys()) {
+                val e = hi.getJSONObject(k)
+                out.putIfAbsent(TextNorm.key(e.getString("text")), JSONObject().put("text", hiOriginal[k] ?: k)
+                    .put("source", e.optString("source")).put("review_status", e.optString("review_status")))
+            }
+            translations.optJSONObject("sat-to-hi")?.let { s -> for (k in s.keys()) out[k] = s.getJSONObject(k) }
+        }
+        out
+    }
+    private val linesCache = HashMap<String, Map<String, JSONObject>>()
+
+    /** A2: the lesson's cut-out flashcards, pre-rendered on the hub. */
+    fun flashcardsPdf(grade: String, topic: String): File? =
+        File(dir, "flashcards/${grade}_$topic.pdf").takeIf { it.isFile && it.parentFile == File(dir, "flashcards") }
+
     fun worksheet(grade: String, topic: String): File? =
         File(dir, "worksheets/${grade}_$topic.pdf").takeIf { it.isFile && it.parentFile == File(dir, "worksheets") }
 
@@ -52,6 +82,42 @@ class Pack(val dir: File) {
         /** Unzip into `work`, check every file against the manifest, then swap it in as `current`. */
         fun import(zip: InputStream, root: File): Pack {
             val work = File(root, "incoming")
+            unzipVerified(zip, work)
+            if (kind(work) != "content") { work.deleteRecursively(); throw PackError("not a content pack: ${kind(work)}") }
+            swapIn(work, root)
+            return Pack(File(root, "current"))
+        }
+
+        /**
+         * A content pack or a model pack (manifest "kind": "models"), whichever it is:
+         * verified the same way, then installed under filesDir/packs or filesDir/models.
+         * Returns the kind.
+         */
+        fun importAny(zip: InputStream, filesDir: File): String {
+            val work = File(filesDir, "incoming")
+            unzipVerified(zip, work)
+            val k = kind(work)
+            val root = File(filesDir, if (k == "models") "models" else "packs")
+            root.mkdirs()
+            val staged = File(root, "incoming")
+            staged.deleteRecursively()
+            if (!work.renameTo(staged)) { work.deleteRecursively(); throw PackError("cannot stage the pack") }
+            swapIn(staged, root)
+            return k
+        }
+
+        fun kind(dir: File): String = JSONObject(File(dir, "manifest.json").readText()).optString("kind", "content")
+
+        private fun swapIn(work: File, root: File) {
+            val current = File(root, "current")
+            val old = File(root, "previous")
+            old.deleteRecursively()
+            if (current.exists() && !current.renameTo(old)) throw PackError("cannot replace the current pack")
+            if (!work.renameTo(current)) { old.renameTo(current); throw PackError("cannot install the pack") }
+            old.deleteRecursively()
+        }
+
+        private fun unzipVerified(zip: InputStream, work: File) {
             work.deleteRecursively(); work.mkdirs()
             ZipInputStream(zip).use { z ->
                 while (true) {
@@ -63,14 +129,7 @@ class Pack(val dir: File) {
                     out.outputStream().use { z.copyTo(it) }
                 }
             }
-            verify(work)
-            val current = File(root, "current")
-            val old = File(root, "previous")
-            old.deleteRecursively()
-            if (current.exists() && !current.renameTo(old)) throw PackError("cannot replace the current pack")
-            if (!work.renameTo(current)) { old.renameTo(current); throw PackError("cannot install the pack") }
-            old.deleteRecursively()
-            return Pack(current)
+            try { verify(work) } catch (e: PackError) { work.deleteRecursively(); throw e }
         }
 
         fun verify(dir: File) {

@@ -765,10 +765,48 @@ def curriculum_worksheet(topic):
 
 
 # ── Worksheet and feedback ────────────────────────────────────────────────────
+@app.route("/flashcards/pdf")
+def flashcards_pdf():
+    """Cut-out flashcards for one lesson (A2): GET /flashcards/pdf?grade=2&topic=addition."""
+    grade, topic = request.args.get("grade", ""), request.args.get("topic", "")
+    meta = next((m for m in get_all_lessons() if m["grade"] == str(grade) and m["topic"] == topic), None)
+    if meta is None:
+        return jsonify({"error": "No lesson matches that grade and topic"}), 404
+    from worksheet_v2 import build_flashcards
+    lesson = get_lesson(meta["grade"], meta["topic"])
+    cards = [{"hi": c["hi"], "emoji": c.get("emoji", ""), "n": c.get("n"), **_card_santali(c["hi"])}
+             for c in lesson.get("flashcards", [])]
+    buf = io.BytesIO()
+    build_flashcards({"title": meta["title"], "grade": meta["grade"], "topic": meta["topic"],
+                      "lakshya_ids": meta["lakshya_ids"], "cards": cards}, buf)
+    buf.seek(0)
+    return send_file(buf, mimetype="application/pdf", download_name=f"{config.APP_NAME}_{topic}_Flashcards.pdf")
+
+
+def _worksheet_v2(sess):
+    """A2: the lesson's student exercises and answer key (worksheet_v2.py)."""
+    from worksheet_v2 import build
+    lesson = sess.lesson
+    cards = [{"hi": c["hi"], "emoji": c.get("emoji", ""), "n": c.get("n"), **_card_santali(c["hi"])}
+             for c in lesson.get("flashcards", [])]
+    done = {t["hindi"]: t["santali"] for t in sess.translations}
+
+    def santali_of(hi):
+        return done.get(hi) or pl.translate(hi, "hi-to-sat", "lesson_script")["text"]
+    grade, topic = next(((m["grade"], m["topic"]) for m in get_all_lessons()
+                         if get_lesson(m["grade"], m["topic"]) == lesson), ("", ""))
+    buf = io.BytesIO()
+    build(lesson, grade, topic, cards, santali_of, buf)
+    buf.seek(0)
+    return send_file(buf, mimetype="application/pdf", download_name=f"{config.APP_NAME}_{topic}_Worksheet.pdf")
+
+
 @app.route("/worksheet", methods=["POST"])
 def worksheet():
     d = request.json or {}
     sess = _session(d.get("session_id", ""))
+    if sess and config.WORKSHEET_V2:
+        return _worksheet_v2(sess)
     lesson_steps = None
     lakshya_ids = None
     if sess:

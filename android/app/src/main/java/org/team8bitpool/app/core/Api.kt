@@ -27,7 +27,11 @@ class Api(
     private val store: Store,
     private val engines: Engines = Engines(),
     private val defaultConfig: JSONObject = JSONObject().put("app_name", "").put("app_name_local", JSONObject()),
+    private val settings: DeviceSettings = DeviceSettings(),
+    private val speechProvider: () -> Speech? = { null },
 ) {
+    /** On-device speech, when the flag is on and a model pack is installed (A1). */
+    private fun speech(): Speech? = if (settings.onDeviceVoice) speechProvider() else null
     private val sessions = HashMap<String, LessonSession>()
     private val directions = setOf("hi-to-sat", "sat-to-hi")
     private val signalMessages = mapOf(
@@ -49,6 +53,8 @@ class Api(
             "GET /health/models" -> Resp.json(healthModels(pack))
             "GET /lessons" -> Resp.json(pack?.lessonsApi ?: JSONObject().put("lessons", JSONArray()))
             "GET /flashcards" -> flashcards(pack, query)
+            "GET /flashcards/pdf" -> pack?.flashcardsPdf(query["grade"] ?: "", query["topic"] ?: "")
+                ?.let { Resp.file(it, "application/pdf") } ?: Resp.error(404, "No flashcard sheet for that lesson on the tablet")
             "POST /session/start" -> sessionStart(pack, json)
             "POST /session/next" -> withSession(json) { s ->
                 s.advance()
@@ -63,10 +69,10 @@ class Api(
                 s.goto(n)
                 Resp.json(JSONObject().put("step_index", s.stepIdx).put("total_steps", s.totalSteps).put("step", s.currentStep))
             }
-            "POST /session/response" -> sessionResponse(json, contentType)
+            "POST /session/response" -> sessionResponse(json, body, contentType)
             "POST /session/summary" -> withSession(json) { s -> Resp.json(s.summary()) }
             "POST /translate/text" -> translateText(pack, json)
-            "POST /translate/audio", "POST /translate/audio_stream" -> notOnDevice("Speech recognition")
+            "POST /translate/audio", "POST /translate/audio_stream" -> translateAudio(pack, body, contentType, path.endsWith("_stream"))
             "POST /speak" -> speak(pack, json)
             "POST /feedback" -> feedback(json)
             "POST /metrics/client" -> metricsClient(json)
@@ -75,18 +81,22 @@ class Api(
                 Resp.error(501, "Lessons are written on the hub and arrive in the content pack", "hub_only")
             else -> when {
                 method == "GET" && path.startsWith("/audio/pack/") -> packAudio(pack, path.removePrefix("/audio/pack/"))
+                method == "GET" && path.startsWith("/audio/device/") -> deviceAudio(path.removePrefix("/audio/device/"))
                 else -> Resp.error(404, "Not found")
             }
         }
     }
 
     private fun healthModels(pack: Pack?): JSONObject {
+        val sp = speech()
         fun lang(tts: String) = JSONObject()
-            .put("asr", JSONObject().put("engine", if (engines.asr) "on device" else "not on device yet (M3)"))
+            .put("asr", JSONObject().put("engine", if (sp != null) "on device: " + sp.describe().optString("asr")
+                else if (engines.asr) "on device" else "not on device yet (M3)"))
             .put("nmt", JSONObject().put("engine", if (engines.nmt) "on device"
-                else "not on device yet (M4); lesson lines come from the content pack"))
-            .put("tts", JSONObject().put("engine", if (engines.tts) "on device"
-                else "not on device yet (M2); $tts audio comes from the content pack"))
+                else "not on device yet (M4); lesson lines come from the content pack" +
+                    (if (sp != null) " (spoken lesson lines are matched to them)" else "")))
+            .put("tts", JSONObject().put("engine", if (sp != null) "on device: " + sp.describe().optString("tts")
+                else if (engines.tts) "on device" else "not on device yet (M2); $tts audio comes from the content pack"))
         return JSONObject()
             .put("languages", JSONObject().put("hi", lang("Hindi")).put("sat", lang("Santali")))
             .put("online_dependencies", JSONArray())
@@ -137,15 +147,112 @@ class Api(
         return synchronized(s) { f(s) }
     }
 
-    private fun sessionResponse(d: JSONObject, contentType: String?): Resp {
-        if (contentType?.startsWith("multipart/") == true) return notOnDevice("Speech recognition")
+    private fun sessionResponse(d0: JSONObject, body: ByteArray?, contentType: String?): Resp {
+        var d = d0
+        var transcript: String? = null
+        if (contentType?.startsWith("multipart/") == true) {
+            val sp = speech() ?: return notOnDevice("Speech recognition")
+            val parts = Multipart.parse(body ?: ByteArray(0), contentType)
+            val audio = parts["audio"] ?: return Resp.error(400, "No audio")
+            val pcm = Audio.decodeWav(audio.data) ?: return Resp.error(415, "The tablet reads WAV recordings only", "audio_format")
+            val lang = parts["lang"]?.text() ?: "sat"
+            if (lang !in setOf("sat", "hi")) return Resp.error(400, "lang must be sat or hi")
+            transcript = sp.transcribe(lang, Audio.to16k(pcm))
+            d = JSONObject().put("session_id", parts["session_id"]?.text() ?: "").put("step", parts["step"]?.text() ?: "")
+                .put("response", transcript)
+        }
         return withSession(d) { s ->
             val step = (d.opt("step") as? Number)?.toInt() ?: (d.opt("step") as? String)?.toIntOrNull()
                 ?: return@withSession Resp.error(400, "step is required: the index of the step being answered")
             if (step !in 0 until s.totalSteps) return@withSession Resp.error(400, "step must be between 0 and ${s.totalSteps - 1}")
             val signal = s.checkResponse(d.optString("response", ""), step)
-            Resp.json(JSONObject().put("signal", signal).put("message", signalMessages[signal]).put("step", step))
+            val out = JSONObject().put("signal", signal).put("message", signalMessages[signal]).put("step", step)
+            if (transcript != null) {
+                out.put("transcript", transcript)
+                // A1: the Hindi feedback for the child, spoken on the tablet
+                val hi = SPOKEN_FEEDBACK_HI.getValue(signal)
+                val f = runCatching { speech()?.speak(hi, "hi") }.getOrNull()
+                out.put("feedback_hi", hi).put("audio_url", f?.let { "/audio/device/${it.name}" } ?: JSONObject.NULL)
+            }
+            Resp.json(out)
         }
+    }
+
+    /**
+     * A1: a spoken lesson line, recognised on the tablet and matched to the pack's
+     * pre-translated lines (LessonMatch). Answers like the hub: JSON for
+     * /translate/audio, NDJSON events (asr, chunk, done) for /translate/audio_stream.
+     * Below the threshold: the transcript and code "not_a_lesson_line", no translation.
+     */
+    private fun translateAudio(pack: Pack?, body: ByteArray?, contentType: String?, stream: Boolean): Resp {
+        val sp = speech() ?: return notOnDevice("Speech recognition")
+        pack ?: return noPack()
+        if (contentType?.startsWith("multipart/") != true) return Resp.error(400, "No audio")
+        val parts = Multipart.parse(body ?: ByteArray(0), contentType)
+        val audio = parts["audio"] ?: return Resp.error(400, "No audio")
+        val direction = parts["direction"]?.text() ?: "hi-to-sat"
+        if (direction !in directions) return Resp.error(400, "direction must be one of [hi-to-sat, sat-to-hi]")
+        val pcm = Audio.decodeWav(audio.data) ?: return Resp.error(415, "The tablet reads WAV recordings only", "audio_format")
+        val inLang = if (direction == "hi-to-sat") "hi" else "sat"
+        val outLang = if (direction == "hi-to-sat") "sat" else "hi"
+        val t0 = System.nanoTime()
+        val recognized = sp.transcribe(inLang, Audio.to16k(pcm))
+        val t1 = System.nanoTime()
+        val lines = pack.lines(direction)
+        val thr = settings.threshold[inLang] ?: 1.0
+        val m = LessonMatch.match(recognized, lines.keys, thr, inLang)
+        val entry = if (m.matched) lines.getValue(m.line!!) else null
+        val teacher = if (m.matched) store.correction(m.line!!, direction) else null
+        val out = teacher ?: entry?.getString("text")
+        val source = when { teacher != null -> "teacher"; entry != null -> entry.optString("source", "pack"); else -> "none" }
+        val t2 = System.nanoTime()
+        var engine = "none"
+        var audioUrl: String? = null
+        if (out != null) {
+            val pf = pack.audioFile(out, outLang)
+            if (pf != null) { audioUrl = "/audio/pack/${pf.name}"; engine = "pack" }
+            else runCatching { sp.speak(out, outLang) }.getOrNull()?.let { audioUrl = "/audio/device/${it.name}"; engine = "device" }
+        }
+        val t3 = System.nanoTime()
+        fun sec(ns: Long) = Math.round(ns / 1e6) / 1000.0
+        val lat = JSONObject().put("asr", sec(t1 - t0)).put("nmt", sec(t2 - t1)).put("tts", sec(t3 - t2)).put("total", sec(t3 - t0))
+        val rid = UUID.randomUUID().toString().replace("-", "")
+        store.logLatency(rid, JSONObject().put("direction", direction).put("input_type", "voice").put("source", source)
+            .put("server_ms", (t3 - t0) / 1e6).put("tts_engine", engine).put("match_score", m.score).put("matched", m.matched))
+        val match = JSONObject().put("line", m.line ?: JSONObject.NULL).put("score", Math.round(m.score * 1000) / 1000.0)
+            .put("threshold", thr).put("matched", m.matched)
+        val ttsError: Any = when {
+            out == null -> "Not a lesson line: use the laptop hub or type"
+            audioUrl == null -> "No audio for this line on the tablet"
+            else -> JSONObject.NULL
+        }
+        val chunk = JSONObject().put("type", "chunk").put("i", 0).put("source_text", recognized)
+            .put("translated_text", out ?: "").put("source", source).put("audio_url", audioUrl ?: JSONObject.NULL)
+            .put("tts_error", ttsError).put("tts_engine", engine).put("ms", (t3 - t0) / 1_000_000)
+            .put("needs_review", false).put("nearest_verified", JSONObject.NULL).put("match", match)
+            .put("review_status", entry?.optString("review_status") ?: JSONObject.NULL)
+        if (out == null) chunk.put("code", "not_a_lesson_line")
+        if (out != null) synchronized(sessions) { sessions[parts["session_id"]?.text() ?: ""] }?.let {
+            synchronized(it) { it.recordTranslation(if (direction == "hi-to-sat") recognized else out,
+                                                    if (direction == "hi-to-sat") out else recognized, (t3 - t0) / 1e9) }
+        }
+        if (!stream) {
+            val j = JSONObject(chunk.toString()); j.remove("type"); j.remove("i")
+            return Resp.json(j.put("request_id", rid).put("recognized_text", recognized).put("latency", lat)
+                .put("model_score", JSONObject.NULL).put("english_pivot", "").put("confidence", JSONObject.NULL))
+        }
+        val events = listOf(
+            JSONObject().put("type", "asr").put("recognized_text", recognized).put("chunks", 1),
+            chunk,
+            JSONObject().put("type", "done").put("request_id", rid).put("translated_text", out ?: "")
+                .put("source", source).put("latency", lat))
+        return Resp(200, "application/x-ndjson", events.joinToString("") { it.toString() + "\n" }.toByteArray())
+    }
+
+    private fun deviceAudio(name: String): Resp {
+        if (!name.matches(Regex("[0-9a-f]{40}\\.wav"))) return Resp.error(404, "Not found")
+        val f = speechProvider()?.audioDir?.let { File(it, name) }?.takeIf { it.isFile } ?: return Resp.error(404, "Not found")
+        return Resp.file(f, "audio/wav")
     }
 
     private fun translateText(pack: Pack?, d: JSONObject): Resp {
@@ -187,9 +294,13 @@ class Api(
         val text = d.optString("text", "").trim()
         val lang = d.optString("lang", "sat")
         if (text.isEmpty() || lang !in setOf("sat", "hi")) return Resp.error(400, "text and lang (sat or hi) are required")
-        val f = pack?.audioFile(text, lang) ?: return notOnDevice("Speech for new text")
-        return Resp.json(JSONObject().put("audio_url", "/audio/pack/${f.name}").put("tts_error", JSONObject.NULL)
-            .put("tts_engine", "pack"))
+        pack?.audioFile(text, lang)?.let { f ->
+            return Resp.json(JSONObject().put("audio_url", "/audio/pack/${f.name}").put("tts_error", JSONObject.NULL)
+                .put("tts_engine", "pack"))
+        }
+        val f = runCatching { speech()?.speak(text, lang) }.getOrNull() ?: return notOnDevice("Speech for new text")
+        return Resp.json(JSONObject().put("audio_url", "/audio/device/${f.name}").put("tts_error", JSONObject.NULL)
+            .put("tts_engine", "device"))
     }
 
     private fun packAudio(pack: Pack?, name: String): Resp {

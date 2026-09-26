@@ -14,8 +14,11 @@ import org.json.JSONObject
 import org.team8bitpool.app.bridge.MicBridge
 import org.team8bitpool.app.bridge.PackBridge
 import org.team8bitpool.app.core.Api
+import org.team8bitpool.app.core.DeviceSettings
 import org.team8bitpool.app.core.Pack
+import org.team8bitpool.app.core.Speech
 import org.team8bitpool.app.core.Store
+import org.team8bitpool.app.engine.SherpaSpeech
 import org.team8bitpool.app.server.LocalServer
 import java.io.File
 import java.io.InputStream
@@ -31,7 +34,19 @@ class MainActivity : Activity() {
     private lateinit var web: WebView
     private var server: LocalServer? = null
     @Volatile private var pack: Pack? = null
+    @Volatile private var speech: SherpaSpeech? = null
+    private lateinit var settings: DeviceSettings
+    private lateinit var api: Api
     private val packRoot get() = File(filesDir, "packs")
+    private val modelDir get() = File(filesDir, "models/current")
+
+    /** A1: sherpa-onnx from the installed model pack; null if there is none or it cannot load. */
+    private fun loadSpeech() {
+        speech?.release(); speech = null
+        if (!settings.onDeviceVoice || !File(modelDir, "models.json").isFile) return
+        speech = runCatching { SherpaSpeech(modelDir, settings, File(cacheDir, "device_audio")) }
+            .onFailure { Log.e(TAG, "on-device speech unavailable", it) }.getOrNull()
+    }
 
     @SuppressLint("SetJavaScriptEnabled", "JavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +54,10 @@ class MainActivity : Activity() {
         pack = runCatching { File(packRoot, "current").takeIf { it.isDirectory }?.let { Pack(it) } }
             .onFailure { Log.e(TAG, "pack unreadable", it) }.getOrNull()
         val defaults = JSONObject(assets.open("app_config.json").use { it.readBytes().decodeToString() })
-        val api = Api({ pack }, Store(File(filesDir, "store")), defaultConfig = defaults)
+        settings = DeviceSettings.from(JSONObject(assets.open("device_config.json").use { it.readBytes().decodeToString() }))
+        loadSpeech()
+        api = Api({ pack }, Store(File(filesDir, "store")), defaultConfig = defaults, settings = settings,
+                  speechProvider = { speech as Speech? })
         server = LocalServer(assets, api).also { it.start(5000, false) }
 
         web = WebView(this)
@@ -101,6 +119,7 @@ class MainActivity : Activity() {
     private fun debugImport(intent: Intent?) {
         if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0) return
         intent?.getIntExtra("mic_test_ms", 0)?.takeIf { it > 0 }?.let { micTest(it) }
+        intent?.getStringExtra("voice_bench")?.let { VoiceBench.run(this, api, it) }
         val name = intent?.getStringExtra("import_pack") ?: return
         val f = File(filesDir, name).canonicalFile
         if (f.parentFile != filesDir.canonicalFile || !f.isFile) return
@@ -167,7 +186,12 @@ class MainActivity : Activity() {
     }
 
     private fun install(s: InputStream) {
-        val p = Pack.import(s, packRoot)
+        if (Pack.importAny(s, filesDir) == "models") {
+            loadSpeech()
+            report(speech != null, if (speech != null) "Speech models installed" else "Speech models installed but not loaded")
+            return
+        }
+        val p = Pack(File(packRoot, "current"))
         pack = p
         report(true, "Content pack installed", p.manifest.optJSONObject("counts"))
     }
@@ -179,6 +203,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         server?.stop()
+        speech?.release()
         super.onDestroy()
     }
 

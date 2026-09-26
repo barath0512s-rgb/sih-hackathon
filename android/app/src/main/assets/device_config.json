@@ -1,0 +1,16 @@
+{
+ "on_device_voice": true,
+ "lesson_match_threshold": {
+  "hi": 0.9,
+  "sat": 0.95
+ },
+ "asr_threads": 2,
+ "asr_trim_silence": {
+  "hi": false,
+  "sat": true
+ },
+ "asr_decoding": {
+  "hi": "ctc",
+  "sat": "rnnt"
+ }
+}

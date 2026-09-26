@@ -1,5 +1,18 @@
 # STATUS, 26 Sep 2026: submission freeze, round 2 (master prompt v2)
 
+## UPLIFT before submission (26–28 Sep 2026): progress
+
+Freeze 28 Sep 18:00 IST. Anything not finished and tested by then stays behind its flag, switched off.
+
+| Item | State | Evidence |
+|---|---|---|
+| B1 Parler pre-render | **Done**: 209 Santali lines of the pack rendered with `ai4bharat/indic-parler-tts` (Apache-2.0) to `content_audio/parler/` (git-ignored). Santali is listed on the card but has no speaker entry and no evaluation, so quality is unknown until A6. Nothing ships from it before A6 | `tools/parler_prerender.py`, `docs/sources.md#indic-parler-tts` |
+| B2 GPU notebooks | **Written, not run** (needs the team's Kaggle/Colab GPU). Mundari: CPU dry-run of the training path passed. Voice: its ONNX exporter tested on `mms-tts-unr` on the laptop | `notebooks/*.ipynb` (from `tools/make_notebooks.py`), `tools/export/export_mms_vits_onnx.py` |
+| A1 on-device voice for lesson lines | **Built, flag on (`ON_DEVICE_VOICE`), measured on the 2 GB Android 9 emulator.** sherpa-onnx 1.13.8 AAR; the int8 models arrive as a verified **model pack** (361 MB, `tools/android/build_model_pack.py`), imported like the content pack. Hindi CTC / Santali transducer loaded one at a time, Piper hi voice (M2), Kotlin ports of `translit/olchiki.py` (125/125 vectors) and of the matcher. Laptop tuning (synthetic clips, held-out half): Hindi threshold 0.90, precision 0.979, recall 0.723; Santali 0.95, precision 1.000, recall 0.108. Emulator (debug build, airplane mode, 2 threads): Hindi transcripts identical to the laptop on 88 of 90; matching precision 0.980, recall 0.833; voice to voice for matched lesson lines p50 0.50 s, p90 0.82 s (to the reply audio file); spoken Santali answers graded as expected 8 of 16 (right answers often misheard in the synthetic voice); peak PSS app 655 MB + WebView 90 MB. Real voices: NOT MEASURED. Realme: pending the device session | `bench/results/lesson_match.md`, `bench/results/emulator-2gb-android9_2026-09-26_voice.md` |
+| A1 matcher change | A unit test found an everyday sentence matching an unrelated lesson line at 0.51 (the first threshold was 0.41). Near-miss negatives and a same-numbers rule were added and the threshold re-tuned; recorded in the results file | `tests/test_lesson_match.py`, `lesson_match.py` |
+| A2 worksheet v2 + flashcards | **Built, flag on (`WORKSHEET_V2`).** Student exercises (count and write, match picture to word, fill in the blank, circle the answer, trace the numeral) with OpenMoji pictures, Ol Chiki / Devanagari / Western numerals, Lakshya IDs, date, answer key; cut-out flashcards with mirrored backs and a review-pending mark. Pre-rendered into the content pack for every lesson; **the tablet serves the pack's PDFs (it does not render PDFs itself)** | `worksheet_v2.py`, `docs/samples/`, `tests/test_worksheet_v2.py` |
+| Differences from the uplift prompt | MMS Ho/Mundari voices read **Odia script** (`translit/odia.py`); there is **no `mms-tts-sat`** (C4 starts from `mms-tts-unr`); MMLoSo's official test set has **no public references** (held-out 5 % of the training file instead) | `docs/sources.md` |
+
 ## RENAME. VaaniSetu → Nijbhasha (26 Sep 2026)
 
 Formerly VaaniSetu, renamed to avoid confusion with another team's project.

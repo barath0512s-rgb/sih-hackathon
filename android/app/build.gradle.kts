@@ -29,6 +29,8 @@ android {
         versionName = "0.1-m1"
         testInstrumentationRunner = "android.test.InstrumentationTestRunner"
         resValue("string", "app_name", appName)
+        // The Realme Pad Mini (arm64) and the x86_64 emulator; keeps the APK smaller.
+        ndk { abiFilters += setOf("arm64-v8a", "x86_64") }
     }
 
     sourceSets["main"].assets.directories.add(webAssets.get().asFile.path)
@@ -57,6 +59,9 @@ tasks.named("preBuild") { dependsOn(copyWebAssets) }
 
 dependencies {
     implementation("org.nanohttpd:nanohttpd:2.3.1")          // BSD-3-Clause
+    // sherpa-onnx 1.13.8 (Apache-2.0), the official release AAR; not in git (50 MB):
+    // python tools/android/fetch_sherpa_aar.py downloads it and checks its SHA-256.
+    implementation(files("libs/sherpa-onnx-1.13.8.aar"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")           // android.jar's org.json is a stub in unit tests
 }

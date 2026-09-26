@@ -89,6 +89,24 @@ ASR_THREADS = 8
 # and these lines are already fast enough.
 STREAM_MIN_WORDS = 18
 
+# ── Tablet: on-device voice for lesson lines (A1) ────────────────────────────
+# The tablet recognises speech on the device (sherpa-onnx, the 120M int8 models:
+# Hindi CTC, Santali transducer) and matches the transcript to the content pack's
+# pre-translated lines (lesson_match.py). Below the threshold it shows the
+# transcript and "not a lesson line" and never invents a translation.
+# Thresholds: bench/lesson_match_tune.py -> bench/results/lesson_match.md
+# (lowest threshold with precision >= 0.98 on the tune half of synthetic clips and
+# near-miss sentences; a match also needs the same numbers as the line).
+ON_DEVICE_VOICE = True             # A1 flag; written to the app by tools/android/sync_config.py
+LESSON_MATCH_THRESHOLD = {"hi": 0.9, "sat": 0.95}
+ON_DEVICE_ASR_THREADS = 2
+
+# ── Worksheets (A2) ───────────────────────────────────────────────────────────
+# v2: student exercises with pictures (count and write, match, fill in the blank,
+# circle the answer, trace the numeral) and a teacher answer key; cut-out
+# flashcard PDFs (worksheet_v2.py). Off: the lesson-lines worksheet (worksheet.py).
+WORKSHEET_V2 = True
+
 # ── Speech ────────────────────────────────────────────────────────────────────
 # No offline voice reads Ol Chiki, so Santali is transliterated first
 # (translit/olchiki.py) and read by an existing Piper voice:
