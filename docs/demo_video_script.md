@@ -1,69 +1,57 @@
-# Demo video script v1.2 (about 4 minutes)
+# Demo video script v2 (about 5 minutes)
 
-v1.2 (25-26 Sep 2026): the Android segment is a **recorded clip**, not a live
-shot: the Realme Pad Mini clip if its check passes (`docs/device_session.md`),
-otherwise the 2 GB emulator clip. Either way it carries the clip's own caption
-and one line with the 2 GB emulator result. v1.1 added that segment; the rest
-is the laptop hub flow, unchanged.
+v2 (27 Sep 2026): only what shipped by the uplift, in the order the team fixed.
+Photo import (C2) is **not shown**: it is not built (blocked). v1.2 is in
+`_archive/demo_video_script_v1.2.md`.
 
-Every shot shows something that works today. Everything up to 3:35 runs in
-**laptop hub mode**: speech recognition, translation and speech all run on
-the laptop, offline. Put the caption **"Laptop hub mode: everything runs on
-this laptop, offline"** on screen at the start, and again on any shot of a
-tablet or phone.
+Every segment carries its **device label** on screen, exactly as written here.
+Two set-ups appear, never mixed in one shot:
 
-**Do not say or show:**
-- the app running *on* a tablet, except in the 3:35 segment, and there only what its caption says;
-- speaking into the tablet app, a worksheet on the tablet, or a new sentence typed on the tablet
-  (M1 has no speech recognition, translation model or voice on the device);
-- any accuracy number;
-- any speed number other than the one the timer shows during the take;
-- "0.15 s", "<4 s", or "all MIT-licensed".
+- **Laptop hub**: caption **"Laptop hub: everything runs on this laptop, offline"**.
+- **Tablet app**: the caption names the device. Tablet shots are **recorded clips**:
+  the Realme Pad Mini if its session passed (`docs/device_session.md`), otherwise
+  the 2 GB Android 9 emulator. Speech into the app can only be filmed on the
+  Realme (the emulator's microphone records silence); without the Realme session,
+  segment 2 uses the emulator clip with typed input and the measured numbers as a
+  caption, and says so.
+
+**Do not say or show:** a speed other than the ones in the captions or on the
+page's timer; "on a 2 GB tablet" for anything measured on the emulator or the
+Realme (say "2 GB emulator" / "Realme Pad Mini, 4 GB"); free-form *spoken*
+translation on the tablet (it is off); anything about photo import; any claim
+that Santali output or voices are reviewed by a native speaker.
 
 ## Before recording
 
-1. Laptop on mains power. Close other programs.
-2. Start `run_nijbhasha.bat` and wait for `Running on http://127.0.0.1:5000`.
-3. In a second window, run `python tools/demo_reset.py --forget-demo-correction`.
-   It must end with `Ready.` It backs up the database, clears old sessions,
-   checks that all lessons loaded, and warms the models.
-4. **Turn Wi-Fi off** (or unplug the network). The rest of the demo is offline.
-5. Open `http://127.0.0.1:5000` in Chrome and reload once. Zoom 125%, or
-   switch on large type in सेटिंग.
-6. Test the microphone once: speak any Hindi line, then refresh the page.
-7. For the 3:35 Android segment, pick the clip (both are in `docs/demo_assets/`):
-   `android_realme.mp4` if the Realme Pad Mini check passed
-   (`bench/results/realme-pad-mini-4gb-android11_<date>_m1.md`: 24/24 in airplane mode and
-   the page check all "yes"); otherwise `android_emulator.mp4`.
-8. Have the correction for the 1:55 shot ready on paper. **A Santali speaker on the
-   team must write it. Do not invent one.**
+1. Laptop on mains power, other programs closed. `run_nijbhasha.bat`; then
+   `python tools/demo_reset.py --forget-demo-correction` (must end with `Ready.`).
+2. Wi-Fi off. Chrome at `http://127.0.0.1:5000`, zoom 125 %.
+3. Tablet clips: install the release APK, import the newest **model pack** and
+   **content pack** (both signed), switch airplane mode on.
+4. A Santali speaker on the team writes the correction for segment 9 and, if
+   possible, speaks the child's answer in segment 2. **Do not invent Santali.**
 
-## Shots
+## Segments
 
-| Time | Shot | What to do and say |
-|---|---|---|
-| 0:00–0:15 | Title card | Product name, SIH26042. One line: *"In the surveyed Jharkhand districts, Hindi is the medium of instruction in about 98% of schools (JEPC Language Mapping Survey)."* |
-| 0:15–0:35 | Offline proof | Show Wi-Fi off. Open `http://127.0.0.1:5000/health/models` and point at `"online_dependencies": []`. Caption: **Laptop hub mode, offline**. |
-| 0:35–1:10 | Teacher speaks Hindi | Classroom (कक्षा), lesson **जोड़ना** (Grade 2). Press **🎤 हिंदी बोलिए** and say *"दो आम और तीन आम मिलाओ। कुल कितने हुए? उंगलियों पर गिनो।"* Santali appears in Ol Chiki and is spoken. Point at the source badge (सत्यापित शब्दकोश) and at the timer card, which shows the real wait from the end of speech to the start of the voice. |
-| 1:10–1:35 | Child answers | Go to the question *"तीन और चार कितने होते हैं?"* In the answer box (बच्चे ने क्या कहा), a Santali speaker says the answer into 🎤. Without one, type **᱗**. It turns green (बिलकुल सही). Point at the ⏳ badge: the accepted answers await native review. |
-| 1:35–1:55 | Santali to Hindi | Press the swap button (🔄) and type *"ᱯᱮ ᱟᱨ ᱯᱩᱱ ᱡᱚᱛᱚ ᱦᱩᱭᱩᱜᱼᱟ?"*, then अनुवाद. A Santali speaker can use **🎙️ ᱥᱟᱱᱛᱟᱲᱤ** instead. The Hindi appears and is spoken. |
-| 1:55–2:25 | A correction is reused | Press 🔄 again to go back to Hindi → Santali. Type *"गांव के बच्चे खेत में खेल रहे हैं।"* The badge says 🤖 मशीन अनुवाद. Under अनुवाद ठीक था, press **✏️ सुधारें**, enter the correction from the Santali speaker, and save it. Translate the same line again: the badge now says 🧑‍🏫 शिक्षक द्वारा सुधारा and the corrected Santali is used. |
-| 2:25–2:45 | Worksheet | Press कार्यपत्रक. Show the PDF: Hindi and Santali headings, the lesson's lines, and the NIPUN Lakshya tag with the Ministry's wording. |
-| 2:45–3:00 | Flashcards | चित्र पत्ते → deck **जोड़ना**. Flip two cards and press 🔊 on one. Point at the badges: word list, review pending. |
-| 3:00–3:35 | Teacher adds a lesson | पाठ → ➕ नया पाठ जोड़िए. Choose कक्षा 1. Paste three prepared lines, e.g. *"आज हम पाँच तक गिनेंगे। चार आम गिनो। यहाँ कितने आम हैं?"* Press ✂️ पंक्तियाँ बनाइए. Tap one label to show it changes. Show the suggested NIPUN goal, tick the confirm box, and press 📘 पाठ बनाइए. Open it in the classroom (कक्षा में खोलिए). |
-| 3:35–3:55 | **Android app (work in progress)**, recorded clip | Play the chosen clip (about 30 s, cut to 20 s if needed): airplane mode shown, the lesson list, a lesson line chosen, **अनुवाद**, the Santali for that line from the content pack. Nothing else. Caption, exactly as the clip: Realme clip: **"Realme Pad Mini, 4 GB RAM, Android 11, airplane mode: app shell + typed translation. On-device speech and AI: in progress."** Emulator clip: **"Android 9 emulator, 2 GB RAM, airplane mode: app shell + typed translation. On-device speech and AI: in progress."** Plus one line under it, either way: **"On a 2 GB RAM, Android 9 emulator: peak memory 185 MB; 24 of 24 app checks pass in airplane mode."** |
-| 3:55–4:05 | Close | *"Built so far: offline on the laptop hub, 17 NIPUN-tagged lessons that teachers can extend, and the first milestone of the Android app. Next: speech, translation and voice on a 2 GB RAM, Android 9+ tablet."* |
-
-The step 3:00 lesson is added to the database. After the recording, you can
-remove it by restoring the backup `demo_reset.py` made (in `data/backups/`),
-or keep it.
+| # | Time | Set-up | Shot | Caption (exact) |
+|---|---|---|---|---|
+| 1 | 0:00–0:20 | Tablet clip | Airplane mode on; open the app; lessons appear from the content pack | Realme: **"Realme Pad Mini, 4 GB RAM, Android 11, airplane mode"** / emulator: **"Android 9 emulator, 2 GB RAM, airplane mode"** |
+| 2 | 0:20–1:05 | Tablet clip | **Lesson line by voice, on the tablet (A1):** the teacher says a lesson line (e.g. *"दो आम और तीन आम मिलाओ।"*); the Santali appears and plays. Then a child's Santali answer to a question; it turns green and the Hindi praise plays | Same device caption, plus: **"On-device speech for lesson lines. On a 2 GB RAM, Android 9 emulator: voice to voice p50 0.50 s, p90 0.82 s (to the reply audio); lines not in the lesson are refused, never guessed."** |
+| 3 | 1:05–1:35 | Tablet clip, then hub | **New sentences (A5):** on the tablet, type a new Hindi sentence → Santali, translated on the tablet. Then on the hub, *speak* a free sentence → Santali voice | Tablet: **"Typed new sentences translated on the tablet (same output as the laptop on 1502 of 1503 test sentences)."** Hub: **"Laptop hub: everything runs on this laptop, offline"** |
+| 4 | 1:35–1:55 | Hub | **Check with a native speaker (A3):** type a line the model gets wrong (pick one flagged in the pack); the ⚠️ मूल वक्ता से जाँचें badge shows, no auto-play, the nearest verified sentence is offered | **"A warning, not a quality score."** |
+| 5 | 1:55–2:30 | Hub | **Worksheet v2 and flashcards (A2):** कार्यपत्रक → the PDF: pictures, count and write, circle the answer, trace the numerals, the answer key page; चित्र पत्ते → 🖨️ → the cut-out cards with the review-pending mark | **"Pictures: OpenMoji (CC BY-SA 4.0). Santali lines await native review."** |
+| 6 | 2:30–3:05 | Hub | **Reading fluency (C1):** प्रगति → पढ़ने की गति जाँचें; tick the consent box; a team member reads *बगीचे की सैर*; words correct per minute and the NIPUN goal; tap one word to override | **"Checked on adult read speech; children not measured yet. The recording is not saved."** |
+| 7 | 3:05–3:25 | Hub | **Class progress by NIPUN Lakshya (A8):** the table by Lakshya and week; CSV and PDF | **"Class level only: no child names, no voices."** |
+| 8 | 3:25–3:55 | Tablet clip + hub | **Corrections between tablets (A4):** a correction on the tablet → निर्यात → the signed file merged on the hub → the next pack on another tablet shows it | Device caption; **"Packs and tablet files are signed (Ed25519); a changed pack is refused."** |
+| 9 | 3:55–4:20 | Hub | **Mundari and Ho voices (A7):** सेटिंग → मुंडारी / हो आवाज़; a teacher's Devanagari line spoken | **"Preview: pronunciation not reviewed. No Mundari or Ho translation yet."** |
+| 10 | 4:20–4:40 | Card | **Santali voice comparison (A6):** the table from `bench/results/voice_compare.md` | **"Kept the current voice by the rule fixed in advance; native listener ratings not collected yet."** |
+| 11 | 4:40–4:55 | Card | Close: *"Offline on the laptop hub, and on the tablet for lesson lines, typed translation, worksheets and sync. Next: the 4 GB tablet, children's voices and native review."* | — |
 
 ## If something goes wrong
 
 | Problem | Fix |
 |---|---|
-| No sound | Click once on the page (the browser blocks autoplay), then press 🔊. |
-| The mic does nothing | Chrome allows the microphone only on `http://127.0.0.1` or `https://`. Use the laptop's own browser for the take. |
-| A slow first translation | Run `tools/demo_reset.py` again with the server already running. |
-| Green does not appear for a spoken Santali answer | Type ᱗ instead. Santali speech recognition was measured only on adult public data (IndicVoices validation split), not on children. |
-| The tablet app shows no lessons | Settings → सामग्री पैक: import the pack again (from a file or the hub). If it still fails, skip the 3:35 segment. |
+| No sound | Click once on the page, then 🔊. |
+| A spoken line on the tablet says "not a lesson line" | That is the designed answer for lines not in the lesson; speak the lesson line exactly, or type it. |
+| The tablet refuses a pack | It is unsigned or changed: rebuild it on the hub (`tools/build_content_pack.py`) and import again. |
+| The reading check gives a low score for an adult | Recognition errors count as misreadings (5.9 % of words on adult speech); tap the word to correct it. |

@@ -158,10 +158,34 @@ Voice to voice, synthetic clips, BEFORE the latency work (baseline) (run 'synthe
 
 Voice to voice, real teacher/child recordings: NOT MEASURED (bench/clips/real/ has no run yet)
 
-On a 2 GB RAM, Android 9+ tablet
-  voice to voice                               NOT MEASURED                 [no tablet; work package 4]
-  peak RAM                                     NOT MEASURED                 [no tablet; work package 4]
-  tablet model and Android version             NOT MEASURED                 [no tablet yet]
+On a real 2 GB RAM, Android 9+ tablet
+  voice to voice                               NOT MEASURED                 [the 2 GB figures below are from an Android 9 emulator]
+  tablet model and Android version             NOT MEASURED                 [no 2 GB tablet; the Realme Pad Mini is 4 GB, Android 11]
+
+Languages and maturity (languages.json)
+  Hindi: ASR / translation / speech            production / production / production [languages.json]
+  Santali: ASR / translation / speech          production / production / production [languages.json]
+  Mundari: ASR / translation / speech          not available / not available / preview [languages.json]
+  Ho: ASR / translation / speech               not available / not available / preview [languages.json]
+
+Lesson-line matching (A1; synthetic clips, held-out half, laptop)
+  Hindi: threshold, precision, recall          0.90, 0.979, 0.723           [bench/results/lesson_match.md]
+  Santali: threshold, precision, recall        0.95, 1.000, 0.108           [bench/results/lesson_match.md]
+
+On the device: emulator, 2 GB, Android 9, 2 threads (A1)
+  Hindi transcripts identical to the laptop    88 of 90                     [bench/results/emulator-2gb-android9_2026-09-26_voice.md]
+  matching precision / recall                  0.980 / 0.833                [bench/results/emulator-2gb-android9_2026-09-26_voice.md]
+  voice to voice, lesson lines, p50 / p90      0.50 / 0.82 s (n=50)         [bench/results/emulator-2gb-android9_2026-09-26_voice.md]
+  peak PSS, app + WebView                      655 + 90 MB                  [bench/results/emulator-2gb-android9_2026-09-26_voice.md]
+  spoken answers graded as expected            8 of 16                      [bench/results/emulator-2gb-android9_2026-09-26_voice.md]
+
+Round-trip flag (A3; IN22-Conv test half)
+  threshold, precision, recall                 34.5, 0.446, 0.558           [eval/results/roundtrip_flag.md]
+
+Santali voice comparison (A6; ASR round-trip CER, 600M)
+  Piper (transliterated)                       CER 0.445                    [bench/results/voice_compare.md]
+  Indic Parler-TTS                             CER 0.776                    [bench/results/voice_compare.md]
+  decision                                     keep Piper audio             [bench/results/voice_compare.md]
 
 Laptop resources
   peak RAM of the server                       NOT MEASURED                 [no script measures it yet]
@@ -173,11 +197,11 @@ Model files on disk
   files pinned in model_manifest.json          423 files, 3.98 GB           [model_manifest.json]
 
 Content
-  lessons (built-in + imported)                17 (5 + 12)                  [lesson_engine.py + vaanisetu_feedback.db (imported)]
-  lessons by grade and domain                  Balvatika lit 2, Balvatika num 2, G1 lit 1, G1 num 3, G2 lit 2, G2 num 2, G3 lit 2, G3 num 3 [lesson_engine.py + vaanisetu_feedback.db (imported)]
-  lessons with a NIPUN Lakshya tag             17                           [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  lessons (built-in + imported)                18 (5 + 13)                  [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  lessons by grade and domain                  Balvatika lit 2, Balvatika num 2, G1 lit 1, G1 num 3, G2 lit 3, G2 num 2, G3 lit 2, G3 num 3 [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  lessons with a NIPUN Lakshya tag             18                           [lesson_engine.py + vaanisetu_feedback.db (imported)]
   lessons reviewed by a native speaker         0                            [lesson_engine.py + vaanisetu_feedback.db (imported) review_status]
-  flashcard words in lessons                   89                           [lesson_engine.py + vaanisetu_feedback.db (imported)]
+  flashcard words in lessons                   96                           [lesson_engine.py + vaanisetu_feedback.db (imported)]
   sentence glossary entries                    18                           [education_glossary.py]
   transliteration test vectors                 125                          [tests/data/olchiki_vectors.json]
 
