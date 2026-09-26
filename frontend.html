@@ -390,6 +390,9 @@ p{margin:0}
 .lak{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 10px}
 .lak th,.lak td{padding:6px 8px;border-bottom:1px solid rgba(0,0,0,.08);text-align:left}
 .lak th{font-weight:800;opacity:.8}
+.orf-passage{font-size:20px;line-height:1.9;margin:8px 0}
+.orf-w{padding:2px 3px;border-radius:6px;cursor:pointer}
+.orf-w.error{background:#ffd6d1}.orf-w.omitted{background:#ffe9a8;text-decoration:line-through}.orf-w.not_reached{opacity:.45}
 .fc-back .src-badge{margin:4px 0 0;font-size:11px}
 .src-badge[data-src="wordlist"]{background:var(--c1-soft,#fff1c7)}
 .src-badge[data-src="pending"]{background:var(--warn-soft,#fff1c7);margin-left:6px}
@@ -1152,6 +1155,16 @@ input:focus,textarea:focus,select:focus{
     <div class="slab fig"><span class="e">✅</span><b id="fRight">०%</b><span data-t="pr_right">सही उत्तर</span></div>
     <div class="slab fig"><span class="e">🪜</span><b id="fSteps">०</b><span data-t="pr_steps">पूरी पंक्तियाँ</span></div>
   </div>
+  <div class="slab item" id="orfSlab">
+    <button class="open-btn" aria-expanded="false"><span class="e">📖</span><b data-t="orf_title">पढ़ने की गति जाँचें</b><span class="sign">+</span></button>
+    <div class="body">
+      <div class="srow"><select id="orfPick" aria-label="passage"></select></div>
+      <p class="orf-passage" id="orfText"></p>
+      <label class="srow"><input type="checkbox" id="orfConsent"> <span data-t="orf_consent">मैंने बच्चे और अभिभावक को बता दिया है: आवाज़ सिर्फ़ गिनती के लिए सुनी जाएगी और सहेजी नहीं जाएगी; नाम नहीं लिखा जाएगा।</span></label>
+      <div class="srow"><button class="btn go" id="orfRec" disabled><span class="e">🎤</span> <span data-t="orf_rec">बच्चा पढ़े (रोकने के लिए फिर दबाएँ)</span></button></div>
+      <div id="orfOut"></div>
+    </div>
+  </div>
   <div class="slab item" id="lakshyaSlab">
     <button class="open-btn" aria-expanded="false"><span class="e">🎯</span><b data-t="pr_lakshya">NIPUN लक्ष्य: कक्षा की प्रगति</b><span class="sign">+</span></button>
     <div class="body">
@@ -1377,6 +1390,9 @@ hi: {
   se_sync:"टैबलेट से सुधार", se_sync_in:"टैबलेट की फ़ाइल जोड़ें", se_sync_in_s:"जाँचकर मिलाया जाता है; टकराव मूल वक्ता के पास जाते हैं",
   pr_lakshya:"NIPUN लक्ष्य: कक्षा की प्रगति", pr_lakshya_s:"हर लक्ष्य और सप्ताह के लिए पढ़ाए गए पाठ और उत्तर (कोई नाम या आवाज़ नहीं)",
   pr_week:"सप्ताह", pr_taught:"पाठ",
+  orf_title:"पढ़ने की गति जाँचें", orf_consent:"मैंने बच्चे और अभिभावक को बता दिया है: आवाज़ सिर्फ़ गिनती के लिए सुनी जाएगी और सहेजी नहीं जाएगी; नाम नहीं लिखा जाएगा।",
+  orf_rec:"बच्चा पढ़े (रोकने के लिए फिर दबाएँ)", orf_wcpm:"सही शब्द प्रति मिनट", orf_right:"सही", orf_done:"पढ़ना जाँचा गया",
+  orf_tap:"किसी शब्द को दबाकर सही / गलत बदलें (शिक्षक का फ़ैसला)",
   pv_title:"मुंडारी / हो आवाज़ (Preview)", pv_sub:"शिक्षक की लिखी पंक्ति (देवनागरी में)। उच्चारण की समीक्षा नहीं हुई: केवल Preview",
   pv_go:"सुनें", pv_note:"Preview: उच्चारण की समीक्षा बाकी",
   se_sync_add:"मिलाएँ", se_sync_done:"फ़ाइल बनी: {n} सुधार", se_sync_merged:"मिलाए: {a} · टकराव: {c}", se_sync_bad:"फ़ाइल नहीं मिलाई",
@@ -1525,6 +1541,9 @@ en: {
   se_sync:"Corrections from tablets", se_sync_in:"Add a tablet's file", se_sync_in_s:"Checked, then merged; conflicts go to a native speaker",
   pr_lakshya:"NIPUN Lakshya: class progress", pr_lakshya_s:"Lessons taught and answers per Lakshya and week (no names, no voices)",
   pr_week:"Week", pr_taught:"Lessons",
+  orf_title:"Reading fluency check", orf_consent:"I have told the child and a parent: the voice is heard only to count words and is not saved; no name is recorded.",
+  orf_rec:"Child reads (press again to stop)", orf_wcpm:"words correct per minute", orf_right:"correct", orf_done:"Reading checked",
+  orf_tap:"Tap a word to switch correct / wrong (the teacher decides)",
   pv_title:"Mundari / Ho voice (Preview)", pv_sub:"A line written by a teacher (Devanagari). Pronunciation not reviewed: Preview only",
   pv_go:"Listen", pv_note:"Preview: pronunciation not reviewed",
   se_sync_add:"Merge", se_sync_done:"File made: {n} corrections", se_sync_merged:"Merged: {a} · conflicts: {c}", se_sync_bad:"File not merged",
@@ -2849,6 +2868,60 @@ $("#pvGo").onclick = async () => {
     else say(r.error || t("m_err"), "⚠️");
   } catch(e){ fail(e); }
 };
+// C1: oral reading fluency. The child's recording is scored on the hub and deleted.
+const ORF = {passages: {}, last: null};
+async function orfLoad(){
+  try {
+    const d = await getJSON("/orf/passages");
+    const sel = $("#orfPick"); sel.innerHTML = "";
+    (d.passages || []).forEach(p => { ORF.passages[p.id] = p;
+      const o = document.createElement("option"); o.value = p.id; o.textContent = t("grade") + " " + num(p.grade) + " · " + p.title; sel.appendChild(o); });
+    $("#orfSlab").hidden = !(d.passages || []).length;
+    orfShow();
+  } catch(e){ $("#orfSlab").hidden = true; }
+}
+function orfShow(){ const p = ORF.passages[$("#orfPick").value]; $("#orfText").textContent = p ? p.text : ""; $("#orfOut").innerHTML = ""; }
+$("#orfPick").onchange = orfShow;
+$("#orfConsent").onchange = e => { $("#orfRec").disabled = !e.target.checked; };
+function orfRender(){
+  const r = ORF.last; if (!r) return;
+  const correct = r.words.filter(w => w.status === "correct").length;
+  const attempted = r.words.filter(w => w.status !== "not_reached").length;
+  const wcpm = r.seconds ? Math.round(correct / (r.seconds / 60) * 10) / 10 : null;
+  const band = r.nipun ? (r.grade === "2" ? wcpm >= 45 : wcpm >= 60) : null;
+  $("#orfText").innerHTML = r.words.map((w, i) => `<span class="orf-w ${w.status}" data-i="${i}" title="${w.heard || ""}">${w.word}</span>`).join(" ");
+  $("#orfOut").innerHTML = `<p><b>${num(wcpm)}</b> ${t("orf_wcpm")} · ${num(correct)}/${num(attempted)} ${t("orf_right")} · ${num(r.seconds)} ${t("t1_sec")}</p>` +
+    (r.nipun ? `<p>${r.nipun.lakshya}: “${r.nipun.goal}” — ${band ? "✅" : "⏳"}</p>` : "") +
+    `<p class="deck-tag">${t("orf_tap")}</p>`;
+  $$(".orf-w", $("#orfText")).forEach(el => el.onclick = () => {       // the teacher overrides a word
+    const w = ORF.last.words[+el.dataset.i];
+    w.status = w.status === "correct" ? "error" : "correct";
+    orfRender();
+  });
+}
+let orfRec = null;
+$("#orfRec").onclick = async () => {
+  if (orfRec){ orfRec.stop(); return; }
+  if (!micReady()){ say(t("m_mic_none"), "🚫"); return; }
+  let stream; try { stream = await micStream(); } catch(e){ say(t("m_mic_no"), "🚫"); return; }
+  const type = pickMime(), chunks = [];
+  orfRec = newRecorder(stream, type);
+  $("#orfRec").classList.add("live");
+  orfRec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  orfRec.onstop = async () => {
+    endStream(stream); $("#orfRec").classList.remove("live"); orfRec = null;
+    const fd = new FormData();
+    fd.append("audio", new Blob(chunks, {type: type || "audio/webm"}), "reading.webm");
+    fd.append("passage_id", $("#orfPick").value); fd.append("consent", "1");
+    say(t("m_listening"), "👂");
+    try { const r = await api("/orf/score", {method:"POST", body:fd}).then(x => x.json());
+          if (r.error){ say(r.error, "⚠️"); return; }
+          ORF.last = r; orfRender(); say(t("orf_done"), "📖"); }
+    catch(e){ fail(e); }
+  };
+  orfRec.start();
+};
+orfLoad();
 // A8: class-level progress per NIPUN Lakshya and week
 async function lakshyaView(){
   const box = $("#lakshyaTable");

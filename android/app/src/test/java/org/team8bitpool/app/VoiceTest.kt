@@ -16,6 +16,7 @@ import org.team8bitpool.app.core.Pack
 import org.team8bitpool.app.core.SPOKEN_FEEDBACK_HI
 import org.team8bitpool.app.core.Speech
 import org.team8bitpool.app.core.Store
+import org.team8bitpool.app.core.Translation
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.security.MessageDigest
@@ -35,12 +36,15 @@ class VoiceTest {
             return File(audioDir, "$name.wav").also { it.writeBytes(Audio.wav(FloatArray(1600), 16000)) }
         }
         override fun describe() = JSONObject().put("asr", "fake").put("tts", "fake")
+        var nmtOn = false
+        override fun translate(text: String, direction: String) = if (nmtOn) Translation("ᱢᱳᱰᱮᱞ $text", false, 5) else null
     }
 
-    private fun setup(on: Boolean = true): Pair<Api, FakeSpeech> {
+    private fun setup(on: Boolean = true, freeForm: Boolean = false): Pair<Api, FakeSpeech> {
         val pack = Pack(packDir)
-        val sp = FakeSpeech(tmp.newFolder("audio"))
-        return Api({ pack }, Store(tmp.newFolder("store")), settings = DeviceSettings(onDeviceVoice = on), speechProvider = { sp }) to sp
+        val sp = FakeSpeech(tmp.newFolder())
+        return Api({ pack }, Store(tmp.newFolder()), settings = DeviceSettings(onDeviceVoice = on, onDeviceNmt = true,
+            freeFormVoice = freeForm), speechProvider = { sp }) to sp
     }
 
     private fun multipart(fields: Map<String, String>, wav: ByteArray): Pair<ByteArray, String> {
@@ -113,6 +117,32 @@ class VoiceTest {
         val r = api.handle("POST", "/translate/audio_stream", emptyMap(), body, ct)
         assertEquals(503, r.status)
         assertEquals("engine_not_on_device", JSONObject(String(r.body)).getString("code"))
+    }
+
+    @Test
+    fun aNewTypedSentenceIsTranslatedOnTheTablet() {                  // A5
+        val (api, sp) = setup()
+        sp.nmtOn = true
+        val r = JSONObject(String(api.handle("POST", "/translate/text", emptyMap(),
+            JSONObject().put("text", "आज मौसम बहुत अच्छा है").put("direction", "hi-to-sat").toString().toByteArray(), "application/json").body))
+        assertEquals("ᱢᱳᱰᱮᱞ आज मौसम बहुत अच्छा है", r.getString("translated_text"))
+        assertEquals("model", r.getString("source")); assertEquals("device", r.getString("tts_engine"))
+        sp.nmtOn = false                                                  // not installed: refused, as before
+        val r2 = api.handle("POST", "/translate/text", emptyMap(),
+            JSONObject().put("text", "कल स्कूल बंद रहेगा").put("direction", "hi-to-sat").toString().toByteArray(), "application/json")
+        assertEquals(503, r2.status)
+    }
+
+    @Test
+    fun freeFormSpeechIsTranslatedOnlyWhereItFits() {                 // A5: RAM-gated
+        val (small, sp1) = setup(freeForm = false)
+        sp1.nmtOn = true; sp1.next = "आज मौसम बहुत अच्छा है"
+        assertEquals("not_a_lesson_line", stream(small, "hi-to-sat")[1].getString("code"))
+        val (big, sp2) = setup(freeForm = true)
+        sp2.nmtOn = true; sp2.next = "आज मौसम बहुत अच्छा है"
+        val chunk = stream(big, "hi-to-sat")[1]
+        assertEquals("model", chunk.getString("source"))
+        assertEquals("ᱢᱳᱰᱮᱞ आज मौसम बहुत अच्छा है", chunk.getString("translated_text"))
     }
 
     @Test

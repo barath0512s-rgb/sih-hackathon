@@ -85,3 +85,6 @@ content_audio/
 android/app/libs/*.aar
 # A6/A7 listening samples (20 short clips of our own synthesis, 2.3 MB)
 !docs/samples/voices/*.wav
+
+# A5: patched ONNX Runtime Java bridge + sherpa runtime (tools/android/patch_ort_jni.py)
+android/app/src/main/jniLibs/

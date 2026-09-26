@@ -1,0 +1,52 @@
+{
+ "device": {
+  "manufacturer": "Google",
+  "brand": "google",
+  "model": "Android SDK built for x86_64",
+  "device": "generic_x86_64",
+  "android": "9",
+  "sdk": "28",
+  "abi": "x86_64",
+  "soc": "ranchu",
+  "board": "",
+  "cores": "4",
+  "ram": "2.0 GB (MemTotal 2046740 kB)",
+  "webview_package": "com.google.android.webview 69.0.3497.100",
+  "webview_in_use": "com.android.chrome 69.0.3497.100",
+  "rom": "sdk_gphone_x86_64-userdebug 9 PSR1.180720.122 6736742 dev-keys"
+ },
+ "golden_same": 80,
+ "golden_n": 80,
+ "in22_n": 20,
+ "chrf_device": 24.362968294305148,
+ "chrf_laptop": 24.362968294305148,
+ "in22_same": 20,
+ "nmt_ms": [
+  819.0,
+  914.0,
+  300.0,
+  1073.0,
+  923.0,
+  773.0,
+  616.0,
+  1193.0,
+  1304.0,
+  575.0,
+  1223.0,
+  899.0,
+  1096.0,
+  842.0,
+  1622.0,
+  1631.0,
+  1656.0,
+  515.0,
+  1167.0,
+  1706.0
+ ],
+ "voice": [],
+ "pss1": [
+  1003887,
+  80424
+ ],
+ "pss2": null
+}

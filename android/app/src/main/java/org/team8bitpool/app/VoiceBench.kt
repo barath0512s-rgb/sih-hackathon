@@ -17,6 +17,7 @@ import kotlin.concurrent.thread
  *   clips[]   -> POST /translate/audio (recognise, match, pack audio or synthesis)
  *   answers[] -> POST /session/start, then a spoken answer to POST /session/response
  *   tts[]     -> POST /speak for lines with no pack audio (on-device synthesis)
+ *   texts[]   -> POST /translate/text for sentences not in the pack (A5: translated on the tablet)
  * Times are measured around each call (from the WAV handed over to the reply with
  * its audio file ready; the WebView's playback start is not included). App-process
  * PSS is sampled after each call. Result: files/bench/result.json.
@@ -89,7 +90,23 @@ object VoiceBench {
                 .put("ms", (System.nanoTime() - t0) / 1e6).put("tts_engine", r.optString("tts_engine")).put("audio_url", r.opt("audio_url")))
             pss()
         }
-        out.put("tts", tts).put("peak_app_pss_kb", peakPss)
+        out.put("tts", tts)
+
+        // A5: typed sentences (not in the pack: translated on the tablet)
+        val texts = JSONArray()
+        val xa = man.optJSONArray("texts") ?: JSONArray()
+        for (i in 0 until xa.length()) {
+            val x = xa.getJSONObject(i)
+            val t0 = System.nanoTime()
+            val r = JSONObject(String(api.handle("POST", "/translate/text", emptyMap(),
+                JSONObject().put("text", x.getString("text")).put("direction", x.getString("direction")).toString().toByteArray(), "application/json").body))
+            texts.put(JSONObject().put("id", x.getString("id")).put("ms", (System.nanoTime() - t0) / 1e6)
+                .put("translated_text", r.optString("translated_text")).put("source", r.optString("source"))
+                .put("needs_review", r.optBoolean("needs_review")).put("latency", r.optJSONObject("latency")))
+            pss()
+            if (i % 50 == 0) Log.i(TAG, "voice_bench texts $i/${xa.length()}")
+        }
+        out.put("texts", texts).put("peak_app_pss_kb", peakPss)
         File(dir, "result.json").writeText(out.toString())
         Log.i(TAG, "voice_bench done: ${clips.length()} clips, ${answers.length()} answers, ${tts.length()} tts, peak PSS $peakPss kB")
     }

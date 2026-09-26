@@ -437,3 +437,35 @@
   text: "Native listener ratings (MOS) of the Santali voices"
   status: "NOT MEASURED"
   evidence: docs/samples/mos_lite_sheet.md
+- id: a5_device_translation
+  text: "Typed new sentences are translated on the 2 GB Android 9 emulator (IndicTrans2 int8, Kotlin port): identical to the laptop's int8 output on 1502 of 1503 IN22-Conv sentences and on 80 of 80 golden sentences; chrF++ 32.04 on the tablet and on the laptop; p50 0.60 s per sentence"
+  status: "TRUE"
+  evidence: bench/results/emulator-2gb-android9_2026-09-26_nmt.md
+- id: a5_port_tokens
+  text: "The Kotlin ports of IndicTransToolkit pre-processing and SentencePiece give identical pre-processed text and token ids on 300 of 300 sentences"
+  status: "TRUE"
+  evidence: android/app/src/test/java/org/team8bitpool/app/NmtTest.kt
+- id: a5_free_form_2gb
+  text: "Free-form Hindi speech to Santali speech entirely on the 2 GB emulator: works after the memory fix, p50 13.48 s, p90 15.07 s (models swapped per utterance); off on 2 GB tablets"
+  status: "TRUE"
+  evidence: bench/results/emulator-2gb-android9_2026-09-26_nmt_memfix.md
+- id: a5_free_form_4gb
+  text: "Free-form speech translation on a 4 GB tablet with both models loaded"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: a5_memory
+  text: "Peak app PSS while translating on the 2 GB emulator (after the memory fix): 1197 MB, above the 900 MB guideline"
+  status: "TRUE"
+  evidence: bench/results/emulator-2gb-android9_2026-09-26_nmt_memfix.md
+- id: c1_orf_alignment
+  text: "Reading-fluency alignment on public adult Hindi read speech: 5.9 % of correctly read words marked wrongly; simulated misreadings found with recall 1.000, precision 0.570"
+  status: "TRUE"
+  evidence: bench/results/orf_validation.md
+- id: c1_orf_children
+  text: "Reading-fluency accuracy with children"
+  status: "NOT MEASURED"
+  evidence: bench/results/orf_validation.md
+- id: c2_photo_import
+  text: "Textbook-page photo import (OCR)"
+  status: "NOT BUILT"
+  evidence: STATUS.md

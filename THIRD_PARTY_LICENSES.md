@@ -44,9 +44,42 @@ Versions and licences are read from each installed package's metadata.
 **Note on piper-tts:** the `piper-tts` package is **GPL-3.0-or-later**. It is
 **installed separately** by `pip install -r requirements.txt` and is **not
 redistributed** in this repository: no Piper code is copied into it. Our own
-code is MIT (`LICENSE`). Plan for the finale: move speech synthesis to
-sherpa-onnx (Apache-2.0) on both the laptop and Android, which removes the
-GPL dependency. This change has not been made yet.
+code is MIT (`LICENSE`).
+
+**Correction (26 Sep 2026):** an earlier plan said that moving speech to
+sherpa-onnx would remove the GPL dependency. It does not: sherpa-onnx itself is
+Apache-2.0, but its Piper voice path compiles in **espeak-ng (GPL-3.0-or-later)**
+for phonemes (its native library contains espeak-ng; `cmake/espeak-ng-for-piper.cmake`
+@ v1.13.8 fetches `csukuangfj/espeak-ng` @ `ed530aa1`). The Android APK now
+redistributes that code, and the model pack carries espeak-ng's data. See the
+Android section below.
+
+## Android app (the APK and the packs it imports)
+
+| Component | Where | Licence | Read from |
+|---|---|---|---|
+| sherpa-onnx 1.13.8 (release AAR) | APK | Apache-2.0 | `docs/sources.md#sherpa-onnx-tts` |
+| espeak-ng (compiled into sherpa-onnx's native library) | APK | **GPL-3.0-or-later** | https://github.com/espeak-ng/espeak-ng `COPYING`, README "released under the GPL version 3 or later"; source: https://github.com/csukuangfj/espeak-ng/archive/ed530aa113046142eb5115cf2fc9157854d0ffe1.zip |
+| espeak-ng data (`tts/espeak-ng-data`, sherpa-onnx tts-models release) | model pack | **GPL-3.0-or-later** (part of espeak-ng) | as above |
+| ONNX Runtime 1.28.2 (native, from sherpa-onnx) and the Java bridge of onnxruntime-android 1.28.0 (its version requirement rewritten to 1.28.2 by `tools/android/patch_ort_jni.py`) | APK | MIT | https://github.com/microsoft/onnxruntime `LICENSE` ("MIT License") |
+| NanoHTTPD 2.3.1 | APK | BSD-3-Clause | `android/app/build.gradle.kts` |
+| IndicConformer 120M hi / sat (int8) | model pack | MIT | `docs/sources.md#indicconformer-120m` |
+| IndicTrans2 indic-indic-dist-320M (int8) + its SentencePiece model | model pack | MIT | `docs/sources.md#indictrans2-model` |
+| Piper voice `hi_IN-pratham-medium` | model pack | **CC BY-NC-SA 4.0** | above |
+| OpenMoji pictures (worksheets, flashcards) | content pack PDFs | CC BY-SA 4.0 | `static/openmoji/ATTRIBUTION.md` |
+| Ported code: IndicTransToolkit processor (MIT), Indic NLP Library normalizers/tokenizers (MIT), RFC 8032 Ed25519 reference (Simplified BSD), sentencepiece BPE algorithm (re-implemented; sentencepiece is Apache-2.0) | APK | as listed | the Kotlin files' headers |
+
+The APK therefore includes GPL-3.0 code: distributing it requires offering the
+corresponding source of espeak-ng (link above) and keeping its licence notice.
+Our own code stays MIT.
+
+## Laptop hub only
+
+| Component | Used for | Licence | Read from |
+|---|---|---|---|
+| facebook/mms-tts-unr, mms-tts-hoc | Mundari / Ho voices, Preview | **CC BY-NC 4.0** | `docs/sources.md#mms-tts` |
+| ai4bharat/indic-parler-tts | Pre-rendered Santali audio (compared in A6; not shipped: the pack keeps Piper) | Apache-2.0 | `docs/sources.md#indic-parler-tts` |
+| sherpa-onnx (Python) 1.13.8 | Benchmarks (A1) | Apache-2.0 | as above |
 
 ## Development and test tools (`requirements-dev.txt`, `requirements-ci.txt`)
 

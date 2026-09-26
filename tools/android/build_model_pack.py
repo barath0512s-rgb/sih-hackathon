@@ -12,6 +12,8 @@ same SHA-256 manifest check. Contents:
                                                       metadata sherpa-onnx reads (as its
                                                       scripts/piper/add_meta_data.py writes)
   tts/espeak-ng-data/                                 sherpa-onnx's espeak-ng data (tts-models release)
+  nmt/{encoder,decoder_init,decoder_step}.int8.onnx   IndicTrans2 indic-indic-dist-320M, int8 (A5)
+  nmt/model.SRC, dict.SRC.json, dict.TGT.json         its SentencePiece model and vocabularies
   models.json                                         engine settings the app reads
   manifest.json                                       format 1, kind "models", SHA-256 of every file
 Stored uncompressed (ONNX does not compress; importing is then a copy).
@@ -84,6 +86,11 @@ def build(out_zip):
         raise SystemExit(f"{ESPEAK} missing: download espeak-ng-data.tar.bz2 from the sherpa-onnx tts-models release "
                          f"(sha256 {ESPEAK_SHA256}) and unpack it into dist/sherpa/")
     shutil.copytree(ESPEAK, stage / "tts/espeak-ng-data")
+    (stage / "nmt").mkdir()
+    for n in ("encoder", "decoder_init", "decoder_step"):
+        shutil.copyfile(config.MODELS_DIR / "indictrans2-onnx" / f"{n}.int8.onnx", stage / f"nmt/{n}.int8.onnx")
+    for n in ("model.SRC", "dict.SRC.json", "dict.TGT.json"):
+        shutil.copyfile(config.NMT_DIR / n, stage / f"nmt/{n}")
     models = {
         "asr": {"hi": {"type": "nemo_ctc", "model": "asr/hi/model.int8.onnx", "tokens": "asr/hi/tokens.txt",
                        "decoding": "greedy_search", "trim_silence": config.ASR_TRIM_SILENCE["hi"],
@@ -97,6 +104,8 @@ def build(out_zip):
                        "noise_scale": inference["noise_scale"], "noise_scale_w": inference["noise_w"],
                        "length_scale": inference["length_scale"], "sample_rate": sr,
                        "source": f"Piper {VOICE} (the hub's voice); Santali is read after translit/olchiki.py"}},
+        "nmt": {"dir": "nmt", "source": "IndicTrans2 indic-indic-dist-320M int8 (tools/export/export_indictrans2_onnx.py)",
+                "guard": "nmt_guard.py (length cap, stem-loop stop and cut)"},
         "sherpa_onnx": "1.13.8",
     }
     (stage / "models.json").write_text(json.dumps(models, ensure_ascii=False, indent=1), encoding="utf-8")

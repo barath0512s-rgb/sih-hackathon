@@ -1,0 +1,1 @@
+Trial runs of tools/android/nmt_bench.py on the 2 GB emulator (26 Sep 2026), kept as records: the last memory-option trial (no pre-packing: 980 MB, p50 1.00 s). Superseded by bench/results/emulator-2gb-android9_2026-09-26_nmt*.md.

@@ -216,3 +216,19 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 
 ### <a name="openmoji"></a>OpenMoji (A2 pictures)
 - https://github.com/hfg-gmuend/openmoji @ `aeb8bb3a59…`, accessed 2026-09-26. README: "OpenMoji graphics are licensed under the Creative Commons Share Alike License 4.0 ([CC BY-SA 4.0]…)"; attribution suggestion: "All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0". Approved by the team. 29 PNGs in `static/openmoji/` (`ATTRIBUTION.md`).
+
+### <a name="onnxruntime-android"></a>ONNX Runtime for Android (A5)
+- Maven Central `com.microsoft.onnxruntime:onnxruntime-android`: versions listed in maven-metadata.xml (accessed 2026-09-26) include 1.28.0, 1.29.0, 1.30.0; **no 1.28.2**. Licence MIT (https://github.com/microsoft/onnxruntime `LICENSE`: "MIT License").
+- sherpa-onnx 1.13.8's native `libonnxruntime.so` exports `OrtGetApiBase@VERS_1.28.2`; the 1.28.0 Java bridge requires `@VERS_1.28.0` (read from the ELF symbol-version tables). The app keeps sherpa-onnx's library and rewrites the bridge's requirement (`tools/android/patch_ort_jni.py`); a patch release keeps the C API version.
+
+### <a name="espeak-ng"></a>espeak-ng (inside sherpa-onnx's Piper path)
+- https://github.com/espeak-ng/espeak-ng, accessed 2026-09-26: `COPYING` is the GNU GPL version 3; README: "eSpeak NG Text-to-Speech is released under the GPL version 3 or later".
+- sherpa-onnx v1.13.8 `cmake/espeak-ng-for-piper.cmake` builds `https://github.com/csukuangfj/espeak-ng/archive/ed530aa113046142eb5115cf2fc9157854d0ffe1.zip`; its native library contains the espeak-ng code ("Failed to initialize espeak-ng with data dir").
+
+### <a name="mlkit-text"></a>ML Kit Text Recognition v2, Devanagari (C2, not used)
+- https://developers.google.com/ml-kit/vision/text-recognition/v2/android, accessed 2026-09-26: bundled model `com.google.mlkit:text-recognition-devanagari:16.0.1` is "statically linked to your app at build time" (works offline), about "4 MB size increase per script per architecture"; "This API requires Android API level 23 or above."
+- https://developers.google.com/ml-kit/terms, accessed 2026-09-26: "These terms incorporate and are subject to the Google APIs Terms of Service"; on-device "processing of the input data fully happens on-device"; but "The ML Kit APIs also send metrics about the performance and utilization of the APIs in your app to Google", and the developer must inform users.
+- Not an open-source licence and it sends usage metrics when online: **not added** without the team's approval.
+
+### <a name="tesseract"></a>Tesseract OCR (C2, laptop)
+- https://tesseract-ocr.github.io/tessdoc/Installation.html, accessed 2026-09-26: Windows installers "are available from Tesseract at UB Mannheim"; Tesseract is distributed under the "Apache 2.0 license"; language data (`hin.traineddata`) goes in the `tessdata` folder. Not installed on the team laptop yet (installing software is the team's step).

@@ -1,0 +1,20 @@
+{
+ "near spelling": {
+  "clips": 80,
+  "words": 1430,
+  "false_errors": 85,
+  "false_error_rate": 0.0594,
+  "misread_precision": 0.57,
+  "misread_recall": 1.0,
+  "misread_n": 106
+ },
+ "exact": {
+  "clips": 80,
+  "words": 1430,
+  "false_errors": 138,
+  "false_error_rate": 0.0965,
+  "misread_precision": 0.445,
+  "misread_recall": 1.0,
+  "misread_n": 106
+ }
+}

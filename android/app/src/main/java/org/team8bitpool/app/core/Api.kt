@@ -210,8 +210,10 @@ class Api(
         val m = LessonMatch.match(recognized, lines.keys, thr, inLang)
         val entry = if (m.matched) lines.getValue(m.line!!) else null
         val teacher = if (m.matched) store.correction(m.line!!, direction) else null
-        val out = teacher ?: entry?.getString("text")
-        val source = when { teacher != null -> "teacher"; entry != null -> entry.optString("source", "pack"); else -> "none" }
+        // A5: free-form speech only where recognition and translation both fit in memory (settings.freeFormVoice)
+        val free = if (teacher == null && entry == null && settings.freeFormVoice) runCatching { sp.translate(recognized, direction) }.getOrNull() else null
+        val out = teacher ?: entry?.getString("text") ?: free?.text
+        val source = when { teacher != null -> "teacher"; entry != null -> entry.optString("source", "pack"); free != null -> "model"; else -> "none" }
         val t2 = System.nanoTime()
         var engine = "none"
         var audioUrl: String? = null
@@ -236,7 +238,7 @@ class Api(
         val chunk = JSONObject().put("type", "chunk").put("i", 0).put("source_text", recognized)
             .put("translated_text", out ?: "").put("source", source).put("audio_url", audioUrl ?: JSONObject.NULL)
             .put("tts_error", ttsError).put("tts_engine", engine).put("ms", (t3 - t0) / 1_000_000)
-            .put("needs_review", teacher == null && entry?.optBoolean("needs_review") == true)
+            .put("needs_review", teacher == null && (entry?.optBoolean("needs_review") == true || free?.needsReview == true))
             .put("nearest_verified", JSONObject.NULL).put("match", match)
             .put("review_status", entry?.optString("review_status") ?: JSONObject.NULL)
         if (out == null) chunk.put("code", "not_a_lesson_line")
@@ -322,21 +324,29 @@ class Api(
         val t0 = System.nanoTime()
         val teacher = store.correction(text, direction)
         val fromPack = if (teacher == null) pack?.translation(text, direction) else null
+        var deviceModel: Translation? = null
         val (out, source) = when {
             teacher != null -> teacher to "teacher"
             fromPack != null -> fromPack.getString("text") to fromPack.getString("source")
-            !engines.nmt -> return if (pack == null) noPack() else notOnDevice("Translation of new sentences")
-            else -> return notOnDevice("Translation")
+            else -> {
+                val tr = runCatching { speech()?.translate(text, direction) }.getOrNull()
+                    ?: return if (pack == null) noPack() else notOnDevice("Translation of new sentences")
+                deviceModel = tr
+                tr.text to "model"
+            }
         }
         val t1 = System.nanoTime()
         val lang = if (direction == "hi-to-sat") "sat" else "hi"
-        val audio = pack?.audioFile(out, lang)
+        val packAudio = pack?.audioFile(out, lang)
+        val deviceAudio = if (packAudio == null && deviceModel != null) runCatching { speech()?.speak(out, lang) }.getOrNull() else null
+        val audioUrl = packAudio?.let { "/audio/pack/${it.name}" } ?: deviceAudio?.let { "/audio/device/${it.name}" }
+        val engine = if (packAudio != null) "pack" else if (deviceAudio != null) "device" else "none"
         val t2 = System.nanoTime()
         fun sec(ns: Long) = Math.round(ns / 1e6) / 1000.0         // seconds, 3 decimals, as the hub rounds
         val lat = JSONObject().put("asr", 0.0).put("nmt", sec(t1 - t0)).put("tts", sec(t2 - t1)).put("total", sec(t2 - t0))
         val rid = UUID.randomUUID().toString().replace("-", "")
         store.logLatency(rid, JSONObject().put("direction", direction).put("input_type", "typed").put("source", source)
-            .put("server_ms", (t2 - t0) / 1e6).put("tts_engine", if (audio != null) "pack" else "none"))
+            .put("server_ms", (t2 - t0) / 1e6).put("tts_engine", engine))
         synchronized(sessions) { sessions[d.optString("session_id")] }?.let {
             taught(it); synchronized(it) { it.recordTranslation(if (direction == "hi-to-sat") text else out,
                                                     if (direction == "hi-to-sat") out else text, (t2 - t0) / 1e9) }
@@ -344,12 +354,12 @@ class Api(
         return Resp.json(JSONObject()
             .put("request_id", rid).put("translated_text", out).put("source", source)
             .put("model_score", JSONObject.NULL)
-            .put("audio_url", audio?.let { "/audio/pack/${it.name}" } ?: JSONObject.NULL)
-            .put("tts_error", if (audio == null) "No recorded audio for this line on the tablet yet (on-device speech: M2)" else JSONObject.NULL)
-            .put("tts_engine", if (audio != null) "pack" else "none")
+            .put("audio_url", audioUrl ?: JSONObject.NULL)
+            .put("tts_error", if (audioUrl == null) "No recorded audio for this line on the tablet yet (on-device speech: M2)" else JSONObject.NULL)
+            .put("tts_engine", engine)
             .put("latency", lat).put("english_pivot", "").put("confidence", JSONObject.NULL)
             // A3: a pack line the round-trip check flagged (a teacher's correction clears it)
-            .put("needs_review", source != "teacher" && fromPack?.optBoolean("needs_review") == true))
+            .put("needs_review", source != "teacher" && (fromPack?.optBoolean("needs_review") == true || deviceModel?.needsReview == true)))
     }
 
     private fun speak(pack: Pack?, d: JSONObject): Resp {

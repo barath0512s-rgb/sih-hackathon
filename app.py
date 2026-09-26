@@ -765,6 +765,46 @@ def curriculum_worksheet(topic):
 
 
 # ── Worksheet and feedback ────────────────────────────────────────────────────
+@app.route("/orf/passages")
+def orf_passages():
+    """C1: the reading passages (content/orf_passages.json)."""
+    import json as _json
+    if not config.ORF:
+        return jsonify({"passages": []})
+    return jsonify({"passages": _json.loads(config.ORF_PASSAGES_FILE.read_text(encoding="utf-8"))["passages"]})
+
+
+@app.route("/orf/score", methods=["POST"])
+def orf_score():
+    """C1: score a child's reading. multipart: audio, passage_id, consent=1.
+    The recording is recognised (Hindi), then deleted; only the numbers come back."""
+    import json as _json
+    import orf
+    if not config.ORF:
+        return jsonify({"error": "reading check is off"}), 404
+    if request.form.get("consent") != "1":
+        return jsonify({"error": "The teacher must confirm consent first", "code": "consent_required"}), 400
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio"}), 400
+    passages = {p["id"]: p for p in _json.loads(config.ORF_PASSAGES_FILE.read_text(encoding="utf-8"))["passages"]}
+    p = passages.get(request.form.get("passage_id", ""))
+    if p is None:
+        return jsonify({"error": "Unknown passage"}), 404
+    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
+        request.files["audio"].save(tmp.name)
+        tmp_path = Path(tmp.name)
+    wav = Path(str(tmp_path) + "_converted.wav")
+    try:
+        spoken = pl.transcribe_hindi(str(tmp_path))
+        seconds = orf.speech_seconds(wav if wav.exists() else tmp_path)
+    finally:                                   # the child's voice is never kept
+        tmp_path.unlink(missing_ok=True)
+        wav.unlink(missing_ok=True)
+    s = orf.score(p["text"], spoken, seconds)
+    s.update(passage_id=p["id"], grade=p["grade"], transcript=spoken, nipun=orf.nipun_band(p["grade"], s["wcpm"]))
+    return jsonify(s)
+
+
 @app.route("/languages")
 def languages_registry():
     """A7: the language registry (languages.json): per language and stage, engine, licence, maturity."""

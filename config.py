@@ -100,6 +100,16 @@ STREAM_MIN_WORDS = 18
 ON_DEVICE_VOICE = True             # A1 flag; written to the app by tools/android/sync_config.py
 LESSON_MATCH_THRESHOLD = {"hi": 0.9, "sat": 0.95}
 ON_DEVICE_ASR_THREADS = 2
+# A5: translation of new TYPED sentences on the tablet (IndicTrans2 int8, ONNX
+# Runtime): same output as the laptop on 1502 of 1503 IN22-Conv sentences, chrF++
+# equal (bench/results/emulator-2gb-android9_2026-09-26_nmt.md).
+ON_DEVICE_NMT = True
+# A5: free-form SPEECH -> translation -> speech on the tablet. On 2 GB the models
+# must be swapped for every utterance: p50 13.5 s (…_nmt_memfix.md), so it is off
+# there. With FREE_FORM_VOICE on, it runs only on tablets with at least this much
+# RAM, keeping recognition and translation loaded; not measured on one yet.
+FREE_FORM_VOICE = False
+FREE_FORM_VOICE_MIN_RAM_GB = 3.5
 
 # ── Round-trip check (A3) ─────────────────────────────────────────────────────
 # A model translation Hindi -> Santali is translated back to Hindi; if the
@@ -112,6 +122,12 @@ ON_DEVICE_ASR_THREADS = 2
 ROUNDTRIP_CHECK = True
 ROUNDTRIP_CHRF_THRESHOLD = 34.5     # eval/results/roundtrip_flag.json (best F1 on the tune half)
 ROUNDTRIP_ON_VOICE = False
+
+# ── Oral reading fluency (C1) ─────────────────────────────────────────────────
+# A child reads a passage (content/orf_passages.json) aloud; words correct per
+# minute against the NIPUN goals. The recording is deleted after recognition.
+ORF = True
+ORF_PASSAGES_FILE = BASE_DIR / "content" / "orf_passages.json"
 
 # ── Worksheets (A2) ───────────────────────────────────────────────────────────
 # v2: student exercises with pictures (count and write, match, fill in the blank,

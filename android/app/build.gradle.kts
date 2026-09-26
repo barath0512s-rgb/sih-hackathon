@@ -52,6 +52,8 @@ android {
     }
     packaging {
         resources.excludes += setOf("META-INF/LICENSE*", "META-INF/NOTICE*")
+        // the app's own jniLibs (tools/android/patch_ort_jni.py) come first
+        jniLibs.pickFirsts += setOf("lib/*/libonnxruntime.so", "lib/*/libonnxruntime4j_jni.so")
     }
 }
 
@@ -62,6 +64,17 @@ dependencies {
     // sherpa-onnx 1.13.8 (Apache-2.0), the official release AAR; not in git (50 MB):
     // python tools/android/fetch_sherpa_aar.py downloads it and checks its SHA-256.
     implementation(files("libs/sherpa-onnx-1.13.8.aar"))
+    // ONNX Runtime's Java API (MIT) for on-device translation (A5). sherpa-onnx bundles the
+    // native onnxruntime 1.28.2; this is the matching 1.28 API, and one libonnxruntime.so is kept.
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.28.0")
+    // Unit tests run the same Kotlin on the laptop's JVM with the desktop build (the version
+    // of the laptop's Python onnxruntime), so the golden test compares like with like.
+    testImplementation("com.microsoft.onnxruntime:onnxruntime:1.28.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")           // android.jar's org.json is a stub in unit tests
+}
+
+// The Android ONNX Runtime classes need Android's loader; unit tests use the desktop jar instead.
+configurations.matching { it.name.endsWith("UnitTestRuntimeClasspath") }.configureEach {
+    exclude(group = "com.microsoft.onnxruntime", module = "onnxruntime-android")
 }

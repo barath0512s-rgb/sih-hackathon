@@ -5,6 +5,9 @@
   "sat": 0.95
  },
  "asr_threads": 2,
+ "on_device_nmt": true,
+ "free_form_voice": false,
+ "free_form_voice_min_ram_gb": 3.5,
  "asr_trim_silence": {
   "hi": false,
   "sat": true

@@ -16,10 +16,17 @@ those requests answer `503 engine_not_on_device`, never a fake result.
 Needs JDK 17 and the Android SDK (platform 36).
 
 ```bash
-python tools/android/sync_config.py        # app name from config.py
+python tools/android/sync_config.py        # app name and the tablet's settings from config.py
+python tools/android/fetch_sherpa_aar.py   # sherpa-onnx 1.13.8 AAR (50 MB, not in git; SHA-256 checked)
+python tools/android/patch_ort_jni.py      # ONNX Runtime's Java bridge made to use sherpa-onnx's onnxruntime (A5)
 cd android
 ./gradlew testDebugUnitTest assembleDebug
 ```
+
+Speech and translation models are not in the APK: build the model pack
+(`python tools/android/build_model_pack.py`, about 890 MB, signed) and import it
+like the content pack. Packs are signed on the hub (`pack_signing.py`); the app
+refuses an unsigned or changed pack.
 
 On Windows, if Gradle fails with "Unable to establish loopback connection", the
 temp path is too long for Java's sockets: set

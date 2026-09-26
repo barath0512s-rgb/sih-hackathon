@@ -29,6 +29,9 @@ def expected_device():
     return json.dumps({"on_device_voice": config.ON_DEVICE_VOICE,
                        "lesson_match_threshold": config.LESSON_MATCH_THRESHOLD,
                        "asr_threads": config.ON_DEVICE_ASR_THREADS,
+                       "on_device_nmt": config.ON_DEVICE_NMT,
+                       "free_form_voice": config.FREE_FORM_VOICE,
+                       "free_form_voice_min_ram_gb": config.FREE_FORM_VOICE_MIN_RAM_GB,
                        "asr_trim_silence": config.ASR_TRIM_SILENCE,
                        "asr_decoding": config.ASR_DECODING}, ensure_ascii=False, indent=1) + "\n"
 

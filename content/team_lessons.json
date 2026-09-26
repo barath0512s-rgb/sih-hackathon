@@ -1,5 +1,5 @@
 {
-  "about": "Twelve short lessons written by Team 8-bitPool in simple Hindi, for import through work package 14 (tools/import_lessons.py). Not copied from any textbook. 'type' is given only where the teacher changes the automatic label; 'answer' is the expected answer to a question (alternatives separated by /). The Santali is generated on import and awaits native review.",
+  "about": "Thirteen short lessons written by Team 8-bitPool in simple Hindi, for import through work package 14 (tools/import_lessons.py). Not copied from any textbook. 'type' is given only where the teacher changes the automatic label; 'answer' is the expected answer to a question (alternatives separated by /). The Santali is generated on import and awaits native review.",
   "lessons": [
     {
       "grade": "0",
@@ -395,6 +395,53 @@
         {
           "hindi": "रीना ने तालाब में क्या देखा?",
           "answer": "मछली"
+        }
+      ]
+    },
+    {
+      "grade": "2",
+      "title": "पढ़ने की गति: बगीचे की सैर",
+      "lakshya_ids": [
+        "NIPUN-G2-LIT-2",
+        "NIPUN-G2-LIT-1"
+      ],
+      "lines": [
+        {
+          "hindi": "आज हम एक छोटी कहानी ज़ोर से पढ़ेंगे।"
+        },
+        {
+          "hindi": "पहले मेरे साथ धीरे धीरे पढ़ो, फिर खुद पढ़ो।"
+        },
+        {
+          "hindi": "आज रविवार है।"
+        },
+        {
+          "hindi": "मीना अपने दादा के साथ बगीचे में गई।"
+        },
+        {
+          "hindi": "बगीचे में लाल और पीले फूल खिले थे।"
+        },
+        {
+          "hindi": "एक पेड़ पर दो चिड़ियाँ बैठी थीं।"
+        },
+        {
+          "hindi": "मीना ने चिड़ियों को दाना दिया।"
+        },
+        {
+          "hindi": "दादा ने कहा कि पेड़ों की देखभाल करो।"
+        },
+        {
+          "hindi": "मीना ने पौधों में पानी डाला और खुश होकर घर लौटी।"
+        },
+        {
+          "hindi": "अब पूरी कहानी एक मिनट में पढ़ने की कोशिश करो।"
+        },
+        {
+          "hindi": "पेड़ पर कितनी चिड़ियाँ बैठी थीं?",
+          "answer": "दो"
+        },
+        {
+          "hindi": "शाबाश, तुमने अच्छा पढ़ा।"
         }
       ]
     }
