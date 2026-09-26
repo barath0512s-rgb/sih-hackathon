@@ -351,7 +351,11 @@
   status: "TRUE"
   evidence: bench/results/sherpa_vs_nemo_rnnt.md
 - id: latency_three_runs
-  text: "Three runs (AC, Best performance mode), median of the runs' p90s, distinct sentences: sentences of ≤ 17 words: upload to reply audio hi→sat 2.14 s, from the end of speech full time 2.85 s, first audio 2.41 s; all sentences: upload hi→sat 2.38 s, sat→hi 2.58 s; first-audio p90 per run 3.40 / 2.75 / 2.54 s"
+  text: "Three runs (AC, Best performance mode), median of the runs' p90s, distinct sentences. Headline, sentences of ≤ 17 words, from the end of speech: full time 2.85 s, first audio 2.41 s; upload to reply audio hi→sat 2.14 s. All sentences: upload hi→sat 2.38 s, sat→hi 2.58 s; first-audio p90 per run 3.40 / 2.75 / 2.54 s"
+  status: "TRUE"
+  evidence: bench/results/latency_hp_runs.md
+- id: latency_pause_check
+  text: "The six clips slow in every end-of-speech run, re-run after a 1 s idle pause: ASR median 1.16 s (in the runs 2.02 s), full time 3.13 s (in the runs 4.17 s): the preceding streaming work explains about half of their extra time"
   status: "TRUE"
   evidence: bench/results/latency_hp_runs.md
 

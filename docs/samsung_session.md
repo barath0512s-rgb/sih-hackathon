@@ -46,7 +46,13 @@ peak PSS; writes `bench/results/samsung-4gb-android13_<date>_m1.md`.
    press it again to stop. Santali should appear and be spoken.
 7. On the laptop: `python tools/hub_mic_check.py --since-minutes 10` prints what the
    hub logged: a voice row with a client time means the microphone, upload and
-   playback worked, and the client time is the voice-to-voice wait the tablet saw.
+   playback worked.
+8. The client time is reported as its own figure, labelled **"tablet browser via
+   laptop hub, Wi-Fi"**: measured by the tablet's browser from the end of speech
+   (mic released) to the reply audio starting to play, so it includes the upload
+   and download over Wi-Fi and playback start, which the laptop benchmarks do not.
+   It is never mixed with the laptop figures. Repeat the line 3 times if possible
+   and report every time.
 
 Afterwards, the result goes into STATUS.md and `docs/claims.yaml` as "Samsung, 4 GB,
 Android 13, hub mode over the laptop's hotspot".

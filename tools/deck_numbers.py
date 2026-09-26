@@ -267,6 +267,9 @@ def latency_three_runs(tag="hp"):
     for d in lr.DEFINITIONS:
         print("  " + _re.sub(r"\*\*|`", "", d))
     steps = {t: lr.steps_run(t) for t in tags}
+    h = steps[tags[0]]["≤ 17"]
+    out("HEADLINE: from end of speech, ≤ 17 words, full time p90 (median of 3 runs)",
+        f"{statistics.median([steps[t]['≤ 17'][3] for t in tags]):.2f} s (n={h[0]}, n_distinct={h[1]})", src)
     for name, (n, nd, _, _) in steps[tags[0]].items():
         firsts = [steps[t][name][2] for t in tags]; fulls = [steps[t][name][3] for t in tags]
         out(f"from end of speech, hi->sat, {lr.label(name, nd)} words: first / full p90",

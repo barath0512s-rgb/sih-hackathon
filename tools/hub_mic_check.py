@@ -35,7 +35,9 @@ def main():
     if not rows:
         print(f"No requests in the last {a.since_minutes:g} minutes.")
         return
-    print("time      device    direction  input         source    server s  client s (end of speech -> audio)")
+    print("Client s = 'tablet browser via laptop hub, Wi-Fi': measured in the browser from the end of speech to the")
+    print("reply audio starting to play, so it includes Wi-Fi both ways and playback start (not in the laptop benchmarks).")
+    print("time      device    direction  input         source    server s  client s")
     for r in rows:
         client = f"{r['client_total_ms'] / 1000:.2f}" if r["client_total_ms"] is not None else "not reported"
         print(f"{time.strftime('%H:%M:%S', time.localtime(r['ts']))}  {(r['device_id'] or '-')[:8]:8}  "

@@ -42,12 +42,13 @@ DEFINITIONS = [
     "(teacher, glossary, cache, model), synthesis and downloading the reply audio; stops when the reply "
     "audio is received. Whole utterance, not streamed. One request after another.",
     "- **Why the end-of-speech full time has the longer tail (p90 3.67 vs 2.38 s, medians 2.11 vs 2.03 s "
-    "in run 3):** the medians agree; the tail comes from speech recognition. In the end-of-speech runs the "
-    "same six clips were slow every time (1.8-2.4 s), yet alone they take 0.76 s median (0.73 s "
-    "re-encoded: the format is not the cause). Each follows a clip with about twice the usual streaming "
-    "work (median 3.5 s vs 1.9 s), which that benchmark runs just before, with no pause. The upload "
-    "benchmark does not stream. So its full time is the realistic one for a line spoken after a pause; "
-    "the end-of-speech full time is pessimistic in the tail.",
+    "in run 3): an explanation, partly supported, not a result.** The medians agree; the tail comes from "
+    "speech recognition. In the end-of-speech runs the same six clips were slow every time (ASR median "
+    "2.02 s, full 4.17 s); each follows a clip with about twice the usual streaming work (3.5 vs 1.9 s), run "
+    "just before with no pause. Re-run after a 1 s idle pause (`bench/results/pause_check.md`), the six "
+    "clips took ASR 1.16 s, full 3.13 s (median): the preceding work explains about half the extra time, "
+    "not all of it (alone, with only the ASR model loaded, ASR took 0.76 s). So the upload figure may be "
+    "closer to a line spoken after a pause, but that is not measured in class.",
     "- **Streaming threshold:** on the saved runs, streaming brings the first sound forward by a median "
     "0.25-0.29 s for 12-17 words but delays the last audio by 0.65-0.70 s; for 18+ words it gains "
     "0.48-0.60 s. The app streams only 18+ words (`config.STREAM_MIN_WORDS = 18`); the data support it.",
