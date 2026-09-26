@@ -231,4 +231,4 @@ Anchors (`#name`) are what `docs/claims.yaml` points to.
 - Not an open-source licence and it sends usage metrics when online: **not added** without the team's approval.
 
 ### <a name="tesseract"></a>Tesseract OCR (C2, laptop)
-- https://tesseract-ocr.github.io/tessdoc/Installation.html, accessed 2026-09-26: Windows installers "are available from Tesseract at UB Mannheim"; Tesseract is distributed under the "Apache 2.0 license"; language data (`hin.traineddata`) goes in the `tessdata` folder. Not installed on the team laptop yet (installing software is the team's step).
+- https://tesseract-ocr.github.io/tessdoc/Installation.html, accessed 2026-09-26: Windows installers "are available from Tesseract at UB Mannheim"; Tesseract is distributed under the "Apache 2.0 license"; language data (`hin.traineddata`) goes in the `tessdata` folder. Installed by the team on 27 Sep 2026: tesseract v5.5.3.20260724 (UB Mannheim, 64-bit), `--list-langs` shows eng, hin, osd; at `C:\Program Files\Tesseract-OCR\` (not on PATH; `ocr.py` looks there).

@@ -1,0 +1,93 @@
+{
+ "engine": "Tesseract, hin, psm 4",
+ "rendered": {
+  "pages": 10,
+  "cer_mean": 0.0503,
+  "cer_median": 0.0518,
+  "lines_exact": 28,
+  "lines": 79
+ },
+ "photo": null,
+ "rows": [
+  {
+   "page": "page_01",
+   "rendered": {
+    "cer": 0.0791,
+    "lines_exact": 3,
+    "lines": 9
+   }
+  },
+  {
+   "page": "page_02",
+   "rendered": {
+    "cer": 0.0207,
+    "lines_exact": 4,
+    "lines": 8
+   }
+  },
+  {
+   "page": "page_03",
+   "rendered": {
+    "cer": 0.0876,
+    "lines_exact": 1,
+    "lines": 8
+   }
+  },
+  {
+   "page": "page_04",
+   "rendered": {
+    "cer": 0.0575,
+    "lines_exact": 1,
+    "lines": 8
+   }
+  },
+  {
+   "page": "page_05",
+   "rendered": {
+    "cer": 0.0333,
+    "lines_exact": 5,
+    "lines": 8
+   }
+  },
+  {
+   "page": "page_06",
+   "rendered": {
+    "cer": 0.0339,
+    "lines_exact": 1,
+    "lines": 7
+   }
+  },
+  {
+   "page": "page_07",
+   "rendered": {
+    "cer": 0.0571,
+    "lines_exact": 2,
+    "lines": 7
+   }
+  },
+  {
+   "page": "page_08",
+   "rendered": {
+    "cer": 0.0567,
+    "lines_exact": 3,
+    "lines": 8
+   }
+  },
+  {
+   "page": "page_09",
+   "rendered": {
+    "cer": 0.0468,
+    "lines_exact": 4,
+    "lines": 9
+   }
+  },
+  {
+   "page": "page_10",
+   "rendered": {
+    "cer": 0.03,
+    "lines_exact": 4,
+    "lines": 7
+   }
+  }
+ ]
+}
