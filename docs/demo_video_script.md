@@ -1,7 +1,7 @@
 # Demo video script v1.2 (about 4 minutes)
 
 v1.2 (25-26 Sep 2026): the Android segment is a **recorded clip**, not a live
-shot: the Samsung clip if the Samsung check passes (`docs/samsung_session.md`),
+shot: the Realme Pad Mini clip if its check passes (`docs/device_session.md`),
 otherwise the 2 GB emulator clip. Either way it carries the clip's own caption
 and one line with the 2 GB emulator result. v1.1 added that segment; the rest
 is the laptop hub flow, unchanged.
@@ -32,8 +32,8 @@ tablet or phone.
    switch on large type in सेटिंग.
 6. Test the microphone once: speak any Hindi line, then refresh the page.
 7. For the 3:35 Android segment, pick the clip (both are in `docs/demo_assets/`):
-   `android_samsung.mp4` if the Samsung check passed
-   (`bench/results/samsung-4gb-android13_<date>_m1.md`: 24/24 in airplane mode and
+   `android_realme.mp4` if the Realme Pad Mini check passed
+   (`bench/results/realme-pad-mini-4gb-android11_<date>_m1.md`: 24/24 in airplane mode and
    the page check all "yes"); otherwise `android_emulator.mp4`.
 8. Have the correction for the 1:55 shot ready on paper. **A Santali speaker on the
    team must write it. Do not invent one.**
@@ -51,7 +51,7 @@ tablet or phone.
 | 2:25–2:45 | Worksheet | Press कार्यपत्रक. Show the PDF: Hindi and Santali headings, the lesson's lines, and the NIPUN Lakshya tag with the Ministry's wording. |
 | 2:45–3:00 | Flashcards | चित्र पत्ते → deck **जोड़ना**. Flip two cards and press 🔊 on one. Point at the badges: word list, review pending. |
 | 3:00–3:35 | Teacher adds a lesson | पाठ → ➕ नया पाठ जोड़िए. Choose कक्षा 1. Paste three prepared lines, e.g. *"आज हम पाँच तक गिनेंगे। चार आम गिनो। यहाँ कितने आम हैं?"* Press ✂️ पंक्तियाँ बनाइए. Tap one label to show it changes. Show the suggested NIPUN goal, tick the confirm box, and press 📘 पाठ बनाइए. Open it in the classroom (कक्षा में खोलिए). |
-| 3:35–3:55 | **Android app (work in progress)**, recorded clip | Play the chosen clip (about 30 s, cut to 20 s if needed): airplane mode shown, the lesson list, a lesson line chosen, **अनुवाद**, the Santali for that line from the content pack. Nothing else. Caption, exactly as the clip: Samsung clip: **"Samsung tablet, 4 GB RAM, Android 13, airplane mode: app shell + typed translation. On-device speech and AI: in progress."** Emulator clip: **"Android 9 emulator, 2 GB RAM, airplane mode: app shell + typed translation. On-device speech and AI: in progress."** Plus one line under it, either way: **"On a 2 GB RAM, Android 9 emulator: peak memory 185 MB; 24 of 24 app checks pass in airplane mode."** |
+| 3:35–3:55 | **Android app (work in progress)**, recorded clip | Play the chosen clip (about 30 s, cut to 20 s if needed): airplane mode shown, the lesson list, a lesson line chosen, **अनुवाद**, the Santali for that line from the content pack. Nothing else. Caption, exactly as the clip: Realme clip: **"Realme Pad Mini, 4 GB RAM, Android 11, airplane mode: app shell + typed translation. On-device speech and AI: in progress."** Emulator clip: **"Android 9 emulator, 2 GB RAM, airplane mode: app shell + typed translation. On-device speech and AI: in progress."** Plus one line under it, either way: **"On a 2 GB RAM, Android 9 emulator: peak memory 185 MB; 24 of 24 app checks pass in airplane mode."** |
 | 3:55–4:05 | Close | *"Built so far: offline on the laptop hub, 17 NIPUN-tagged lessons that teachers can extend, and the first milestone of the Android app. Next: speech, translation and voice on a 2 GB RAM, Android 9+ tablet."* |
 
 The step 3:00 lesson is added to the database. After the recording, you can

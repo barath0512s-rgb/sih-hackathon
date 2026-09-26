@@ -2,6 +2,8 @@
 
 ## FREEZE-2 (branch `android-wp4`, fast-forwarded to `main`)
 
+**Device change (26 Sep 2026):** the Samsung tablet (4 GB, Android 13) is replaced by a **Realme Pad Mini (4 GB RAM, 64 GB storage, Android 11)**; earlier plans that named the Samsung now name the Realme. No measurement was ever made on the Samsung. The 2 GB evidence stays the Android 9 emulator.
+
 | # | Item | Result | Evidence |
 |---|---|---|---|
 | 1 | Latency, three runs (AC power, Windows Best performance power mode, other apps closed; set by the user) | Median of the three runs' p90s, distinct sentences. **Upload to reply audio:** Hindi → Santali 2.38 s (n = 79, n_distinct = 68), Santali → Hindi 2.58 s (n = n_distinct = 80), answers of ≤ 10 words 2.27 s. **From the end of speech (FLEURS hi → sat):** time to first audio 2.75 s (all 69), full time 2.85 s (≤ 17 words, n_distinct = 32). **Run to run:** first-audio p90 3.40 / 2.75 / 2.54 s: one run over 3 s. 18-23 words, full p90 4.19-4.93 s. Every run and every word bin in the evidence file | `bench/results/latency_hp_runs.md` |
@@ -10,10 +12,10 @@
 | 3b | Native mic, **release** APK, 2 GB Android 9 emulator | Through the page (Hindi mic pressed about 3 s): 108,849 bytes uploaded to the in-app server, about 3.4 s of 16 kHz audio. Same run: 24/24 online and in airplane mode, page check yes/yes/yes, peak PSS 183 MB (app 82 + renderer 104) | `bench/results/emulator-2gb-android9_2026-09-26_m1.md` |
 | 6 | Loop guard on the page | A reply the guard cut, or whose text contains a loop of word variants, is marked `needs_review`: the page shows "⚠️ मूल वक्ता से जाँचें", does not auto-play it (typed or streamed), and offers the nearest verified glossary sentence (`education_glossary.nearest_verified`). Tests: `tests/test_nmt_review.py` (page and lookup, no models) and `tests/test_api.py` (end to end) | `app.py`, `pipeline.py`, `frontend.html` |
 | 7 | Old-WebView test in CI | CI runs the whole suite; the step logs need a GitHub login, so CI now also writes a public run summary (`.github/ci_summary.py`): counts, and the Chrome-69 test by name | `.github/workflows/tests.yml`, the run's Summary page |
-| 4 | Samsung pass, prepared | One-pass `tools/android/device_check.py` (release APK, release-safe pack import folder, 24 checks online and in airplane mode, page checked through the accessibility tree, optional screen recording, mic via the debug build, peak PSS). Session steps and the CA path: `docs/samsung_session.md`; hub log reader: `tools/hub_mic_check.py`. **No Samsung result yet** | `docs/samsung_session.md` |
+| 4 | Tablet pass (Realme Pad Mini), prepared | One-pass `tools/android/device_check.py` (release APK, release-safe pack import folder, 24 checks online and in airplane mode, page checked through the accessibility tree, optional screen recording, mic via the debug build, peak PSS). Session steps and the CA path: `docs/device_session.md`; hub log reader: `tools/hub_mic_check.py`. **No tablet result yet** | `docs/device_session.md` |
 | 3 | Emulator clip + one-pass check, release APK | 2 GB RAM, Android 9 emulator (WebView 69), **release** APK, release-safe import folder: pack import 7.2 s; contract 24/24 online and 24/24 in airplane mode; page in the WebView (lessons listed, line chosen, Translate → Santali): yes / yes / yes; mic 3.02 s (debug build); peak PSS 174 MB (app 77 + renderer 96-98; the earlier run: 185 MB). Clip `docs/demo_assets/android_emulator.mp4` (6.7 MB, about 30 s), caption as in `docs/demo_assets/README.md` | `bench/results/emulator-2gb-android9_2026-09-26_m1.md` |
 | — | **CI was red since 873f6b0**, fixed | The Android test pack's 8 audio clips were never committed (a global `*.wav` rule in `.gitignore`), so `tests/test_android_assets.py::test_the_android_test_pack_is_intact` failed in every fresh clone (the Android unit tests would too); it passed here only because the files exist locally. Reproduced in a fresh clone with the CI requirements; fixed with a `.gitignore` exception and the clips committed (1 MB) | `.gitignore` |
-| 5 | Demo script v1.2 | The Android segment is a recorded clip (Samsung if its check passes, else the 2 GB emulator), with its exact caption and the 2 GB emulator line | `docs/demo_video_script.md`, `docs/demo_assets/README.md` |
+| 5 | Demo script v1.2 | The Android segment is a recorded clip (Realme Pad Mini if its check passes, else the 2 GB emulator), with its exact caption and the 2 GB emulator line | `docs/demo_video_script.md`, `docs/demo_assets/README.md` |
 
 ---
 
@@ -26,9 +28,9 @@
 | 1 | Tablet ASR | 120M for Hindi and Santali. Santali fp32 vs int8: rule recorded (fp32 if peak PSS stays under 900 MB with ASR + NMT + TTS loaded). **Not decided yet**: those engines are not on the device before M3-M4, so that PSS is NOT MEASURED. README/STATUS: "laptop hub = higher accuracy, tablet = portable" | README §4 |
 | 4 | **M1 on a 2 GB RAM, Android 9 emulator** (API 28, x86_64, 4 cores, MemTotal 2.0 GB, WebView 69) | Pack import (SHA-256 checks) 7.6 s; REST contract **24 of 24** with network and **24 of 24 in airplane mode**; native mic 3.00 s captured at 16 kHz; typed lesson line 31 ms (median, over adb); **peak PSS 185 MB** (app 89 + WebView renderer 96) | `bench/results/android_m1_emulator-2gb-android9.md` |
 | 4 | Bug found on Android 9, fixed | The page did not run at all: Android 9's WebView (Chrome 69) has no `??`, a syntax error that stopped the whole script (no lessons shown). Replaced by a helper; `tests/test_frontend_offline.py` now fails on post-Chrome-69 syntax and APIs. After the fix: lessons, session and typed translation checked through the real WebView (screenshots). CSS flex `gap` is not supported there: some spacing is lost (cosmetic) | `frontend.html` |
-| 4 | Samsung tablet over USB | **NOT MEASURED**: no device connected yet (`adb devices`) | — |
+| 4 | Realme Pad Mini over USB | **NOT MEASURED**: no device connected yet (`adb devices`) | — |
 | d | Demo path (`tools/demo_reset.py`) | **Bug found and fixed:** a reply made from a voice clip cached over 30 min earlier got a dead audio link (404): `shutil.copy2` kept the cache file's old time and the pruner deleted the reply at once. Now `copyfile`; regression test in `tests/test_api.py` (fails with the old code). After the fix `demo_reset.py` ends with **Ready**; the page's demo path checked in the browser: teacher line → Santali with the glossary badge and audio (served), Santali → Hindi, child's answer ᱗ green, a correction reused (placeholder, then removed with `--forget-demo-correction`), worksheet PDF, flashcards, lesson-import draft (3 lines, labels, NIPUN-G1-NUM-1) | `tools/demo_reset.py` |
-| c | Demo script | `docs/demo_video_script.md` v1.1: laptop hub flow, plus a 20 s "Android app (work in progress)" segment showing only M1 on the Samsung in airplane mode, with its exact caption; to be filmed only after `device_check.py` passes on the Samsung | `docs/demo_video_script.md` |
+| c | Demo script | `docs/demo_video_script.md` v1.1: laptop hub flow, plus a 20 s "Android app (work in progress)" segment showing only M1 on the tablet (now a Realme Pad Mini) in airplane mode, with its exact caption; to be filmed only after `device_check.py` passes on the tablet (now a Realme Pad Mini) | `docs/demo_video_script.md` |
 | — | Latency, 3 runs | **Waiting for you**: high-performance power plan (a system setting I may not change) and other apps closed | — |
 
 ---
@@ -52,7 +54,7 @@ validation split (no public Santali test split); may overlap model-development d
 
 Measured on the Android **emulator with 4 GB RAM** (API 37, x86_64, 4 cores).
 The AVD asks for 2 GB, but the emulator raises API 37 images to 4096 MB, so this
-is **not** a 2 GB measurement. Not yet on the Samsung tablet or on Android 9.
+is **not** a 2 GB measurement. Not yet on the tablet (now a Realme Pad Mini) or on Android 9.
 
 | Item | Result | Evidence |
 |---|---|---|
@@ -74,7 +76,7 @@ native speaker writes them.
 
 **Needed from you:** (1) a 2 GB emulator needs an Android 9-11 x86_64 system image
 (about 1 GB download from Google via Android Studio's SDK Manager); may I install
-one, or will you? (2) the Samsung tablet over USB (developer mode, USB debugging)
+one, or will you? (2) the tablet over USB (now a Realme Pad Mini) (developer mode, USB debugging)
 for M1 on real hardware.
 
 ---
@@ -97,7 +99,7 @@ Nothing ran on a tablet: on-device figures are **NOT MEASURED**.
 | Size on disk (int8 set) | ASR 138 MB x 2 + NMT int8 517 MB (the two decoder graphs duplicate the decoder weights) + Piper voice 64 MB = about 0.86 GB. RAM on a 2 GB device: **NOT MEASURED** | files above |
 
 **Decisions for you:**
-1. Which ASR for the tablet? (a) 120M per language: 138 MB each, int8 costs Santali 1.9 WER points; (b) 120M fp32: 482 MB each. I recommend (a) for Hindi, and measuring (a) vs (b) for Santali on the Samsung before choosing.
+1. Which ASR for the tablet? (a) 120M per language: 138 MB each, int8 costs Santali 1.9 WER points; (b) 120M fp32: 482 MB each. I recommend (a) for Hindi, and measuring (a) vs (b) for Santali on the tablet (now a Realme Pad Mini) before choosing.
 2. Translation on the tablet: int8 (517 MB, about 5x faster than PyTorch, not token-identical, IN22-Conv within 0.2 chrF++) or fp32 (2.05 GB, too large for 2 GB RAM)? I recommend int8, with the golden-test target changed from "identical" to "IN22-Conv chrF++ within 0.5", since that is your L1 rule.
 3. For F4 hotwords, also export the RNN-T branch (encoder, decoder, joiner). The export needs the same multisoftmax slice on the joint network; not done yet.
 
