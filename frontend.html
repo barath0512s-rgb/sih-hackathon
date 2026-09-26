@@ -387,6 +387,9 @@ p{margin:0}
 .imp-open{margin:-8px 0 18px}
 .imp-msg a,.imp-msg button{margin-left:8px}
 .deck-tag{margin:-10px 0 18px;font-size:13px;font-weight:700;opacity:.75}
+.lak{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 10px}
+.lak th,.lak td{padding:6px 8px;border-bottom:1px solid rgba(0,0,0,.08);text-align:left}
+.lak th{font-weight:800;opacity:.8}
 .fc-back .src-badge{margin:4px 0 0;font-size:11px}
 .src-badge[data-src="wordlist"]{background:var(--c1-soft,#fff1c7)}
 .src-badge[data-src="pending"]{background:var(--warn-soft,#fff1c7);margin-left:6px}
@@ -1149,6 +1152,17 @@ input:focus,textarea:focus,select:focus{
     <div class="slab fig"><span class="e">✅</span><b id="fRight">०%</b><span data-t="pr_right">सही उत्तर</span></div>
     <div class="slab fig"><span class="e">🪜</span><b id="fSteps">०</b><span data-t="pr_steps">पूरी पंक्तियाँ</span></div>
   </div>
+  <div class="slab item" id="lakshyaSlab">
+    <button class="open-btn" aria-expanded="false"><span class="e">🎯</span><b data-t="pr_lakshya">NIPUN लक्ष्य: कक्षा की प्रगति</b><span class="sign">+</span></button>
+    <div class="body">
+      <p class="deck-tag" data-t="pr_lakshya_s">हर लक्ष्य और सप्ताह के लिए पढ़ाए गए पाठ और उत्तर (कोई नाम या आवाज़ नहीं)</p>
+      <div id="lakshyaTable"></div>
+      <div class="srow" style="border:0">
+        <button class="btn paper" id="lakCsv"><span class="e">📄</span> CSV</button>
+        <button class="btn paper" id="lakPdf"><span class="e">🖨️</span> PDF</button>
+      </div>
+    </div>
+  </div>
   <div class="slab logwrap" id="log">
     <div class="blank">
       <span class="e">🌱</span>
@@ -1216,6 +1230,33 @@ input:focus,textarea:focus,select:focus{
           <span class="txt"><b data-t="se_pack_hub">हब से</b><small data-t="se_pack_hub_s">हब का https:// पता</small></span>
           <input type="url" id="packHub" inputmode="url" autocomplete="off" spellcheck="false" aria-label="hub">
           <button class="btn" id="packHubBtn"><span class="e">⬇️</span> <span data-t="se_pack_get">लाएँ</span></button>
+        </div>
+        <div class="srow">
+          <span class="txt"><b data-t="se_sync_out">हब के लिए निर्यात</b><small data-t="se_sync_out_s">सुधार और कक्षा की गिनती (नाम या आवाज़ नहीं)</small></span>
+          <button class="btn" id="syncOut"><span class="e">📤</span> <span data-t="se_sync_go">बनाएँ</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slab item" id="previewSlab">
+      <button class="open-btn" aria-expanded="false"><span class="e">🗣️</span><b data-t="pv_title">मुंडारी / हो आवाज़ (Preview)</b><span class="sign">+</span></button>
+      <div class="body">
+        <p class="deck-tag" data-t="pv_sub">शिक्षक की लिखी पंक्ति (देवनागरी में)। उच्चारण की समीक्षा नहीं हुई: केवल Preview</p>
+        <div class="srow">
+          <select id="pvLang" aria-label="language"><option value="unr">मुंडारी (Mundari)</option><option value="hoc">हो (Ho)</option></select>
+          <input type="text" id="pvText" autocomplete="off" aria-label="line">
+          <button class="btn" id="pvGo"><span class="e">🔊</span> <span data-t="pv_go">सुनें</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slab item" id="syncSlab">
+      <button class="open-btn" aria-expanded="false"><span class="e">🔄</span><b data-t="se_sync">टैबलेट से सुधार</b><span class="sign">+</span></button>
+      <div class="body">
+        <div class="srow">
+          <span class="txt"><b data-t="se_sync_in">टैबलेट की फ़ाइल जोड़ें</b><small data-t="se_sync_in_s">जाँचकर मिलाया जाता है; टकराव मूल वक्ता के पास जाते हैं</small></span>
+          <input type="file" id="syncFile" accept=".json,application/json" aria-label="export">
+          <button class="btn" id="syncIn"><span class="e">📥</span> <span data-t="se_sync_add">मिलाएँ</span></button>
         </div>
       </div>
     </div>
@@ -1332,6 +1373,13 @@ hi: {
   wr_low:"एक बार और पढ़ाइए", wr_low_b:"चीज़ें हाथ में देकर फिर से कीजिए",
   m_nothing:"इस तरफ़ कुछ नहीं है", m_first:"पहले अनुवाद कीजिए", m_playing:"सुनाई दे रहा है",
   m_not_lesson:"यह पाठ की पंक्ति नहीं है: लैपटॉप हब इस्तेमाल कीजिए या लिखिए", fc_pdf:"छापने के लिए",
+  se_sync_out:"हब के लिए निर्यात", se_sync_out_s:"सुधार और कक्षा की गिनती (नाम या आवाज़ नहीं)", se_sync_go:"बनाएँ",
+  se_sync:"टैबलेट से सुधार", se_sync_in:"टैबलेट की फ़ाइल जोड़ें", se_sync_in_s:"जाँचकर मिलाया जाता है; टकराव मूल वक्ता के पास जाते हैं",
+  pr_lakshya:"NIPUN लक्ष्य: कक्षा की प्रगति", pr_lakshya_s:"हर लक्ष्य और सप्ताह के लिए पढ़ाए गए पाठ और उत्तर (कोई नाम या आवाज़ नहीं)",
+  pr_week:"सप्ताह", pr_taught:"पाठ",
+  pv_title:"मुंडारी / हो आवाज़ (Preview)", pv_sub:"शिक्षक की लिखी पंक्ति (देवनागरी में)। उच्चारण की समीक्षा नहीं हुई: केवल Preview",
+  pv_go:"सुनें", pv_note:"Preview: उच्चारण की समीक्षा बाकी",
+  se_sync_add:"मिलाएँ", se_sync_done:"फ़ाइल बनी: {n} सुधार", se_sync_merged:"मिलाए: {a} · टकराव: {c}", se_sync_bad:"फ़ाइल नहीं मिलाई",
   m_blocked:"एक बार दबाकर आवाज़ चालू कीजिए", m_no_voice:"इस पंक्ति की आवाज़ नहीं बन पाई। अनुवाद ऊपर लिखा है।",
   src_glossary:"✅ सत्यापित शब्दकोश", src_teacher:"🧑‍🏫 शिक्षक द्वारा सुधारा", src_cached:"⚡ पहले से तैयार", src_model:"🤖 मशीन अनुवाद", src_wordlist:"📝 शब्द सूची", src_pending:"समीक्षा बाकी", src_review:"⚠️ मूल वक्ता से जाँचें",
   m_review:"यह अनुवाद भरोसेमंद नहीं: मूल वक्ता से जाँचें", m_nearest:"सबसे पास का सत्यापित वाक्य", ans_pending:"⏳ उत्तरों की समीक्षा बाकी",
@@ -1473,6 +1521,13 @@ en: {
   wr_low:"Worth teaching again", wr_low_b:"Run it once more with things they can hold",
   m_nothing:"There is nothing on that side", m_first:"Translate a line first", m_playing:"Playing it",
   m_not_lesson:"Not a lesson line: use the laptop hub or type", fc_pdf:"Print",
+  se_sync_out:"Export for the hub", se_sync_out_s:"Corrections and class counts (no names, no voices)", se_sync_go:"Make",
+  se_sync:"Corrections from tablets", se_sync_in:"Add a tablet's file", se_sync_in_s:"Checked, then merged; conflicts go to a native speaker",
+  pr_lakshya:"NIPUN Lakshya: class progress", pr_lakshya_s:"Lessons taught and answers per Lakshya and week (no names, no voices)",
+  pr_week:"Week", pr_taught:"Lessons",
+  pv_title:"Mundari / Ho voice (Preview)", pv_sub:"A line written by a teacher (Devanagari). Pronunciation not reviewed: Preview only",
+  pv_go:"Listen", pv_note:"Preview: pronunciation not reviewed",
+  se_sync_add:"Merge", se_sync_done:"File made: {n} corrections", se_sync_merged:"Merged: {a} · conflicts: {c}", se_sync_bad:"File not merged",
   m_blocked:"Press once to allow sound", m_no_voice:"The voice for this line could not be made. The translation is shown above.",
   src_glossary:"✅ Verified glossary", src_teacher:"🧑‍🏫 Teacher-verified", src_cached:"⚡ Cached", src_model:"🤖 Model", src_wordlist:"📝 Word list", src_pending:"review pending", src_review:"⚠️ Check with a native speaker",
   m_review:"This translation is not reliable: check with a native speaker", m_nearest:"Nearest verified sentence", ans_pending:"⏳ answers: review pending",
@@ -1792,6 +1847,7 @@ function view(name){
   $$(".tabs a").forEach(a => a.dataset.view === name
     ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
   if (name === "settings") modelBadges();
+  if (name === "progress") lakshyaView();          // A8
   window.scrollTo({ top:0, behavior: still() ? "auto" : "smooth" });
 }
 function fromHash(){
@@ -2761,12 +2817,73 @@ if (window.VaaniPack){
   showPack();
   $("#packFile").onclick = () => window.VaaniPack.pickFile();
   $("#packHubBtn").onclick = () => window.VaaniPack.fromHub($("#packHub").value.trim());
+  $("#syncSlab").hidden = true;                  // merging happens on the hub
+  $("#syncOut").onclick = async () => {
+    try {
+      const r = await postJSON("/sync/export", {});
+      say(t("se_sync_done").replace("{n}", num(r.corrections)) + (r.saved_to ? " · " + r.saved_to : ""), "📤");
+    } catch(e){ fail(e); }
+  };
   window.onPackImported = r => {
     say((r.ok ? t("se_pack_ok") : t("se_pack_bad")) + (r.ok ? "" : ": " + r.message), r.ok ? "📦" : "⚠️");
     showPack();
     if (r.ok) setTimeout(() => location.reload(), 800);
   };
 }
+// A4 on the hub: merge a tablet's signed export
+// A7: Mundari / Ho voice preview (hub only; the registry says which languages have one)
+(async () => {
+  try {
+    const d = await getJSON("/languages");
+    const has = (d.languages || []).filter(l => l.stages.tts.maturity === "preview").map(l => l.code);
+    $("#previewSlab").hidden = !has.length;
+    $$("#pvLang option").forEach(o => { o.hidden = !has.includes(o.value); });
+  } catch(e){ $("#previewSlab").hidden = true; }
+})();
+$("#pvGo").onclick = async () => {
+  const text = $("#pvText").value.trim();
+  if (!text) return;
+  try {
+    const r = await postJSON("/preview/speak", {lang: $("#pvLang").value, text});
+    if (r.audio_url){ const a = new Audio(SERVER + r.audio_url); a.play().catch(() => {}); say(t("pv_note"), "🗣️"); }
+    else say(r.error || t("m_err"), "⚠️");
+  } catch(e){ fail(e); }
+};
+// A8: class-level progress per NIPUN Lakshya and week
+async function lakshyaView(){
+  const box = $("#lakshyaTable");
+  if (!box) return;
+  try {
+    const d = await getJSON("/progress/lakshya");
+    const rows = d.rows || [];
+    box.innerHTML = rows.length ? `<table class="lak"><tr><th>${t("pr_week")}</th><th>NIPUN</th><th>${t("pr_taught")}</th><th>✅</th><th>🟡</th><th>🔴</th></tr>` +
+      rows.map(r => `<tr><td>${r.week}</td><td title="${r.lakshya_id}">${r.lakshya_id}</td><td>${num(r.lessons_taught)}</td>` +
+                    `<td>${num(r.green)}</td><td>${num(r.yellow)}</td><td>${num(r.red)}</td></tr>`).join("") + "</table>"
+      : `<p>${t("pr_blank_t")}</p>`;
+  } catch(e){ box.textContent = ""; }
+}
+async function lakshyaFile(fmt){
+  try {
+    const r = await api("/progress/lakshya?format=" + fmt);
+    const url = URL.createObjectURL(await r.blob());
+    const a = document.createElement("a");
+    a.href = url; a.download = (S.appName || T.en.brand) + "_NIPUN_progress." + fmt;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  } catch(e){ fail(e); }
+}
+$("#lakCsv").onclick = () => lakshyaFile("csv");
+$("#lakPdf").onclick = () => lakshyaFile("pdf");
+if (window.VaaniPack) $("#lakPdf").hidden = true;          // the tablet exports CSV; the PDF is made on the hub
+$("#syncIn").onclick = async () => {
+  const f = $("#syncFile").files[0];
+  if (!f) return;
+  const fd = new FormData(); fd.append("export", f, f.name);
+  try {
+    const r = await api("/sync/import", {method:"POST", body:fd}).then(x => x.json());
+    say(t("se_sync_merged").replace("{a}", num(r.applied)).replace("{c}", num(r.conflicts.length)), r.conflicts.length ? "⚖️" : "✅");
+  } catch(e){ say(t("se_sync_bad") + (e.message ? ": " + e.message : ""), "⚠️"); }
+};
 toggle("#tgBig",  v => bigType(v));
 toggle("#tgAsk",  v => { S.confirm = v; localStorage.setItem("vs_confirm", v?"1":"0"); });
 $("#saveSet").onclick = async () => {

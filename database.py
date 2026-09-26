@@ -120,22 +120,27 @@ def init_db():
 
 
 # ── Corrections ───────────────────────────────────────────────────────────────
-def save_feedback(hindi, santali, is_correct, corrected="", direction="hi-to-sat"):
+def save_feedback(hindi, santali, is_correct, corrected="", direction="hi-to-sat", timestamp=None, origin="hub"):
     """Store a thumbs-up, thumbs-down, or correction.
 
     hindi_text / santali_text always hold the Hindi and Santali sides, whichever
     way the translation ran. corrected_text is in the target language.
+    timestamp / origin: set by the sync merge (sync.py) for a tablet's correction,
+    which keeps the time it was made there and "tablet:<device_id>".
     """
     if direction not in DIRECTIONS:
         raise ValueError(f"direction must be one of {DIRECTIONS}")
     source = hindi if direction == "hi-to-sat" else santali
     with _db() as c:
+        cols = {r["name"] for r in c.execute("PRAGMA table_info(feedback)")}
+        if "origin" not in cols:
+            c.execute("ALTER TABLE feedback ADD COLUMN origin TEXT NOT NULL DEFAULT 'hub'")
         c.execute("""
             INSERT INTO feedback (hindi_text, santali_text, is_correct, corrected_text,
-                                  timestamp, direction, source_key)
-            VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (hindi, santali, bool(is_correct), corrected or "", time.time(),
-             direction, normalize_key(source or "")))
+                                  timestamp, direction, source_key, origin)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (hindi, santali, bool(is_correct), corrected or "", time.time() if timestamp is None else timestamp,
+             direction, normalize_key(source or ""), origin))
 
 
 def get_correction(source_text, direction="hi-to-sat"):

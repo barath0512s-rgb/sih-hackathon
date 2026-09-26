@@ -1,0 +1,37 @@
+{
+ "note": "Language registry (A7). One entry per language; per stage the engine, its licence and its maturity. maturity: production (in the app, measured), preview (works, labelled Preview, not measured for quality), phrasebook (fixed verified sentences only), not available. The page, GET /languages, /health/models, the README table and tools/deck_numbers.py read this file; tests/test_languages.py keeps them in step. Sources: docs/sources.md.",
+ "languages": [
+  {
+   "code": "hi", "name_en": "Hindi", "name_local": "हिंदी", "scripts": ["Deva"],
+   "stages": {
+    "asr": {"engine": "IndicConformer 600M multilingual (hub); 120M CTC int8 via sherpa-onnx (tablet)", "licence": "MIT", "maturity": "production", "source": "docs/sources.md#indicconformer-600m"},
+    "nmt": {"engine": "IndicTrans2 indic-indic-dist-320M (hub)", "licence": "MIT", "maturity": "production", "source": "docs/sources.md#indictrans2-model"},
+    "tts": {"engine": "Piper hi_IN-pratham-medium", "licence": "CC BY-NC-SA 4.0", "maturity": "production", "source": "docs/sources.md#piper-pratham"}
+   }
+  },
+  {
+   "code": "sat", "name_en": "Santali", "name_local": "ᱥᱟᱱᱛᱟᱲᱤ", "scripts": ["Olck"],
+   "stages": {
+    "asr": {"engine": "IndicConformer 600M multilingual (hub); 120M transducer int8 via sherpa-onnx (tablet)", "licence": "MIT", "maturity": "production", "source": "docs/sources.md#indicconformer-600m"},
+    "nmt": {"engine": "IndicTrans2 indic-indic-dist-320M (hub); pack lines on the tablet", "licence": "MIT", "maturity": "production", "source": "docs/sources.md#indictrans2-model"},
+    "tts": {"engine": "Piper hi_IN-pratham-medium reading an Ol Chiki transliteration (pending native review)", "licence": "CC BY-NC-SA 4.0", "maturity": "production", "source": "docs/sources.md#piper-pratham"}
+   }
+  },
+  {
+   "code": "unr", "name_en": "Mundari", "name_local": "मुंडारी", "scripts": ["Deva"],
+   "stages": {
+    "asr": {"engine": null, "licence": null, "maturity": "not available", "source": null},
+    "nmt": {"engine": "IndicTrans2 + Hindi–Mundari LoRA (notebooks/mundari_lora.ipynb, not run yet)", "licence": "MIT (model); data CC BY-SA 4.0", "maturity": "not available", "source": "docs/sources.md#mmloso"},
+    "tts": {"engine": "facebook/mms-tts-unr (reads Odia script; Devanagari converted)", "licence": "CC BY-NC 4.0", "maturity": "preview", "source": "docs/sources.md#mms-tts"}
+   }
+  },
+  {
+   "code": "hoc", "name_en": "Ho", "name_local": "हो", "scripts": ["Deva", "Wara"],
+   "stages": {
+    "asr": {"engine": null, "licence": null, "maturity": "not available", "source": null},
+    "nmt": {"engine": null, "licence": null, "maturity": "not available", "source": null},
+    "tts": {"engine": "facebook/mms-tts-hoc (reads Odia script; Devanagari converted; Warang Citi not supported yet)", "licence": "CC BY-NC 4.0", "maturity": "preview", "source": "docs/sources.md#mms-tts"}
+   }
+  }
+ ]
+}

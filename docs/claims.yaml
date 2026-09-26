@@ -389,3 +389,51 @@
   text: "The tablet renders worksheets itself"
   status: "NOT BUILT"
   evidence: STATUS.md
+- id: a3_roundtrip
+  text: "Round-trip check on IN22-Conv (test half): threshold 34.5 flags 116 of 208 worst Hindi→Santali translations (recall 0.558) at precision 0.446; it flags 260 of 738 sentences; Spearman 0.295 with sentence chrF"
+  status: "TRUE"
+  evidence: eval/results/roundtrip_flag.md
+- id: a3_scope
+  text: "The round-trip flag applies to typed translations and content packs; voice replies skip it (a second model pass)"
+  status: "TRUE"
+  evidence: config.py
+- id: a4_sync_roundtrip
+  text: "A correction made on one tablet reaches another through the hub (signed export, merge, signed pack); a pack with one changed byte in its manifest is refused (2 GB Android 9 emulator, the second tablet simulated by clearing the app's data)"
+  status: "TRUE"
+  evidence: bench/results/sync_roundtrip_2026-09-26.md
+- id: a4_two_devices
+  text: "Correction sync between two physical tablets"
+  status: "NOT MEASURED"
+  evidence: STATUS.md
+- id: a8_lakshya_view
+  text: "Class-level progress per NIPUN Lakshya and week (lessons taught, green/yellow/red) from the hub's lessons and synced tablets, exported as CSV (hub and tablet) and PDF (hub); no child names or audio"
+  status: "TRUE"
+  evidence: tests/test_progress.py
+- id: a7_registry
+  text: "One language registry (languages.json) drives the README table, GET /languages and the deck numbers: Hindi and Santali production at every stage; Mundari and Ho speech preview only"
+  status: "TRUE"
+  evidence: tests/test_languages.py
+- id: a7_preview_voices
+  text: "Mundari and Ho preview voices (facebook/mms-tts-unr, mms-tts-hoc, CC BY-NC 4.0) speak a teacher's Devanagari line on the laptop hub, labelled Preview; pronunciation not reviewed"
+  status: "TRUE"
+  evidence: mms_tts.py
+- id: a7_samples
+  text: "Mundari and Ho audio samples of teacher-authored lines"
+  status: "NOT BUILT"
+  evidence: STATUS.md
+- id: a7_tablet_voices
+  text: "Mundari and Ho voices on the tablet"
+  status: "NOT BUILT"
+  evidence: STATUS.md
+- id: mundari_translation
+  text: "Hindi–Mundari translation"
+  status: "NOT BUILT"
+  evidence: notebooks/mundari_lora.ipynb
+- id: a6_voice_compare
+  text: "Santali voices, ASR round-trip CER on 210 pack lines (600M): Piper (transliterated) mean 0.445, median 0.275; Indic Parler-TTS mean 0.776, median 0.091 (lower on 139 lines, higher on 49); by the rule fixed in advance the pack keeps Piper"
+  status: "TRUE"
+  evidence: bench/results/voice_compare.md
+- id: a6_mos
+  text: "Native listener ratings (MOS) of the Santali voices"
+  status: "NOT MEASURED"
+  evidence: docs/samples/mos_lite_sheet.md

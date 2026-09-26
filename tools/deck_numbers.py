@@ -313,6 +313,59 @@ def f1_phase_a():
             f"{same.group(1) if same else NM} identical; " + ", ".join(f"{k} {v} ms" for k, v in ms), f"bench/results/{g.name}")
 
 
+def uplift():
+    """Language maturity and the uplift results (A1, A3, A6), read from their files."""
+    import glob
+    import json
+    sys.path.insert(0, str(ROOT))
+    import languages
+    print("\nLanguages and maturity (languages.json)")
+    for l in languages.load():
+        out(f"{l['name_en']}: ASR / translation / speech",
+            " / ".join(l["stages"][s]["maturity"] for s in languages.STAGES), "languages.json")
+    lm = RESULTS / "lesson_match.json"
+    if lm.exists():
+        r = json.loads(lm.read_text(encoding="utf-8"))
+        print("\nLesson-line matching (A1; synthetic clips, held-out half, laptop)")
+        for lang, name in (("hi", "Hindi"), ("sat", "Santali")):
+            t = r[lang]["test"]
+            out(f"{name}: threshold, precision, recall", f"{r[lang]['threshold']:.2f}, {t['precision']:.3f}, {t['recall']:.3f}",
+                "bench/results/lesson_match.md")
+    for f in sorted(glob.glob(str(RESULTS / "*_voice.json"))):
+        v = json.loads(Path(f).read_text(encoding="utf-8"))
+        rows = v["rows"]
+        hi = [r for r in rows if r["lang"] == "hi"]
+        ms = sorted(r["ms"] for r in hi if r["correct"] and r["audio"])
+        acc = [r for r in hi if r["matched"]]
+        cor = [r for r in hi if r["correct"]]
+        pos = [r for r in hi if r["kind"] == "pos"]
+        src = f"bench/results/{Path(f).stem}.md"
+        print(f"\nOn the device: {v['device_label']} (A1)")
+        out("Hindi transcripts identical to the laptop", f"{sum(r['device'] == r['laptop'] for r in hi)} of {len(hi)}", src)
+        out("matching precision / recall", f"{len(cor) / len(acc):.3f} / {len(cor) / len(pos):.3f}", src)
+        def lin(q):                        # linear interpolation, as tools/android/voice_bench.py reports
+            x = (len(ms) - 1) * q; f = int(x)
+            return ms[f] + (ms[min(f + 1, len(ms) - 1)] - ms[f]) * (x - f)
+        out("voice to voice, lesson lines, p50 / p90", f"{lin(.5) / 1000:.2f} / {lin(.9) / 1000:.2f} s (n={len(ms)})", src)
+        p = v["peak_pss_kb"]
+        out("peak PSS, app + WebView", f"{p['app'] / 1024:.0f} + {p['renderer'] / 1024:.0f} MB", src)
+        a = v["answers"]
+        out("spoken answers graded as expected", f"{sum((x['signal'] == 'green') == (x['expect'] == 'green') for x in a)} of {len(a)}", src)
+    rt = ROOT / "eval" / "results" / "roundtrip_flag.json"
+    if rt.exists():
+        r = json.loads(rt.read_text(encoding="utf-8"))
+        print("\nRound-trip flag (A3; IN22-Conv test half)")
+        out("threshold, precision, recall", f"{r['threshold']}, {r['test']['precision']:.3f}, {r['test']['recall']:.3f}",
+            "eval/results/roundtrip_flag.md")
+    vc = RESULTS / "voice_compare.json"
+    if vc.exists():
+        r = json.loads(vc.read_text(encoding="utf-8"))
+        print("\nSantali voice comparison (A6; ASR round-trip CER, 600M)")
+        for k2, name in (("piper", "Piper (transliterated)"), ("parler", "Indic Parler-TTS")):
+            out(name, f"CER {r['voices'][k2]['cer600_mean']:.3f}", "bench/results/voice_compare.md")
+        out("decision", r["decision"], "bench/results/voice_compare.md")
+
+
 def main():
     print(f"{config.APP_NAME}: deck numbers. Values come from files in this repo; "
           f"measurements are '{LAPTOP}'.")
@@ -325,10 +378,10 @@ def main():
     if not any("real" in k for k in runs):
         print(f"\nVoice to voice, real teacher/child recordings: {NM} (bench/clips/real/ has no run yet)")
 
-    print("\nOn a 2 GB RAM, Android 9+ tablet")
-    out("voice to voice", NM, "no tablet; work package 4")
-    out("peak RAM", NM, "no tablet; work package 4")
-    out("tablet model and Android version", NM, "no tablet yet")
+    print("\nOn a real 2 GB RAM, Android 9+ tablet")
+    out("voice to voice", NM, "the 2 GB figures below are from an Android 9 emulator")
+    out("tablet model and Android version", NM, "no 2 GB tablet; the Realme Pad Mini is 4 GB, Android 11")
+    uplift()
     print(f"\nLaptop resources")
     out("peak RAM of the server", NM, "no script measures it yet")
 

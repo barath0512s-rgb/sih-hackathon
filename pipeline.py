@@ -258,8 +258,18 @@ class VaaniSetuPipeline:
             text = text.replace(bad, good).strip()
         return text
 
-    def translate(self, text, direction="hi-to-sat", content_mode="lesson_script"):
+    def roundtrip_chrf(self, hindi, santali):
+        """A3: chrF of the Hindi source against the Santali translated back to Hindi."""
+        from sacrebleu.metrics import CHRF
+        back, _ = self._nmt(santali, "sat_Olck", "hin_Deva")
+        return CHRF().sentence_score(back, [hindi]).score, back
+
+    def translate(self, text, direction="hi-to-sat", content_mode="lesson_script", roundtrip=False):
         """Translate one line. Returns {"text", "source", "model_score"}.
+
+        roundtrip=True (A3; config.ROUNDTRIP_CHECK): a model translation Hindi ->
+        Santali is also translated back; below config.ROUNDTRIP_CHRF_THRESHOLD it gets
+        needs_review and review_reason "roundtrip". Adds "roundtrip_chrf".
 
         Answered by the cheapest layer that can answer it, in this order:
           teacher   a teacher's correction (always wins, both directions)
@@ -284,6 +294,8 @@ class VaaniSetuPipeline:
 
         key = f"{direction}::{content_mode}::{text}"
         if key in TRANSLATION_CACHE:
+            if roundtrip and fwd:
+                self._roundtrip(text, TRANSLATION_CACHE[key])
             cached = dict(TRANSLATION_CACHE[key])
             cached["source"] = "cached"
             return cached
@@ -296,8 +308,22 @@ class VaaniSetuPipeline:
         if needs_review:
             # A loop was cut or found: the text is not a translation to present as one.
             result["needs_review"] = True
+            result["review_reason"] = "loop"
+        if roundtrip and fwd:
+            self._roundtrip(text, result)
         TRANSLATION_CACHE[key] = result
         return result
+
+    def _roundtrip(self, hindi, result):
+        """Adds roundtrip_chrf (once) and needs_review below the threshold (A3)."""
+        thr = config.ROUNDTRIP_CHRF_THRESHOLD
+        if not config.ROUNDTRIP_CHECK or thr is None or "roundtrip_chrf" in result:
+            return
+        rt, _ = self.roundtrip_chrf(hindi, result["text"])
+        result["roundtrip_chrf"] = round(rt, 1)
+        if rt < thr and not result.get("needs_review"):
+            result["needs_review"] = True
+            result["review_reason"] = "roundtrip"
 
     def hindi_to_santali(self, hindi_text, content_mode="lesson_script"):
         """(santali, source, model_score). Kept for older callers; see translate()."""

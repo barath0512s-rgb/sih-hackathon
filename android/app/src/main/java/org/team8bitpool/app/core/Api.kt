@@ -29,6 +29,8 @@ class Api(
     private val defaultConfig: JSONObject = JSONObject().put("app_name", "").put("app_name_local", JSONObject()),
     private val settings: DeviceSettings = DeviceSettings(),
     private val speechProvider: () -> Speech? = { null },
+    /** Where POST /sync/export writes the signed file (the app's shared folder); null in tests. */
+    private val exportDir: File? = null,
 ) {
     /** On-device speech, when the flag is on and a model pack is installed (A1). */
     private fun speech(): Speech? = if (settings.onDeviceVoice) speechProvider() else null
@@ -77,6 +79,9 @@ class Api(
             "POST /feedback" -> feedback(json)
             "POST /metrics/client" -> metricsClient(json)
             "POST /worksheet" -> worksheet(pack, json)
+            "POST /sync/export" -> syncExport()
+            "GET /progress/lakshya" -> progressLakshya(query["format"] ?: "json")
+            "POST /sync/import" -> Resp.error(501, "Tablet files are merged on the hub", "hub_only")
             "POST /curriculum/import", "POST /curriculum/save" ->
                 Resp.error(501, "Lessons are written on the hub and arrive in the content pack", "hub_only")
             else -> when {
@@ -166,6 +171,8 @@ class Api(
                 ?: return@withSession Resp.error(400, "step is required: the index of the step being answered")
             if (step !in 0 until s.totalSteps) return@withSession Resp.error(400, "step must be between 0 and ${s.totalSteps - 1}")
             val signal = s.checkResponse(d.optString("response", ""), step)
+            taught(s)
+            store.logAnswer(s.grade, s.topic, s.lesson.optJSONArray("lakshya_ids") ?: JSONArray(), signal)
             val out = JSONObject().put("signal", signal).put("message", signalMessages[signal]).put("step", step)
             if (transcript != null) {
                 out.put("transcript", transcript)
@@ -229,11 +236,12 @@ class Api(
         val chunk = JSONObject().put("type", "chunk").put("i", 0).put("source_text", recognized)
             .put("translated_text", out ?: "").put("source", source).put("audio_url", audioUrl ?: JSONObject.NULL)
             .put("tts_error", ttsError).put("tts_engine", engine).put("ms", (t3 - t0) / 1_000_000)
-            .put("needs_review", false).put("nearest_verified", JSONObject.NULL).put("match", match)
+            .put("needs_review", teacher == null && entry?.optBoolean("needs_review") == true)
+            .put("nearest_verified", JSONObject.NULL).put("match", match)
             .put("review_status", entry?.optString("review_status") ?: JSONObject.NULL)
         if (out == null) chunk.put("code", "not_a_lesson_line")
         if (out != null) synchronized(sessions) { sessions[parts["session_id"]?.text() ?: ""] }?.let {
-            synchronized(it) { it.recordTranslation(if (direction == "hi-to-sat") recognized else out,
+            taught(it); synchronized(it) { it.recordTranslation(if (direction == "hi-to-sat") recognized else out,
                                                     if (direction == "hi-to-sat") out else recognized, (t3 - t0) / 1e9) }
         }
         if (!stream) {
@@ -247,6 +255,58 @@ class Api(
             JSONObject().put("type", "done").put("request_id", rid).put("translated_text", out ?: "")
                 .put("source", source).put("latency", lat))
         return Resp(200, "application/x-ndjson", events.joinToString("") { it.toString() + "\n" }.toByteArray())
+    }
+
+    /** A lesson counts as taught (A8) once something happens in it: the page opens a
+     *  session on start, which alone is not teaching. */
+    private val counted = HashSet<String>()
+    private fun taught(s: LessonSession) {
+        if (synchronized(counted) { counted.add(s.sid) })
+            store.logSession(s.grade, s.topic, s.lesson.optJSONArray("lakshya_ids") ?: JSONArray())
+    }
+
+    /** A8: this tablet's class counts per Lakshya and ISO week (json or csv; the PDF is made on the hub). */
+    private fun progressLakshya(format: String): Resp {
+        val agg = LinkedHashMap<String, JSONObject>()
+        for (r in store.classCounts()) {
+            val d = java.time.LocalDate.parse(r.getString("day"))
+            val week = "%d-W%02d".format(d.get(java.time.temporal.IsoFields.WEEK_BASED_YEAR),
+                                         d.get(java.time.temporal.IsoFields.WEEK_OF_WEEK_BASED_YEAR))
+            val lids = r.optJSONArray("lakshya_ids") ?: JSONArray()
+            for (i in 0 until lids.length()) {
+                val a = agg.getOrPut("$week|${lids.getString(i)}") {
+                    JSONObject().put("lakshya_id", lids.getString(i)).put("week", week).put("lessons_taught", 0)
+                        .put("green", 0).put("yellow", 0).put("red", 0).put("sources", JSONArray().put("tablet:${store.deviceId}"))
+                }
+                a.put("lessons_taught", a.getInt("lessons_taught") + r.getInt("sessions"))
+                for (k in listOf("green", "yellow", "red")) a.put(k, a.getInt(k) + r.getInt(k))
+            }
+        }
+        val rows = agg.values.sortedWith(compareBy({ it.getString("week") }, { it.getString("lakshya_id") }))
+        for (a in rows) {
+            val n = a.getInt("green") + a.getInt("yellow") + a.getInt("red")
+            a.put("green_share", if (n > 0) Math.round(a.getInt("green") * 1000.0 / n) / 1000.0 else JSONObject.NULL)
+        }
+        return when (format) {
+            "csv" -> Resp(200, "text/csv", (listOf("week,lakshya_id,lessons_taught,green,yellow,red,green_share,sources") +
+                rows.map { a -> listOf(a.getString("week"), a.getString("lakshya_id"), a.getInt("lessons_taught"), a.getInt("green"),
+                    a.getInt("yellow"), a.getInt("red"), if (a.isNull("green_share")) "" else a.getDouble("green_share"),
+                    "tablet:${store.deviceId}").joinToString(",") }).joinToString("\n", postfix = "\n").toByteArray())
+            "json" -> Resp.json(JSONObject().put("rows", JSONArray(rows)))
+            else -> Resp.error(404, "The progress PDF is made on the hub; the tablet gives csv", "hub_only")
+        }
+    }
+
+    /** A4: the signed corrections-and-counts file for the hub. */
+    private fun syncExport(): Resp {
+        val bytes = store.exportSigned()
+        val name = "nijbhasha-export-${store.deviceId}-${System.currentTimeMillis() / 1000}.json"
+        val saved = exportDir?.let { d -> d.mkdirs(); File(d, name).also { it.writeBytes(bytes) } }
+        val p = JSONObject(JSONObject(String(bytes, Charsets.UTF_8)).getString("payload"))
+        return Resp.json(JSONObject().put("device_id", store.deviceId).put("file", name)
+            .put("saved_to", saved?.path ?: JSONObject.NULL)
+            .put("corrections", p.getJSONArray("corrections").length()).put("class_rows", p.getJSONArray("analytics").length())
+            .put("export", JSONObject(String(bytes, Charsets.UTF_8))))
     }
 
     private fun deviceAudio(name: String): Resp {
@@ -278,7 +338,7 @@ class Api(
         store.logLatency(rid, JSONObject().put("direction", direction).put("input_type", "typed").put("source", source)
             .put("server_ms", (t2 - t0) / 1e6).put("tts_engine", if (audio != null) "pack" else "none"))
         synchronized(sessions) { sessions[d.optString("session_id")] }?.let {
-            synchronized(it) { it.recordTranslation(if (direction == "hi-to-sat") text else out,
+            taught(it); synchronized(it) { it.recordTranslation(if (direction == "hi-to-sat") text else out,
                                                     if (direction == "hi-to-sat") out else text, (t2 - t0) / 1e9) }
         }
         return Resp.json(JSONObject()
@@ -287,7 +347,9 @@ class Api(
             .put("audio_url", audio?.let { "/audio/pack/${it.name}" } ?: JSONObject.NULL)
             .put("tts_error", if (audio == null) "No recorded audio for this line on the tablet yet (on-device speech: M2)" else JSONObject.NULL)
             .put("tts_engine", if (audio != null) "pack" else "none")
-            .put("latency", lat).put("english_pivot", "").put("confidence", JSONObject.NULL))
+            .put("latency", lat).put("english_pivot", "").put("confidence", JSONObject.NULL)
+            // A3: a pack line the round-trip check flagged (a teacher's correction clears it)
+            .put("needs_review", source != "teacher" && fromPack?.optBoolean("needs_review") == true))
     }
 
     private fun speak(pack: Pack?, d: JSONObject): Resp {

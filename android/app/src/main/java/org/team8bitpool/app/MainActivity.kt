@@ -54,10 +54,13 @@ class MainActivity : Activity() {
         pack = runCatching { File(packRoot, "current").takeIf { it.isDirectory }?.let { Pack(it) } }
             .onFailure { Log.e(TAG, "pack unreadable", it) }.getOrNull()
         val defaults = JSONObject(assets.open("app_config.json").use { it.readBytes().decodeToString() })
+        Pack.trustedKey = runCatching {
+            org.team8bitpool.app.core.Ed25519.unhex(assets.open("pack_signing.pub").use { it.readBytes().decodeToString() }.trim())
+        }.getOrNull()
         settings = DeviceSettings.from(JSONObject(assets.open("device_config.json").use { it.readBytes().decodeToString() }))
         loadSpeech()
         api = Api({ pack }, Store(File(filesDir, "store")), defaultConfig = defaults, settings = settings,
-                  speechProvider = { speech as Speech? })
+                  speechProvider = { speech as Speech? }, exportDir = getExternalFilesDir("export"))
         server = LocalServer(assets, api).also { it.start(5000, false) }
 
         web = WebView(this)

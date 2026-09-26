@@ -10,6 +10,9 @@ Pack layout (format 1):
   manifest.json          format, created, app name, model versions, counts, and
                          the SHA-256 of every other file (the app refuses a pack
                          whose files do not match)
+  manifest.sig           Ed25519 signature of manifest.json by the hub's key
+                         (pack_signing.py); the app refuses an unsigned or
+                         wrongly signed pack
   api/config.json        GET /config, as the hub answers it
   api/lessons.json       GET /lessons
   api/flashcards.json    GET /flashcards
@@ -104,9 +107,14 @@ def build(out_dir, audio=True, worksheets=True, audio_lessons=None, log=print):
                 trans[direction][k] = {"source_text": line, "text": c["sat"], "source": c["source"],
                                        "review_status": c["review_status"]}
                 continue
-            r = pl.translate(line, direction, "lesson_script")
+            r = pl.translate(line, direction, "lesson_script", roundtrip=True)
             trans[direction][k] = {"source_text": line, "text": r["text"], "source": r["source"],
                                    "review_status": review.get(r["source"], "unreviewed_model_output")}
+            if r.get("needs_review"):             # A3: the tablet shows the badge and does not auto-play
+                trans[direction][k]["needs_review"] = True
+                trans[direction][k]["review_reason"] = r.get("review_reason", "loop")
+            if "roundtrip_chrf" in r:
+                trans[direction][k]["roundtrip_chrf"] = r["roundtrip_chrf"]
     save("translations.json", trans)
     log(f"translations: {len(trans['hi-to-sat'])} hi-to-sat, {len(trans['sat-to-hi'])} sat-to-hi")
 
@@ -173,9 +181,11 @@ def build(out_dir, audio=True, worksheets=True, audio_lessons=None, log=print):
                    "translations_sat_to_hi": len(trans["sat-to-hi"]),
                    "audio_clips": len(index["sat"]) + len(index["hi"])},
         "files": files,
-        "signature": None,          # Ed25519, from M5
+        "signature": "manifest.sig",    # Ed25519 over manifest.json's bytes (pack_signing.py)
     }
     save("manifest.json", manifest)
+    import pack_signing
+    pack_signing.sign_dir(out_dir)
     return manifest
 
 

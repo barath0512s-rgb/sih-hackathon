@@ -78,6 +78,9 @@ class Pack(val dir: File) {
 
     companion object {
         const val FORMAT = 1
+        /** The hub's pack-signing key (assets/pack_signing.pub, pack_signing.py). When set, a pack
+         *  must carry manifest.sig, a valid Ed25519 signature of manifest.json by this key. */
+        @Volatile var trustedKey: ByteArray? = null
 
         /** Unzip into `work`, check every file against the manifest, then swap it in as `current`. */
         fun import(zip: InputStream, root: File): Pack {
@@ -137,10 +140,15 @@ class Pack(val dir: File) {
             if (!mf.isFile) throw PackError("not a content pack: no manifest.json")
             val m = JSONObject(mf.readText())
             if (m.optInt("format") != FORMAT) throw PackError("pack format ${m.optInt("format")}, this app reads $FORMAT")
+            trustedKey?.let { key ->
+                val sig = File(dir, "manifest.sig").takeIf { it.isFile } ?: throw PackError("the pack is not signed by the hub")
+                val ok = runCatching { Ed25519.verify(key, mf.readBytes(), Ed25519.unhex(sig.readText().trim())) }.getOrDefault(false)
+                if (!ok) throw PackError("the pack's signature is wrong: it was changed or is not from this hub")
+            }
             val files = m.getJSONObject("files")
             val listed = files.keys().asSequence().toSet()
             val present = dir.walkTopDown().filter { it.isFile }
-                .map { it.relativeTo(dir).invariantSeparatorsPath }.filter { it != "manifest.json" }.toSet()
+                .map { it.relativeTo(dir).invariantSeparatorsPath }.filter { it != "manifest.json" && it != "manifest.sig" }.toSet()
             (present - listed).firstOrNull()?.let { throw PackError("file not in the manifest: $it") }
             for (name in listed) {
                 val f = File(dir, name)

@@ -58,6 +58,19 @@ laptop, offline, and checked by the named test or script.
 | 5 | Whole application offline on low-cost tablets (**2 GB RAM, Android 9+**) after initial content synchronisation | Fully offline **on the laptop hub** (tablets use its browser page over local Wi-Fi). **Android app, work in progress (F1 M1):** on an Android 9 emulator with 2 GB RAM, in airplane mode, the app shows the lessons, flashcards and typed translations of lesson lines from a verified content pack, through the same page and REST contract as the hub (24 of 24 contract cases); peak PSS 185 MB (app + WebView) | On the tablet: speech recognition, translation of new sentences and voice synthesis are **not built yet** (M2-M4); the Realme Pad Mini tablet (4 GB, Android 11) itself: **NOT MEASURED** yet | `bench/results/android_m1_emulator-2gb-android9.md`; `pytest tests/test_offline.py` |
 | 6 | A working application, a demo video and a GitHub repository | The application and this repository | Demo video: not recorded yet | |
 
+### Languages and how far each stage is (from `languages.json`)
+
+Maturity: **production** = in the app and measured; **preview** = works, labelled Preview in the app, quality not measured; **phrasebook** = verified fixed sentences only; not available.
+
+<!-- languages:start -->
+| Language | Speech recognition | Translation | Speech |
+|---|---|---|---|
+| Hindi (हिंदी) | **production**: IndicConformer 600M multilingual (hub); 120M CTC int8 via sherpa-onnx (tablet) (MIT) | **production**: IndicTrans2 indic-indic-dist-320M (hub) (MIT) | **production**: Piper hi_IN-pratham-medium (CC BY-NC-SA 4.0) |
+| Santali (ᱥᱟᱱᱛᱟᱲᱤ) | **production**: IndicConformer 600M multilingual (hub); 120M transducer int8 via sherpa-onnx (tablet) (MIT) | **production**: IndicTrans2 indic-indic-dist-320M (hub); pack lines on the tablet (MIT) | **production**: Piper hi_IN-pratham-medium reading an Ol Chiki transliteration (pending native review) (CC BY-NC-SA 4.0) |
+| Mundari (मुंडारी) | not available | not available (planned: IndicTrans2 + Hindi–Mundari LoRA (notebooks/mundari_lora.ipynb, not run yet)) | **preview**: facebook/mms-tts-unr (reads Odia script; Devanagari converted) (CC BY-NC 4.0) |
+| Ho (हो) | not available | not available | **preview**: facebook/mms-tts-hoc (reads Odia script; Devanagari converted; Warang Citi not supported yet) (CC BY-NC 4.0) |
+<!-- languages:end -->
+
 ---
 
 ## 3. What it does

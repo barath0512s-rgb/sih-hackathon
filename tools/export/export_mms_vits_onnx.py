@@ -70,6 +70,7 @@ def main():
             "noise_scale": m.config.noise_scale, "noise_scale_duration": m.config.noise_scale_duration,
             "speaking_rate": m.config.speaking_rate, "opset": OPSET}
     (out / "tts.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
+    tok.save_pretrained(str(out / "tokenizer"))      # the exact tokenizer (mms_tts.py uses it on the laptop)
     src_readme = Path(a.model) / "README.md"
     if src_readme.exists():
         shutil.copyfile(src_readme, out / "MODEL_CARD.md")

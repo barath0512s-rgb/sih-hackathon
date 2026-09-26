@@ -101,6 +101,18 @@ ON_DEVICE_VOICE = True             # A1 flag; written to the app by tools/androi
 LESSON_MATCH_THRESHOLD = {"hi": 0.9, "sat": 0.95}
 ON_DEVICE_ASR_THREADS = 2
 
+# ── Round-trip check (A3) ─────────────────────────────────────────────────────
+# A model translation Hindi -> Santali is translated back to Hindi; if the
+# round trip's chrF against the Hindi source is below the threshold, the reply
+# carries needs_review: the page shows "check with a native speaker", does not
+# auto-play, and offers the nearest verified sentence. Tuned on IN22-Conv:
+# eval/roundtrip_flag.py -> eval/results/roundtrip_flag.md. It costs a second
+# model pass, so voice replies skip it unless ROUNDTRIP_ON_VOICE (typed
+# translations and content packs are checked).
+ROUNDTRIP_CHECK = True
+ROUNDTRIP_CHRF_THRESHOLD = 34.5     # eval/results/roundtrip_flag.json (best F1 on the tune half)
+ROUNDTRIP_ON_VOICE = False
+
 # ── Worksheets (A2) ───────────────────────────────────────────────────────────
 # v2: student exercises with pictures (count and write, match, fill in the blank,
 # circle the answer, trace the numeral) and a teacher answer key; cut-out

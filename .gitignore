@@ -83,3 +83,5 @@ content_audio/
 
 # sherpa-onnx release AAR (50 MB): tools/android/fetch_sherpa_aar.py
 android/app/libs/*.aar
+# A6/A7 listening samples (20 short clips of our own synthesis, 2.3 MB)
+!docs/samples/voices/*.wav

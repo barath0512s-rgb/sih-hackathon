@@ -104,6 +104,8 @@ def build(out_zip):
     manifest = {"format": 1, "kind": "models", "created": datetime.datetime.now().isoformat(timespec="seconds"),
                 "app_name": config.APP_NAME, "files": files}
     (stage / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")
+    import pack_signing
+    pack_signing.sign_dir(stage)                     # A4: signed like the content pack
     out_zip.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_STORED) as z:
         for p in sorted(stage.rglob("*")):

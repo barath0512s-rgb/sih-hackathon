@@ -353,7 +353,7 @@ def translate_audio():
         tmp_path.unlink(missing_ok=True)
         Path(str(tmp_path) + "_converted.wav").unlink(missing_ok=True)
     t1 = time.time()
-    r = pl.translate(recognized, direction, mode)
+    r = pl.translate(recognized, direction, mode, roundtrip=config.ROUNDTRIP_ON_VOICE)
     r = dict(r, nearest_verified=_nearest(r, recognized, direction))
     t2 = time.time()
     audio_url, tts_error, tts_engine = _speak(direction, r["text"])
@@ -415,7 +415,7 @@ def translate_audio_stream():
         outs, nmt_s, tts_s, sources, engines, errors = [], 0.0, 0.0, [], [], []
         for i, part in enumerate(parts):
             a = time.time()
-            r = pl.translate(part, direction, mode)
+            r = pl.translate(part, direction, mode, roundtrip=config.ROUNDTRIP_ON_VOICE)
             b = time.time()
             audio_url, tts_error, tts_engine = _speak(direction, r["text"])
             c = time.time()
@@ -455,7 +455,7 @@ def translate_text():
     mode = data.get("mode", "lesson_script")
 
     t0 = time.time()
-    r = pl.translate(text, direction, mode)
+    r = pl.translate(text, direction, mode, roundtrip=True)
     r = dict(r, nearest_verified=_nearest(r, text, direction))
     t1 = time.time()
     audio_url, tts_error, tts_engine = _speak(direction, r["text"])
@@ -765,6 +765,82 @@ def curriculum_worksheet(topic):
 
 
 # ── Worksheet and feedback ────────────────────────────────────────────────────
+@app.route("/languages")
+def languages_registry():
+    """A7: the language registry (languages.json): per language and stage, engine, licence, maturity."""
+    import languages
+    return jsonify({"languages": languages.load()})
+
+
+@app.route("/preview/speak", methods=["POST"])
+def preview_speak():
+    """A7: Mundari / Ho voice, Preview only: {lang: "unr"|"hoc", text: a teacher's line (Devanagari)}."""
+    import mms_tts
+    d = request.json or {}
+    lang, text = d.get("lang"), (d.get("text") or "").strip()
+    if lang not in mms_tts.NAMES or not text:
+        return jsonify({"error": "lang (unr or hoc) and text are required"}), 400
+    if not mms_tts.available(lang):
+        return jsonify({"error": f"The {mms_tts.NAMES[lang]} preview voice is not installed", "code": "engine_missing"}), 503
+    try:
+        w, sr = _preview_voice(lang).synth(text)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    import soundfile as sf
+    aid = uuid.uuid4().hex
+    config.TTS_OUT_DIR.mkdir(exist_ok=True)
+    sf.write(str(config.TTS_OUT_DIR / f"{aid}.wav"), w, sr, subtype="PCM_16")
+    with _audio_lock:
+        _prune_audio()
+    return jsonify({"audio_url": f"/audio/{aid}", "maturity": "preview", "language": mms_tts.NAMES[lang],
+                    "seconds": round(len(w) / sr, 2)})
+
+
+_preview_voices = {}
+
+
+def _preview_voice(lang):
+    import mms_tts
+    if lang not in _preview_voices:
+        _preview_voices[lang] = mms_tts.MmsVoice(lang)
+    return _preview_voices[lang]
+
+
+@app.route("/progress/lakshya")
+def progress_lakshya():
+    """A8: class-level progress per NIPUN Lakshya and week (?format=json|csv|pdf)."""
+    import progress
+    rs = progress.rows()
+    fmt = request.args.get("format", "json")
+    if fmt == "csv":
+        return Response(progress.as_csv(rs), mimetype="text/csv",
+                        headers={"Content-Disposition": f"attachment; filename={config.APP_NAME}_NIPUN_progress.csv"})
+    if fmt == "pdf":
+        buf = io.BytesIO()
+        progress.as_pdf(rs, buf)
+        buf.seek(0)
+        return send_file(buf, mimetype="application/pdf", download_name=f"{config.APP_NAME}_NIPUN_progress.pdf")
+    return jsonify({"rows": rs})
+
+
+@app.route("/sync/import", methods=["POST"])
+def sync_import():
+    """A4: merge a tablet's signed export (corrections + class counts): multipart "export"."""
+    import sync
+    f = request.files.get("export")
+    if f is None:
+        return jsonify({"error": "No export file"}), 400
+    try:
+        return jsonify(sync.import_file(f.read()))
+    except sync.SyncError as e:
+        return jsonify({"error": str(e), "code": "sync_refused"}), 400
+
+
+@app.route("/sync/export", methods=["POST"])
+def sync_export():
+    return jsonify({"error": "The hub imports tablet files; export is on the tablet", "code": "tablet_only"}), 501
+
+
 @app.route("/flashcards/pdf")
 def flashcards_pdf():
     """Cut-out flashcards for one lesson (A2): GET /flashcards/pdf?grade=2&topic=addition."""
