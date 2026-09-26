@@ -213,6 +213,24 @@ def page_flow(s, record=None):
     return res
 
 
+def mic_through_page(s, seconds=3):
+    """The native microphone in the build under test (release), through the page: press
+    the Hindi mic button, wait, press it again. The page uploads what MicBridge recorded to
+    the in-app server, which logs the body size (no speech recognition on the device in M1,
+    so the page then says so). Returns (bytes, approx seconds of 16 kHz 16-bit audio) or None."""
+    adb(s, "logcat", "-c", check=False)
+    btn = find_visible(s, lambda n: "हिंदी बोलिए" in n["text"] and "Button" in n["cls"])
+    if not btn:
+        return None
+    tap(s, btn["box"]); time.sleep(seconds); tap(s, btn["box"]); time.sleep(4)
+    log = adb(s, "logcat", "-d", "-s", "tablet:I", check=False)
+    m = re.findall(r"request POST /translate/audio(?:_stream)? body=(\d+) bytes", log)
+    if not m:
+        return None
+    n = int(m[-1])
+    return n, max(0.0, (n - 44 - 400) / 32000)       # minus WAV header and multipart fields (approx.)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--apk", type=Path, required=True, help="the build to test (release)")
@@ -257,6 +275,7 @@ def main():
     time.sleep(3)
     airplane = adb(s, "shell", "settings", "get", "global", "airplane_mode_on", check=False)
     page = page_flow(s, a.record)
+    mic_release = mic_through_page(s)
     offline = run(send, engines=set())
     adb(s, "shell", "cmd", "connectivity", "airplane-mode", "disable", check=False)
     st, _, raw = send("GET", "/lessons", None)
@@ -300,6 +319,9 @@ def main():
              f"| REST contract, airplane mode | {n_cases - len(offline)} of {n_cases} cases pass |",
              f"| Typed lesson line from the pack, round trip over adb forward (20 runs) | median {typed[10]:.0f} ms, "
              f"max {typed[-1]:.0f} ms |",
+             (f"| Native mic, build under test, through the page (Hindi mic pressed for about 3 s) | "
+              f"{mic_release[0]} bytes uploaded, about {mic_release[1]:.1f} s of 16 kHz audio |"
+              if mic_release else "| Native mic, build under test, through the page | FAILED: no upload seen |"),
              (f"| Native mic (MicBridge, 3 s, 16 kHz; debug build of the same code) | {mic['seconds']:.2f} s of audio, "
               f"RMS {mic['rms']:.4f}, peak {mic['peak']:.3f} |" if mic and mic.get("ok")
               else f"| Native mic | {'FAILED: ' + json.dumps(mic) if a.debug_apk else 'NOT MEASURED (no --debug-apk)'} |"),

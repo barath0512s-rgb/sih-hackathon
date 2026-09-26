@@ -6,14 +6,13 @@
 
 | Check | Result |
 |---|---|
-| Pack import (push + SHA-256 check of every file + install, release build) | 7.2 s |
+| Pack import (push + SHA-256 check of every file + install, release build) | 10.4 s |
 | REST contract, network on | 24 of 24 cases pass |
 | Page in the WebView, airplane mode on (airplane_mode_on=1) | lesson lines listed: yes; line chosen: yes; Translate gave Santali: yes |
 | REST contract, airplane mode | 24 of 24 cases pass |
-| Typed lesson line from the pack, round trip over adb forward (20 runs) | median 21 ms, max 36 ms |
-| Native mic (MicBridge, 3 s, 16 kHz; debug build of the same code) | 3.02 s of audio, RMS 0.0035, peak 0.014 |
-| Peak PSS during the checks and the typed lesson (dumpsys meminfo every 1 s, 30 samples): app / WebView renderer / sum | 77 / 98 / **174 MB** |
+| Typed lesson line from the pack, round trip over adb forward (20 runs) | median 21 ms, max 50 ms |
+| Native mic, build under test, through the page (Hindi mic pressed for about 3 s) | 108849 bytes uploaded, about 3.4 s of 16 kHz audio |
+| Native mic (MicBridge, 3 s, 16 kHz; debug build of the same code) | 3.08 s of audio, RMS 0.0035, peak 0.014 |
+| Peak PSS during the checks and the typed lesson (dumpsys meminfo every 1 s, 52 samples): app / WebView renderer / sum | 82 / 104 / **183 MB** |
 
 Santali shown after Translate: ᱵᱟᱨ ᱩᱞ ᱟᱨ ᱯᱮ ᱩᱞ ᱢᱮᱥᱟᱣ ᱢᱮ। ᱡᱚᱛᱚ ᱛᱤᱱᱟᱜ ᱦᱩᱭᱮᱱᱟ? ᱩᱝᱜᱽᱞᱤ ᱨᱮ ᱜᱤᱱᱛᱤ ᱢᱮ।
-
-Screen recording: `docs/demo_assets/android_emulator.mp4` (6.7 MB).

@@ -28,6 +28,9 @@ class LocalServer(private val assets: AssetManager, private val api: Api, port: 
             if (len > MAX_BODY) return newFixedLengthResponse(Response.Status.BAD_REQUEST, "text/plain", "too large")
             ByteArray(len).also { buf -> var off = 0; while (off < len) { val n = session.inputStream.read(buf, off, len - off); if (n < 0) break; off += n } }
         } else null
+        // Method, path and body size only (never the content): lets a device check see
+        // that the page's recording arrived, in release builds too.
+        if (body != null) android.util.Log.i("tablet", "request ${session.method} $path body=${body.size} bytes")
         val query = session.parameters.mapValues { it.value.firstOrNull() ?: "" }
         // One bad request must never take the whole app down.
         val r = try { api.handle(session.method.name, path, query, body, type) }

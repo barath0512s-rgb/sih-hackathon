@@ -351,7 +351,7 @@
   status: "TRUE"
   evidence: bench/results/sherpa_vs_nemo_rnnt.md
 - id: latency_three_runs
-  text: "Three runs (AC, High performance plan), median of the runs' p90s, distinct sentences: upload to reply audio hi→sat 2.38 s, sat→hi 2.58 s; from the end of speech, first audio 2.75 s (all 69 FLEURS sentences), full time 2.85 s (≤ 17 words); first-audio p90 per run 3.40 / 2.75 / 2.54 s"
+  text: "Three runs (AC, Best performance mode), median of the runs' p90s, distinct sentences: sentences of ≤ 17 words: upload to reply audio hi→sat 2.14 s, from the end of speech full time 2.85 s, first audio 2.41 s; all sentences: upload hi→sat 2.38 s, sat→hi 2.58 s; first-audio p90 per run 3.40 / 2.75 / 2.54 s"
   status: "TRUE"
   evidence: bench/results/latency_hp_runs.md
 

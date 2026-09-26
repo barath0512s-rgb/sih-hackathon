@@ -25,6 +25,42 @@ STEP_BINS = ((0, 11), (12, 17), (18, 23), (24, 999))
 SAT_BINS = ((0, 10), (11, 17), (18, 999))
 
 
+DEFINITIONS = [
+    "**Definitions.** Neither measure includes the endpointing wait: the silence endpoint (500 ms, "
+    "1000 ms after 2.5 s of speech) is a setting, off by default; with it on, add at least that wait. "
+    "Neither includes Wi-Fi or the browser starting playback.",
+    "- **From the end of speech** (`bench/latency_steps.py`, Hindi -> Santali): starts when the recorded "
+    "audio, already a WAV file, is handed to speech recognition in the same process. **Full time** stops "
+    "when the Santali audio for the whole utterance is written (not streamed). **Time to first audio** "
+    "stops when the first clause chunk's audio is written (streamed; computed for every clip, although "
+    "the app streams only utterances of 18+ words). **Time to last audio**: the last chunk's audio. "
+    "For each clip the benchmark runs the whole path and then the streamed path, and goes straight on "
+    "to the next clip.",
+    "- **Upload to reply audio** (`bench/bench_latency.py`, both directions): starts when the request with "
+    "the audio file is sent to the app in the same process (Flask test client, no network); includes "
+    "saving the upload, re-encoding it with ffmpeg, speech recognition, the translation layers "
+    "(teacher, glossary, cache, model), synthesis and downloading the reply audio; stops when the reply "
+    "audio is received. Whole utterance, not streamed. One request after another.",
+    "- **Why the end-of-speech full time has the longer tail (p90 3.67 vs 2.38 s, medians 2.11 vs 2.03 s "
+    "in run 3):** the medians agree; the tail comes from speech recognition. In the end-of-speech runs the "
+    "same six clips were slow every time (1.8-2.4 s), yet alone they take 0.76 s median (0.73 s "
+    "re-encoded: the format is not the cause). Each follows a clip with about twice the usual streaming "
+    "work (median 3.5 s vs 1.9 s), which that benchmark runs just before, with no pause. The upload "
+    "benchmark does not stream. So its full time is the realistic one for a line spoken after a pause; "
+    "the end-of-speech full time is pessimistic in the tail.",
+    "- **Streaming threshold:** on the saved runs, streaming brings the first sound forward by a median "
+    "0.25-0.29 s for 12-17 words but delays the last audio by 0.65-0.70 s; for 18+ words it gains "
+    "0.48-0.60 s. The app streams only 18+ words (`config.STREAM_MIN_WORDS = 18`); the data support it.",
+    "- Rows with fewer than 10 distinct sentences are marked **small sample**. The headline is the "
+    "**<= 17-word** row.",
+]
+SMALL = 10
+
+
+def label(name, nd):
+    return f"{name} (small sample)" if nd < SMALL else name
+
+
 def pct(v, p):
     v = sorted(v)
     return v[max(0, min(len(v) - 1, -(-len(v) * p // 100) - 1))]
@@ -62,7 +98,8 @@ def v2v_run(tag):
             seen.add(k); dist.append(r)
     out = {}
     for d, bins in (("hi-to-sat", STEP_BINS), ("sat-to-hi", SAT_BINS)):
-        for name, lo, hi in [("all", 0, 999)] + [(span(lo, hi), lo, hi) for lo, hi in bins]:
+        head = [("all", 0, 999), ("≤ 17", 0, 17)] if d == "hi-to-sat" else [("all", 0, 999)]
+        for name, lo, hi in head + [(span(lo, hi), lo, hi) for lo, hi in bins]:
             w = lambda r: len(r["reference"].split())
             a = [r for r in rows if r["direction"] == d and lo <= w(r) <= hi]
             b = [r for r in dist if r["direction"] == d and lo <= w(r) <= hi]
@@ -77,9 +114,10 @@ def report(tag="hp"):
     v2v = {t: v2v_run(t) for t in tags}
     med = lambda xs: statistics.median(xs)
     lines = [f"# Latency, three runs ({', '.join(tags)})", "",
-             "Laptop on AC power, Windows power plan High performance, other apps closed (set by the user). "
+             "Laptop on AC power, Windows power mode Best performance, other apps closed (set by the user). "
              "Offline. Every run is listed; the last column is the median of the three runs' p90s. "
-             "Distinct sentences only (the first clip of each): n = clips, n_distinct = sentences used.", "",
+             "Distinct sentences only (the first clip of each): n = clips, n_distinct = sentences used.", ""]
+    lines += DEFINITIONS + ["",
              "## From the end of speech: FLEURS Hindi -> Santali (`bench/latency_steps.py --backend app`)", "",
              "Time to first audio (clause streaming) and full time (whole utterance voiced), p90 in seconds.", "",
              "| Words | n | n_distinct | " + " | ".join(f"{t}: first / full" for t in tags) +
@@ -88,7 +126,7 @@ def report(tag="hp"):
     for name in steps[tags[0]]:
         n, nd = steps[tags[0]][name][:2]
         cells = [f"{steps[t][name][2]:.2f} / {steps[t][name][3]:.2f}" for t in tags]
-        lines.append(f"| {name} | {n} | {nd} | " + " | ".join(cells) +
+        lines.append(f"| {label(name, nd)} | {n} | {nd} | " + " | ".join(cells) +
                      f" | **{med([steps[t][name][2] for t in tags]):.2f} / {med([steps[t][name][3] for t in tags]):.2f}** |")
     lines += ["", "Source files: " + ", ".join(f"`latency_steps_app_{t}.csv`" for t in tags), "",
               "## Upload to reply audio, both directions (`bench/bench_latency.py`, public clips)", "",
@@ -100,7 +138,7 @@ def report(tag="hp"):
     for key in v2v[tags[0]][0]:
         n, nd = v2v[tags[0]][0][key][:2]
         cells = [f"{v2v[t][0][key][2]:.2f}" for t in tags]
-        lines.append(f"| {key[0]} | {key[1]} | {n} | {nd} | " + " | ".join(cells) +
+        lines.append(f"| {key[0]} | {label(key[1], nd)} | {n} | {nd} | " + " | ".join(cells) +
                      f" | **{med([v2v[t][0][key][2] for t in tags]):.2f}** |")
     lines += ["", "Source files: " + ", ".join(f"`{v2v[t][1]}`" for t in tags)]
     return lines
