@@ -421,8 +421,10 @@ def stage_report(s, a, st):
              f"in use {dev['webview_in_use']}.",
              f"- APK tested: `{a.apk.name}` ({a.apk.stat().st_size / 1e6:.1f} MB). Pack: `{a.pack.name}` "
              f"({a.pack.stat().st_size / 1e6:.1f} MB): {json.dumps(st['counts'])}.",
-             "- No speech, translation or voice engine is on the device in M1: the contract cases that need one must "
-             "answer 503 engine_not_on_device, and they did unless listed as failures.",
+             "- This check imports the content pack only (no model pack), so the app has no speech or translation "
+             "engine loaded: the contract cases that need one must answer 503 engine_not_on_device, and they did unless "
+             "listed as failures. On-device speech and translation are measured separately (tools/android/voice_bench.py, "
+             "nmt_bench.py).",
              f"- Manual steps asked for during the run: {', '.join(st.get('actions', [])) or 'none'}.", "",
              "| Check | Result |", "|---|---|",
              f"| Pack import (push + SHA-256 check of every file + install, release build) | {st['import_s']:.1f} s |",

@@ -1,5 +1,18 @@
 # STATUS, 26 Sep 2026: submission freeze, round 2 (master prompt v2)
 
+## Ministry clauses at the submission freeze (candidate, 27 Sep 2026; final at 28 Sep 18:00)
+
+Replaces section 1 below (kept as history). Every number is in the evidence file named.
+
+| # | Clause (SIH26042) | Verdict | Evidence |
+|---|---|---|---|
+| 1 | Hindi-speaking teachers teach in the mother tongue (Ho, Mundari, Santali) with no language training | **PARTIAL.** Santali: speech, translation and speech output on the hub; on the tablet for lesson lines and typed sentences. Mundari and Ho: voices only, labelled Preview (hub); no recognition or translation; Mundari translation prepared, not trained | `languages.json`, `mms_tts.py`, `notebooks/mundari_lora.ipynb` |
+| 2 | Translate Hindi FLN content into accurate text and synthesised audio | **PARTIAL.** Every lesson line has Ol Chiki text and offline audio. Public benchmarks: chrF++ Hindi → Santali 32.2 (IN22-Conv). A round-trip caution flag marks doubtful model output for native review (test precision 0.464, recall 0.449). No native review has been done | `eval/results/benchmarks.md`, `eval/results/roundtrip_flag.md`, `docs/native_review.md` |
+| 3 | Real-time voice to voice, no more than 3 s | **PARTIAL.** Laptop, public adult speech, ≤ 17 words, from the end of speech: p90 2.85 s. Tablet (2 GB emulator), lesson lines: p50 0.50 s, p90 0.82 s. Free-form speech on a 2 GB tablet: p50 13.48 s, so it stays on the laptop hub. Children's speech, classroom Wi-Fi, a real 2 GB tablet: NOT MEASURED | `bench/results/latency_hp_runs.md`, `bench/results/emulator-2gb-android9_2026-09-26_voice.md`, `…_nmt_memfix.md` |
+| 4 | Bilingual worksheets and visual flashcards aligned to NIPUN Bharat | **MET, with caveats.** Worksheet v2 (pictures, five exercise types, answer key) and cut-out flashcards for all 18 lessons, with the Ministry's Lakshya IDs; every Lakshya has a lesson; reading-fluency check against the NIPUN words-per-minute goals. Caveats: the lesson-to-goal mapping is not teacher-reviewed; the Santali on them awaits native review; reading-fluency accuracy with children NOT MEASURED | `tests/test_worksheet_v2.py`, `docs/samples/`, `bench/results/orf_validation.md` |
+| 5 | Whole application offline on low-cost tablets (2 GB RAM, Android 9+) after initial content synchronisation | **PARTIAL.** On a 2 GB Android 9 emulator in airplane mode: lessons, worksheets, flashcards, typed translation, spoken lesson lines, spoken answers and sync, from signed packs (24 of 24 contract cases). Not on a real 2 GB tablet; free-form speech is not on the tablet; translation needs about 1.2 GB. The Realme Pad Mini (4 GB): pending | `bench/results/emulator-2gb-android9_2026-09-26_voice.md`, `…_nmt.md`, `bench/results/sync_roundtrip_2026-09-26.md` |
+| 6 | A working application, demo video and GitHub repository | **PARTIAL.** Application and public repository; demo video script v2 ready, video not recorded yet | `docs/demo_video_script.md` |
+
 ## UPLIFT before submission (26–28 Sep 2026): progress
 
 Freeze 28 Sep 18:00 IST. Anything not finished and tested by then stays behind its flag, switched off.
@@ -302,7 +315,7 @@ Notes:
 Branch `sih-final`, not pushed. Numbers come from `python tools/deck_numbers.py`
 (laptop, offline). Anything with no script behind it is marked NOT MEASURED.
 
-## 1. Ministry clauses
+## 1. Ministry clauses (superseded: see "Ministry clauses at the submission freeze" at the top)
 
 | # | Clause | Verdict | Evidence |
 |---|---|---|---|
